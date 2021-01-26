@@ -74,7 +74,7 @@ bool Shader::shader_compile(Shader_Shader* shader, const char** code)
 bool Shader::shaderProgram_catchError()
 {
 	//Scope is needed for bin for some reason depite also giving it pointer to the class.
-	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, std::placeholders::_1, shaderProgram.id);
+	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, shaderProgram.id, std::placeholders::_1);
 
 	if (!getProgramInfo(GL_LINK_STATUS))
 	{
@@ -88,7 +88,7 @@ bool Shader::shaderProgram_catchError()
 bool Shader::shader_catchError(Shader_Shader* shader)
 {
 	//glGetShaderiv wapped in an lambda to make it parameters less verbose.
-	auto getShaderInfo = std::bind(&Shader::getDebugInfo<decltype(glGetShaderiv)>, this, glGetShaderiv, std::placeholders::_1, shaderProgram.id);
+	auto getShaderInfo = std::bind(&Shader::getDebugInfo<decltype(glGetShaderiv)>, this, glGetShaderiv, shader->id, std::placeholders::_1);
 
 	if (!getShaderInfo(GL_COMPILE_STATUS))
 	{
