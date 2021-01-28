@@ -73,7 +73,7 @@ bool Shader::shader_compile(Shader_Shader* shader, const char** code)
 
 bool Shader::shaderProgram_catchError()
 {
-	//Scope is needed for bin for some reason depite also giving it pointer to the class.
+	//Scope is needed for bind for some reason depite also giving it pointer to the class.
 	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, shaderProgram.id, std::placeholders::_1);
 
 	if (!getProgramInfo(GL_LINK_STATUS))

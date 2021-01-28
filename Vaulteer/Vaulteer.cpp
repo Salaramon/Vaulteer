@@ -27,8 +27,8 @@ int main() {
 
 	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
-	Model model("backpack/backpack.obj");
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	Model model("Crate/Crate1.obj");
+	Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
 
 	float deltaTime = 0, lastFrame = 0;
 
@@ -56,7 +56,8 @@ int main() {
 
 		// render the loaded model
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 1.0f, 0.0f)); // translate it down so it's at the center of the scene
+		modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 		shader.setMatrix("model", modelMatrix);
 		model.draw(shader);
@@ -71,5 +72,43 @@ int main() {
 
 //TODO
 /*
-Implement rendering.
+Import and modify TileMap
+Event handling
+
+Make camera and make it able to rotate around the y axis
 */
+
+enum class KEY {
+	A = 1,
+	B = 2
+};
+
+enum class ACTION {
+	PRESS = 1,
+	RELEASE = 2
+};
+
+struct Event {
+
+	static void Poll() {};
+
+	struct Key {
+		bool operator()(KEY key) {
+			//do something
+		}
+	};
+	struct Action {
+		bool operator()(ACTION key) {
+			//do something
+		}
+	};
+
+	static Key Key;
+	static Action Action;
+};
+
+void test() {
+	
+	Event::Poll();
+	Event::Key == KEY::A && Event::Action == ACTION::PRESS;
+}

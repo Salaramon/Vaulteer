@@ -12,6 +12,7 @@ GLAD/
 GLM/
 GLFW/
 Vaulteer/backpack/
+Vaulteer/Crate/
 
 # User-specific files
 *.rsuser

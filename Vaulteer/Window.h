@@ -35,7 +35,7 @@ public:
 		|_______________________________|	*/
 
 	//Returns the raw GLFW window pointer.
-	GLFWwindow* getRawWindow();
+	GLFWwindow* getRawWindow() const;
 
 	//Returns window height.
 	int getHeight();

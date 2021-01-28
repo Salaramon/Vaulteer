@@ -10,7 +10,7 @@ int Window::is_running()
 	return !glfwWindowShouldClose(window);
 }
 
-GLFWwindow* Window::getRawWindow()
+GLFWwindow* Window::getRawWindow() const
 {
 	return window;
 }
