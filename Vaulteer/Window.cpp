@@ -3,6 +3,11 @@
 Window::Window(const std::string title, unsigned const int width, unsigned const int height) 
 {
 	setup(title, width, height);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+	}
 }
 
 int Window::is_running()
@@ -36,6 +41,7 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 
 void Window::setup(const std::string title, unsigned const int width, unsigned const int height)
 {
+
 	window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;

@@ -1,12 +1,22 @@
 #include "Event.h"
 
 
-typedef double_t TIME;
-typedef double_t CURSOR_X;
-typedef double_t CURSOR_Y;
-typedef double_t SCROLL_X;
-typedef double_t SCROLL_Y;
-typedef Window WINDOW_CONTEXT;
+Event::_Key Event::Key;
+Event::_Action Event::Action;
+Event::_State Event::State;
+Event::_Check Event::Check;
+
+
+std::vector<Event::Button> Event::buttonEvents;
+std::vector<Event::Cursor> Event::cursorEvents;
+std::vector<Event::Wheel> Event::wheelEvents;
+
+std::future<void> Event::catchEvents;
+
+std::unordered_set<Window*> Event::windowContexts;
+
+bool Event::startup = true;
+
 
 void Event::AddEventHandlingForWindow(Window* window)
 {
@@ -21,7 +31,7 @@ void Event::AddEventHandlingForWindow(Window* window)
 	//glfwSetWindowFocusCallback(rawWindow, window_focus_callback);
 }
 
-TIME Event::getTime(EventID id)
+Event::TIME Event::getTime(EventID id)
 {
 	if (id != 0) {
 		if (id <= buttonEvents.size() + 1) {
@@ -39,17 +49,8 @@ TIME Event::getTime(EventID id)
 
 bool Event::Poll() 
 {
-	glfwPostEmptyEvent();
-	catchEvents.wait();
-	for (auto window : windowContexts) {
-		if (glfwWindowShouldClose(window->getRawWindow())) {
-			windowContexts.erase(window);
-			if (windowContexts.empty()) {
-				return false;
-			}
-		}
-	}
-	catchEvents = std::async(glfwWaitEvents);
+	
+	
 	return true;
 }
 
@@ -59,44 +60,64 @@ double_t Event::now()
 	return static_cast<double_t>(glfwGetTime());
 }
 
-size_t Event::Key::operator()(KEY key)
+bool Event::_Check::operator<<(BooleanCheck&& result)
 {
+	return result.eventHappened();
+}
+
+Event::BooleanCheck::BooleanCheck(std::vector<size_t> value)
+{
+	eventIDs = value;
+}
+
+bool Event::BooleanCheck::eventHappened()
+{
+	return !eventIDs.empty();
+}
+
+Event::BooleanCheck&& Event::BooleanCheck::operator&&(BooleanCheck&& value)
+{
+	std::vector<size_t> eventsFound;
+	for (size_t i = 0; i < eventIDs.size(); i++) {
+		for(size_t j = 0; j < value.eventIDs.size(); j++)
+		if (eventIDs[i] == value.eventIDs[j]) {
+			eventsFound.push_back(eventIDs[i]);
+		}
+	}
+	return eventsFound;
+}
+
+Event::BooleanCheck&& Event::_Key::operator==(KEY key)
+{
+	std::vector<size_t> eventsFound;
 	for (size_t i = 0; i < buttonEvents.size(); i++) {
 		if (buttonEvents[i].Key == key) {
-			return i+1;
+			eventsFound.push_back(i);
 		}
 	}
-	return 0;
+	return eventsFound;
 }
 
-size_t Event::Key::operator()(KEY key, ACTION action)
+Event::BooleanCheck&& Event::_Action::operator==(ACTION action)
 {
-	for (size_t i = 0; i < buttonEvents.size(); i++) {
-		if (buttonEvents[i].Key == key && buttonEvents[i].Action == action) {
-			return i + 1;
-		}
-	}
-	return 0;
-}
-
-size_t Event::Key::operator()(ACTION action)
-{
+	std::vector<size_t> eventsFound;
 	for (size_t i = 0; i < buttonEvents.size(); i++) {
 		if (buttonEvents[i].Action == action) {
-			return i + 1;
+			eventsFound.push_back(i);
 		}
 	}
-	return 0;
+	return eventsFound;
 }
 
-size_t Event::Key::operator()(KEY key, STATE state)
+Event::BooleanCheck&& Event::_State::operator==(STATE state)
 {
+	std::vector<size_t> eventsFound;
 	for (size_t i = 0; i < buttonEvents.size(); i++) {
-		if (buttonEvents[i].Key == key && buttonEvents[i].State == state) {
-			return i + 1;
+		if (buttonEvents[i].State == state) {
+			eventsFound.push_back(i);
 		}
 	}
-	return 0;
+	return eventsFound;
 }
 
 void Event::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

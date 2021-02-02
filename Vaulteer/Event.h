@@ -4,6 +4,7 @@
 #include <future>
 #include <algorithm>
 #include <unordered_set>
+#include <chrono>
 
 #include "Window.h"
 
@@ -18,17 +19,17 @@ public:
 	typedef double_t SCROLL_Y;
 	typedef Window WINDOW_CONTEXT;
 
-	void AddEventHandlingForWindow(Window* window);
+	static void AddEventHandlingForWindow(Window* window);
 
-	bool Poll();
+	static bool Poll();
 
 	typedef size_t EventID;
 
 	TIME getTime(EventID id);
 
 	enum class KEY {
-		START_OF_KEYBOARDKEYS = KEY::UNKNOWN,
 		UNKNOWN = -1,
+		START_OF_KEYBOARDKEYS = KEY::UNKNOWN,
 		SPACE = 32,
 		APOSTROPHE = 39,
 		COMMA = 44,
@@ -167,12 +168,28 @@ public:
 		DOWN = 1
 	};
 
-	struct Key {
-		size_t operator()(KEY key);
-		size_t operator()(ACTION action);
-		size_t operator()(KEY key, ACTION action);
-		size_t operator()(KEY key, STATE state);
+	struct BooleanCheck {
+		BooleanCheck(std::vector<size_t> value);
+		bool eventHappened();
+		std::vector<size_t> eventIDs;
+		BooleanCheck&& operator&&(BooleanCheck&& value);
+	protected:
 	};
+
+	struct _Check {
+		bool operator<<(BooleanCheck&& result);
+	};
+	
+	struct _Key {
+		BooleanCheck&& operator==(KEY key);
+	};
+	struct _Action {
+		BooleanCheck&& operator==(ACTION key);
+	};
+	struct _State {
+		BooleanCheck&& operator==(STATE state);
+	};
+
 	struct Time {
 		template<class FLOAT_TYPE>
 		bool operator<(FLOAT_TYPE timePoint);
@@ -241,7 +258,7 @@ public:
 	struct Cursor {
 		CURSOR_X CursorX;
 		CURSOR_Y CursorY;
-		TIME Time
+		TIME Time;
 	};
 	struct Wheel {
 		SCROLL_X ScrollX;
@@ -249,10 +266,14 @@ public:
 		TIME Time;
 	};
 
-	static Key Key;
-	static WindowContext WindowContext;
+	static _Key Key;
+	static _Action Action;
+	static _State State;
+	static _Check Check;
+	static WindowContext* windowContext;
 
 	static double_t now();
+	
 private:
 
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -269,6 +290,8 @@ private:
 	static std::future<void> catchEvents;
 	//static std::unordered_map<Event*,Window*> windowContexts;
 	static std::unordered_set<Window*> windowContexts;
+
+	static bool startup;
 
 };
 
