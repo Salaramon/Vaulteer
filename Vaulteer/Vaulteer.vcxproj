@@ -150,7 +150,6 @@
     <ClCompile Include="..\GLAD\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderable.cpp" />
@@ -164,7 +163,6 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Renderable.h" />

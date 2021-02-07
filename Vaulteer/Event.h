@@ -3,8 +3,9 @@
 #include <vector>
 #include <future>
 #include <algorithm>
-#include <unordered_set>
+#include <set>
 #include <chrono>
+#include <array>
 
 #include "Window.h"
 
@@ -158,9 +159,10 @@ public:
 	};
 
 	enum class ACTION {
-		PRESS = 0,
-		RELEASE = 1,
-		REPEAT = 2
+		RELEASE = 0,
+		PRESS = 1,
+		REPEAT = 2,
+		NONE = 3
 	};
 
 	enum class STATE {
@@ -172,22 +174,27 @@ public:
 		BooleanCheck(std::vector<size_t> value);
 		bool eventHappened();
 		std::vector<size_t> eventIDs;
-		BooleanCheck&& operator&&(BooleanCheck&& value);
-	protected:
+		BooleanCheck operator&&(BooleanCheck&& value);
 	};
 
 	struct _Check {
 		bool operator<<(BooleanCheck&& result);
 	};
 	
+	struct _Count {
+		size_t operator<<(BooleanCheck&& result);
+	};
+	
+
+
 	struct _Key {
-		BooleanCheck&& operator==(KEY key);
+		BooleanCheck operator==(KEY key);
 	};
 	struct _Action {
-		BooleanCheck&& operator==(ACTION key);
+		BooleanCheck operator==(ACTION key);
 	};
 	struct _State {
-		BooleanCheck&& operator==(STATE state);
+		BooleanCheck operator==(STATE state);
 	};
 
 	struct Time {
@@ -201,27 +208,17 @@ public:
 		bool operator>=(FLOAT_TYPE timePoint);
 		double_t timeStamp;
 	};
-	struct CursorX{
-		template<class FLOAT_TYPE>
-		bool operator<(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator<=(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>=(FLOAT_TYPE timePoint);
-		double_t pos;
+	struct _CursorX{
+		BooleanCheck operator<(CURSOR_X position);
+		BooleanCheck operator>(CURSOR_X position);
+		BooleanCheck operator<=(CURSOR_X position);
+		BooleanCheck operator>=(CURSOR_X position);
 	};
-	struct CursorY {
-		template<class FLOAT_TYPE>
-		bool operator<(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator<=(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>=(FLOAT_TYPE timePoint);
-		double_t pos;
+	struct _CursorY {
+		BooleanCheck operator<(CURSOR_Y position);
+		BooleanCheck operator>(CURSOR_Y position);
+		BooleanCheck operator<=(CURSOR_Y position);
+		BooleanCheck operator>=(CURSOR_Y position);
 	};
 	struct ScrollX {
 		template<class FLOAT_TYPE>
@@ -266,14 +263,31 @@ public:
 		TIME Time;
 	};
 
+	typedef std::vector<Button> KeyEvents;
+	typedef std::vector<Cursor> CursorEvents;
+
+
+	struct _Retrieve {
+		//Must create a iterator esc list which acts as an interface and can point to an underlying type
+		template <class RETURN_TYPE>
+		RETURN_TYPE operator<<(BooleanCheck&& result);
+	};
+
 	static _Key Key;
 	static _Action Action;
 	static _State State;
+
+	static _CursorX CursorX;
+	static _CursorY CursorY;
+
 	static _Check Check;
-	static WindowContext* windowContext;
+	static _Count Count;
+
+	static Cursor cursorLastPosition;
 
 	static double_t now();
-	
+	static double_t delta();
+
 private:
 
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -289,11 +303,18 @@ private:
 	
 	static std::future<void> catchEvents;
 	//static std::unordered_map<Event*,Window*> windowContexts;
-	static std::unordered_set<Window*> windowContexts;
+	static Window* window;
 
 	static bool startup;
 
+	static double_t lastPollTime;
+	static double_t currentPollTime;
+
+	static const size_t NUMBER_OF_POSSIBLE_KEYS = 124;
+	static const std::array<intmax_t, NUMBER_OF_POSSIBLE_KEYS> allKeyValues;
 };
+
+//Create own value type to make compact position checking
 
 /*
 	Have the ID as return value, but allow that ID or Type to be used in conjunction with Time and other things such as Event::Key(Event::KEY::A) &&
@@ -301,3 +322,9 @@ private:
 	Maybe Event::Check << (Conditions here)
 	Where Check << basically just runs a function to get true or false through using a interfaced function
 */
+
+template<class RETURN_TYPE>
+inline RETURN_TYPE Event::_Retrieve::operator<<(BooleanCheck&& result)
+{
+	return RETURN_TYPE();
+}
