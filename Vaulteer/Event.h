@@ -267,10 +267,8 @@ public:
 	typedef std::vector<Cursor> CursorEvents;
 
 
-	struct _Retrieve {
-		//Must create a iterator esc list which acts as an interface and can point to an underlying type
-		template <class RETURN_TYPE>
-		RETURN_TYPE operator<<(BooleanCheck&& result);
+	struct _Cursor {
+		CursorEvents operator<<(BooleanCheck&& result);
 	};
 
 	static _Key Key;
@@ -283,7 +281,7 @@ public:
 	static _Check Check;
 	static _Count Count;
 
-	static Cursor cursorLastPosition;
+	static _Cursor CursorEventList;
 
 	static double_t now();
 	static double_t delta();
@@ -322,9 +320,3 @@ private:
 	Maybe Event::Check << (Conditions here)
 	Where Check << basically just runs a function to get true or false through using a interfaced function
 */
-
-template<class RETURN_TYPE>
-inline RETURN_TYPE Event::_Retrieve::operator<<(BooleanCheck&& result)
-{
-	return RETURN_TYPE();
-}

@@ -3,8 +3,10 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include <vector>
+#include <string>
 
 #include "Event.h"
 
@@ -12,32 +14,34 @@
 class Camera
 {
 public:
-	// camera Attributes
-	glm::vec3 Position;
-	glm::vec3 Front;
-	glm::vec3 Up;
-	glm::vec3 Right;
-	glm::vec3 WorldUp;
+
 	// euler Angles
-	float yaw;
-	float pitch;
-	// camera options
-	float speed;
-	float Zoom;
+	double_t yaw;
+	double_t pitch;
+	double_t roll;
+
+	glm::quat orientation;
+	glm::vec3 position;
+	float angleUp;
+	float angleRight;
+	float angleFront;
 
 	// constructor with vectors
-	Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
+	Camera(glm::vec3 position, float yaw, float pitch, float roll);
 	// constructor with scalar values
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+	Camera(float posX, float posY, float posZ, float yaw, float pitch, float roll);
 
 	// returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix();
 
 	void move(glm::vec3 direction);
-	void rotate(glm::vec2 direction);
+	void rotate(float yaw, float pitch, float roll);
+
+	std::string getOrientation();
+	glm::vec3 getFront();
+	glm::vec3 getRight();
+	glm::vec3 getUp();
 
 private:
-	// calculates the front vector from the Camera's (updated) Euler Angles
-	void updateCameraVectors();
-
+	void updateRotation();
 };

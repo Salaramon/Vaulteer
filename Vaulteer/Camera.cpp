@@ -1,67 +1,95 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
-	Front(glm::vec3(0.0f, 0.0f, -1.0f)), 
-	speed(2.5f), 
-	Zoom(45.0f)
+Camera::Camera(glm::vec3 position, float yaw, float pitch, float roll) :
+	position(position),
+	orientation(glm::vec3(.0f, .0f, .0f)),
+	angleUp(pitch),
+	angleRight(yaw),
+	angleFront(roll)
 {
-	Position = position;
-	WorldUp = up;
-	Camera::yaw = yaw;
-	Camera::pitch = pitch;
-	updateCameraVectors();
+	updateRotation();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : 
-	Front(glm::vec3(0.0f, 0.0f, -1.0f)), 
-	speed(2.5f),
-	Zoom(45.0f)
+Camera::Camera(float x, float y, float z, float yaw, float pitch, float roll) :
+	position(glm::vec3(x,y,z)),
+	angleUp(pitch),
+	angleRight(yaw),
+	angleFront(roll)
 {
-	Position = glm::vec3(posX, posY, posZ);
-	WorldUp = glm::vec3(upX, upY, upZ);
-	Camera::yaw = yaw;
-	Camera::pitch = pitch;
-	updateCameraVectors();
+	updateRotation();
 }
 
 glm::mat4 Camera::GetViewMatrix()
 {
-	return glm::lookAt(Position, Position + Front, Up);
+	glm::quat orientationConjugate = glm::conjugate(orientation);
+	glm::mat4 rotation = glm::mat4_cast(orientationConjugate);
+	glm::mat4 translation = glm::translate(glm::mat4(1.0), -position);
+
+	return rotation * translation;
 }
 
 void Camera::move(glm::vec3 direction)
 {
-	Position += glm::normalize(direction) * speed * static_cast<float>(Event::delta());
+	position += direction;
 }
 
 
-void Camera::rotate(glm::vec2 direction)
+void Camera::rotate(float yaw, float pitch, float roll)
 {
-	direction = glm::normalize(direction)* speed * 20.0f * static_cast<float>(Event::delta());
-	yaw += direction.x;
-	pitch += direction.y;
+	angleUp += pitch;
+	angleRight += yaw;
+	angleFront += roll;
 
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-
-	// update Front, Right and Up Vectors using the updated Euler angles
-	updateCameraVectors();
+	updateRotation();
 }
 
-void Camera::updateCameraVectors()
+void Camera::updateRotation() {
+	glm::quat xRotation = glm::angleAxis(glm::radians(-angleUp), glm::vec3(1, 0, 0));
+	glm::quat yRotation = glm::angleAxis(glm::radians(-angleRight), glm::vec3(0, 1, 0));
+	glm::quat zRotation = glm::angleAxis(glm::radians(-angleFront), glm::vec3(0, 0, 1));
+
+	orientation *= xRotation * yRotation * zRotation;
+
+	angleUp = 0.0f;
+	angleRight = 0.0f;
+	angleFront = 0.0f;
+}
+
+std::string Camera::getOrientation() {
+	return std::string("[" + std::to_string(orientation.x) + "," + std::to_string(orientation.y) + "," + std::to_string(orientation.z) + "," + std::to_string(orientation.w) + "," + "]");
+}
+
+glm::vec3 Camera::getFront()
 {
-	// calculate the new Front vector
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	Front = glm::normalize(front);
-	// also re-calculate the Right and Up vector
-	Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	Up = glm::normalize(glm::cross(Right, Front));
+	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);
+	return glm::vec3({ qF.x, qF.y, qF.z });
 }
 
+glm::vec3 Camera::getRight()
+{
+	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);
+	//glm::rotate(glm::inverse(qF), 90.0f, glm::vec3({ qF.x, qF.y, qF.z })
+	return glm::normalize(glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::vec3(0, 1, 0)));
+}
+
+glm::vec3 Camera::getUp()
+{
+	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);
+	return glm::normalize(glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::vec3(0, 1, 0))));
+}
+/*
+forward vector:
+x = 2 * (x*z + w*y)
+y = 2 * (y*z - w*x)
+z = 1 - 2 * (x*x + y*y)
+
+up vector
+x = 2 * (x*y - w*z)
+y = 1 - 2 * (x*x + z*z)
+z = 2 * (y*z + w*x)
+
+left vector
+x = 1 - 2 * (y*y + z*z)
+y = 2 * (x*y + w*z)
+z = 2 * (x*z - w*y)
+*/

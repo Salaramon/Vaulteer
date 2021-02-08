@@ -24,6 +24,8 @@ bool Event::startup = true;
 double_t Event::lastPollTime = 0;
 double_t Event::currentPollTime = 0;
 
+Event::_Cursor Event::CursorEventList;
+
 const std::array<intmax_t, Event::NUMBER_OF_POSSIBLE_KEYS> Event::allKeyValues{ -1, 32, 39, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 59, 61, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 96, 161, 162, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 280, 281, 282, 283, 284, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351 };
 
 
@@ -308,4 +310,13 @@ Event::BooleanCheck Event::_CursorY::operator>(CURSOR_Y position)
 size_t Event::_Count::operator<<(BooleanCheck&& result)
 {
 	return result.eventIDs.size();
+}
+
+Event::CursorEvents Event::_Cursor::operator<<(BooleanCheck&& result)
+{
+	Event::CursorEvents events;
+	for (size_t i = 0; i < result.eventIDs.size(); i++) {
+		events.push_back(cursorEvents[result.eventIDs[i]]);
+	}
+	return events;
 }

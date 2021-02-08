@@ -33,14 +33,14 @@ int main() {
 	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
 	Model model("Crate/Crate1.obj");
-	Camera camera(glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),0.0f,0.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, 15.0f), 0.0f,0.0f,0.0f);
 
 	float deltaTime = 0, lastFrame = 0;
 
 	Event::AddEventHandlingForWindow(&window);
 
 	std::cout.precision(8);
-
+	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	while (window.is_running()) {
 
 		// per-frame time logic
@@ -58,34 +58,57 @@ int main() {
 		shader.use();
 
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)1280 / (float)720, 0.1f, 1000.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 1000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		shader.setMatrix("projection", projection);
 		shader.setMatrix("view", view);
-
+		
 		// render the loaded model
 		for (intmax_t i = -2; i < 2; i++) {
 			for (intmax_t j = -2; j < 2; j++) {
 				for (intmax_t k = -2; k < 2; k++) {
 					glm::mat4 modelMatrix = glm::mat4(1.0f);
-					modelMatrix = glm::translate(modelMatrix, glm::vec3(i, k, j)); // translate it down so it's at the center of the scene
-					modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0));
+					modelMatrix = glm::translate(modelMatrix, glm::vec3((float)i, (float)k, (float)j)); // translate it down so it's at the center of the scene
+					modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 					modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
 					shader.setMatrix("model", modelMatrix);
 					model.draw(shader);
 				}
 			}
 		}
-
+		float speed = 5.0f;
 		Event::Poll();
+		//std::cout << (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) << std::endl;
+		double_t zDifference = 0.0f;
+		if (Event::Check << (Event::Key == Event::KEY::Q && Event::State == Event::STATE::DOWN)) {
+			zDifference = (float)Event::delta() * speed * 100.0f;
+		}
+		if (Event::Check << (Event::Key == Event::KEY::E && Event::State == Event::STATE::DOWN)) {
+			zDifference = -(float)Event::delta() * speed * 100.0f;
+		}
 
-		std::cout << (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) << std::endl;
-		if (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) {
-			camera.rotate(glm::vec2(0, 1));
+		Event::CursorEvents events = (Event::CursorEventList << (Event::CursorX > -9999999 && Event::CursorX < 9999999 && Event::CursorY > -9999999 && Event::CursorY < 9999999));
+		if (!events.empty()) {
+			double_t xDifference = events.back().CursorX - events.front().CursorX;
+			double_t yDifference = events.back().CursorY - events.front().CursorY;
+			camera.rotate(0.1f * xDifference, 0.1f * yDifference, 0.1f * zDifference);
+			std::cout << camera.getOrientation() << std::endl;
+		}
+
+		
+		if (Event::Check << (Event::Key == Event::KEY::W && Event::State == Event::STATE::DOWN)) {
+			camera.move(camera.getFront() * (float)Event::delta() * speed);
 		}
 		if (Event::Check << (Event::Key == Event::KEY::S && Event::State == Event::STATE::DOWN)) {
-			camera.rotate(glm::vec2(0,-1));
+			camera.move(-camera.getFront() * (float)Event::delta() * speed);
 		}
+		if (Event::Check << (Event::Key == Event::KEY::A && Event::State == Event::STATE::DOWN)) {
+			camera.move(-camera.getRight() * (float)Event::delta() * speed);
+		}
+		if (Event::Check << (Event::Key == Event::KEY::D && Event::State == Event::STATE::DOWN)) {
+			camera.move(camera.getRight() * (float)Event::delta() * speed);
+		}
+
 
 		glfwSwapBuffers(window.getRawWindow());
 	}
