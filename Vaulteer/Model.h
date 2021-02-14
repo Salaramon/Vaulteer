@@ -7,6 +7,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/gtx/normal.hpp>
+
 #include "stb_image.h"
 
 #include "Renderable.h"

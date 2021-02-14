@@ -32,7 +32,7 @@ int main() {
 
 	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
-	Model model("Crate/Crate1.obj");
+	Model model("teapot.obj");
 	Camera camera(glm::vec3(0.0f, 0.0f, 15.0f), 0.0f,0.0f,0.0f);
 
 	float deltaTime = 0, lastFrame = 0;
@@ -51,11 +51,15 @@ int main() {
 
 		// render
 		// ------
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// don't forget to enable shader before setting uniforms
 		shader.use();
+
+		std::cout << deltaTime << std::endl;
+		glm::vec3 lightsourcePos = glm::vec3(cos(currentFrame) * 4.0f, 2.0f, sin(currentFrame) * 4.0f);
+		shader.setVector("LightPosition_worldspace", lightsourcePos);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 1000.0f);
@@ -64,18 +68,13 @@ int main() {
 		shader.setMatrix("view", view);
 		
 		// render the loaded model
-		for (intmax_t i = -2; i < 2; i++) {
-			for (intmax_t j = -2; j < 2; j++) {
-				for (intmax_t k = -2; k < 2; k++) {
-					glm::mat4 modelMatrix = glm::mat4(1.0f);
-					modelMatrix = glm::translate(modelMatrix, glm::vec3((float)i, (float)k, (float)j)); // translate it down so it's at the center of the scene
-					modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-					modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
-					shader.setMatrix("model", modelMatrix);
-					model.draw(shader);
-				}
-			}
-		}
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f)); // translate it down so it's at the center of the scene
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
+		shader.setMatrix("model", modelMatrix);
+		model.draw(shader);
+
 		float speed = 5.0f;
 		Event::Poll();
 		//std::cout << (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) << std::endl;
@@ -102,10 +101,10 @@ int main() {
 		if (Event::Check << (Event::Key == Event::KEY::S && Event::State == Event::STATE::DOWN)) {
 			camera.move(-camera.getFront() * (float)Event::delta() * speed);
 		}
-		if (Event::Check << (Event::Key == Event::KEY::A && Event::State == Event::STATE::DOWN)) {
+		if (Event::Check << (Event::Key == Event::KEY::D && Event::State == Event::STATE::DOWN)) {
 			camera.move(-camera.getRight() * (float)Event::delta() * speed);
 		}
-		if (Event::Check << (Event::Key == Event::KEY::D && Event::State == Event::STATE::DOWN)) {
+		if (Event::Check << (Event::Key == Event::KEY::A && Event::State == Event::STATE::DOWN)) {
 			camera.move(camera.getRight() * (float)Event::delta() * speed);
 		}
 

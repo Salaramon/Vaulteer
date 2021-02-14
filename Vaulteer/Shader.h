@@ -35,6 +35,9 @@ public:
 	//Sets the uniform variable in the shader program. !!(Incomplete: Missing overloads for more types)
 	void setUniform(std::string name, int value);
 
+	//Sets the uniform variable in the shader program. !!(Incomplete: Missing overloads for more types)
+	void setVector(const std::string &name, const glm::vec3& vec) const;
+
 	//Sets the matrix transform variable in the shader program. !!(Incomplete: Missing overloads for more types)
 	void setMatrix(const std::string &name, const glm::mat4& mat) const;
 
