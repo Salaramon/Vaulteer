@@ -67,29 +67,13 @@ glm::vec3 Camera::getFront()
 
 glm::vec3 Camera::getRight()
 {
-	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);
+	glm::quat qF = orientation * glm::quat(0, -1, 0, 0) * glm::conjugate(orientation);
 	//glm::rotate(glm::inverse(qF), 90.0f, glm::vec3({ qF.x, qF.y, qF.z })
-	return glm::normalize(glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::vec3(0, 1, 0)));
+	return glm::vec3({ qF.x, qF.y, qF.z });
 }
 
 glm::vec3 Camera::getUp()
 {
-	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);
-	return glm::normalize(glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::cross(glm::vec3({ qF.x, qF.y, qF.z }), glm::vec3(0, 1, 0))));
+	glm::quat qF = orientation * glm::quat(0, 0, -1, 0) * glm::conjugate(orientation);
+	return glm::vec3({ qF.x, qF.y, qF.z });
 }
-/*
-forward vector:
-x = 2 * (x*z + w*y)
-y = 2 * (y*z - w*x)
-z = 1 - 2 * (x*x + y*y)
-
-up vector
-x = 2 * (x*y - w*z)
-y = 1 - 2 * (x*x + z*z)
-z = 2 * (y*z + w*x)
-
-left vector
-x = 1 - 2 * (y*y + z*z)
-y = 2 * (x*y + w*z)
-z = 2 * (x*z - w*y)
-*/
