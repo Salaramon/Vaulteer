@@ -5,6 +5,16 @@ Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)
 	setup(pathGSGLVertexCode, pathGSGLFragmentCode);
 }
 
+Shader::Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCode)
+{
+	setup(shaderVertexCode.getCode(), pathGSGLFragmentCode);
+}
+
+Shader::Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode)
+{
+	setup(shaderVertexCode.getCode(), shaderFragmentCode.getCode());
+}
+
 void Shader::use()
 {
 	glUseProgram(shaderProgram.id);
@@ -18,6 +28,11 @@ void Shader::setUniform(std::string name, int value)
 void Shader::setMatrix(const std::string &name, const glm::mat4& mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+size_t Shader::getShaderID()
+{
+	return shaderProgram.id;
 }
 
 void Shader::setup(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)

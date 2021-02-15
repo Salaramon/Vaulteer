@@ -10,6 +10,8 @@
 #include <functional>
 #include <vector>
 
+#include "ShaderCode.h"
+
 class Shader
 {
 public:
@@ -23,7 +25,8 @@ public:
 
 	//Loads vertex and fragment shaders on creation.
 	Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode);
-
+	Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCode);
+	Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode);
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		WRAPPER FUNCTIONS 		|
@@ -38,6 +41,8 @@ public:
 	//Sets the matrix transform variable in the shader program. !!(Incomplete: Missing overloads for more types)
 	void setMatrix(const std::string &name, const glm::mat4& mat) const;
 
+
+	size_t getShaderID();
 
 private:
 
