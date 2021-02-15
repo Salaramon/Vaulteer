@@ -33,7 +33,7 @@ int main() {
 	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
 	Model model("teapot.obj");
-	Camera camera(glm::vec3(0.0f, 0.0f, 15.0f), 0.0f,0.0f,0.0f);
+	Camera camera(glm::vec3(1.0f, 2.0f, 6.0f), 0.0f,1.0f,0.0f);
 
 	float deltaTime = 0, lastFrame = 0;
 
@@ -58,7 +58,7 @@ int main() {
 		shader.use();
 
 		std::cout << deltaTime << std::endl;
-		glm::vec3 lightsourcePos = glm::vec3(cos(currentFrame) * 4.0f, 2.0f, sin(currentFrame) * 4.0f);
+		glm::vec3 lightsourcePos = glm::vec3(cos(currentFrame) * 3.0f + 1, 4.0f, sin(currentFrame) * 3.0f + 1);
 		shader.setVector("LightPosition_worldspace", lightsourcePos);
 
 		// view/projection transformations
