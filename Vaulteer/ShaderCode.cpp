@@ -1,5 +1,10 @@
 #include "ShaderCode.h"
 
+size_t shr::vec4Identifier::id = -1;
+size_t shr::InputIdentifier::id = -1;
+size_t shr::UniformIdentifier::id = -1;
+size_t shr::OutputIdentifier::id = -1;
+
 namespace shr {
 
 	size_t ShaderCode::shaderCodeEnumerator;
@@ -44,19 +49,29 @@ namespace shr {
 		return inputs.size();
 	}
 
-	void ShaderCode::addUniform(GLSLTypesInterface typeCode)
+	size_t ShaderCode::getNumberOfOther()
+	{
+		return other.size();
+	}
+
+	void ShaderCode::addUniform(GLSLTypesInterface *typeCode)
 	{
 		uniforms.push_back(typeCode);
 	}
 
-	void ShaderCode::addOutput(GLSLTypesInterface typeCode)
+	void ShaderCode::addOutput(GLSLTypesInterface *typeCode)
 	{
 		outputs.push_back(typeCode);
 	}
 
-	void ShaderCode::addInput(GLSLTypesInterface typeCode)
+	void ShaderCode::addInput(GLSLTypesInterface *typeCode)
 	{
 		inputs.push_back(typeCode);
+	}
+
+	void ShaderCode::addOther(GLSLTypesInterface* typeCode)
+	{
+		other.push_back(typeCode);
 	}
 
 	void ShaderCode::addCodeLine(ShaderCodeLine shaderCodeLine)
@@ -67,40 +82,30 @@ namespace shr {
 	std::string ShaderCode::getCode()
 	{
 		std::string shaderCode = version + "\n\n";
-		for (GLSLTypesInterface &code : inputs) {
-			shaderCode += code.codeDeclaration + "\n";
+		for (GLSLTypesInterface *code : inputs) {
+			shaderCode += code->codeDeclaration + ";\n";
 		}
 		shaderCode += "\n";
 
-		for (GLSLTypesInterface& code : outputs) {
-			shaderCode += code.codeDeclaration + "\n";
+		for (GLSLTypesInterface *code : outputs) {
+			shaderCode += code->codeDeclaration + ";\n";
 		}
 		shaderCode += "\n";
 
-		for (GLSLTypesInterface& code : uniforms) {
-			shaderCode += code.codeDeclaration + "\n";
+		for (GLSLTypesInterface *code : uniforms) {
+			shaderCode += code->codeDeclaration + ";\n";
 		}
 		shaderCode += "\nvoid main()\n{\n";
 
 		for (ShaderCodeLine& code : mainLines) {
-			shaderCode += code.generatedCode + "\n";
+			shaderCode += code.generateCode() + ";\n";
 		}
 		shaderCode += "}";
 
 		return shaderCode;
 	}
 
-
-
-	shr::ShaderCodeLine::ShaderCodeLine()
-	{
-	}
-
-	shr::ShaderCodeLine::ShaderCodeLine(std::string code)
-	{
-		generatedCode = code;
-	}
-
 	
+
 
 }

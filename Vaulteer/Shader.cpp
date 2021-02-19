@@ -2,12 +2,12 @@
 
 Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)
 {
-	setup(pathGSGLVertexCode, pathGSGLFragmentCode);
+	setup(file_to_string(pathGSGLVertexCode), file_to_string(pathGSGLFragmentCode));
 }
 
 Shader::Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCode)
 {
-	setup(shaderVertexCode.getCode(), pathGSGLFragmentCode);
+	setup(shaderVertexCode.getCode(), file_to_string(pathGSGLFragmentCode));
 }
 
 Shader::Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode)
@@ -35,11 +35,8 @@ size_t Shader::getShaderID()
 	return shaderProgram.id;
 }
 
-void Shader::setup(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)
+void Shader::setup(std::string stringVertex, std::string stringFragment)
 {
-
-	std::string stringVertex = file_to_string(pathGSGLVertexCode);
-	std::string stringFragment = file_to_string(pathGSGLFragmentCode);
 
 	const char
 		* stringGSGLVertexCode = stringVertex.c_str(),
