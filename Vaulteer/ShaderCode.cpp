@@ -1,22 +1,32 @@
 #include "ShaderCode.h"
 
-size_t shr::vec4Identifier::id = -1;
-size_t shr::InputIdentifier::id = -1;
-size_t shr::UniformIdentifier::id = -1;
-size_t shr::OutputIdentifier::id = -1;
+shr::ShaderCode* shr::ShaderCode::activeShaderCode;
+std::vector<shr::UniversalTypeInfo> shr::ShaderCode::variables;
+bool shr::ShaderCode::firstInitialization = true;
+
+std::array<std::string, 1> shr::ShaderCode::deliminators;
+size_t shr::ShaderCode::shaderCodeEnumerator = 0;
+std::unordered_map<size_t, std::string> shr::ShaderCode::typeIDToName;
+size_t shr::ShaderCode::variableEnumerator = 0;
+
+std::vector<shr::CodeType> shr::SegmentContainer::codeTypes;
+std::vector<shr::CodeVariable> shr::SegmentContainer::codeVariables;
+std::vector<shr::CodeSymbol> shr::SegmentContainer::codeSymbols;
+std::vector<shr::CodeValue> shr::SegmentContainer::codeValues;
+std::vector<shr::CodeMember> shr::SegmentContainer::codeMembers;
+
 
 namespace shr {
 
-	size_t ShaderCode::shaderCodeEnumerator;
-	ShaderCode* ShaderCode::activeShaderCode = nullptr;
-
 	ShaderCode::ShaderCode()
 	{
+		initializeStaticVariables();
 		//See no reason to implement an id reservation system for shader code generation. Thus an ever increasing ID keeps it simple.
 		shaderCodeID = shaderCodeEnumerator;
 		shaderCodeEnumerator++;
 
 		version = "#version 330 core";
+
 	}
 
 	void ShaderCode::unbind()
@@ -33,76 +43,45 @@ namespace shr {
 			throw "ShaderCode is already bound.";
 		}
 	}
-
-	size_t ShaderCode::getNumberOfUniforms()
-	{
-		return uniforms.size();
-	}
-
-	size_t ShaderCode::getNumberOfOutputs()
-	{
-		return outputs.size();
-	}
-
-	size_t ShaderCode::getNumberOfInputs()
-	{
-		return inputs.size();
-	}
-
-	size_t ShaderCode::getNumberOfOther()
-	{
-		return other.size();
-	}
-
-	void ShaderCode::addUniform(GLSLTypesInterface *typeCode)
-	{
-		uniforms.push_back(typeCode);
-	}
-
-	void ShaderCode::addOutput(GLSLTypesInterface *typeCode)
-	{
-		outputs.push_back(typeCode);
-	}
-
-	void ShaderCode::addInput(GLSLTypesInterface *typeCode)
-	{
-		inputs.push_back(typeCode);
-	}
-
-	void ShaderCode::addOther(GLSLTypesInterface* typeCode)
-	{
-		other.push_back(typeCode);
-	}
-
-	void ShaderCode::addCodeLine(ShaderCodeLine shaderCodeLine)
-	{
-		mainLines.push_back(shaderCodeLine);
-	}
-
+	
 	std::string ShaderCode::getCode()
 	{
-		std::string shaderCode = version + "\n\n";
-		for (GLSLTypesInterface *code : inputs) {
-			shaderCode += code->codeDeclaration + ";\n";
+		std::string shaderCode;
+		for (auto& codeLine : codeLines) {
+			shaderCode += codeLine.getCode() + "\n";
 		}
-		shaderCode += "\n";
-
-		for (GLSLTypesInterface *code : outputs) {
-			shaderCode += code->codeDeclaration + ";\n";
-		}
-		shaderCode += "\n";
-
-		for (GLSLTypesInterface *code : uniforms) {
-			shaderCode += code->codeDeclaration + ";\n";
-		}
-		shaderCode += "\nvoid main()\n{\n";
-
-		for (ShaderCodeLine& code : mainLines) {
-			shaderCode += code.generateCode() + ";\n";
-		}
-		shaderCode += "}";
-
 		return shaderCode;
+	}
+	
+	void ShaderCode::setShaderProgramID(size_t id)
+	{
+		shaderCodeID = id;
+	}
+
+    std::string ShaderCode::getTypeName(size_t typeID)
+    {
+        return typeIDToName.find(typeID)->second;
+    }
+
+	size_t ShaderCode::getNextVariableID()
+	{
+		return variableEnumerator++;
+	}
+
+	UniversalTypeInfo* ShaderCode::storeVariable(size_t typeID)
+	{
+		return &variables.emplace_back(UniversalTypeInfo(static_cast<GLSLType>(typeID)));
+		
+	}
+
+	
+	void ShaderCode::initializeStaticVariables()
+	{
+		if (firstInitialization){
+			firstInitialization = false;
+			variables.reserve(variableContainerSize);
+		}
+		
 	}
 
 	
