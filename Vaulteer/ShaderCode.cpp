@@ -1,7 +1,7 @@
 #include "ShaderCode.h"
 
 shr::ShaderCode* shr::ShaderCode::activeShaderCode;
-std::vector<shr::UniversalTypeInfo> shr::ShaderCode::variables;
+std::array<shr::UniversalTypeInfo, shr::ShaderCode::variableContainerSize> shr::ShaderCode::variables;
 bool shr::ShaderCode::firstInitialization = true;
 
 std::array<std::string, 1> shr::ShaderCode::deliminators;
@@ -70,7 +70,9 @@ namespace shr {
 
 	UniversalTypeInfo* ShaderCode::storeVariable(size_t typeID)
 	{
-		return &variables.emplace_back(UniversalTypeInfo(static_cast<GLSLType>(typeID)));
+		initializeStaticVariables();
+		variables[variableEnumerator - 1] = std::move(UniversalTypeInfo(static_cast<GLSLType>(typeID)));
+		return &variables[variableEnumerator - 1];
 		
 	}
 
@@ -79,7 +81,7 @@ namespace shr {
 	{
 		if (firstInitialization){
 			firstInitialization = false;
-			variables.reserve(variableContainerSize);
+			SegmentContainer::initializeStaticVariables();
 		}
 		
 	}
@@ -87,4 +89,22 @@ namespace shr {
 	
 
 
+}
+
+ShaderCode::SegmentContainer ShaderCode::SegmentContainer::add(CodeLine type) {
+	codeSegments.insert(codeSegments.end(), type.getSegmentContainer().getSegmentList().begin(), type.getSegmentContainer().getSegmentList().end());
+	return *this;
+}
+
+ShaderCode::UniversalTypeInterface::UniversalTypeInterface(UniversalTypeInfo* type) : type(type) {
+	if (!ShaderCode::firstInitialization) {
+		CodeLine newCodeLine;
+		newCodeLine = newCodeLine << type->getType() << Symbol::SPACE << *this << Symbol::SEMICOLON;
+		ShaderCode::activeShaderCode->codeLines.push_back(newCodeLine);
+	}
+}
+
+std::string ShaderCode::CodeMember::getCode()
+{
+	return std::string(type->getVariableName() + name);
 }

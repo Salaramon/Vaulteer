@@ -1,12 +1,18 @@
 #pragma once
 
-#include "Shader.h"
+#include "VertexBuffer.h"
+#include "Texture.h"
 
 class Renderable
 {
 public:
-	virtual void draw(Shader  & shader) = 0;
+	void render();
 
+protected:
+	virtual void renderingLogic() = 0;
+	//VertexBuffer vertexBuffer;
 private:
+	
+	Texture texture;
 };
 

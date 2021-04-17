@@ -12,6 +12,8 @@ Shader::Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCo
 
 Shader::Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode)
 {
+	shaderVertexCode.setShaderProgramID(getShaderID());
+	shaderFragmentCode.setShaderProgramID(getShaderID());
 	setup(shaderVertexCode.getCode(), shaderFragmentCode.getCode());
 }
 

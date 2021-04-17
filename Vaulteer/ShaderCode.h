@@ -7,121 +7,108 @@
 #include <iostream>
 #include <array>
 #include <unordered_map>
-#include <algorithm>
+//#include <algorithm>
 
 #include<string> 
 #include<typeinfo>
 #include<type_traits>
-#include <tuple>
 
-namespace shr {
+class UniversalTypeInterface;
+class CodeLine;
+class UniversalTypeInfo;
 
-	class UniversalTypeInterface;
-	class CodeLine;
-	class UniversalTypeInfo;
+class CodeSymbol;
+class CodeVariable;
+class CodeType;
+class CodeValue;
+//////////////////
+////Main Class////
+//////////////////
 
-	class CodeSymbol;
-	class CodeVariable;
-	class CodeType;
-	class CodeValue;
-	//////////////////
-	////Main Class////
-	//////////////////
+using namespace std::string_literals;
 
-	using namespace std::string_literals;
+inline const std::vector<std::string> symbolList{
+		" + "s,
+		" - ",
+		" * ",
+		" / ",
+		"(",
+		")",
+		"[",
+		"]",
+		"{",
+		"}",
+		" = ",
+		" ",
+		";",
+		", "
+};
+inline const std::vector<std::string> typeList{
+	"bool",
+	"int",
+	"float",
+	"double",
+	"vec2",
+	"vec3",
+	"vec4",
+	"mat2",
+	"mat3",
+	"mat4"
+};
 
-	inline const std::vector<std::string> symbolList{
-			" + "s,
-			" - ",
-			" * ",
-			" / ",
-			"(",
-			")",
-			"[",
-			"]",
-			"{",
-			"}",
-			" = ",
-			" ",
-			";",
-			", "
+class ShaderCode
+{
+public:
+	ShaderCode();
+
+	void unbind();
+	void bind();
+
+
+	std::string getCode();
+	void setShaderProgramID(size_t id);
+
+	constexpr static size_t variableContainerSize = 1000;
+
+	static ShaderCode* activeShaderCode;
+
+	std::vector<CodeLine> codeLines;
+
+	static std::array<UniversalTypeInfo, variableContainerSize> variables;
+
+
+	static std::string getTypeName(size_t typeID);
+	static size_t getNextVariableID();
+	static UniversalTypeInfo* storeVariable(size_t typeID);
+	static bool firstInitialization;
+	static void initializeStaticVariables();
+private:
+
+	enum class GLSLQualifier {
+		CONSTANT,
+		UNIFORM,
+		LAYOUT,
+		LAYOUT_LOCATION,
+		LAYOUT_BINDING,
+		VEC2,
+		VEC3,
+		VEC4,
+
+
+		GLSLType_SIZE
 	};
-	inline const std::vector<std::string> typeList{
-		"bool",
-		"int",
-		"float",
-		"double",
-		"vec2",
-		"vec3",
-		"vec4",
-		"mat2",
-		"mat3",
-		"mat4"
-	};
+	std::string version;
+	//std::vector<ShaderCodeLine> linesOfCode;
 
-	class ShaderCode
-	{
-	public:
-		ShaderCode();
+	size_t shaderCodeID;
+	size_t shaderProgramID;
 
-		void unbind();
-		void bind();
+		
 
-
-		std::string getCode();
-		void setShaderProgramID(size_t id);
-
-		std::vector<CodeLine> codeLines;
-
-		constexpr static size_t variableContainerSize = 100;
-
-		static shr::ShaderCode* activeShaderCode;
-
-		//static ShaderCode* activeShaderCode;
-		static std::vector<UniversalTypeInfo> variables;
-
-		/*
-		static std::vector<CodeType> codeTypes;
-		static std::vector<CodeVariable> codeVariables;
-		static std::vector<CodeSymbol> codeSymbols;
-		static std::vector<CodeValue> codeValues;
-		*/
-
-		static std::string getTypeName(size_t typeID);
-		static size_t getNextVariableID();
-		static UniversalTypeInfo* storeVariable(size_t typeID);
-		static bool firstInitialization;
-	private:
-
-		enum class GLSLQualifier {
-			CONSTANT,
-			UNIFORM,
-			LAYOUT,
-			LAYOUT_LOCATION,
-			LAYOUT_BINDING,
-			VEC2,
-			VEC3,
-			VEC4,
-
-
-			GLSLType_SIZE
-		};
-		std::string version;
-		//std::vector<ShaderCodeLine> linesOfCode;
-
-		size_t shaderCodeID;
-		size_t shaderProgramID;
-
-		static void initializeStaticVariables();
-
-		static std::array<std::string, 1> deliminators;
-		static size_t shaderCodeEnumerator;
-		static std::unordered_map<size_t, std::string> typeIDToName;
-		static size_t variableEnumerator;
-
-	};
-
-	enum class TypesInterface{};
+	static std::array<std::string, 1> deliminators;
+	static size_t shaderCodeEnumerator;
+	static std::unordered_map<size_t, std::string> typeIDToName;
+	static size_t variableEnumerator;
 
 	enum class GLSLType {
 		BOOL,
@@ -216,7 +203,7 @@ namespace shr {
 			return typeNameID;
 		}
 	private:
-		const GLSLType typeNameID;
+		GLSLType typeNameID;
 		std::string variableName;
 	};
 
@@ -227,6 +214,7 @@ namespace shr {
 
 	class CodeVariable : public CodeSegment {
 	public:
+		CodeVariable() {}
 		CodeVariable(UniversalTypeInterface variable);
 		std::string getCode() override {
 			return variable->getVariableName();
@@ -289,16 +277,12 @@ namespace shr {
 		std::string name;
 	};
 
-
-	class CodeLine;
-
 	struct SegmentContainer {
 	public:
 		SegmentContainer() {
-			codeTypes.reserve(segmentAllocationSize);
-			codeVariables.reserve(segmentAllocationSize);
-			codeSymbols.reserve(segmentAllocationSize);
-			codeValues.reserve(segmentAllocationSize);
+			if (ShaderCode::firstInitialization) {
+
+			}
 		}
 
 		SegmentContainer add(Symbol type) {
@@ -322,7 +306,6 @@ namespace shr {
 			return *this;
 		}
 		SegmentContainer add(CodeMember type) {
-			add(type.getInterface());
 			codeMembers.push_back(type);
 			codeSegments.push_back(&codeMembers.back());
 			return *this;
@@ -332,6 +315,14 @@ namespace shr {
 			return codeSegments;
 		}
 
+		static void initializeStaticVariables() {
+			codeTypes.reserve(segmentAllocationSize);
+			codeVariables.reserve(segmentAllocationSize);
+			codeSymbols.reserve(segmentAllocationSize);
+			codeValues.reserve(segmentAllocationSize);
+		}
+
+
 	private:
 		std::vector<CodeSegment*> codeSegments;
 		static std::vector<CodeType> codeTypes;
@@ -339,7 +330,7 @@ namespace shr {
 		static std::vector<CodeSymbol> codeSymbols;
 		static std::vector<CodeValue> codeValues;
 		static std::vector<CodeMember> codeMembers;
-		
+
 		static constexpr size_t segmentAllocationSize = 100;
 	};
 
@@ -398,23 +389,19 @@ namespace shr {
 	private:
 		SegmentContainer segmentContainer;
 	};
-
-	inline SegmentContainer shr::SegmentContainer::add(CodeLine type){
+	/*
+	inline SegmentContainer::add(CodeLine type) {
 		codeSegments.insert(codeSegments.end(), type.getSegmentContainer().getSegmentList().begin(), type.getSegmentContainer().getSegmentList().end());
 		return *this;
 	}
+	*/
 
 
 	class UniversalTypeInterface {
 	public:
 		UniversalTypeInterface() {}
-		UniversalTypeInterface(UniversalTypeInfo* type) : type(type) {
-			if (!ShaderCode::firstInitialization) {
-				CodeLine newCodeLine;
-				newCodeLine = newCodeLine << type->getType() << Symbol::SPACE << *this << Symbol::SEMICOLON;
-				ShaderCode::activeShaderCode->codeLines.push_back(newCodeLine);
-			}
-		}
+		UniversalTypeInterface(UniversalTypeInfo* type);
+
 		UniversalTypeInfo* getInfo() {
 			return type;
 		}
@@ -431,38 +418,26 @@ namespace shr {
 		UniversalTypeInfo* type;
 	};
 
-
-
-	class FundamentalTypeInterface : public UniversalTypeInterface, public CodeValue {
-	public:
-		using CodeValue::CodeValue;
-		FundamentalTypeInterface(UniversalTypeInterface value){}
-	};
-
-
-	inline std::string shr::CodeMember::getCode(){
-		return std::string(type->getVariableName() + name);
-	}
-
-	inline CodeLine shr::CodeLine::operator*(UniversalTypeInterface& type) {
+	ShaderCode::CodeLine CodeLine::operator*(UniversalTypeInterface& type)
+	{
 		CodeLine newCodeLine;
 		newCodeLine = *this << Symbol::MULTIPLICATION << type;
 		return newCodeLine;
 	}
 
-	inline CodeLine shr::CodeLine::operator+(UniversalTypeInterface& type) {
+	inline CodeLine CodeLine::operator+(UniversalTypeInterface& type) {
 		CodeLine newCodeLine;
 		newCodeLine = *this << Symbol::ADDITION << type;
 		return newCodeLine;
 	}
 
-	inline CodeLine shr::CodeLine::operator/(UniversalTypeInterface& type) {
+	inline CodeLine CodeLine::operator/(UniversalTypeInterface& type) {
 		CodeLine newCodeLine;
 		newCodeLine = *this << Symbol::DIVISION << type;
 		return newCodeLine;
 	}
 
-	inline CodeLine shr::CodeLine::operator-(UniversalTypeInterface& type) {
+	inline CodeLine CodeLine::operator-(UniversalTypeInterface& type) {
 		CodeLine newCodeLine;
 		newCodeLine = *this << Symbol::SUBTRACTION << type;
 		return newCodeLine;
@@ -542,23 +517,7 @@ namespace shr {
 		*/
 	};
 
-	struct Texture {
 
-	};
-	/*
-	template<class StorageType >
-	class Vec2;
-
-	class Int;
-
-	template<class StorageType >
-	class FundamentalTypeInterface {
-	public:
-		FundamentalTypeInterface(Vec2<StorageType> type) {}
-		FundamentalTypeInterface(StorageType type) {}
-
-	};
-	*/
 	template<class Type, const size_t id>
 	class FundamentalType : public UniversalType<Type, id> {
 	public:
@@ -614,12 +573,7 @@ namespace shr {
 	template<class StorageType, class Type, const size_t id>
 	class VectorType : public UniversalType<Type, id> {
 	public:
-		
-		//Overload for raw types
 
-		//swizzeling
-
-		//vec+fundamental
 		CodeMember x = CodeMember(this, ".x");
 		CodeMember y = CodeMember(this, ".y");
 		CodeMember z = CodeMember(this, ".z");
@@ -745,22 +699,23 @@ namespace shr {
 		CodeMember zzzz = CodeMember(this, ".zxzz");
 
 
-		//template<class FundamentalType>
-		CodeLine operator()(FundamentalTypeInterface type1, FundamentalTypeInterface type2) {
+		template<class Type1, class Type2>
+		CodeLine operator()(Type1 type1, Type2 type2) {
 			CodeLine newCodeLine;
+			std::cout << typeid(Type1).name() << " " << typeid(Type2).name() << std::endl;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
 		}
 
-		template<class FundamentalType>
-		CodeLine operator()(FundamentalType type1, FundamentalType type2, FundamentalType type3) {
+		template<class Type1, class Type2, class Type3>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3) {
 			CodeLine newCodeLine;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
 		}
 
-		template<class FundamentalType>
-		CodeLine operator()(FundamentalType type1, FundamentalType type2, FundamentalType type3, FundamentalType type4) {
+		template<class Type1, class Type2, class Type3, class Type4>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4) {
 			CodeLine newCodeLine;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
@@ -772,21 +727,90 @@ namespace shr {
 	class MatrixType : public UniversalType<Type, id> {
 	public:
 
-		CodeLine operator()(const StorageType type1,const StorageType type2) {
+		template<class Type1, class Type2>
+		CodeLine operator()(Type1 type1, Type2 type2) {
 			CodeLine newCodeLine;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
 		}
 
-		CodeLine operator()(StorageType type1, StorageType type2, StorageType type3) {
+		template<class Type1, class Type2, class Type3>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3) {
 			CodeLine newCodeLine;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
 		}
 
-		CodeLine operator()(StorageType type1, StorageType type2, StorageType type3, StorageType type4) {
+		template<class Type1, class Type2, class Type3, class Type4>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4) {
 			CodeLine newCodeLine;
 			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT << type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6
+				<< Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6, Type7 type7, Type8 type8) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6 << Symbol::COMMA << type7 << Symbol::COMMA << type8
+				<< Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8, class Type9, class Type10>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6, Type7 type7, Type8 type8, Type9 type9, Type10 type10) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6 << Symbol::COMMA << type7 << Symbol::COMMA << type8
+				<< type9 << Symbol::COMMA << type10 << Symbol::COMMA
+				<< Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8, class Type9, class Type10, class Type11, class Type12>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6, Type7 type7, Type8 type8, Type9 type9, Type10 type10, Type11 type11, Type12 type12) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6 << Symbol::COMMA << type7 << Symbol::COMMA << type8 << Symbol::COMMA
+				<< type9 << Symbol::COMMA << type10 << Symbol::COMMA << type11 << Symbol::COMMA << type12
+				<< Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8, class Type9, class Type10, class Type11, class Type12, class Type13, class Type14>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6, Type7 type7, Type8 type8, Type9 type9, Type10 type10, Type11 type11, Type12 type12, Type13 type13, Type14 type14) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6 << Symbol::COMMA << type7 << Symbol::COMMA << type8 << Symbol::COMMA
+				<< type9 << Symbol::COMMA << type10 << Symbol::COMMA << type11 << Symbol::COMMA << type12 << Symbol::COMMA
+				<< type13 << Symbol::COMMA << type14
+				<< Symbol::PARANTHESIS_RIGHT;
+			return newCodeLine;
+		}
+
+		template<class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8, class Type9, class Type10, class Type11, class Type12, class Type13, class Type14, class Type15, class Type16>
+		CodeLine operator()(Type1 type1, Type2 type2, Type3 type3, Type4 type4, Type5 type5, Type6 type6, Type7 type7, Type8 type8, Type9 type9, Type10 type10, Type11 type11, Type12 type12, Type13 type13, Type14 type14, Type15 type15, Type16 type16) {
+			CodeLine newCodeLine;
+			newCodeLine = newCodeLine << this->getType() << Symbol::PARANTHESIS_LEFT
+				<< type1 << Symbol::COMMA << type2 << Symbol::COMMA << type3 << Symbol::COMMA << type4 << Symbol::COMMA
+				<< type5 << Symbol::COMMA << type6 << Symbol::COMMA << type7 << Symbol::COMMA << type8 << Symbol::COMMA
+				<< type9 << Symbol::COMMA << type10 << Symbol::COMMA << type11 << Symbol::COMMA << type12 << Symbol::COMMA
+				<< type13 << Symbol::COMMA << type14 << Symbol::COMMA << type15 << Symbol::COMMA << type16
+				<< Symbol::PARANTHESIS_RIGHT;
 			return newCodeLine;
 		}
 	};
@@ -800,16 +824,22 @@ namespace shr {
 	template<class StorageType> struct Vec3 : public VectorType<StorageType, Vec3<StorageType>, 5> { using UniversalType<Vec3<StorageType>, 5>::operator=; };
 	template<class StorageType> struct Vec4 : public VectorType<StorageType, Vec4<StorageType>, 6> { using UniversalType<Vec4<StorageType>, 6>::operator=; };
 
-	template<class StorageType> struct Mat2 : public MatrixType<StorageType, Mat2<StorageType>, 7> { using UniversalType<Mat2<StorageType>, 6>::operator=; };
-	template<class StorageType> struct Mat3 : public MatrixType<StorageType, Mat3<StorageType>, 8> { using UniversalType<Mat3<StorageType>, 7>::operator=; };
-	template<class StorageType> struct Mat4 : public MatrixType<StorageType, Mat4<StorageType>, 9> { using UniversalType<Mat4<StorageType>, 8>::operator=; };
-	
+	template<class StorageType> struct Mat2 : public MatrixType<StorageType, Mat2<StorageType>, 7> { using UniversalType<Mat2<StorageType>, 7>::operator=; };
+	template<class StorageType> struct Mat3 : public MatrixType<StorageType, Mat3<StorageType>, 8> { using UniversalType<Mat3<StorageType>, 8>::operator=; };
+	template<class StorageType> struct Mat4 : public MatrixType<StorageType, Mat4<StorageType>, 9> { using UniversalType<Mat4<StorageType>, 9>::operator=; };
 
 	inline Vec2<Float> vec2;
+	inline Vec3<Float> vec3;
+	inline Mat3<Float> mat3;
 
 
-}
+};
+
+
+using shr  = ShaderCode;
 
 //Have Action types such as swizzle use the type system as above. Such that the type inherits the universal type and its interface type and when used it will call it will add the swizzle and attached type functions seperately.
 //Many functions currently do the same thing despite being for different operators, is there a way to operator overload once and have the related types used them regardless?
 //Have constructors return their respective types which then can be fed to an operator
+
+//Use array instead of vector, maybe later try constexpr compiler to count number of objects created during the program.

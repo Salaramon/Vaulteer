@@ -3,13 +3,38 @@
 Model::Model(std::string path)
 {
 	load(path);
-	std::cout << "Assimp Error: " << std::endl;
 }
 
-void Model::draw(Shader & shader)
+void Model::renderingLogic()
 {
 	for (size_t i = 0; i < meshes.size(); i++) {
-		meshes[i].draw(shader);
+		//meshes[i].draw(shader);
+
+		size_t diffuse_id = 1, specular_id = 1;
+
+		for (size_t i = 0; i < textures.size(); i++) {
+			std::string name, id;
+
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			switch (textures[i].type) {
+			case Texture::TextureType::DIFFUSE:
+				name = "diffuse";
+				id = std::to_string(diffuse_id++);
+				break;
+			case Texture::TextureType::SPECULAR:
+				name = "specular";
+				id = std::to_string(specular_id++);
+				break;
+			}
+
+
+
+			//textures[i] == defFSUniformSampler;
+			//shader.setUniform((name + id).c_str(), i);
+			//defaultVertexShaderUniform = i;
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		}
 	}
 }
 
@@ -38,7 +63,7 @@ void Model::processNode(const aiScene* scene, aiNode* node)
 	}
 }
 
-Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
+Mesh&& Model::processMesh(const aiScene* scene, aiMesh* mesh)
 {
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
@@ -86,7 +111,7 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 
 	
 
-	return Mesh(vertices, indices, textures);
+	return Mesh(std::move(vertices), std::move(indices));
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material, aiTextureType type, Texture::TextureType textureType)

@@ -5,25 +5,16 @@
 #include <glad/glad.h>
 
 #include "Vertex.h"
-#include "Texture.h"
-#include "Renderable.h"
+#include "VertexBuffer.h"
+#include "VertexArray.h"
 
-class Mesh : public Renderable
+class Mesh
 {
 public:
-
-	Mesh();
-	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
-
-	void draw(Shader& shader) override;
+	Mesh(std::vector<Vertex>&& vertices, std::vector<GLuint>&& indices);
 
 private:
-	GLuint VAO, VBO, EBO;
-
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
-	std::vector<Texture> textures;
-
-	void setup();
+	//VertexBuffer vertexBuffer;
+	//VertexArray vertexArray;
 };
 
