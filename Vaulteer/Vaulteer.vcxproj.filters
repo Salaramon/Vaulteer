@@ -51,6 +51,12 @@
     <ClCompile Include="Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -86,12 +92,21 @@
     <ClInclude Include="Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.shader">
+    <None Include="g_pass_frag.shader">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vertex.shader">
+    <None Include="g_pass_vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="light_pass_frag.shader">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
