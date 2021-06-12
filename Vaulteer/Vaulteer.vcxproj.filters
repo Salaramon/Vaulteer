@@ -104,12 +104,18 @@
     <ClInclude Include="VertexAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLSLCPPBinder.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.shader">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
