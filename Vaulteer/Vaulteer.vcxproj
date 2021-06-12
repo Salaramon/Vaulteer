@@ -181,6 +181,8 @@
     <None Include="g_pass_frag.shader" />
     <None Include="g_pass_vertex.shader" />
     <None Include="light_pass_frag.shader" />
+    <None Include="standard_frag.shader" />
+    <None Include="standard_vertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

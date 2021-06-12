@@ -3,7 +3,6 @@
 Model::Model(std::string path)
 {
 	load(path);
-	std::cout << "Assimp Error: " << std::endl;
 }
 
 void Model::draw(Shader & shader)

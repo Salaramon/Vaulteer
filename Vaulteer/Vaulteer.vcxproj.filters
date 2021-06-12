@@ -109,5 +109,11 @@
     <None Include="light_pass_frag.shader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="standard_frag.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="standard_vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
