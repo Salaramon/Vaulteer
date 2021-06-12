@@ -98,6 +98,9 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLSLCPPBinder.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="g_pass_frag.shader">
@@ -113,6 +116,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="standard_vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
