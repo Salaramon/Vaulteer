@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\shr">
-      <UniqueIdentifier>{1f3b765b-1f38-4735-bd16-cb4eaf56cf8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\shr">
-      <UniqueIdentifier>{6528c9fe-838b-49b6-ad86-af6814fc6fe9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vaulteer.cpp">
@@ -66,9 +60,6 @@
     <ClCompile Include="VertexAttribute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderCode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -113,9 +104,6 @@
     <ClInclude Include="VertexAttribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.shader">
@@ -124,10 +112,5 @@
     <None Include="vertex.shader">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Text.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>
