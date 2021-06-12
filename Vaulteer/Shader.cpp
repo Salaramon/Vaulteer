@@ -5,18 +5,6 @@ Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)
 	setup(file_to_string(pathGSGLVertexCode), file_to_string(pathGSGLFragmentCode));
 }
 
-Shader::Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCode)
-{
-	setup(shaderVertexCode.getCode(), file_to_string(pathGSGLFragmentCode));
-}
-
-Shader::Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode)
-{
-	shaderVertexCode.setShaderProgramID(getShaderID());
-	shaderFragmentCode.setShaderProgramID(getShaderID());
-	setup(shaderVertexCode.getCode(), shaderFragmentCode.getCode());
-}
-
 void Shader::use()
 {
 	glUseProgram(shaderProgram.id);

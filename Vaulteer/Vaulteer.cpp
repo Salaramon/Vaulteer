@@ -14,7 +14,6 @@
 
 #include "Event.h"
 
-#include "ShaderCode.h"
 #include "Shader.h"
 
 
@@ -33,102 +32,8 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 	glEnable(GL_DEPTH_TEST);
 
-	
-	shr::ShaderCode vertexShader;
-	
-	vertexShader.bind();
 
-	shr::Vec2<shr::Float> wer;
-	shr::Vec4<shr::Float> wow;
-	shr::Vec4<shr::Float> wow2;
-	shr::Vec4<shr::Float> wow3;
-	shr::Vec4<shr::Float> wow4;
-
-	wow = wow2 + wow3 * wow4;
-	wer = shr::vec2(1.543f, 56.5654f) * wow2.xx;
-	wer = shr::vec2(wer, 5.23f);
-	wer = shr::vec3(343.54f, wer);
-	wer = shr::mat3(2345.0f, 3455.0f, 3453.0f);
-
-	//shr::Mat3<shr::Float> test;
-	//wer(34, 65);
-	//test(4553, 435, 345, 56, 5, 34, 53, 4, 56, 45);
-
-	/*
-
-	shr::LocIn<shr::vec3> defVSLocInPos;
-	shr::LocIn<shr::vec3> defVSLocInNormal;
-	shr::LocIn<shr::vec2> defVSLocInTexCoord;
-
-	shr::Output<shr::vec2> defVSOutTexCoord;
-
-	shr::Uniform<shr::mat4> defVSUniView;
-	shr::Uniform<shr::mat4> defVSUniProj;
-	shr::Uniform<shr::mat4> defVSUniModel;
-
-	
-	
-	defVSOutTexCoord = defVSLocInTexCoord;
-	shr::gl_Position = defVSUniProj * defVSUniView * defVSUniModel * shr::Vec4(defVSLocInPos, 1.0);
-	*/
-	vertexShader.unbind();
-	
-	std::cout << vertexShader.getCode() << std::endl;
-
-	shr::ShaderCode fragmentShader;
-
-	fragmentShader.bind();
-	/*
-	shr::Output<shr::vec4> defFSColor;
-
-	shr::Input<shr::vec2> defFSTexture(defVSOutTexCoord);
-
-	shr::Uniform<shr::sampler2D> defFSUniDiffuse;
-
-	defFSColor = shr::texture(defFSUniDiffuse, defFSTexture);
-	*/
-	fragmentShader.unbind();
-
-	
-
-	/*
-	shr::Struct<types...> myStruct;
-	myStruct = a, b, a, ...;
-	myStruct = {a, b, c, ...};
-	*/
-	/*
-	shr::ShaderCode test;
-	test.bind();
-	shr::LocIn<shr::vec3> VertexCoords_modelspace;
-	shr::LocIn<shr::vec3> VertexNormal_modelspace;
-	shr::LocIn<shr::vec2> aTexCoords;
-
-	shr::Uniform<shr::mat4> modela;
-	shr::Uniform<shr::mat4> viewa;
-	shr::Uniform<shr::mat4> projectiona;
-
-	shr::Output<shr::vec3> EyeDirection_cameraspace;
-	shr::Output<shr::vec3> Position_worldspace;
-
-	shr::gl_Position = projectiona * viewa * modela * shr::Vec4(VertexCoords_modelspace, 1.0f).xyz();
-
-	Position_worldspace = (modela * shr::Vec4(VertexCoords_modelspace, 1.0));
-
-	shr::vec3 vertexPosition_cameraspace; vertexPosition_cameraspace  = (viewa * modela * shr::Vec4(VertexCoords_modelspace, 1.0f)).xyz();
-	EyeDirection_cameraspace = shr::Vec3(0.0f, 0.0f, 0.0f) - vertexPosition_cameraspace;
-	
-	test.unbind();
-	*/
-	
-	/*
-		Vec4(Uniform, float)
-		xyz
-		Vec3(float,float,float)
-	*/
-
-	//std::cout << test.getCode() << std::endl;
-
-	Shader shader(vertexShader, fragmentShader);
+	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
 
 	Model model("Crate/Crate1.obj");

@@ -46,9 +46,12 @@ void Model::load(std::string path)
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "Assimp Error: " << modelImporter.GetErrorString() << std::endl;
 	}
+
 	directory = path.substr(0, path.find_last_of('/'));
 
-	processNode(scene, scene->mRootNode);
+	if (scene) {
+		processNode(scene, scene->mRootNode);
+	}
 }
 
 void Model::processNode(const aiScene* scene, aiNode* node)

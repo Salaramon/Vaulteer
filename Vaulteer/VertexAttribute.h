@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "VertexArray.h"
-#include "ShaderCode.h"
 
 
 class VertexAttribute
