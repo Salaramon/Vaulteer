@@ -1,3 +1,4 @@
+
 Halt_On_Error = false
 Generate_Log = true
 Shader_Files = [ "fragment.shader", "vertex.shader" ]
