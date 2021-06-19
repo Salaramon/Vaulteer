@@ -11,53 +11,49 @@
 #include "Window.h"
 #include "Shader.h"
 #include "Model.h"
+#include "MyCamera.h"
 #include "Camera.h"
 #include "ShaderCode.h"
+#include "ShadowMapFBO.h"
 
 #include "Event.h"
 #include "GBuffer.h"
 
 
-void handleEvents(Camera& camera) {
-	float speed = 5.0f;
-	//std::cout << (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) << std::endl;
-	double_t zDifference = 0.0f;
-	if (Event::Check << (Event::Key == Event::KEY::Q && Event::State == Event::STATE::DOWN)) {
-		zDifference = (float)Event::delta() * speed * 100.0f;
-	}
-	if (Event::Check << (Event::Key == Event::KEY::E && Event::State == Event::STATE::DOWN)) {
-		zDifference = -(float)Event::delta() * speed * 100.0f;
-	}
+#include "GLSLCPPBinder.h"
+
+
+void handleCamera(MyCamera& camera) {
 
 	Event::CursorEvents events = (Event::CursorEventList << (Event::CursorX > -9999999 && Event::CursorX < 9999999 && Event::CursorY > -9999999 && Event::CursorY < 9999999));
 	if (!events.empty()) {
 		double_t xDifference = events.back().CursorX - events.front().CursorX;
 		double_t yDifference = events.back().CursorY - events.front().CursorY;
-		camera.rotate(0.1f * xDifference, 0.1f * yDifference, 0.1f * zDifference);
-		//std::cout << camera.getOrientation() << std::endl;
+
+		camera.rotate(xDifference * 0.1f, yDifference * -0.1f);
 	}
 
-
+	float speed = 5.0f;
 	if (Event::Check << (Event::Key == Event::KEY::W && Event::State == Event::STATE::DOWN)) {
-		camera.move(camera.getFront() * (float)Event::delta() * speed);
+		camera.move(camera.front * (float)Event::delta() * speed);
 	}
 	if (Event::Check << (Event::Key == Event::KEY::S && Event::State == Event::STATE::DOWN)) {
-		camera.move(-camera.getFront() * (float)Event::delta() * speed);
+		camera.move(-camera.front * (float)Event::delta() * speed);
 	}
 	if (Event::Check << (Event::Key == Event::KEY::A && Event::State == Event::STATE::DOWN)) {
-		camera.move(camera.getRight() * (float)Event::delta() * speed);
+		camera.move(-camera.right * (float)Event::delta() * speed);
 	}
 	if (Event::Check << (Event::Key == Event::KEY::D && Event::State == Event::STATE::DOWN)) {
-		camera.move(-camera.getRight() * (float)Event::delta() * speed);
+		camera.move(camera.right * (float)Event::delta() * speed);
 	}
 }
 
-
 int main() {
-
 	glfwInit();
 
-	Window window("Vaulteer", 1280, 720);
+	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
+
+	Window window("Vaulteer", WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -65,63 +61,79 @@ int main() {
 		return -1;
 	}
 
-	//glEnable(GL_DEPTH_TEST);
+	Event::AddEventHandlingForWindow(&window);
+	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
-	/*
-	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-	// positions   // texCoords
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	-1.0f, -1.0f,  0.0f, 0.0f,
-	 1.0f, -1.0f,  1.0f, 0.0f,
-
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	 1.0f, -1.0f,  1.0f, 0.0f,
-	 1.0f,  1.0f,  1.0f, 1.0f
-	};
-
-	unsigned int quadVAO, quadVBO;
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	*/
-
-
-	stbi_set_flip_vertically_on_load(true);
-
-	// initialize shader
 	Shader shader = Shader("standard_vertex.shader", "standard_frag.shader");
+	shader.use();
 
-	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
+	Model model("teapot.obj");
+	Model quad("quad.obj");
 
-	Model model("triangle.obj");
 
-	//Event::AddEventHandlingForWindow(&window);
-	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	MyCamera camera = MyCamera(glm::vec3(.0f, .0f, -5.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .0f, 1.0f));
+	MyCamera spotlight = MyCamera(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, .0f));
 
+	ShadowMapFBO shadowMap = ShadowMapFBO();
+	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+
+
+	glEnable(GL_DEPTH_TEST);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	float deltaTime = 0, lastFrame = 0;
-	float startTime = glfwGetTime();
-
+	
 	while (window.is_running()) {
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// shadow map pass
 
-		shader.use();
+		shadowMap.bindWrite();
+		
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		glm::mat4 sh_model(1.0f);
+
+		shader.setMatrix("model", sh_model);
+		shader.setMatrix("view", spotlight.getViewMatrix());
+		shader.setMatrix("projection", spotlight.getProjectionMatrix(1.0f, 1.0f));
+
 		model.draw(shader);
 
-		while (GLenum error = glGetError()) {
-			printf("OpenGL error %d\n", error);
-		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		shader.use();
+
+		// render pass
+
+		shadowMap.bindRead(GL_TEXTURE0);
+
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glm::mat4 modelMat(1.0f);
+		//modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
+		//modelMat = glm::rotate(modelMat, (float) (glfwGetTime() * .2f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		glm::mat4 view = camera.getViewMatrix();
+		glm::mat4 projection = camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+		shader.setMatrix("model", modelMat);
+		shader.setMatrix("view", view);
+		shader.setMatrix("projection", projection);
+
+		shader.setUniform("shadowMap", 0);
+
+		quad.draw(shader);
+
+		glActiveTexture(0);
 
 		glfwSwapBuffers(window.getRawWindow());
-		glfwPollEvents();
+
+		Event::Poll();
+		handleCamera(spotlight);
 	}
 
 	glfwTerminate();

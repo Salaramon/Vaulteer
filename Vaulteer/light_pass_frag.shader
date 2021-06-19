@@ -58,7 +58,7 @@ uniform int numPointLights;
 uniform sampler2D diffuse1;
 
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[2];
+uniform PointLight pointLights;
 uniform vec3 eyeWorldPos;
 uniform float matSpecularIntensity;
 uniform float specularPower;
