@@ -4,6 +4,14 @@
 
 #include<glad/glad.h>
 
+#include "GLSLCPPBinder.h"
+
+#include "Vertex.h"
+
+typedef std::vector<Vertex> Vertices;
+typedef GLuint Index;
+typedef std::vector<GLuint> Indices;
+
 class VertexBuffer
 {
 public:

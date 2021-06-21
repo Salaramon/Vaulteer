@@ -2,46 +2,44 @@
 
 #include <string>
 #include <vector>
+#include <array>
 
 #include "VertexArray.h"
-
+#include "GLSLCPPBinder.h"
 
 class VertexAttribute
 {
 public:
-	template<class StorageType, class shrType>
-	VertexAttribute(VertexBuffer& vertexArray, VertexBuffer& vertexBuffer, shr::LocIn<shrType>& location)
+	template<const size_t arraySize>
+	VertexAttribute(VertexArray& vertexArray, std::array<Binder::Location, arraySize> location) {
+		vertexArray.bind();
+
+		for (size_t i = 0; i < location.size(); i++) {
+			glEnableVertexAttribArray(location[i].id);
+			glVertexAttribPointer(location[i].id, location[i].size, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offset[location.id]);
+		}
+
+		vertexArray.unbind();
+	}
+
+	VertexAttribute(VertexArray& vertexArray) {
+
+		vertexArray.bind();
+
+		size_t size = 0;
+		for (size_t i = 0; i < locations.size(); i++) {
+			glEnableVertexAttribArray(locations[i].id);
+			glVertexAttribPointer(locations[i].id, locations[i].size, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)size);
+			size += locations[i].size;
+		}
+
+		vertexArray.unbind();
+	}
 
 private:
-	/*
-	template<class Container>
-	struct TemplateArgument : public TemplateArgument<Container> {
-		using Type = TemplateArgument<Container>::Type;
+	inline static const std::array<Binder::Location, 3> locations = {
+			Binder::vertex::locations::aPos,
+			Binder::vertex::locations::aNormal,
+			Binder::vertex::locations::aTexCoords
 	};
-
-	template <template<class> class ContainerType, class Container>
-	struct TemplateArgument<ContainerType<Container>>{
-		using Type = ContainerType;
-	};
-
-	static std::vector<GLuint> takenShaderLayoutLocationIDs;
-	*/
 };
-
-template<class Type,class shrType>
-inline VertexAttribute::VertexAttribute(VertexBuffer& vertexArray, VertexBuffer& vertexBuffer, shr::LocIn<shrType>& location)
-{
-	glBindVertexArray(vertexArray.getVAO());
-
-	glEnableVertexAttribArray(location.id());
-	glVertexAttribPointer(location.id(), location.size(), GL_FLOAT, GL_FALSE, vertexBuffer.byteSize(), 0);
-	
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
-	
-	glBindVertexArray(0);
-
-}

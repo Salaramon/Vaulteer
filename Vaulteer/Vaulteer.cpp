@@ -11,8 +11,13 @@
 #include "Window.h"
 #include "Model.h"
 #include "Camera.h"
-
 #include "Event.h"
+
+#include "GLSLCPPBinder.h"
+
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexAttribute.h"
 
 #include "Shader.h"
 
@@ -32,11 +37,13 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 	glEnable(GL_DEPTH_TEST);
 
+	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::fragment::uniforms::diffuse1);
 
 	Shader shader("vertex.shader", "fragment.shader");
 	shader.use();
 
-	Model model("Crate/Crate1.obj");
+	Model model("Crate/Crate1.obj","Crate");
+	model.setShaderContext(&shader);
 	Camera camera(glm::vec3(0.0f, 0.0f, 15.0f), 0.0f,0.0f,0.0f);
 
 	float deltaTime = 0, lastFrame = 0;
@@ -66,14 +73,15 @@ int main() {
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 1000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		shader.setMatrix("projection", projection);
-		shader.setMatrix("view", view);
+		shader.setUniform(Binder::vertex::uniforms::projection, 1, GL_FALSE, projection);
+		shader.setUniform(Binder::vertex::uniforms::view, 1, GL_FALSE, view);;
 		
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
 
 		// render the loaded model
-		shader.setMatrix("model", modelMatrix);
-		//model.draw(shader);
+		shader.setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
+		model.draw();
 		
 		float speed = 5.0f;
 		Event::Poll();

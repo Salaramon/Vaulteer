@@ -1,28 +1,31 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 #include <glad/glad.h>
 
-#include "Vertex.h"
 #include "VertexBuffer.h"
 
 class VertexArray
 {
 public:
-	VertexArray(const VertexBuffer &vertexBuffer);
-
+	VertexArray(const VertexBuffer &vertexBuffer, const Vertices& vertices, const Indices& indices);
+	~VertexArray();
 	GLuint getVAO() const;
 
-	size_t getNumberOfIndicies();
-	size_t getNumberOfVertices();
+	void bind();
+	void unbind();
+
+	Vertices vertices;
+	Indices indices;
 
 private:
 	void initialize(const VertexBuffer& vertexBuffer);
+	void cleanup();
 
 	GLuint VAO;
 
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
+	inline static VertexArray* boundArray = nullptr;
 };
 

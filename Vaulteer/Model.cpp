@@ -1,44 +1,18 @@
 #include "Model.h"
 
-Model::Model(std::string path)
+Model::Model(std::string meshPath)
 {
-	load(path);
+
+	loadModel(meshPath);
 }
 
-void Model::renderingLogic()
+Model::Model(std::string meshPath, std::string textureFolderPath)
 {
-	for (size_t i = 0; i < meshes.size(); i++) {
-		//meshes[i].draw(shader);
-
-		size_t diffuse_id = 1, specular_id = 1;
-
-		for (size_t i = 0; i < textures.size(); i++) {
-			std::string name, id;
-
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			switch (textures[i].type) {
-			case Texture::TextureType::DIFFUSE:
-				name = "diffuse";
-				id = std::to_string(diffuse_id++);
-				break;
-			case Texture::TextureType::SPECULAR:
-				name = "specular";
-				id = std::to_string(specular_id++);
-				break;
-			}
-
-
-
-			//textures[i] == defFSUniformSampler;
-			//shader.setUniform((name + id).c_str(), i);
-			//defaultVertexShaderUniform = i;
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-		}
-	}
+	setTexturesFolder(textureFolderPath);
+	loadModel(meshPath);
 }
 
-void Model::load(std::string path)
+void Model::loadModel(std::string path)
 {
 	Assimp::Importer modelImporter;
 	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -47,7 +21,7 @@ void Model::load(std::string path)
 		std::cout << "Assimp Error: " << modelImporter.GetErrorString() << std::endl;
 	}
 
-	directory = path.substr(0, path.find_last_of('/'));
+	//directory = path.substr(0, path.find_last_of('/'));
 
 	if (scene) {
 		processNode(scene, scene->mRootNode);
@@ -57,8 +31,9 @@ void Model::load(std::string path)
 void Model::processNode(const aiScene* scene, aiNode* node)
 {
 	for (size_t i = 0; i < node->mNumMeshes; i++) {
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(processMesh(scene, mesh));
+		aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+
+		meshes.push_back(processMesh(scene, aiMesh));
 	}
 
 	for (size_t i = 0; i < node->mNumChildren; i++) {
@@ -68,29 +43,23 @@ void Model::processNode(const aiScene* scene, aiNode* node)
 
 Mesh&& Model::processMesh(const aiScene* scene, aiMesh* mesh)
 {
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
-	std::vector<Texture> textures;
+	Vertices vertices;
+	Indices indices;
+	Textures textures;
 
 	for (size_t i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
-
-		vertex.position.x = mesh->mVertices[i].x;
-		vertex.position.y = mesh->mVertices[i].y;
-		vertex.position.z = mesh->mVertices[i].z;
+		vertex.aPos = ai_glmVec(mesh->mVertices[i]);
 
 		if (mesh->HasNormals()) {
-			vertex.normal.x = mesh->mNormals[i].x;
-			vertex.normal.y = mesh->mNormals[i].y;
-			vertex.normal.z = mesh->mNormals[i].z;
+			vertex.aNormal = ai_glmVec(mesh->mNormals[i]);
 		}
 
 		if (mesh->mTextureCoords[0]) {
-			vertex.textureCoordinates.x = mesh->mTextureCoords[0][i].x;
-			vertex.textureCoordinates.y = mesh->mTextureCoords[0][i].y;
+			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 		}
 		else {
-			vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
+			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
 		}
 
 		vertices.push_back(vertex);
@@ -105,81 +74,64 @@ Mesh&& Model::processMesh(const aiScene* scene, aiMesh* mesh)
 	}
 
 	if (mesh->mMaterialIndex >= 0) {
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, Texture::TextureType::DIFFUSE);
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, Texture::TextureType::SPECULAR);
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		getTextureUniforms(material);
 	}
 
-	
 
-	return Mesh(std::move(vertices), std::move(indices));
+
+	return Mesh(vertices, indices);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material, aiTextureType type, Texture::TextureType textureType)
+void Model::getTextureUniforms(aiMaterial* material)
 {
-	std::vector<Texture> textures;
-	for (size_t i = 0; i < material->GetTextureCount(type); i++) {
-		aiString string;
-		material->GetTexture(type, i, &string);
-		bool skip = false;
-		for (size_t j = 0; j < Model::textures.size(); j++) {
-			if (std::strcmp(Model::textures[j].path.data(), string.C_Str()) == 0) {
-				textures.push_back(Model::textures[j]);
-				skip = true;
-				break;
+	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
+		aiTextureType type = static_cast<aiTextureType>(i);
+		for (size_t j = 0; j < material->GetTextureCount(type); j++) {
+			aiString string;
+			material->GetTexture(type, j, &string);
+			std::string texturePath = texturesFolder + "\\" + string.C_Str();
+			auto uniformTT_Iterator = Texture::uniformTextureTypes.find(type);
+			if (textureFiles.insert(texturePath).second) {
+				if (uniformTT_Iterator != Texture::uniformTextureTypes.end()) {
+					textures.push_back(Texture(texturePath, uniformTT_Iterator->second));
+				}
+				else {
+					std::cout << "Uniform for texture type " << type << " not available.\nSee assimp's aiTextureTypes." << std::endl;
+				}
 			}
 		}
-		
-		if (!skip) {
-			Texture texture;
-			texture.id = TextureFromFile(directory + '/' + string.C_Str());
-			texture.type = textureType;
-			texture.path = string.C_Str();
-			textures.push_back(texture);
-			Model::textures.push_back(texture);
-		}
 	}
-	return textures;
 }
 
-uint32_t Model::TextureFromFile(const std::string path)
+glm::vec3 Model::ai_glmVec(aiVector3D aiVec)
 {
-	uint32_t textureID;
-	glGenTextures(1, &textureID);
+	return { aiVec.x, aiVec.y, aiVec.z };
+}
 
-	int32_t width, height, nrComponents;
-	uint8_t* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
-	if (data) {
-		GLenum format{};
 
-		switch (nrComponents) {
-		case 1:
-			format = GL_RED;
-			break;
-		case 3:
-			format = GL_RGB;
-			break;
-		case 4: 
-			format = GL_RGBA;
-			break;
+void Model::setShaderContext(Shader* shader)
+{
+	Model::shader = shader;
+}
+
+void Model::draw()
+{
+	for (Mesh& mesh : meshes) {
+		for (GLint i = 0; i < textures.size(); i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setUniform(textures[i].uniform, i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 		}
 
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
+		mesh.vertexArray.bind();
+		glDrawElements(GL_TRIANGLES, mesh.vertexArray.indices.size(), GL_UNSIGNED_INT, 0);
+		mesh.vertexArray.unbind();
+		glActiveTexture(GL_TEXTURE0);
 	}
-	else {
-		std::cout << "Could not load texture: " << path << std::endl;
-	}
+}
 
-	return textureID;
+void Model::setTexturesFolder(std::string path)
+{
+	texturesFolder = path;
 }

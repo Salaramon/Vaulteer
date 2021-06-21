@@ -1,14 +1,20 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray(const VertexBuffer& vertexBuffer)
+VertexArray::VertexArray(const VertexBuffer& vertexBuffer, const Vertices& vertices,const Indices& indices) : vertices(vertices), indices(indices)
 {
 	initialize(vertexBuffer);
 }
 
+VertexArray::~VertexArray()
+{
+	cleanup();
+}
+
 void VertexArray::initialize(const VertexBuffer& vertexBuffer)
 {
+
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	bind();
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.getVBO());
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), indices.data(), GL_STATIC_DRAW);
@@ -16,7 +22,7 @@ void VertexArray::initialize(const VertexBuffer& vertexBuffer)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexBuffer.getEBO());
 	glBufferData(GL_ARRAY_BUFFER, indices.size() * sizeof(Vertex), indices.data(), GL_STATIC_DRAW);
 
-	glBindVertexArray(0);
+	unbind();
 }
 
 GLuint VertexArray::getVAO() const
@@ -24,12 +30,23 @@ GLuint VertexArray::getVAO() const
 	return VAO;
 }
 
-size_t VertexArray::getNumberOfIndicies()
+void VertexArray::bind()
 {
-	return indices.size();
+	if (boundArray == nullptr) {
+		glBindVertexArray(VAO);
+		boundArray = this;
+	}
+	else {
+		std::cout << "VertexArray is already bound!" << std::endl;
+	}
 }
 
-size_t VertexArray::getNumberOfVertices()
+void VertexArray::unbind()
 {
-	return vertices.size();
+	glBindVertexArray(0);
+	boundArray = nullptr;
+}
+
+void VertexArray::cleanup() {
+	glDeleteVertexArrays(1, &VAO);
 }

@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode)
+Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode) : setUniform(this)
 {
 	setup(file_to_string(pathGSGLVertexCode), file_to_string(pathGSGLFragmentCode));
 }
@@ -10,16 +10,6 @@ void Shader::use()
 	glUseProgram(shaderProgram.id);
 }
 
-void Shader::setUniform(std::string name, int value)
-{
-	glUniform1i(glGetUniformLocation(shaderProgram.id, name.c_str()), value);
-}
-
-void Shader::setMatrix(const std::string &name, const glm::mat4& mat) const
-{
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-}
-
 size_t Shader::getShaderID()
 {
 	return shaderProgram.id;
@@ -27,7 +17,6 @@ size_t Shader::getShaderID()
 
 void Shader::setup(std::string stringVertex, std::string stringFragment)
 {
-
 	const char
 		* stringGSGLVertexCode = stringVertex.c_str(),
 		* stringGSGLFragmentCode = stringFragment.c_str();

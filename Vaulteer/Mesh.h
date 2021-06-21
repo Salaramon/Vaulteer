@@ -1,20 +1,23 @@
 #pragma once
 
-#include <vector>
-
 #include <glad/glad.h>
 
-#include "Vertex.h"
 #include "VertexBuffer.h"
 #include "VertexArray.h"
+#include "VertexAttribute.h"
+
+#include "Shader.h"
 
 class Mesh
 {
 public:
-	Mesh(std::vector<Vertex>&& vertices, std::vector<GLuint>&& indices);
-
-private:
-	//VertexBuffer vertexBuffer;
-	//VertexArray vertexArray;
+	Mesh(Vertices vertices, Indices indices) :
+		vertexArray(vertexBuffer, vertices, indices),
+		vertexAttribute(vertexArray) 
+	{}
+	void draw();
+	VertexBuffer vertexBuffer;
+	VertexArray vertexArray;
+	VertexAttribute vertexAttribute;
 };
 

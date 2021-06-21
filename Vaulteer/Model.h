@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -12,29 +14,46 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "stb_image.h"
-
-#include "Renderable.h"
 #include "Mesh.h"
+#include "Texture.h"
+#include "Shader.h"
 
-class Model : public Renderable
+typedef std::vector<Texture> Textures;
+
+class Model
 {
 public:
+	Model(std::string meshPath);
+	Model(std::string meshPath, std::string textureFolderPath);
 
-	Model(std::string path);
-
+	void setShaderContext(Shader* shader);
+	void draw();
 private:
-	void renderingLogic() override;
 
-	std::vector<Texture> textures;
-	std::vector<Mesh> meshes;
-	std::string directory;
+	void loadModel(std::string path);
 
-	void load(std::string path);
+	void loadTexture(const Uniform uniform, const std::string path);
+
 	void processNode(const aiScene* scene, aiNode* node);
+
 	Mesh&& processMesh(const aiScene* scene, aiMesh* mesh);
 
-	std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, Texture::TextureType textureType);
-	uint32_t TextureFromFile(const std::string path);
+	void getTextureUniforms(aiMaterial* material);
+
+	glm::vec3 ai_glmVec(aiVector3D aiVec);
+
+	//void renderingLogic() override;
+
+	Textures textures;
+	std::vector<Mesh> meshes;
+	std::string texturesFolder;
+
+	Shader* shader;
+
+	void setTexturesFolder(std::string path);
+
+	//std::unordered_map<std::string, size_t>  uniformUsage;
+	std::unordered_set<std::string>  textureFiles;
+
 };
 

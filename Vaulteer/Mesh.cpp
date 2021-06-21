@@ -1,5 +1,8 @@
 #include "Mesh.h"
+#include "Shader.h"
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<GLuint>&& indices)
+void Mesh::draw()
 {
+	
+	glDrawElements(GL_TRIANGLES, vertexArray.indices.size(), GL_UNSIGNED_INT, 0);
 }
