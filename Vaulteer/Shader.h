@@ -24,7 +24,7 @@ public:
 		|_______________________________|	*/
 
 	//Loads vertex and fragment shaders on creation.
-	Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode);
+	Shader(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
 	Shader(shr::ShaderCode& shaderVertexCode, std::string pathGSGLFragmentCode);
 	Shader(shr::ShaderCode& shaderVertexCode, shr::ShaderCode& shaderFragmentCode);
 
@@ -36,7 +36,13 @@ public:
 	void use();
 
 	//Sets the uniform variable in the shader program. !!(Incomplete: Missing overloads for more types)
-	void setUniform(std::string name, int value);
+	//void setUniform(std::string name, int value);
+
+	void setInt(std::string name, int value);
+	void setFloat(std::string name, float value);
+
+	//Sets the vector variable in the shader program. !!(Incomplete: Missing overloads for more types)
+	void setVector(std::string name, const glm::vec3& vec) const;
 
 	//Sets the matrix transform variable in the shader program. !!(Incomplete: Missing overloads for more types)
 	void setMatrix(const std::string &name, const glm::mat4& mat) const;
@@ -57,6 +63,9 @@ private:
 	struct ShaderProgram {
 		ShaderProgram() {
 			id = glCreateProgram();
+		}
+		~ShaderProgram() {
+			glDeleteProgram(id);
 		}
 		unsigned int id;
 	};

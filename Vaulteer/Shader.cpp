@@ -20,14 +20,28 @@ void Shader::use()
 	glUseProgram(shaderProgram.id);
 }
 
-void Shader::setUniform(std::string name, int value)
+void Shader::setInt(std::string name, int value)
 {
-	glUniform1i(glGetUniformLocation(shaderProgram.id, name.c_str()), value);
+	int location = glGetUniformLocation(shaderProgram.id, name.c_str());
+	glUniform1i(location, value);
+}
+
+void Shader::setFloat(std::string name, float value)
+{
+	int location = glGetUniformLocation(shaderProgram.id, name.c_str());
+	glUniform1f(location, value);
+}
+
+void Shader::setVector(std::string name, const glm::vec3& vec) const
+{
+	int location = glGetUniformLocation(shaderProgram.id, name.c_str());
+	glUniform3fv(location, 1, &vec[0]);
 }
 
 void Shader::setMatrix(const std::string &name, const glm::mat4& mat) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	int location = glGetUniformLocation(shaderProgram.id, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
 size_t Shader::getShaderID()

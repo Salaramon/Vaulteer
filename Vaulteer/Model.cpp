@@ -5,10 +5,10 @@ Model::Model(std::string path)
 	load(path);
 }
 
-void Model::draw(Shader & shader)
+void Model::draw()
 {
 	for (size_t i = 0; i < meshes.size(); i++) {
-		meshes[i].draw(shader);
+		meshes[i].draw();
 	}
 }
 
@@ -72,6 +72,21 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 		aiFace face = mesh->mFaces[i];
 		for (size_t j = 0; j < face.mNumIndices; j++) {
 			indices.push_back((face.mIndices[j]));
+		}
+
+		// Generate normals if not present - used for lighting on test objects.
+		if (!mesh->HasNormals()) {
+			Vertex* triangle[3];
+			for (size_t j = 0; j < face.mNumIndices; j++) {
+				triangle[j] = &vertices[face.mIndices[j]];
+			}
+
+			glm::vec3 normal = glm::triangleNormal(triangle[0]->position, triangle[1]->position, triangle[2]->position);
+			for (Vertex* vPtr : triangle) {
+				vPtr->normal.x = normal.x;
+				vPtr->normal.y = normal.y;
+				vPtr->normal.z = normal.z;
+			}
 		}
 	}
 

@@ -15,12 +15,11 @@
 #include "Camera.h"
 #include "ShaderCode.h"
 #include "ShadowMapFBO.h"
+#include "LightingTechnique.h"
 
 #include "Event.h"
 #include "GBuffer.h"
 
-
-#include "GLSLCPPBinder.h"
 
 
 void handleCamera(MyCamera& camera) {
@@ -65,19 +64,21 @@ int main() {
 	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
-	Shader shader = Shader("standard_vertex.shader", "standard_frag.shader");
-	shader.use();
+	/*Shader shader = Shader("standard_vertex.shader", "standard_frag.shader");
+	shader.use();*/
 
 	Model model("teapot.obj");
 	Model quad("quad.obj");
 
 
-	MyCamera camera = MyCamera(glm::vec3(.0f, .0f, -5.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .0f, 1.0f));
-	MyCamera spotlight = MyCamera(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, .0f));
+	MyCamera camera(glm::vec3(.0f, .0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .0f, 1.0f));
+	MyCamera spotlight(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, .0f));
 
-	ShadowMapFBO shadowMap = ShadowMapFBO();
-	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	//ShadowMapFBO shadowMap = ShadowMapFBO();
+	//shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	LightingTechnique lightingTech("light_vertex.shader", "light_frag.shader");
+	lightingTech.use();
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -89,7 +90,7 @@ int main() {
 
 		// shadow map pass
 
-		shadowMap.bindWrite();
+		/*shadowMap.bindWrite();
 		
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -97,43 +98,45 @@ int main() {
 
 		shader.setMatrix("model", sh_model);
 		shader.setMatrix("view", spotlight.getViewMatrix());
-		shader.setMatrix("projection", spotlight.getProjectionMatrix(1.0f, 1.0f));
+		shader.setMatrix("projection", spotlight.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		model.draw(shader);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-		shader.use();
+		*/
 
 		// render pass
 
-		shadowMap.bindRead(GL_TEXTURE0);
+		//shadowMap.bindRead(GL_TEXTURE0);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 modelMat(1.0f);
-		//modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
-		//modelMat = glm::rotate(modelMat, (float) (glfwGetTime() * .2f), glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
+		//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
+		//modelMat = glm::rotate(modelMat, (float) (sinf(glfwGetTime()) * 1.2f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		glm::mat4 view = camera.getViewMatrix();
-		glm::mat4 projection = camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT);
+		lightingTech.setModel(modelMat);
+		lightingTech.setView(camera.getViewMatrix());
+		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
-		shader.setMatrix("model", modelMat);
-		shader.setMatrix("view", view);
-		shader.setMatrix("projection", projection);
+		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
+		lightingTech.setDirectionalLight({ 0.1f, glm::vec3(1.0f), .1f, glm::vec3(0.0f, 0.0f, 1.0f) });
 
-		shader.setUniform("shadowMap", 0);
+		lightingTech.setWorldCameraPos(camera.position);
 
-		quad.draw(shader);
+		lightingTech.setMaterialSpecularIntensity(1.0f);
+		lightingTech.setMaterialSpecularPower(32.0f);
 
-		glActiveTexture(0);
+		//shader.setUniform("shadowMap", 0);
+
+		model.draw();
 
 		glfwSwapBuffers(window.getRawWindow());
 
 		Event::Poll();
-		handleCamera(spotlight);
+		handleCamera(camera);
 	}
 
 	glfwTerminate();

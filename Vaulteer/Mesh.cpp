@@ -13,29 +13,9 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
 	setup();
 }
 
-void Mesh::draw(Shader& shader)
+void Mesh::draw()
 {
 	size_t diffuse_id = 1, specular_id = 1;
-
-	for (size_t i = 0; i < textures.size(); i++) {
-		std::string name, id;
-
-		glActiveTexture(GL_TEXTURE0 + i);
-
-		switch (textures[i].type) {
-		case Texture::TextureType::DIFFUSE:
-			name = "diffuse";
-			id = std::to_string(diffuse_id++);
-			break;
-		case Texture::TextureType::SPECULAR:
-			name = "specular";
-			id = std::to_string(specular_id++);
-			break;
-		}
-
-		shader.setUniform((name + id).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-	}
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -67,4 +47,4 @@ void Mesh::setup()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
 
 	glBindVertexArray(0);
-}	
+}

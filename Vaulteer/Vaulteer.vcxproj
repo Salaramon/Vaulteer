@@ -163,6 +163,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="LightingTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyCamera.cpp" />
@@ -171,6 +172,8 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderCode.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp" />
+    <ClCompile Include="ShadowTechnique.cpp" />
+    <ClCompile Include="Technique.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -181,6 +184,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
+    <ClInclude Include="LightingTechnique.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyCamera.h" />
@@ -189,7 +193,9 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCode.h" />
     <ClInclude Include="ShadowMapFBO.h" />
+    <ClInclude Include="ShadowTechnique.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Technique.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
@@ -197,12 +203,11 @@
   <ItemGroup>
     <None Include="g_pass_frag.shader" />
     <None Include="g_pass_vertex.shader" />
-    <None Include="light_pass_frag.shader" />
+    <None Include="light_frag.shader" />
+    <None Include="light_vertex.shader" />
     <None Include="standard_frag.shader" />
     <None Include="standard_vertex.shader" />
-    <None Include="fragment.shader" />
     <None Include="GLSLSourceFiles.toml" />
-    <None Include="vertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

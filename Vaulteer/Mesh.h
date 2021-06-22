@@ -15,7 +15,7 @@ public:
 	Mesh();
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
 
-	void draw(Shader& shader) override;
+	void draw() override;
 
 private:
 	GLuint VAO, VBO, EBO;
