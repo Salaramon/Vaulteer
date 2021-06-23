@@ -15,7 +15,11 @@ public:
 		vertexArray(vertexBuffer, vertices, indices),
 		vertexAttribute(vertexArray) 
 	{}
-	void draw();
+	Mesh(Mesh&& other) : 
+		vertexBuffer(std::move(other.vertexBuffer)),
+		vertexArray(std::move(other.vertexArray)),
+		vertexAttribute(std::move(other.vertexAttribute))
+	{}
 	VertexBuffer vertexBuffer;
 	VertexArray vertexArray;
 	VertexAttribute vertexAttribute;

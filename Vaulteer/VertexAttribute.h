@@ -29,7 +29,7 @@ public:
 		size_t size = 0;
 		for (size_t i = 0; i < locations.size(); i++) {
 			glEnableVertexAttribArray(locations[i].id);
-			glVertexAttribPointer(locations[i].id, locations[i].size, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)size);
+			glVertexAttribPointer(locations[i].id, locations[i].size, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(size * sizeof(float)));
 			size += locations[i].size;
 		}
 
@@ -38,8 +38,8 @@ public:
 
 private:
 	inline static const std::array<Binder::Location, 3> locations = {
-			Binder::vertex::locations::aPos,
-			Binder::vertex::locations::aNormal,
-			Binder::vertex::locations::aTexCoords
+			Binder::vertex::locations::aPos
+			,Binder::vertex::locations::aNormal
+			,Binder::vertex::locations::aTexCoords
 	};
 };

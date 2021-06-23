@@ -14,6 +14,7 @@ Model::Model(std::string meshPath, std::string textureFolderPath)
 
 void Model::loadModel(std::string path)
 {
+
 	Assimp::Importer modelImporter;
 	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -33,7 +34,7 @@ void Model::processNode(const aiScene* scene, aiNode* node)
 	for (size_t i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
 
-		meshes.push_back(processMesh(scene, aiMesh));
+		meshes.emplace_back(std::move(processMesh(scene, aiMesh)));
 	}
 
 	for (size_t i = 0; i < node->mNumChildren; i++) {
@@ -41,7 +42,7 @@ void Model::processNode(const aiScene* scene, aiNode* node)
 	}
 }
 
-Mesh&& Model::processMesh(const aiScene* scene, aiMesh* mesh)
+Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 {
 	Vertices vertices;
 	Indices indices;
@@ -115,8 +116,42 @@ void Model::setShaderContext(Shader* shader)
 	Model::shader = shader;
 }
 
+void Model::rotate(float angle, glm::vec3 axis)
+{
+	modelRotation = glm::rotate(modelRotation, angle, axis);
+}
+
+void Model::setRotation(float angle, glm::vec3 axis)
+{
+	modelRotation = glm::rotate(glm::mat4(1.0f), angle, axis);
+}
+
+void Model::move(float x, float y, float z)
+{
+	modelTranslation = glm::translate(modelTranslation, glm::vec3(x, y, z));
+}
+
+void Model::setPosition(float x, float y, float z)
+{
+	modelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+}
+
+void Model::scale(float x, float y, float z)
+{
+	modelScale = glm::scale(modelScale, glm::vec3(x, y, z));
+}
+
+void Model::setScale(float x, float y, float z)
+{
+	modelScale = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z));
+}
+
 void Model::draw()
 {
+	glm::mat4 modelMatrix = modelTranslation * modelScale * modelRotation;
+
+	shader->setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
+
 	for (Mesh& mesh : meshes) {
 		for (GLint i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);

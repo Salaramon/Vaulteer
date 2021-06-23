@@ -6,6 +6,9 @@
 class Vertex
 {
 public:
+	Vertex(){}
+	Vertex(float x, float y, float z) : aPos({x,y,z}) {}
+
 	glm::vec3 aPos;
 	glm::vec3 aNormal;
 	glm::vec2 aTexCoords;

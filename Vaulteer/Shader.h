@@ -140,39 +140,39 @@ private:
 	struct UniformFunctor {
 	public:
 		UniformFunctor(Shader* shader) : shader(shader) {}
-		void operator()(Uniform uniform, GLfloat value1) { glad_glUniform1f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
-		void operator()(Uniform uniform, GLfloat value1, GLfloat value2) { glad_glUniform2f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
-		void operator()(Uniform uniform, GLfloat value1, GLfloat value2, GLfloat value3) { glad_glUniform3f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
-		void operator()(Uniform uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) { glad_glUniform4f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
-		void operator()(Uniform uniform, GLint value1) { glad_glUniform1i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
-		void operator()(Uniform uniform, GLint value1, GLint value2) { glad_glUniform2i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
-		void operator()(Uniform uniform, GLint value1, GLint value2, GLint value3) { glad_glUniform3i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
-		void operator()(Uniform uniform, GLint value1, GLint value2, GLint value3, GLint value4) { glad_glUniform4i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
-		void operator()(Uniform uniform, GLuint value1) { glad_glUniform1ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
-		void operator()(Uniform uniform, GLuint value1, GLuint value2) { glad_glUniform2ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
-		void operator()(Uniform uniform, GLuint value1, GLuint value2, GLuint value3) { glad_glUniform3ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
-		void operator()(Uniform uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) { glad_glUniform4ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
-		void operator()(Uniform uniform, GLsizei count, const glm::vec1& value) { glUniform1fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::vec2& value) { glUniform2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::vec3& value) { glUniform3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::vec4& value) { glUniform4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::ivec1& value) { glUniform1iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::ivec2& value) { glUniform2iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::ivec3& value) { glUniform3iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::ivec4& value) { glUniform4iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::uvec1& value) { glUniform1uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::uvec2& value) { glUniform2uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::uvec3& value) { glUniform3uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, const glm::uvec4& value) { glUniform4uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2& value) { glUniformMatrix2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3& value) { glUniformMatrix3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) { glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2x3& value) { glUniformMatrix2x3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3x2& value) { glUniformMatrix3x2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2x4& value) { glUniformMatrix2x4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4x2& value) { glUniformMatrix4x2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3x4& value) { glUniformMatrix3x4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4x3& value) { glUniformMatrix4x3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLfloat value1) {													glUniform1f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
+		void operator()(Uniform uniform, GLfloat value1, GLfloat value2) {									glUniform2f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
+		void operator()(Uniform uniform, GLfloat value1, GLfloat value2, GLfloat value3) {					glUniform3f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
+		void operator()(Uniform uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) {	glUniform4f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
+		void operator()(Uniform uniform, GLint value1) {													glUniform1i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
+		void operator()(Uniform uniform, GLint value1, GLint value2) {										glUniform2i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
+		void operator()(Uniform uniform, GLint value1, GLint value2, GLint value3) {						glUniform3i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
+		void operator()(Uniform uniform, GLint value1, GLint value2, GLint value3, GLint value4) {			glUniform4i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
+		void operator()(Uniform uniform, GLuint value1) {													glUniform1ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
+		void operator()(Uniform uniform, GLuint value1, GLuint value2) {									glUniform2ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
+		void operator()(Uniform uniform, GLuint value1, GLuint value2, GLuint value3) {						glUniform3ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
+		void operator()(Uniform uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) {		glUniform4ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
+		void operator()(Uniform uniform, GLsizei count, const glm::vec1& value) {							glUniform1fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::vec2& value) {							glUniform2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::vec3& value) {							glUniform3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::vec4& value) {							glUniform4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::ivec1& value) {							glUniform1iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::ivec2& value) {							glUniform2iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::ivec3& value) {							glUniform3iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::ivec4& value) {							glUniform4iv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::uvec1& value) {							glUniform1uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::uvec2& value) {							glUniform2uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::uvec3& value) {							glUniform3uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, const glm::uvec4& value) {							glUniform4uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2& value) {		glUniformMatrix2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3& value) {		glUniformMatrix3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) {		glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2x3& value) {	glUniformMatrix2x3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3x2& value) {	glUniformMatrix3x2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat2x4& value) {	glUniformMatrix2x4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4x2& value) {	glUniformMatrix4x2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat3x4& value) {	glUniformMatrix3x4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Uniform uniform, GLsizei count, GLboolean transpose, const glm::mat4x3& value) {	glUniformMatrix4x3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
 	private:
 		Shader* shader;
 	};

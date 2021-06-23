@@ -16,6 +16,13 @@ class VertexBuffer
 {
 public:
 	VertexBuffer();
+	VertexBuffer(VertexBuffer&& other) :
+		VBO(other.VBO),
+		EBO(other.EBO)
+	{
+		other.VBO = 0;
+		other.EBO = 0;
+	}
 	~VertexBuffer();
 
 	GLuint getVBO() const;

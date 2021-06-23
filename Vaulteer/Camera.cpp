@@ -1,20 +1,24 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, float yaw, float pitch, float roll) :
+Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection) :
+	renderDistance(renderDistance),
 	position(position),
-	orientation(glm::vec3(.0f, .0f, .0f)),
-	angleUp(pitch),
-	angleRight(yaw),
-	angleFront(roll)
+	fov(fov),
+	aspectRatio(aspectRatio),
+	uView(view),
+	uProjection(projection)
 {
+	setRotation(direction, roll);
 	updateRotation();
 }
 
-Camera::Camera(float x, float y, float z, float yaw, float pitch, float roll) :
-	position(glm::vec3(x,y,z)),
-	angleUp(pitch),
-	angleRight(yaw),
-	angleFront(roll)
+Camera::Camera(float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection) :
+	renderDistance(renderDistance),
+	position(position),
+	fov(fov),
+	aspectRatio(aspectRatio),
+	uView(view),
+	uProjection(projection)
 {
 	updateRotation();
 }
@@ -26,6 +30,11 @@ glm::mat4 Camera::GetViewMatrix()
 	glm::mat4 translation = glm::translate(glm::mat4(1.0), -position);
 
 	return rotation * translation;
+}
+
+void Camera::setShaderContext(Shader* shader)
+{
+	Camera::shader = shader;
 }
 
 void Camera::move(glm::vec3 direction)
@@ -43,6 +52,28 @@ void Camera::rotate(float yaw, float pitch, float roll)
 	updateRotation();
 }
 
+void Camera::setRotation(float yaw, float pitch, float roll)
+{
+	angleUp = pitch;
+	angleRight = yaw;
+	angleFront = roll;
+
+	updateRotation();
+	
+}
+
+void Camera::setRotation(glm::vec3 direction, float roll) {
+	
+	orientation = glm::quatLookAt(glm::normalize(direction), getUp());
+	angleFront = roll;
+
+	updateRotation();
+}
+
+void Camera::setPosition(float posX, float posY, float posZ)
+{
+}
+
 void Camera::updateRotation() {
 	glm::quat xRotation = glm::angleAxis(glm::radians(-angleUp), glm::vec3(1, 0, 0));
 	glm::quat yRotation = glm::angleAxis(glm::radians(-angleRight), glm::vec3(0, 1, 0));
@@ -53,6 +84,16 @@ void Camera::updateRotation() {
 	angleUp = 0.0f;
 	angleRight = 0.0f;
 	angleFront = 0.0f;
+}
+
+void Camera::updateShaderMatrices()
+{
+	//can be optimized by only calling glm::perspective and GetViewMatrix only when changes happened.
+	mProjection =  glm::perspective(glm::radians(fov), aspectRatio, 0.1f, renderDistance);
+	shader->setUniform(Binder::vertex::uniforms::projection, 1, GL_FALSE, mProjection);
+
+	mView = GetViewMatrix();
+	shader->setUniform(Binder::vertex::uniforms::view, 1, GL_FALSE, mView);
 }
 
 std::string Camera::getOrientation() {

@@ -9,39 +9,51 @@
 #include <string>
 
 #include "Event.h"
+#include "Shader.h"
 
 
 class Camera
 {
 public:
 
-	// euler Angles
-	double_t yaw;
-	double_t pitch;
-	double_t roll;
+	Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection);
+	Camera(float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection);
 
-	glm::quat orientation;
-	glm::vec3 position;
-	float angleUp;
-	float angleRight;
-	float angleFront;
-
-	// constructor with vectors
-	Camera(glm::vec3 position, float yaw, float pitch, float roll);
-	// constructor with scalar values
-	Camera(float posX, float posY, float posZ, float yaw, float pitch, float roll);
-
-	// returns the view matrix calculated using Euler Angles and the LookAt Matrix
-	glm::mat4 GetViewMatrix();
+	void setShaderContext(Shader* shader);
 
 	void move(glm::vec3 direction);
 	void rotate(float yaw, float pitch, float roll);
+	void setRotation(float yaw, float pitch, float roll);
+	void setRotation(glm::vec3 direction, float roll);
+	void setPosition(float posX, float posY, float posZ);
+
+	void updateShaderMatrices();
+
+private:
+	float fov;
+	float renderDistance;
+	float aspectRatio;
+
+	glm::mat4 mView;
+	glm::mat4 mProjection;
+
+	Uniform uView;
+	Uniform uProjection;
+
+	Shader* shader;
+
+	glm::quat orientation;
+	glm::vec3 position = { 0,0,0 };
+	float angleUp = 0;
+	float angleRight = 0;
+	float angleFront = 0;
 
 	std::string getOrientation();
 	glm::vec3 getFront();
 	glm::vec3 getRight();
 	glm::vec3 getUp();
 
-private:
+	glm::mat4 GetViewMatrix();
+
 	void updateRotation();
 };

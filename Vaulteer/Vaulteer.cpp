@@ -1,4 +1,4 @@
-
+﻿
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <glm/glm.hpp>
@@ -22,12 +22,20 @@
 #include "Shader.h"
 
 
+void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
+	GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​) {
+	std::cout << message​ << std::endl;
+}
+
 int main() {
 
 	glfwInit();
 
-	Window window("Vaulteer", 1280, 720);
+	
 
+	Window window("Vaulteer", 1280, 720);
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(debugCallback, nullptr);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -37,95 +45,55 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 	glEnable(GL_DEPTH_TEST);
 
-	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::fragment::uniforms::diffuse1);
-
-	Shader shader("vertex.shader", "fragment.shader");
-	shader.use();
-
-	Model model("Crate/Crate1.obj","Crate");
-	model.setShaderContext(&shader);
-	Camera camera(glm::vec3(0.0f, 0.0f, 15.0f), 0.0f,0.0f,0.0f);
-
-	float deltaTime = 0, lastFrame = 0;
-
 	Event::AddEventHandlingForWindow(&window);
 
-	std::cout.precision(8);
-	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	Shader shader("vertex.shader", "fragment.shader");
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
 
+	Camera camera(1000,45,window.getWidth()/window.getHeight(),Binder::vertex::uniforms::view, Binder::vertex::uniforms::projection);
+	camera.setShaderContext(&shader);
 
-	while (window.is_running()) {
+	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::fragment::uniforms::diffuse1);
+	Model model("backpack/backpack.obj", "backpack");
+	model.setShaderContext(&shader);
+	
 
-		// per-frame time logic
-		// --------------------
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+	// uncomment this call to draw in wireframe polygons.
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// render loop
+	// -----------
+	while (window.is_running())
+	{
 
 		// render
 		// ------
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// don't forget to enable shader before setting uniforms
+		// draw our first triangle
 		shader.use();
+		camera.updateShaderMatrices();
 
-		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)1280 / (float)720, 0.1f, 1000.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		shader.setUniform(Binder::vertex::uniforms::projection, 1, GL_FALSE, projection);
-		shader.setUniform(Binder::vertex::uniforms::view, 1, GL_FALSE, view);;
-		
-		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(1.0f, 1.0f, 1.0f));
-
-		// render the loaded model
-		shader.setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
+		model.setPosition(2*cos(glfwGetTime()*2) + 5, 2*sin(glfwGetTime()*2), -25);
+		model.setRotation(0.5 * glfwGetTime(), {1,0,0});
+		model.setScale(1 + sin(glfwGetTime()) * 0.1, 1 + sin(glfwGetTime()) * 0.1, 1 + sin(glfwGetTime()) * 0.1);
 		model.draw();
-		
-		float speed = 5.0f;
+		model.setPosition(2*cos(glfwGetTime()*2) - 5, 2*sin(glfwGetTime()*2), -25);
+		model.setRotation(2.5 * glfwGetTime(), { 0, 1, 0 });
+		model.setScale(1 + sin(glfwGetTime()) * 0.1, 1 + sin(glfwGetTime()) * 0.1, 1 + sin(glfwGetTime()) * 0.1);
+		model.draw();
+
 		Event::Poll();
-		//std::cout << (Event::Count << (Event::CursorX > 540 && Event::CursorX < 740 && Event::CursorY > 260 && Event::CursorY < 460)) << std::endl;
-		double_t zDifference = 0.0f;
-		if (Event::Check << (Event::Key == Event::KEY::Q && Event::State == Event::STATE::DOWN)) {
-			zDifference = (float)Event::delta() * speed * 100.0f;
-		}
-		if (Event::Check << (Event::Key == Event::KEY::E && Event::State == Event::STATE::DOWN)) {
-			zDifference = -(float)Event::delta() * speed * 100.0f;
-		}
-
-		Event::CursorEvents events = (Event::CursorEventList << (Event::CursorX > -9999999 && Event::CursorX < 9999999 && Event::CursorY > -9999999 && Event::CursorY < 9999999));
-		if (!events.empty()) {
-			double_t xDifference = events.back().CursorX - events.front().CursorX;
-			double_t yDifference = events.back().CursorY - events.front().CursorY;
-			camera.rotate(0.1f * xDifference, 0.1f * yDifference, 0.1f * zDifference);
-			//std::cout << camera.getOrientation() << std::endl;
-		}
-
-		
-		if (Event::Check << (Event::Key == Event::KEY::W && Event::State == Event::STATE::DOWN)) {
-			camera.move(camera.getFront() * (float)Event::delta() * speed);
-		}
-		if (Event::Check << (Event::Key == Event::KEY::S && Event::State == Event::STATE::DOWN)) {
-			camera.move(-camera.getFront() * (float)Event::delta() * speed);
-		}
-		if (Event::Check << (Event::Key == Event::KEY::A && Event::State == Event::STATE::DOWN)) {
-			camera.move(camera.getRight() * (float)Event::delta() * speed);
-		}
-		if (Event::Check << (Event::Key == Event::KEY::D && Event::State == Event::STATE::DOWN)) {
-			camera.move(-camera.getRight() * (float)Event::delta() * speed);
-		}
-		if (Event::Check << (Event::Key == Event::KEY::LEFT_SHIFT && Event::State == Event::STATE::DOWN)) {
-			camera.move(camera.getUp() * (float)Event::delta() * speed);
-		}
-		if (Event::Check << (Event::Key == Event::KEY::SPACE && Event::State == Event::STATE::DOWN)) {
-			camera.move(-camera.getUp() * (float)Event::delta() * speed);
-		}
-
 
 		glfwSwapBuffers(window.getRawWindow());
+
 	}
 
+
+	// glfw: terminate, clearing all previously allocated GLFW resources.
+	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }
