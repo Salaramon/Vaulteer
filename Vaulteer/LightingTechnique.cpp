@@ -27,7 +27,20 @@ void LightingTechnique::setDirectionalLight(const DirectionalLight& light) {
     shader.setFloat("directionalLight.ambientIntensity", light.ambientIntensity);
     shader.setVector("directionalLight.color", light.color);
     shader.setFloat("directionalLight.diffuseIntensity", light.diffuseIntensity);
+
     shader.setVector("directionalLight.direction", glm::normalize(light.direction));
+}
+
+void LightingTechnique::setPointLight(const PointLight& light)
+{
+    shader.setFloat("pointLight.ambientIntensity", light.ambientIntensity);
+    shader.setVector("pointLight.color", light.color);
+    shader.setFloat("pointLight.diffuseIntensity", light.diffuseIntensity);
+
+    shader.setVector("pointLight.position", light.position);
+    shader.setFloat("pointLight.att.aConstant", light.attenuation.constant);
+    shader.setFloat("pointLight.att.aLinear", light.attenuation.linear);
+    shader.setFloat("pointLight.att.aExp", light.attenuation.exp);
 }
 
 void LightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {

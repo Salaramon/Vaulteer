@@ -42,6 +42,7 @@ public:
 	void setFloat(std::string name, float value);
 
 	//Sets the vector variable in the shader program. !!(Incomplete: Missing overloads for more types)
+	void setVector2(std::string name, const glm::vec2& vec) const;
 	void setVector(std::string name, const glm::vec3& vec) const;
 
 	//Sets the matrix transform variable in the shader program. !!(Incomplete: Missing overloads for more types)

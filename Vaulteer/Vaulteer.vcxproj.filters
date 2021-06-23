@@ -131,6 +131,9 @@
     <ClInclude Include="LightingTechnique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LightTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="g_pass_frag.shader">

@@ -16,6 +16,8 @@
 #include "ShaderCode.h"
 #include "ShadowMapFBO.h"
 #include "LightingTechnique.h"
+#include "ShadowTechnique.h"
+#include "LightTypes.h"
 
 #include "Event.h"
 #include "GBuffer.h"
@@ -74,11 +76,11 @@ int main() {
 	MyCamera camera(glm::vec3(.0f, .0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .0f, 1.0f));
 	MyCamera spotlight(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, .0f));
 
-	//ShadowMapFBO shadowMap = ShadowMapFBO();
-	//shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	ShadowMapFBO shadowMap = ShadowMapFBO();
+	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	LightingTechnique lightingTech("light_vertex.shader", "light_frag.shader");
-	lightingTech.use();
+	ShadowTechnique shadowTech("standard_vertex.shader", "standard_frag.shader");
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -91,16 +93,17 @@ int main() {
 		// shadow map pass
 
 		/*shadowMap.bindWrite();
+		shadowTech.use();
 		
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 sh_model(1.0f);
 
-		shader.setMatrix("model", sh_model);
-		shader.setMatrix("view", spotlight.getViewMatrix());
-		shader.setMatrix("projection", spotlight.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+		shadowTech.setModel(sh_model);
+		shadowTech.setView(spotlight.getViewMatrix());
+		shadowTech.setProjection(spotlight.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
-		model.draw(shader);
+		model.draw();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		*/
@@ -112,6 +115,8 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		lightingTech.use();
+
 		glm::mat4 modelMat(1.0f);
 		modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
 		//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
@@ -122,12 +127,12 @@ int main() {
 		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
-		lightingTech.setDirectionalLight({ 0.1f, glm::vec3(1.0f), .1f, glm::vec3(0.0f, 0.0f, 1.0f) });
+		lightingTech.setDirectionalLight({ glm::vec3(1.0f), 0.05f, .1f, glm::vec3(cosf(glfwGetTime() * 1), 0.0f, sinf(glfwGetTime() * 1)) });
 
 		lightingTech.setWorldCameraPos(camera.position);
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialSpecularPower(32.0f);
+		lightingTech.setMaterialSpecularPower(16.0f);
 
 		//shader.setUniform("shadowMap", 0);
 

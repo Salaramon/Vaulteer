@@ -38,6 +38,12 @@ void Shader::setVector(std::string name, const glm::vec3& vec) const
 	glUniform3fv(location, 1, &vec[0]);
 }
 
+void Shader::setVector2(std::string name, const glm::vec2& vec) const
+{
+	int location = glGetUniformLocation(shaderProgram.id, name.c_str());
+	glUniform2fv(location, 1, &vec[0]);
+}
+
 void Shader::setMatrix(const std::string &name, const glm::mat4& mat) const
 {
 	int location = glGetUniformLocation(shaderProgram.id, name.c_str());

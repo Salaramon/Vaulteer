@@ -184,6 +184,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
+    <ClInclude Include="LightTypes.h" />
     <ClInclude Include="LightingTechnique.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />

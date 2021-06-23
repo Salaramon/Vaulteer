@@ -37,6 +37,9 @@ bool ShadowMapFBO::init(unsigned int width, unsigned int height)
 		printf("FB error, status: 0x%x\n", status);
 		return false;
 	}
+
+	// Restore default framebuffer after init
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return true;
 }
 

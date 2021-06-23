@@ -11,6 +11,6 @@ public:
 	virtual void init() {};
 	void use();
 
-protected:
 	Shader shader;
+protected:
 };

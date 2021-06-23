@@ -1,14 +1,9 @@
 #pragma once
 #include "Technique.h"
+#include "LightTypes.h"
+
  class LightingTechnique : public Technique
 {
-	 struct DirectionalLight
-	 {
-		 float ambientIntensity;
-		 glm::vec3 color;
-		 float diffuseIntensity;
-		 glm::vec3 direction;
-	 };
 
 public:
 	LightingTechnique(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
@@ -19,6 +14,7 @@ public:
 
 	void setTextureUnit(GLuint textureUnit);
 	void setDirectionalLight(const DirectionalLight& light);
+	void setPointLight(const PointLight& light);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);
 	void setMaterialSpecularIntensity(const float intensity);
