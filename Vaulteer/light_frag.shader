@@ -1,7 +1,8 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 fragPos;
+in vec3 fragPosition;
+in vec3 fragNormal;
 in vec2 TexCoords;
 
 // light types
@@ -9,28 +10,31 @@ in vec2 TexCoords;
 struct Attenuation {
     float aConstant;
     float aLinear;
-    float aExp;
+    float aQuadratic;
 };
 
-struct DirectionalLight {
+struct BaseLight {
     vec3 color;
     float ambientIntensity;
     float diffuseIntensity;
+};
+
+struct DirectionalLight {
+    BaseLight light;
     vec3 direction;
 };
 
 struct PointLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-    vec3 position;
+    BaseLight light;
     Attenuation att;
+    vec3 position;
 };
 
 // uniforms
 
 uniform sampler2D u_texture;
 uniform DirectionalLight directionalLight;
+uniform PointLight pointLight;
 
 uniform vec3 worldCameraPos;
 
@@ -43,30 +47,41 @@ float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-void main() {
-    vec4 ambientColor = vec4(directionalLight.color, 1.0f) * directionalLight.ambientIntensity;
+vec4 calcLightInternal(BaseLight light, vec3 lightDirection) {
+    vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
     vec4 specularColor = vec4(0.0);
 
-    float diffuseFactor = dot(normalize(fragPos), -directionalLight.direction);
+    float diffuseFactor = dot(normalize(fragNormal), -lightDirection);
 
     if (diffuseFactor > 0) {
-        diffuseColor = vec4(directionalLight.color * diffuseFactor * directionalLight.diffuseIntensity, 1.0);
+        diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
 
-        vec3 vertexToEye = normalize(worldCameraPos - fragPos);
-        vec3 lightReflect = normalize(reflect(directionalLight.direction, fragPos));
+        vec3 vertexToEye = normalize(worldCameraPos - fragNormal);
+        vec3 lightReflect = normalize(reflect(lightDirection, fragNormal));
         float specularFactor = dot(vertexToEye, lightReflect);
         if (specularFactor > 0) {
             specularFactor = pow(specularFactor, specularPower);
-            specularColor = vec4(directionalLight.color * materialSpecularIntensity * specularFactor, 1.0f);
+            specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0f);
         }
     }
 
-    float ring = specularColor.x - 1.0;
-    if (specularColor.x > 1.0) {
-        specularColor -= ring * 2;
-    }
+    return (ambientColor + diffuseColor + specularColor);
+}
 
-    float rand = rand(vec2(fragPos));
-    FragColor = (ambientColor + diffuseColor + specularColor);
+vec4 calcPointLight() {
+    vec3 lightDirection = fragPosition - pointLight.position;
+    float lightDistance = length(lightDirection);
+    lightDirection = normalize(lightDirection);
+
+    float attenuation = (pointLight.att.aConstant
+                       + pointLight.att.aLinear * lightDistance
+                       + pointLight.att.aQuadratic * (lightDistance * lightDistance));
+
+    return calcLightInternal(pointLight.light, lightDirection) / attenuation;
+}
+
+void main() {
+    FragColor = calcPointLight();
+    //FragColor = vec4(fragNormal, 1.0);
 }

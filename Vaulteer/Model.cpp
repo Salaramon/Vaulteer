@@ -15,7 +15,7 @@ void Model::draw()
 void Model::load(std::string path)
 {
 	Assimp::Importer modelImporter;
-	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "Assimp Error: " << modelImporter.GetErrorString() << std::endl;
@@ -55,6 +55,9 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 			vertex.normal.y = mesh->mNormals[i].y;
 			vertex.normal.z = mesh->mNormals[i].z;
 		}
+		else {
+			vertex.normal = glm::vec3(0);
+		}
 
 		if (mesh->mTextureCoords[0]) {
 			vertex.textureCoordinates.x = mesh->mTextureCoords[0][i].x;
@@ -72,21 +75,6 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 		aiFace face = mesh->mFaces[i];
 		for (size_t j = 0; j < face.mNumIndices; j++) {
 			indices.push_back((face.mIndices[j]));
-		}
-
-		// Generate normals if not present - used for lighting on test objects.
-		if (!mesh->HasNormals()) {
-			Vertex* triangle[3];
-			for (size_t j = 0; j < face.mNumIndices; j++) {
-				triangle[j] = &vertices[face.mIndices[j]];
-			}
-
-			glm::vec3 normal = glm::triangleNormal(triangle[0]->position, triangle[1]->position, triangle[2]->position);
-			for (Vertex* vPtr : triangle) {
-				vPtr->normal.x = normal.x;
-				vPtr->normal.y = normal.y;
-				vPtr->normal.z = normal.z;
-			}
 		}
 	}
 

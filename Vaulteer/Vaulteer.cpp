@@ -84,11 +84,18 @@ int main() {
 
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	float deltaTime = 0, lastFrame = 0;
+	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
+	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
 	
 	while (window.is_running()) {
+
+		lastFrame = deltaTime;
+		deltaTime = glfwGetTime() - startTime;
 
 		// shadow map pass
 
@@ -112,7 +119,7 @@ int main() {
 
 		//shadowMap.bindRead(GL_TEXTURE0);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		lightingTech.use();
@@ -120,14 +127,20 @@ int main() {
 		glm::mat4 modelMat(1.0f);
 		modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
 		//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
-		//modelMat = glm::rotate(modelMat, (float) (sinf(glfwGetTime()) * 1.2f), glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 0.5f, glm::vec3(.5f, 1.0f, 0.0f));
 
 		lightingTech.setModel(modelMat);
 		lightingTech.setView(camera.getViewMatrix());
 		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
-		lightingTech.setDirectionalLight({ glm::vec3(1.0f), 0.05f, .1f, glm::vec3(cosf(glfwGetTime() * 1), 0.0f, sinf(glfwGetTime() * 1)) });
+
+		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f };
+		PointLight light = { glm::vec3(1.0f), 0.05f, 1.0f, glm::vec3(.0f, sinf(glfwGetTime())*2 + 6, .0f), att };
+
+		glm::vec3 dir = { cosf(glfwGetTime() * 1), 0.0f, sinf(glfwGetTime() * 1) };
+
+		lightingTech.setPointLight(light);
 
 		lightingTech.setWorldCameraPos(camera.position);
 

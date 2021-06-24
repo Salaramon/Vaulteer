@@ -11,6 +11,7 @@ public:
 	void setModel(const glm::mat4& model);
 	void setView(const glm::mat4& view);
 	void setProjection(const glm::mat4& projection);
+	void setNormal(const glm::mat4& model);
 
 	void setTextureUnit(GLuint textureUnit);
 	void setDirectionalLight(const DirectionalLight& light);
