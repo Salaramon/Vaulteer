@@ -136,7 +136,7 @@ int main() {
 		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
 
 		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f };
-		PointLight light = { glm::vec3(1.0f), 0.05f, 1.0f, glm::vec3(.0f, sinf(glfwGetTime())*2 + 6, .0f), att };
+		PointLight light = { glm::vec3(1.0f), 0.05f, 1.0f, glm::vec3(.0f, sinf(glfwGetTime())*2 - 6, .0f), att };
 
 		glm::vec3 dir = { cosf(glfwGetTime() * 1), 0.0f, sinf(glfwGetTime() * 1) };
 
