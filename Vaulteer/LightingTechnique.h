@@ -16,10 +16,11 @@ public:
 	void setTextureUnit(GLuint textureUnit);
 	void setDirectionalLight(const DirectionalLight& light);
 	void setPointLight(const PointLight& light);
+	void setSpotLight(const SpotLight& light);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);
 	void setMaterialSpecularIntensity(const float intensity);
-	void setMaterialSpecularPower(const float power);
+	void setMaterialShininess(const float shininess);
 
 private:
 };

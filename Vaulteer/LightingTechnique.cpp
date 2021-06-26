@@ -48,6 +48,21 @@ void LightingTechnique::setPointLight(const PointLight& light) {
     shader.setVector("pointLight.position", light.position);
 }
 
+void LightingTechnique::setSpotLight(const SpotLight& light) {
+    shader.setVector("spotLight.base.light.color", light.color);
+    shader.setFloat("spotLight.base.light.ambientIntensity", light.ambientIntensity);
+    shader.setFloat("spotLight.base.light.diffuseIntensity", light.diffuseIntensity);
+
+    shader.setFloat("spotLight.base.att.aConstant", light.attenuation.constant);
+    shader.setFloat("spotLight.base.att.aLinear", light.attenuation.linear);
+    shader.setFloat("spotLight.base.att.aQuadratic", light.attenuation.quadratic);
+
+    shader.setVector("spotLight.base.position", light.position);
+
+    shader.setVector("spotLight.direction", light.direction);
+    shader.setFloat("spotLight.cutoff", light.cutoff);
+}
+
 void LightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
     shader.setVector("worldCameraPos", cameraPos);
 }
@@ -56,6 +71,6 @@ void LightingTechnique::setMaterialSpecularIntensity(const float intensity) {
     shader.setFloat("materialSpecularIntensity", intensity);
 }
 
-void LightingTechnique::setMaterialSpecularPower(const float power) {
-    shader.setFloat("specularPower", power);
+void LightingTechnique::setMaterialShininess(const float shininess) {
+    shader.setFloat("materialShininess", shininess);
 }

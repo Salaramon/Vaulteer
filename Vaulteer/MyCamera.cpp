@@ -26,7 +26,7 @@ glm::mat4 MyCamera::getViewMatrix() {
 
 glm::mat4 MyCamera::getProjectionMatrix(float width, float height) {
 	//return glm::ortho(-1.6f, 1.6f, -1.0f, 1.0f, 0.1f, 50.0f);
-	return glm::perspectiveFov(glm::radians(camera_fov), width, height, .1f, 50.0f);
+	return glm::perspectiveFov(glm::radians(camera_fov), width, height, .1f, 1000.0f);
 }
 
 void MyCamera::updateRotation() {

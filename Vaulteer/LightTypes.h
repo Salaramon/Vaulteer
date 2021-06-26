@@ -8,6 +8,10 @@ struct BaseLight {
 	float diffuseIntensity;
 };
 
+struct DirectionalLight : public BaseLight {
+	glm::vec3 direction;
+};
+
 struct PointLight : public BaseLight {
 	glm::vec3 position;
 
@@ -18,7 +22,8 @@ struct PointLight : public BaseLight {
 	} attenuation;
 };
 
-struct DirectionalLight : public BaseLight {
+struct SpotLight : public PointLight {
 	glm::vec3 direction;
+	float cutoff;
 };
 

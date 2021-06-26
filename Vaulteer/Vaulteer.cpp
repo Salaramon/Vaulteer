@@ -84,8 +84,8 @@ int main() {
 
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -124,32 +124,39 @@ int main() {
 
 		lightingTech.use();
 
-		glm::mat4 modelMat(1.0f);
-		modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.0f, 0.0f));
-		//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
-		modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 0.5f, glm::vec3(.5f, 1.0f, 0.0f));
-
-		lightingTech.setModel(modelMat);
 		lightingTech.setView(camera.getViewMatrix());
 		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
 
-		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f };
-		PointLight light = { glm::vec3(1.0f), 0.05f, 1.0f, glm::vec3(.0f, sinf(glfwGetTime())*2 - 6, .0f), att };
+		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
+		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(sinf(glfwGetTime() * 3) * 4, 3.5f, cosf(glfwGetTime() * 3) * 4), att };
 
-		glm::vec3 dir = { cosf(glfwGetTime() * 1), 0.0f, sinf(glfwGetTime() * 1) };
+		glm::vec3 dir = camera.front;
+		SpotLight light = { glm::vec3(1.0f), 0.05f, 1.0f, camera.position, att, camera.front, 0.96f };
 
-		lightingTech.setPointLight(light);
+		lightingTech.setPointLight(pLight);
+		lightingTech.setSpotLight(light);
 
 		lightingTech.setWorldCameraPos(camera.position);
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialSpecularPower(16.0f);
+		lightingTech.setMaterialShininess(16.0f);
 
-		//shader.setUniform("shadowMap", 0);
+		//for (int x = -10; x < 10; x++) {
+		//	for (int y = -10; y < 10; y++) {
+				glm::mat4 modelMat(1.0f);
+				modelMat = glm::translate(modelMat, glm::vec3(0 * 3, -1.0f, 0 * 3));
+				//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
+				//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		model.draw();
+				lightingTech.setModel(modelMat);
+
+				//shader.setUniform("shadowMap", 0);
+
+				model.draw();
+		//	}
+		//}
 
 		glfwSwapBuffers(window.getRawWindow());
 

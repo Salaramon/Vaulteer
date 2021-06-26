@@ -30,16 +30,24 @@ struct PointLight {
     vec3 position;
 };
 
+struct SpotLight {
+    PointLight base;
+    vec3 direction;
+    float cutoff;
+};
+
 // uniforms
 
-uniform sampler2D u_texture;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLight;
+uniform SpotLight spotLight;
+
+uniform float materialSpecularIntensity;
+uniform float materialShininess;
 
 uniform vec3 worldCameraPos;
 
-uniform float materialSpecularIntensity;
-uniform float specularPower;
+uniform sampler2D u_texture;
 
 // functions
 
@@ -57,19 +65,22 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection) {
     if (diffuseFactor > 0) {
         diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
 
-        vec3 vertexToEye = normalize(worldCameraPos - fragNormal);
+        float kEnergyConservation = (8.0 + materialShininess) / (8.0 * 3.14159265);
+
+        vec3 viewDir = normalize(worldCameraPos - fragNormal);
         vec3 lightReflect = normalize(reflect(lightDirection, fragNormal));
-        float specularFactor = dot(vertexToEye, lightReflect);
-        if (specularFactor > 0) {
-            specularFactor = pow(specularFactor, specularPower);
-            specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0f);
-        }
+        vec3 halfwayDir = normalize(lightDirection + viewDir);
+
+        float specularFactor = max(dot(viewDir, lightReflect), 0.0);
+        specularFactor = kEnergyConservation * pow(specularFactor, materialShininess);
+
+        specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0f);
     }
 
     return (ambientColor + diffuseColor + specularColor);
 }
 
-vec4 calcPointLight() {
+vec4 calcPointLight(PointLight pointLight) {
     vec3 lightDirection = fragPosition - pointLight.position;
     float lightDistance = length(lightDirection);
     lightDirection = normalize(lightDirection);
@@ -81,7 +92,22 @@ vec4 calcPointLight() {
     return calcLightInternal(pointLight.light, lightDirection) / attenuation;
 }
 
+vec4 calcSpotLight(SpotLight spotLight) {
+    vec3 lightToFragment = normalize(fragPosition - spotLight.base.position);
+    float spotFactor = dot(lightToFragment, spotLight.direction);
+
+    if (spotFactor > spotLight.cutoff) {
+        vec4 color = calcPointLight(spotLight.base);
+        return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - spotLight.cutoff));
+    }
+    else {
+        return vec4(0, 0, 0, 0);
+    }
+}
+
 void main() {
-    FragColor = calcPointLight();
+    vec4 spotColor = calcSpotLight(spotLight);
+    FragColor = spotColor + calcPointLight(pointLight);
+
     //FragColor = vec4(fragNormal, 1.0);
 }
