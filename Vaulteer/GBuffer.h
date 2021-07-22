@@ -7,30 +7,36 @@ class GBuffer
 {
 public:
 
-    enum GBUFFER_TEXTURE_TYPE {
-        GBUFFER_TEXTURE_TYPE_POSITION,
-        GBUFFER_TEXTURE_TYPE_DIFFUSE,
-        GBUFFER_TEXTURE_TYPE_NORMAL,
-        GBUFFER_TEXTURE_TYPE_TEXCOORD,
-        GBUFFER_NUM_TEXTURES
+    enum GBufferTextureType {
+        Position,
+        Normal,
+        Color,
+        NumTextures
     };
 
-    GBuffer();
+
+    GBuffer(unsigned int windowWidth, unsigned int windowHeight);
 
     ~GBuffer();
 
-    bool Init(unsigned int WindowWidth, unsigned int WindowHeight);
+    bool init();
 
-    void BindForWriting();
+    void bindForWriting();
 
-    void BindForReading();
+    void bindForReading();
 
-    void SetReadBuffer(GBuffer::GBUFFER_TEXTURE_TYPE TextureType);
+    void setReadBuffer(GBufferTextureType TextureType);
+
+
+    GLuint textures[NumTextures];
 
 private:
-	GLuint FBO;
-    GLuint textures[GBUFFER_NUM_TEXTURES];
+    unsigned int windowWidth, windowHeight;
+    unsigned int colorTexturesInitialized = 0;
+
+    GLuint FBO;//, RBO;
     GLuint depthTexture;
 
+    void initTexture(GLuint texture, GLenum internalFormat, GLenum format, GLenum type);
 };
 

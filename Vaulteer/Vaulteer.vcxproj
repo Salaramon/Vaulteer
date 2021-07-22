@@ -163,6 +163,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="GeometryTechnique.cpp" />
     <ClCompile Include="LightingTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
+    <ClInclude Include="GeometryTechnique.h" />
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="LightingTechnique.h" />
     <ClInclude Include="Mesh.h" />
@@ -202,12 +204,14 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="g_pass_frag.shader" />
-    <None Include="g_pass_vertex.shader" />
+    <None Include="deferred_frag.shader" />
+    <None Include="deferred_vertex.shader" />
+    <None Include="geometry_frag.shader" />
+    <None Include="geometry_vertex.shader" />
     <None Include="light_frag.shader" />
     <None Include="light_vertex.shader" />
-    <None Include="standard_frag.shader" />
-    <None Include="standard_vertex.shader" />
+    <None Include="shadow_frag.shader" />
+    <None Include="shadow_vertex.shader" />
     <None Include="GLSLSourceFiles.toml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

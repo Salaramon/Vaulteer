@@ -16,7 +16,7 @@ float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-void main() {   
+void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
     TexCoords = aTexCoords;
 

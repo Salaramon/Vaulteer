@@ -3,8 +3,10 @@
 #define ARRAY_SIZE_IN_ELEMENTS(a) sizeof(a) / sizeof(a[0])
 
 
-GBuffer::GBuffer()
+GBuffer::GBuffer(unsigned int windowWidth, unsigned int windowHeight)
+    : windowWidth(windowWidth), windowHeight(windowHeight)
 {
+    init();
 }
 
 GBuffer::~GBuffer()
@@ -12,28 +14,22 @@ GBuffer::~GBuffer()
     glDeleteFramebuffers(1, &FBO);
 }
 
-bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
+bool GBuffer::init()
 {
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
 
     // Create the gbuffer textures
-    glGenTextures(GBUFFER_NUM_TEXTURES, textures);
+    glGenTextures(NumTextures, textures);
     glGenTextures(1, &depthTexture);
 
-    for (unsigned int i = 0; i < GBUFFER_NUM_TEXTURES; i++) {
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, WindowWidth, WindowHeight, 0, GL_RGB, GL_FLOAT, nullptr);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0);
-    }
+    initTexture(textures[Position], GL_RGBA16F, GL_RGBA, GL_FLOAT);
+    initTexture(textures[Normal], GL_RGBA16F, GL_RGBA, GL_FLOAT);
+    initTexture(textures[Color], GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // intention is to combine color and specular data into single texture here - specular currently unused
+    initTexture(depthTexture, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT);
 
-    // depth
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, WindowWidth, WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
-
-    GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(GBUFFER_NUM_TEXTURES, DrawBuffers);
+    GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(NumTextures, DrawBuffers);
 
     GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         
@@ -48,17 +44,28 @@ bool GBuffer::Init(unsigned int WindowWidth, unsigned int WindowHeight)
     return true;
 }
 
-void GBuffer::BindForWriting()
+void GBuffer::initTexture(GLuint texture, GLenum internalFormat, GLenum format, GLenum type)
+{
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, windowWidth, windowHeight, 0, format, type, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    GLenum attachment = (format == GL_DEPTH_COMPONENT ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0 + colorTexturesInitialized++);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture, 0);
+}
+
+void GBuffer::bindForWriting()
 {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
 }
 
-void GBuffer::BindForReading()
+void GBuffer::bindForReading()
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 }
 
-void GBuffer::SetReadBuffer(GBuffer::GBUFFER_TEXTURE_TYPE TextureType)
+void GBuffer::setReadBuffer(GBufferTextureType TextureType)
 {
     glReadBuffer(GL_COLOR_ATTACHMENT0 + TextureType);
 }

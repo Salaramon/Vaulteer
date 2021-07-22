@@ -3,6 +3,8 @@ out vec4 FragColor;
 
 in vec3 fragPosition;
 in vec3 fragNormal;
+in float fragShininess;
+in vec3 fragC;
 in vec2 TexCoords;
 
 // light types
@@ -47,40 +49,47 @@ uniform float materialShininess;
 
 uniform vec3 worldCameraPos;
 
-uniform sampler2D u_texture;
-
 // functions
 
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-vec4 calcLightInternal(BaseLight light, vec3 lightDirection) {
+vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 normal) {
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
     vec4 specularColor = vec4(0.0);
 
-    float diffuseFactor = dot(normalize(fragNormal), -lightDirection);
+    float diffuseFactor = dot(normalize(normal), -lightDirection);
 
     if (diffuseFactor > 0) {
         diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
 
-        float kEnergyConservation = (8.0 + materialShininess) / (8.0 * 3.14159265);
+        float shininess = materialShininess * 4;
 
-        vec3 viewDir = normalize(worldCameraPos - fragNormal);
-        vec3 lightReflect = normalize(reflect(lightDirection, fragNormal));
-        vec3 halfwayDir = normalize(lightDirection + viewDir);
+        float kEnergyConservation = (8.0 + shininess) / (8.0 * 3.14159265);
 
-        float specularFactor = max(dot(viewDir, lightReflect), 0.0);
-        specularFactor = kEnergyConservation * pow(specularFactor, materialShininess);
+        vec3 viewDir =    normalize(worldCameraPos - fragPosition);
 
-        specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0f);
+        // blinn-phong shading:
+        vec3 halfwayDir = normalize(viewDir - lightDirection);
+        float specularFactor = max(dot(fragNormal, halfwayDir), 0.0);
+
+        // phong shading:
+        /*vec3 reflectDir = reflect(lightDirection, fragNormal);
+        float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
+
+        specularFactor = kEnergyConservation * pow(specularFactor, shininess);
+
+        //specularColor = vec4(specularFactor, specularFactor, specularFactor, 1.0);
+        specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0);
     }
 
+    //return specularColor;
     return (ambientColor + diffuseColor + specularColor);
 }
 
-vec4 calcPointLight(PointLight pointLight) {
+vec4 calcPointLight(PointLight pointLight, vec3 normal) {
     vec3 lightDirection = fragPosition - pointLight.position;
     float lightDistance = length(lightDirection);
     lightDirection = normalize(lightDirection);
@@ -89,15 +98,15 @@ vec4 calcPointLight(PointLight pointLight) {
                        + pointLight.att.aLinear * lightDistance
                        + pointLight.att.aQuadratic * (lightDistance * lightDistance));
 
-    return calcLightInternal(pointLight.light, lightDirection) / attenuation;
+    return calcLightInternal(pointLight.light, lightDirection, normal) / attenuation;
 }
 
-vec4 calcSpotLight(SpotLight spotLight) {
+vec4 calcSpotLight(SpotLight spotLight, vec3 normal) {
     vec3 lightToFragment = normalize(fragPosition - spotLight.base.position);
     float spotFactor = dot(lightToFragment, spotLight.direction);
 
     if (spotFactor > spotLight.cutoff) {
-        vec4 color = calcPointLight(spotLight.base);
+        vec4 color = calcPointLight(spotLight.base, normal);
         return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - spotLight.cutoff));
     }
     else {
@@ -106,8 +115,7 @@ vec4 calcSpotLight(SpotLight spotLight) {
 }
 
 void main() {
-    vec4 spotColor = calcSpotLight(spotLight);
-    FragColor = spotColor + calcPointLight(pointLight);
-
-    //FragColor = vec4(fragNormal, 1.0);
+    vec3 normal = fragNormal;
+    vec4 spotColor = calcSpotLight(spotLight, normal);
+    FragColor = spotColor + calcPointLight(pointLight, normal);
 }

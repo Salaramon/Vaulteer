@@ -21,6 +21,7 @@
 
 #include "Event.h"
 #include "GBuffer.h"
+#include "GeometryTechnique.h"
 
 
 
@@ -54,6 +55,7 @@ int main() {
 
 	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 
+	glfwWindowHint(GLFW_SAMPLES, 4); // antialiasing - see GL_ENABLE(GL_MULTISAMPLE)
 	Window window("Vaulteer", WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -69,21 +71,29 @@ int main() {
 	/*Shader shader = Shader("standard_vertex.shader", "standard_frag.shader");
 	shader.use();*/
 
+	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+
 	Model model("teapot.obj");
+	Model cube("cube.obj");
 	Model quad("quad.obj");
 
 
-	MyCamera camera(glm::vec3(.0f, .0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .0f, 1.0f));
+	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f));
 	MyCamera spotlight(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, .0f));
 
 	ShadowMapFBO shadowMap = ShadowMapFBO();
 	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	LightingTechnique lightingTech("light_vertex.shader", "light_frag.shader");
-	ShadowTechnique shadowTech("standard_vertex.shader", "standard_frag.shader");
+	GeometryTechnique geometryTech("geometry_vertex.shader", "geometry_frag.shader");
+	LightingTechnique lightingTech("deferred_vertex.shader", "deferred_frag.shader");
+	ShadowTechnique shadowTech("shadow_vertex.shader", "shadow_frag.shader");
 
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE); // antialiasing - see glfwWindowHints. doesn't work with deferred shading!
+
+	//glEnable(GL_FRAMEBUFFER_SRGB);
+
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 
@@ -96,6 +106,106 @@ int main() {
 
 		lastFrame = deltaTime;
 		deltaTime = glfwGetTime() - startTime;
+
+		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// geometry pass
+        // -----------------------------------------------------------------------------------------------------------------------
+
+		gbuffer.bindForWriting();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		geometryTech.use();
+
+		geometryTech.setView(camera.getViewMatrix());
+		geometryTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+		glm::mat4 origModelMat(1.0f);
+		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 2.0f, 0 * 3));
+		//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		geometryTech.setModel(modelMat);
+		model.draw();
+
+		geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
+		cube.draw();
+
+		// unbind
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// light pass
+        // -----------------------------------------------------------------------------------------------------------------------
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		lightingTech.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Position]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Normal]);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Color]);
+
+		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
+		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(sinf(glfwGetTime() * 3) * 4, 10.0f, cosf(glfwGetTime() * 3) * 4), att };
+		lightingTech.setPointLight(pLight);
+
+		lightingTech.setWorldCameraPos(camera.position);
+
+		lightingTech.setMaterialSpecularIntensity(1.0f);
+		lightingTech.setMaterialShininess(8.0f);
+
+		/*
+
+		lightingTech.setView(camera.getViewMatrix());
+		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+
+		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
+		PointLight::Attenuation noAtt = { 1.0f , 0.0f, 0.0f }; // for no dropoff: { 1.0f, .0f, .0f }
+		//PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(0, 1.0f, 0), att };
+		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(sinf(glfwGetTime() * 3) * 4, 10.0f, cosf(glfwGetTime() * 3) * 4), att };
+
+		SpotLight light = { glm::vec3(1.0f), 0.05f, 1.0f, camera.position, noAtt, camera.front, 0.96f };
+
+		lightingTech.setPointLight(pLight);
+		//lightingTech.setSpotLight(light);
+
+		lightingTech.setWorldCameraPos(camera.position);
+
+		lightingTech.setMaterialSpecularIntensity(1.0f);
+		lightingTech.setMaterialShininess(8.0f);
+
+		glm::mat4 origModelMat(1.0f);
+		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 3.0f, 0 * 3));
+		//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		lightingTech.setModel(modelMat);
+		//shader.setUniform("shadowMap", 0); 
+
+		model.draw();
+
+		modelMat = glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f));
+		lightingTech.setModel(modelMat);
+		cube.draw();*/
+
+		// render quad
+
+		geometryTech.setModel(glm::mat4(1.0f));
+		geometryTech.setView(glm::lookAt(glm::vec3(.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		geometryTech.setProjection(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 50.0f));
+		//gPassTech.setTexture();
+
+		quad.draw();
+
+		gbuffer.bindForReading();
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
+		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
+		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
+		glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// shadow map pass
 
@@ -114,49 +224,6 @@ int main() {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		*/
-
-		// render pass
-
-		//shadowMap.bindRead(GL_TEXTURE0);
-
-		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		lightingTech.use();
-
-		lightingTech.setView(camera.getViewMatrix());
-		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-
-		float intensity = sinf(glfwGetTime()) / 2 + 0.5;
-
-		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
-		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(sinf(glfwGetTime() * 3) * 4, 3.5f, cosf(glfwGetTime() * 3) * 4), att };
-
-		glm::vec3 dir = camera.front;
-		SpotLight light = { glm::vec3(1.0f), 0.05f, 1.0f, camera.position, att, camera.front, 0.96f };
-
-		lightingTech.setPointLight(pLight);
-		lightingTech.setSpotLight(light);
-
-		lightingTech.setWorldCameraPos(camera.position);
-
-		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialShininess(16.0f);
-
-		//for (int x = -10; x < 10; x++) {
-		//	for (int y = -10; y < 10; y++) {
-				glm::mat4 modelMat(1.0f);
-				modelMat = glm::translate(modelMat, glm::vec3(0 * 3, -1.0f, 0 * 3));
-				//modelMat = glm::scale(modelMat, glm::vec3((float) (WINDOW_WIDTH / (float)WINDOW_HEIGHT), 1.0f, 1.0f));
-				//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
-
-				lightingTech.setModel(modelMat);
-
-				//shader.setUniform("shadowMap", 0);
-
-				model.draw();
-		//	}
-		//}
 
 		glfwSwapBuffers(window.getRawWindow());
 

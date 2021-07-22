@@ -72,6 +72,9 @@
     <ClCompile Include="LightingTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -134,18 +137,18 @@
     <ClInclude Include="LightTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="g_pass_frag.shader">
+    <None Include="geometry_vertex.shader">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="g_pass_vertex.shader">
+    <None Include="shadow_frag.shader">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="standard_frag.shader">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="standard_vertex.shader">
+    <None Include="shadow_vertex.shader">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">
@@ -155,6 +158,15 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="light_vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="geometry_frag.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="deferred_frag.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="deferred_vertex.shader">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

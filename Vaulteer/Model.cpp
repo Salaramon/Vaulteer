@@ -67,6 +67,10 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 			vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
 		}
 
+		// random
+		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
+
 		vertices.push_back(vertex);
 	}
 
