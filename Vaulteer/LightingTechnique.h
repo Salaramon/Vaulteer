@@ -8,6 +8,8 @@
 public:
 	LightingTechnique(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
 
+	virtual void init();
+
 	void setModel(const glm::mat4& model);
 	void setView(const glm::mat4& view);
 	void setProjection(const glm::mat4& projection);

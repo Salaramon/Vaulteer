@@ -64,8 +64,3 @@ void GBuffer::bindForReading()
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 }
-
-void GBuffer::setReadBuffer(GBufferTextureType TextureType)
-{
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + TextureType);
-}

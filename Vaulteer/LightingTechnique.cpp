@@ -7,6 +7,12 @@ LightingTechnique::LightingTechnique(std::string pathGLSLVertexCode, std::string
 {
 }
 
+void LightingTechnique::init() {
+    shader.setInt("gPosition", 0);
+    shader.setInt("gNormal", 1);
+    shader.setInt("gColor", 2);
+}
+
 void LightingTechnique::setModel(const glm::mat4& model) {
     shader.setMatrix("model", model);
     setNormal(model);

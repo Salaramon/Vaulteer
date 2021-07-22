@@ -9,4 +9,5 @@ Technique::Technique(std::string pathGLSLVertexCode, std::string pathGLSLFragmen
 void Technique::use() 
 {
 	shader.use();
+	init();
 }
