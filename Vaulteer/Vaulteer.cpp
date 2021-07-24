@@ -51,18 +51,16 @@ void handleCamera(MyCamera& camera) {
 	}
 }
 
+float randf(float LO, float HI) {
+	return LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
+}
+
 int main() {
 	glfwInit();
 
 	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 
 	Window window("Vaulteer", WINDOW_WIDTH, WINDOW_HEIGHT);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
 
 	Event::AddEventHandlingForWindow(&window);
 	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -87,13 +85,24 @@ int main() {
 	GeometryTechnique geometryTech("geometry_vertex.shader", "geometry_frag.shader");
 	LightingTechnique lightingTech("deferred_vertex.shader", "deferred_frag.shader");
 	ShadowTechnique shadowTech("shadow_vertex.shader", "shadow_frag.shader");
+	Shader lightSourceShader = Shader("lightsource_vertex.shader", "lightsource_frag.shader");
 
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_FRAMEBUFFER_SRGB);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+	const int NUM_LIGHTS = 32;
+	glm::vec3 lightPositions[NUM_LIGHTS];
+	int8_t lightDirs[NUM_LIGHTS];
+	PointLight pointLights[NUM_LIGHTS];
+	PointLight::Attenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
+
+	srand((int) glfwGetTime());
+	for (int i = 0; i < NUM_LIGHTS; i++) {
+		lightDirs[i] = (rand() % 2) * 2 - 1;
+		lightPositions[i] = glm::vec3(randf(-10.0f, 10.0f), randf(1.0f, 10.0f), randf(-10.0f, 10.0f));
+		pointLights[i] = { glm::vec3(randf(0.0f, 1.0f), randf(0.0f, 1.0f), randf(0.0f, 1.0f)), 0.01f, 0.2f, lightPositions[i], att };
+	}
 
 
 	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
@@ -112,7 +121,6 @@ int main() {
 
 		gbuffer.bindForWriting();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		geometryTech.use();
 
@@ -121,7 +129,6 @@ int main() {
 
 		glm::mat4 origModelMat(1.0f);
 		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 2.0f, 0 * 3));
-		//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		geometryTech.setModel(modelMat);
 		model.draw();
@@ -135,9 +142,7 @@ int main() {
 		// light pass
         // -----------------------------------------------------------------------------------------------------------------------
 
-		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		lightingTech.use();
 		glActiveTexture(GL_TEXTURE0);
@@ -147,16 +152,23 @@ int main() {
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Color]);
 
-		glm::vec3 lightPosition(sinf(glfwGetTime() * 3) * 4, 6.0f, cosf(glfwGetTime() * 3) * 4);
+		glm::vec3 lightCurrentPos[NUM_LIGHTS];
+		for (int i = 0; i < NUM_LIGHTS; i++) {
+			lightCurrentPos[i] = glm::vec3(
+				lightDirs[i] * sinf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].x,
+				lightPositions[i].y, 
+				lightDirs[i] * cosf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].z);
+		}
 
-		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
-		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.01f, 0.2f, lightPosition, att };
-		lightingTech.setPointLight(pLight);
+		for (int i = 0; i < NUM_LIGHTS; i++) {
+			pointLights[i].position = lightCurrentPos[i];
+			lightingTech.setPointLight(pointLights[i], i);
+		}
 
 		lightingTech.setWorldCameraPos(camera.position);
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialShininess(8.0f);
+		lightingTech.setMaterialShininess(32.0f);
 
 		/*
 
@@ -204,6 +216,23 @@ int main() {
 		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
 		glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// light source pass
+
+		lightSourceShader.use();
+		lightSourceShader.setMatrix("view", camera.getViewMatrix());
+		lightSourceShader.setMatrix("projection", camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+		for (int i = 0; i < NUM_LIGHTS; i++) {
+			glm::mat4 modelMat = glm::translate(origModelMat, lightCurrentPos[i] + glm::vec3(0, -0.05, 0));
+			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
+			modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 3, glm::vec3(0.0f, 1.0f, 0.0f));
+
+			lightSourceShader.setMatrix("model", modelMat);
+			lightSourceShader.setVector("lightColor", pointLights[i].color);
+
+			model.draw();
+		}
 
 		// shadow map pass
 

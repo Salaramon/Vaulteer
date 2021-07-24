@@ -169,5 +169,11 @@
     <None Include="deferred_vertex.shader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="lightsource_frag.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightsource_vertex.shader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

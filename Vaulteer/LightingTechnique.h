@@ -17,7 +17,7 @@ public:
 
 	void setTextureUnit(GLuint textureUnit);
 	void setDirectionalLight(const DirectionalLight& light);
-	void setPointLight(const PointLight& light);
+	void setPointLight(const PointLight& light, const int& index);
 	void setSpotLight(const SpotLight& light);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);

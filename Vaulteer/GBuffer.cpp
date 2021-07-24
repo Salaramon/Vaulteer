@@ -26,7 +26,7 @@ bool GBuffer::init()
     initTexture(textures[Position], GL_RGBA16F, GL_RGBA, GL_FLOAT);
     initTexture(textures[Normal], GL_RGBA16F, GL_RGBA, GL_FLOAT);
     initTexture(textures[Color], GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // intention is to combine color and specular data into single texture here - specular currently unused
-    initTexture(depthTexture, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT);
+    initTexture(depthTexture, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 
     GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(NumTextures, DrawBuffers);

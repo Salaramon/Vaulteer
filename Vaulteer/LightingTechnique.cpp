@@ -42,16 +42,17 @@ void LightingTechnique::setDirectionalLight(const DirectionalLight& light) {
     shader.setVector("directionalLight.direction", glm::normalize(light.direction));
 }
 
-void LightingTechnique::setPointLight(const PointLight& light) {
-    shader.setVector("pointLight.light.color", light.color);
-    shader.setFloat("pointLight.light.ambientIntensity", light.ambientIntensity);
-    shader.setFloat("pointLight.light.diffuseIntensity", light.diffuseIntensity);
+void LightingTechnique::setPointLight(const PointLight& light, const int& index) {
+    std::string indexStr = std::to_string(index);
+    shader.setVector("pointLights[" + indexStr + "].light.color", light.color);
+    shader.setFloat("pointLights[" + indexStr + "].light.ambientIntensity", light.ambientIntensity);
+    shader.setFloat("pointLights[" + indexStr + "].light.diffuseIntensity", light.diffuseIntensity);
 
-    shader.setFloat("pointLight.att.aConstant", light.attenuation.constant);
-    shader.setFloat("pointLight.att.aLinear", light.attenuation.linear);
-    shader.setFloat("pointLight.att.aQuadratic", light.attenuation.quadratic);
+    shader.setFloat("pointLights[" + indexStr + "].att.aConstant", light.attenuation.constant);
+    shader.setFloat("pointLights[" + indexStr + "].att.aLinear", light.attenuation.linear);
+    shader.setFloat("pointLights[" + indexStr + "].att.aQuadratic", light.attenuation.quadratic);
 
-    shader.setVector("pointLight.position", light.position);
+    shader.setVector("pointLights[" + indexStr + "].position", light.position);
 }
 
 void LightingTechnique::setSpotLight(const SpotLight& light) {
