@@ -75,6 +75,12 @@ int main() {
 	Model cube("cube.obj");
 	Model quad("quad.obj");
 
+	unsigned int nullTextureID;
+	glGenTextures(1, &nullTextureID);
+	glBindTexture(GL_TEXTURE_2D, nullTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f));
 	MyCamera spotlight(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, .0f));
@@ -130,8 +136,11 @@ int main() {
 		glm::mat4 origModelMat(1.0f);
 		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 2.0f, 0 * 3));
 
+		geometryTech.setTexture(nullTextureID);
+
 		geometryTech.setModel(modelMat);
 		model.draw();
+		quad.draw();
 
 		geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
 		cube.draw();
