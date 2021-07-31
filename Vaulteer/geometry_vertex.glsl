@@ -18,8 +18,8 @@ float rand(vec2 co) {
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
-    TexCoords = aTexCoords;
 
     fragPosition = (model * vec4(aPos, 1.0)).xyz;
     fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
+    TexCoords = aTexCoords;
 }

@@ -48,21 +48,22 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, 
     vec4 specularColor = vec4(0.0);
 
     float diffuseFactor = dot(fragNormal, -lightDirection);
+    if (diffuseFactor > 0.0) {
+        diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
 
-    diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
+        float shininess = materialShininess * 4;
+        float kEnergyConservation = (8.0 + shininess) / (8.0 * 3.14159265);
+        vec3 viewDir = normalize(worldCameraPos - fragPosition);
 
-    float shininess = materialShininess * 4;
-    float kEnergyConservation = (8.0 + shininess) / (8.0 * 3.14159265);
-    vec3 viewDir = normalize(worldCameraPos - fragPosition);
+        // blinn-phong shading impl
+        /*vec3 halfwayDir = normalize(viewDir - lightDirection);
+        float specularFactor = max(dot(fragNormal, halfwayDir), 0.0);*/
+        vec3 reflectDir = reflect(lightDirection, fragNormal);
+        float specularFactor = max(dot(reflectDir, viewDir), 0.0);
 
-    // blinn-phong shading impl
-    vec3 halfwayDir = normalize(viewDir - lightDirection);
-    float specularFactor = max(dot(fragNormal, halfwayDir), 0.0);
-    /*vec3 reflectDir = reflect(lightDirection, fragNormal);
-    float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
-
-    specularFactor = kEnergyConservation * pow(specularFactor, shininess);
-    specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0);
+        specularFactor = kEnergyConservation * pow(specularFactor, shininess);
+        specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0);
+    }
 
     return (ambientColor + diffuseColor + specularColor);
 }
@@ -82,22 +83,21 @@ vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
 
 void main()
 {
+    if (texture(gPosition, TexCoords).w == 1.0) {
+        FragColor = vec4(0.5);
+        return;
+    }
     vec3 fragPosition = texture(gPosition, TexCoords).xyz;
     vec3 fragNormal = texture(gNormal, TexCoords).xyz;
-    vec3 diffuse = texture(gColor, TexCoords).xyz;
+    vec3 diffuse = texture(gColor, TexCoords).rgb;
 
     vec4 totalLight = vec4(0.0);
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
-        totalLight = totalLight + calcPointLight(pointLights[i], fragPosition, fragNormal);
+        totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal);
     }
 
     const float gamma = 1.0;
     vec4 fragColor = vec4(diffuse, 1.0) + totalLight;
-    if (gamma != 1.0) {
-        FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
-    }
-    else {
-        FragColor = fragColor;
-    }
+    FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }

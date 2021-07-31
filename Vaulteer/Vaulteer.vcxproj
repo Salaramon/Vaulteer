@@ -204,16 +204,16 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="deferred_frag.shader" />
-    <None Include="deferred_vertex.shader" />
-    <None Include="geometry_frag.shader" />
-    <None Include="geometry_vertex.shader" />
-    <None Include="lightsource_frag.shader" />
-    <None Include="lightsource_vertex.shader" />
-    <None Include="light_frag.shader" />
-    <None Include="light_vertex.shader" />
-    <None Include="shadow_frag.shader" />
-    <None Include="shadow_vertex.shader" />
+    <None Include="deferred_frag.glsl" />
+    <None Include="deferred_vertex.glsl" />
+    <None Include="geometry_frag.glsl" />
+    <None Include="geometry_vertex.glsl" />
+    <None Include="lightsource_frag.glsl" />
+    <None Include="lightsource_vertex.glsl" />
+    <None Include="light_frag.glsl" />
+    <None Include="light_vertex.glsl" />
+    <None Include="shadow_frag.glsl" />
+    <None Include="shadow_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

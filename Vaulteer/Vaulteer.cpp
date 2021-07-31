@@ -55,6 +55,13 @@ float randf(float LO, float HI) {
 	return LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
 }
 
+glm::vec3 getColor(float offset) {
+	float diff0 = fmax(1 - fmin(offset, 3 - offset), 0.0f);
+	float diff1 = fmax(1 - fabsf(1 - offset), 0.0f);
+	float diff2 = fmax(1 - fabsf(2 - offset), 0.0f);
+	return glm::vec3(diff0, diff1, diff2);
+}
+
 int main() {
 	glfwInit();
 
@@ -66,7 +73,7 @@ int main() {
 	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
-	/*Shader shader = Shader("standard_vertex.shader", "standard_frag.shader");
+	/*Shader shader = Shader("standard_vertex.glsl", "standard_frag.glsl");
 	shader.use();*/
 
 	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -78,9 +85,9 @@ int main() {
 	unsigned int nullTextureID;
 	glGenTextures(1, &nullTextureID);
 	glBindTexture(GL_TEXTURE_2D, nullTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f));
 	MyCamera spotlight(glm::vec3(0.0f, 1.0f, -10.0f), glm::vec3(.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, .0f));
@@ -88,17 +95,21 @@ int main() {
 	ShadowMapFBO shadowMap = ShadowMapFBO();
 	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	GeometryTechnique geometryTech("geometry_vertex.shader", "geometry_frag.shader");
-	LightingTechnique lightingTech("deferred_vertex.shader", "deferred_frag.shader");
-	ShadowTechnique shadowTech("shadow_vertex.shader", "shadow_frag.shader");
-	Shader lightSourceShader = Shader("lightsource_vertex.shader", "lightsource_frag.shader");
+	GeometryTechnique geometryTech("geometry_vertex.glsl", "geometry_frag.glsl");
+	LightingTechnique lightingTech("deferred_vertex.glsl", "deferred_frag.glsl");
+	ShadowTechnique shadowTech("shadow_vertex.glsl", "shadow_frag.glsl");
+	Shader lightSourceShader = Shader("lightsource_vertex.glsl", "lightsource_frag.glsl");
 
 
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	const int NUM_LIGHTS = 32;
 	glm::vec3 lightPositions[NUM_LIGHTS];
+	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
 	PointLight pointLights[NUM_LIGHTS];
 	PointLight::Attenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
@@ -106,7 +117,8 @@ int main() {
 	srand((int) glfwGetTime());
 	for (int i = 0; i < NUM_LIGHTS; i++) {
 		lightDirs[i] = (rand() % 2) * 2 - 1;
-		lightPositions[i] = glm::vec3(randf(-10.0f, 10.0f), randf(1.0f, 10.0f), randf(-10.0f, 10.0f));
+		lightPositions[i] = glm::vec3(0.0, randf(1.0f, 3.0f), randf(-10.0f, 10.0f));
+		lightColorOffsets[i] = randf(0.0f, 3.0f);
 		pointLights[i] = { glm::vec3(randf(0.0f, 1.0f), randf(0.0f, 1.0f), randf(0.0f, 1.0f)), 0.01f, 0.2f, lightPositions[i], att };
 	}
 
@@ -137,9 +149,9 @@ int main() {
 		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 2.0f, 0 * 3));
 
 		geometryTech.setTexture(nullTextureID);
-
 		geometryTech.setModel(modelMat);
 		model.draw();
+		geometryTech.setModel(glm::scale(glm::translate(origModelMat, glm::vec3(0, 3.0f, 0)), glm::vec3(3.0f, 3.0f, 1.0f)));
 		quad.draw();
 
 		geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
@@ -162,15 +174,22 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Color]);
 
 		glm::vec3 lightCurrentPos[NUM_LIGHTS];
+		glm::vec3 lightCurrentColor[NUM_LIGHTS];
 		for (int i = 0; i < NUM_LIGHTS; i++) {
 			lightCurrentPos[i] = glm::vec3(
 				lightDirs[i] * sinf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].x,
 				lightPositions[i].y, 
 				lightDirs[i] * cosf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].z);
+
+			lightCurrentColor[i] = getColor(fmod(lightColorOffsets[i] + glfwGetTime() * lightColorOffsets[i], 3.0f));
 		}
 
 		for (int i = 0; i < NUM_LIGHTS; i++) {
 			pointLights[i].position = lightCurrentPos[i];
+			if (lightCurrentPos[i].z > 0.0)
+				pointLights[i].color = lightCurrentColor[i];
+			else
+				pointLights[i].color = glm::vec3(0.0);
 			lightingTech.setPointLight(pointLights[i], i);
 		}
 
@@ -178,40 +197,6 @@ int main() {
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
-
-		/*
-
-		lightingTech.setView(camera.getViewMatrix());
-		lightingTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-
-
-		PointLight::Attenuation att = { 1.0f , 0.09f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
-		PointLight::Attenuation noAtt = { 1.0f , 0.0f, 0.0f }; // for no dropoff: { 1.0f, .0f, .0f }
-		//PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(0, 1.0f, 0), att };
-		PointLight pLight = { glm::vec3(1.0f, 1.0f, 1.0f), 0.05f, 1.0f, glm::vec3(sinf(glfwGetTime() * 3) * 4, 10.0f, cosf(glfwGetTime() * 3) * 4), att };
-
-		SpotLight light = { glm::vec3(1.0f), 0.05f, 1.0f, camera.position, noAtt, camera.front, 0.96f };
-
-		lightingTech.setPointLight(pLight);
-		//lightingTech.setSpotLight(light);
-
-		lightingTech.setWorldCameraPos(camera.position);
-
-		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialShininess(8.0f);
-
-		glm::mat4 origModelMat(1.0f);
-		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3, 3.0f, 0 * 3));
-		//modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 240.f, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		lightingTech.setModel(modelMat);
-		//shader.setUniform("shadowMap", 0); 
-
-		model.draw();
-
-		modelMat = glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f));
-		lightingTech.setModel(modelMat);
-		cube.draw();*/
 
 		// render quad to default framebuffer
 		quad.draw();
@@ -238,7 +223,7 @@ int main() {
 			modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 3, glm::vec3(0.0f, 1.0f, 0.0f));
 
 			lightSourceShader.setMatrix("model", modelMat);
-			lightSourceShader.setVector("lightColor", pointLights[i].color);
+			lightSourceShader.setVector("lightColor",  pointLights[i].color);
 
 			model.draw();
 		}

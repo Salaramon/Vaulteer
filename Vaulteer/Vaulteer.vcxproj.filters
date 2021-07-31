@@ -142,37 +142,37 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="geometry_vertex.shader">
+    <None Include="geometry_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shadow_frag.shader">
+    <None Include="shadow_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shadow_vertex.shader">
+    <None Include="shadow_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="light_frag.shader">
+    <None Include="light_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="light_vertex.shader">
+    <None Include="light_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="geometry_frag.shader">
+    <None Include="geometry_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="deferred_frag.shader">
+    <None Include="deferred_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="deferred_vertex.shader">
+    <None Include="deferred_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="lightsource_frag.shader">
+    <None Include="lightsource_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="lightsource_vertex.shader">
+    <None Include="lightsource_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
