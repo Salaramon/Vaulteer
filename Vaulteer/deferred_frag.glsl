@@ -84,7 +84,7 @@ vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
 void main()
 {
     if (texture(gPosition, TexCoords).w == 1.0) {
-        FragColor = vec4(0.5);
+        FragColor = vec4(0.0);
         return;
     }
     vec3 fragPosition = texture(gPosition, TexCoords).xyz;
@@ -97,7 +97,7 @@ void main()
         totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal);
     }
 
-    const float gamma = 1.0;
+    const float gamma = 2.2;
     vec4 fragColor = vec4(diffuse, 1.0) + totalLight;
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }
