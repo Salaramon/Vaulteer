@@ -2,6 +2,7 @@
 
 Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode) : setUniform(this)
 {
+	debug("Loading vertex shader: " + pathGSGLVertexCode + " and vertex shader: " + pathGSGLFragmentCode + "\n");
 	setup(file_to_string(pathGSGLVertexCode), file_to_string(pathGSGLFragmentCode));
 }
 
@@ -17,6 +18,7 @@ size_t Shader::getShaderID()
 
 void Shader::setup(std::string stringVertex, std::string stringFragment)
 {
+	
 	const char
 		* stringGSGLVertexCode = stringVertex.c_str(),
 		* stringGSGLFragmentCode = stringFragment.c_str();
@@ -112,7 +114,7 @@ std::string Shader::file_to_string(std::string path)
 	catch (std::ifstream::failure& e)
 	{
 		//Return empty string upon error.
-		std::cout << "Error: Could not read file:\n" << path << std::endl;
+		debug("Error: Could not read file:\n\t" + path + "\n");
 		return "";
 	}
 
@@ -130,5 +132,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	std::cout << errorMessageAppend << "\n" << log.data() << std::endl;
+	debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderOutput);
 }

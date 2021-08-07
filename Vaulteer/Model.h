@@ -18,13 +18,17 @@
 #include "Texture.h"
 #include "Shader.h"
 
+#include "DebugLogger.h"
+
 typedef std::vector<Texture> Textures;
 
-class Model
+class Model : public DebugLogger<Model>
 {
 public:
 	Model(std::string meshPath);
-	Model(std::string meshPath, std::string textureFolderPath);
+	Model(std::string meshPath, std::string textureFolderPath, const size_t instances = 1);
+
+	Model& operator[](size_t instance);
 
 	void setShaderContext(Shader* shader);
 	void rotate(float angle, glm::vec3 axis);
@@ -37,13 +41,13 @@ public:
 private:
 
 
-	glm::mat4 modelScale = glm::mat4(1.0f);
-	glm::mat4 modelTranslation = glm::mat4(1.0f);
-	glm::mat4 modelRotation = glm::mat4(1.0f);
+	std::vector<glm::mat4> modelScale;
+	std::vector<glm::mat4> modelTranslation;
+	std::vector<glm::mat4> modelRotation;
 
 	void loadModel(std::string path);
 
-	void loadTexture(const Uniform uniform, const std::string path);
+	void loadTexture(const Binder::UniformInfo uniform, const std::string path);
 
 	void processNode(const aiScene* scene, aiNode* node);
 
@@ -62,6 +66,10 @@ private:
 	void setTexturesFolder(std::string path);
 
 	std::unordered_set<std::string>  textureFiles;
+
+	size_t instanceSelection = 0;
+	std::vector<glm::mat4> instances;
+	VertexBuffer<glm::mat4> instanceBuffer;
 
 };
 

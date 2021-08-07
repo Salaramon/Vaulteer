@@ -1,7 +1,8 @@
 #include "Texture.h"
 
-Texture::Texture(std::string path, Uniform uniform) : uniform(uniform)
+Texture::Texture(std::string path, Binder::UniformInfo uniform) : uniform(uniform)
 {
+	debug("Loading texture: " + path + " for uniform: " + std::string(uniform.name) + "\n");
 	loadTexture(path);
 }
 
@@ -37,6 +38,6 @@ void Texture::loadTexture(std::string path) {
 		stbi_image_free(data);
 	}
 	else {
-		std::cout << "Could not load texture: " << path << std::endl;
+		debug("Failed to load texture: \n\t" + path + "\n");
 	}
 }

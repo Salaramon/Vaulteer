@@ -3,25 +3,56 @@
 #include <glad/glad.h>
 
 #include "VertexBuffer.h"
+#include "ElementBuffer.h"
 #include "VertexArray.h"
-#include "VertexAttribute.h"
+
 
 #include "Shader.h"
 
-class Mesh
+#include "DebugLogger.h"
+
+class Mesh : public DebugLogger<Mesh>
 {
 public:
-	Mesh(Vertices vertices, Indices indices) :
-		vertexArray(vertexBuffer, vertices, indices),
-		vertexAttribute(vertexArray) 
-	{}
-	Mesh(Mesh&& other) : 
-		vertexBuffer(std::move(other.vertexBuffer)),
+	Mesh(Vertices vertices, Indices indices, VertexBuffer<glm::mat4>& instanceBuffer) :
+		vertices(vertices),
+		indices(indices),
+		vertexBuffer(vertices, vertexArray, locInfo),
+		indexBuffer(indices, vertexArray)
+	{
+		instanceBuffer.bindVertexArray(vertexArray, locDivisors, locDivisors);
+		debug("Mesh created.\n");
+	}
+	Mesh(Mesh&& other) noexcept : 
+		vertices(std::move(other.vertices)),
+		indices(std::move(other.indices)),
 		vertexArray(std::move(other.vertexArray)),
-		vertexAttribute(std::move(other.vertexAttribute))
-	{}
-	VertexBuffer vertexBuffer;
+		vertexBuffer(std::move(other.vertexBuffer)),
+		indexBuffer(std::move(other.indexBuffer))
+	{
+		debug("Mesh moved.\n");
+	}
+	~Mesh() {
+		debug("Mesh destroyed.\n");
+	}
+
+	
+	inline static LocationVector locInfo = {
+		Binder::vertex::locations::aPos,
+		Binder::vertex::locations::aNormal,
+		Binder::vertex::locations::aTexCoords
+	};
+
+	inline static LocationVector locDivisors = {
+		Binder::vertex::locations::instanceMatrix
+	};
+
+	Vertices vertices;
+	Indices indices;
+
 	VertexArray vertexArray;
-	VertexAttribute vertexAttribute;
+
+	VertexBuffer<Vertex> vertexBuffer;
+	ElementBuffer indexBuffer;
 };
 

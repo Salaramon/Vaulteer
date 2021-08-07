@@ -5,34 +5,34 @@
 
 #include <glad/glad.h>
 
-#include "VertexBuffer.h"
+#include "Vertex.h"
+#include "GLSLCPPBinder.h"
 
-class VertexArray
+typedef std::vector<Vertex> Vertices;
+typedef std::vector<GLuint> Indices;
+
+class VertexArray : public DebugLogger<VertexArray>
 {
 public:
-	VertexArray(const VertexBuffer &vertexBuffer, const Vertices& vertices, const Indices& indices);
+	VertexArray();
 	VertexArray(VertexArray&& other) : 
-		VAO(other.VAO),
-		vertices(std::move(other.vertices)),
-		indices(std::move(other.indices))
+		VAO(other.VAO)
 	{
 		other.VAO = 0;
+		debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
 	}
 	~VertexArray();
-	GLuint getVAO() const;
+	operator GLuint() const { return VAO; }
 
 	void bind();
 	void unbind();
 
-	Vertices vertices;
-	Indices indices;
-
 private:
-	void initialize(const VertexBuffer& vertexBuffer);
 	void cleanup();
+	void initialize();
 
 	GLuint VAO;
 
-	inline static VertexArray* boundArray = nullptr;
+	inline static VertexArray* currentlyBound = nullptr;
 };
 

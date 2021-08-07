@@ -5,8 +5,11 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 
-class Window
+#include "DebugLogger.h"
+
+class Window : public DebugLogger<Window>
 {
 
 public:

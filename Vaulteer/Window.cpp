@@ -1,12 +1,11 @@
 #include "Window.h"
 
-Window::Window(const std::string title, unsigned const int width, unsigned const int height) 
+Window::Window(const std::string title, unsigned const int width, unsigned const int height) : DebugLogger<Window>("WindowStuff")
 {
 	setup(title, width, height);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	int init = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		debug("GLAD initialization: " + std::to_string(init) + "\n","gladLoadGLLoader");
 	}
 }
 
@@ -37,17 +36,22 @@ int Window::getWidth()
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+	DebugLogger<Window> log;
+	log.debug("Viewport: width=" + std::to_string(width) + "height=" + std::to_string(height) + "\n", "glViewport");
 }
 
 void Window::setup(const std::string title, unsigned const int width, unsigned const int height)
 {
 
 	window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-	if (window == nullptr) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-	}
+	bool success = window != nullptr;
+	debug("GLFW window initialization: " + std::to_string(success) + "\n");
+	//MUST IMPLEMENT DEBUGLOGGER STOPPER THINGY
+	//glfwTerminate(); <<<<<<<<<
 
 	glfwMakeContextCurrent(window);
+	debug("GLFW window context set.\n");
+
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	debug("GLFW window resize framebuffer callback set.\n");
 }

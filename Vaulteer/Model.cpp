@@ -2,14 +2,26 @@
 
 Model::Model(std::string meshPath)
 {
-
+	debug("Loading model: " + meshPath + "\n");
 	loadModel(meshPath);
 }
 
-Model::Model(std::string meshPath, std::string textureFolderPath)
+Model::Model(std::string meshPath, std::string textureFolderPath, const size_t nrInstances) :
+	modelRotation(nrInstances, glm::mat4(1.0f)),
+	modelScale(nrInstances, glm::mat4(1.0f)),
+	modelTranslation(nrInstances, glm::mat4(1.0f)),
+	instances(nrInstances, glm::mat4(1.0f)),
+	instanceBuffer(instances)
 {
 	setTexturesFolder(textureFolderPath);
 	loadModel(meshPath);
+}
+
+//OBJECT
+Model& Model::operator[](size_t instance)
+{
+	instanceSelection = instance;
+	return *this;
 }
 
 void Model::loadModel(std::string path)
@@ -19,10 +31,8 @@ void Model::loadModel(std::string path)
 	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "Assimp Error: " << modelImporter.GetErrorString() << std::endl;
+		debug("Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n", MessageAlias::CriticalError);
 	}
-
-	//directory = path.substr(0, path.find_last_of('/'));
 
 	if (scene) {
 		processNode(scene, scene->mRootNode);
@@ -81,7 +91,7 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 
 
 
-	return Mesh(vertices, indices);
+	return Mesh(vertices, indices, instanceBuffer);
 }
 
 void Model::getTextureUniforms(aiMaterial* material)
@@ -98,7 +108,7 @@ void Model::getTextureUniforms(aiMaterial* material)
 					textures.push_back(Texture(texturePath, uniformTT_Iterator->second));
 				}
 				else {
-					std::cout << "Uniform for texture type " << type << " not available.\nSee assimp's aiTextureTypes." << std::endl;
+					debug("Uniform for texture type " + std::to_string(type) + " not available.\n\tSee assimp's aiTextureTypes.\n");
 				}
 			}
 		}
@@ -118,39 +128,49 @@ void Model::setShaderContext(Shader* shader)
 
 void Model::rotate(float angle, glm::vec3 axis)
 {
-	modelRotation = glm::rotate(modelRotation, angle, axis);
+	modelRotation[instanceSelection] = glm::rotate(modelRotation[instanceSelection], angle, axis);
+	instanceSelection = 0;
 }
 
 void Model::setRotation(float angle, glm::vec3 axis)
 {
-	modelRotation = glm::rotate(glm::mat4(1.0f), angle, axis);
+	modelRotation[instanceSelection] = glm::rotate(glm::mat4(1.0f), angle, axis);
+	instanceSelection = 0;
 }
 
 void Model::move(float x, float y, float z)
 {
-	modelTranslation = glm::translate(modelTranslation, glm::vec3(x, y, z));
+	modelTranslation[instanceSelection] = glm::translate(modelTranslation[instanceSelection], glm::vec3(x, y, z));
+	instanceSelection = 0;
 }
 
 void Model::setPosition(float x, float y, float z)
 {
-	modelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+	modelTranslation[instanceSelection] = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+	instanceSelection = 0;
 }
 
 void Model::scale(float x, float y, float z)
 {
-	modelScale = glm::scale(modelScale, glm::vec3(x, y, z));
+	modelScale[instanceSelection] = glm::scale(modelScale[instanceSelection], glm::vec3(x, y, z));
+	instanceSelection = 0;
 }
 
 void Model::setScale(float x, float y, float z)
 {
-	modelScale = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z));
+	modelScale[instanceSelection] = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z));
+	instanceSelection = 0;
 }
 
 void Model::draw()
 {
-	glm::mat4 modelMatrix = modelTranslation * modelScale * modelRotation;
+	//shader->setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
 
-	shader->setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
+	for (size_t i = 0; i < instances.size(); i++) {
+		instances[i] = modelTranslation[i] * modelScale[i] * modelRotation[i];
+	}
+	//CAN BE OPTIMIZED TO ONLY REPLACE THE DATA THAT WAS CHANGED IN THE ARRAY
+	instanceBuffer.replace(0, instances);
 
 	for (Mesh& mesh : meshes) {
 		for (GLint i = 0; i < textures.size(); i++) {
@@ -160,7 +180,9 @@ void Model::draw()
 		}
 
 		mesh.vertexArray.bind();
-		glDrawElements(GL_TRIANGLES, mesh.vertexArray.indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
+		debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElementsInstanced");
+		//glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 		mesh.vertexArray.unbind();
 		glActiveTexture(GL_TEXTURE0);
 	}

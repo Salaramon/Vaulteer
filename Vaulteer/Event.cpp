@@ -31,8 +31,11 @@ const std::array<intmax_t, Event::NUMBER_OF_POSSIBLE_KEYS> Event::allKeyValues{ 
 
 void Event::AddEventHandlingForWindow(Window* window)
 {
+	DebugLogger<Event> log;
 	GLFWwindow* rawWindow = window->getRawWindow();
 	Event::window = window;
+
+	log.debug("Event window context:" + std::to_string(window->getObjectKey()) + "\n");
 
 	glfwSetMouseButtonCallback(rawWindow, mouse_button_callback);
 	glfwSetCursorPosCallback(rawWindow, cursor_position_callback);
@@ -67,6 +70,9 @@ Event::TIME Event::getTime(EventID id)
 
 bool Event::Poll() 
 {
+	DebugLogger<Event> log;
+	log.debug("Events started polling.\n");
+
 	lastPollTime = currentPollTime;
 	currentPollTime = glfwGetTime();
 	
@@ -120,7 +126,8 @@ bool Event::Poll()
 			});
 		}
 	}
-	
+	log.debug("Events finished polling.\n");
+
 	return true;
 }
 

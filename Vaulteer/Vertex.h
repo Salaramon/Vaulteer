@@ -1,21 +1,18 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
+#include "GLSLCPPBinder.h"
+#include "DebugLogger.h"
 
 class Vertex
 {
 public:
-	Vertex(){}
-	Vertex(float x, float y, float z) : aPos({x,y,z}) {}
+	Vertex() {
+		DebugLogger<Vertex> log;
+		log.debug("Vertex created.\n");
 
-	glm::vec3 aPos;
-	glm::vec3 aNormal;
-	glm::vec2 aTexCoords;
-
-	static constexpr size_t offset[] = { 0,3,6 };
-
-private:
-
+	}
+	decltype(Binder::vertex::locations::aPos)::type aPos;
+	decltype(Binder::vertex::locations::aNormal)::type aNormal;
+	decltype(Binder::vertex::locations::aTexCoords)::type aTexCoords;
 };
 

@@ -10,12 +10,14 @@
 #include "stb_image.h"
 #include "GLSLCPPBinder.h"
 
-class Texture
+#include "DebugLogger.h"
+
+class Texture : public DebugLogger<Texture>
 {
 public:
-	Texture(std::string path, Uniform uniform);
+	Texture(std::string path, Binder::UniformInfo uniform);
 
-	Uniform uniform;
+	Binder::UniformInfo uniform;
 	GLuint textureID;
 	GLint width, height;
 	GLint nrComponents;
@@ -25,9 +27,9 @@ public:
 	//Make a seperate file that contains the array for vertexAttribute
 	//Make field in binder that will not be overwritten. JUST MAYBE
 
-	inline static std::unordered_map<aiTextureType, Uniform> uniformTextureTypes;
+	inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 private:
-	void initialize(std::string path, Uniform uniform);
+	void initialize(std::string path, Binder::UniformInfo uniform);
 	
 	void loadTexture(std::string path);
 };

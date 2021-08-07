@@ -8,8 +8,9 @@
 #include <array>
 
 #include "Window.h"
+#include "DebugLogger.h"
 
-class Event
+class Event : public DebugLogger<Event>
 {
 public:
 

@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection) :
+Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio, Binder::UniformInfo view, Binder::UniformInfo projection) :
 	renderDistance(renderDistance),
 	position(position),
 	fov(fov),
@@ -10,17 +10,20 @@ Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float render
 {
 	setRotation(direction, roll);
 	updateRotation();
+
+	debug("Camera created at: " + glm::to_string(position) + "\n");
 }
 
-Camera::Camera(float renderDistance, float fov, float aspectRatio, Uniform view, Uniform projection) :
+Camera::Camera(float renderDistance, float fov, float aspectRatio, Binder::UniformInfo view, Binder::UniformInfo projection) :
 	renderDistance(renderDistance),
-	position(position),
 	fov(fov),
 	aspectRatio(aspectRatio),
 	uView(view),
 	uProjection(projection)
 {
 	updateRotation();
+
+	debug("Camera created at: " + glm::to_string(position) + "\n");
 }
 
 glm::mat4 Camera::GetViewMatrix()

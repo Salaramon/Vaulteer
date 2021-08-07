@@ -1,50 +1,35 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray(const VertexBuffer& vertexBuffer, const Vertices& vertices,const Indices& indices) : vertices(vertices), indices(indices)
-{
-	initialize(vertexBuffer);
+VertexArray::VertexArray() {
+	initialize();
+	debug("VertexArray created VAO: " + std::to_string(VAO) + "\n", "DEFAULT_CONSTRUCTOR");
 }
 
 VertexArray::~VertexArray()
 {
 	cleanup();
-}
-
-void VertexArray::initialize(const VertexBuffer& vertexBuffer)
-{
-
-	glGenVertexArrays(1, &VAO);
-	bind();
-
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer.getVBO());
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexBuffer.getEBO());
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
-
-	unbind();
-}
-
-GLuint VertexArray::getVAO() const
-{
-	return VAO;
+	debug("VertexArray destroyed. VAO: " + std::to_string(VAO) + "\n", "DECONSTRUCTOR");
 }
 
 void VertexArray::bind()
 {
-	if (boundArray == nullptr) {
+	if(currentlyBound == nullptr){
+		currentlyBound = this;
 		glBindVertexArray(VAO);
-		boundArray = this;
 	}
 	else {
-		std::cout << "VertexArray is already bound!" << std::endl;
+		debug("VertexArray is already bound! VAO: " + std::to_string(VAO) + "\n");
 	}
 }
 
 void VertexArray::unbind()
 {
+	currentlyBound = nullptr;
 	glBindVertexArray(0);
-	boundArray = nullptr;
+}
+
+void VertexArray::initialize() {
+	glGenVertexArrays(1, &VAO);
 }
 
 void VertexArray::cleanup() {
