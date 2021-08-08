@@ -1,5 +1,5 @@
 
 Halt_On_Error = false
 Generate_Log = true
-Shader_Files = [ "fragment.shader", "vertex.shader" ]
+Shader_Files = [ "deferred_frag.glsl", "deferred_vertex.glsl", "geometry_frag.glsl", "geometry_vertex.glsl", "light_frag.glsl", "light_vertex.glsl", "lightsource_frag.glsl", "lightsource_vertex.glsl", "shadow_frag.glsl", "shadow_vertex.glsl" ]
 GLM_Include = "glm/"

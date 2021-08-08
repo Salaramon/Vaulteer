@@ -14,7 +14,7 @@ Model::Model(std::string meshPath, std::string textureFolderPath, const size_t n
 	instanceBuffer(instances)
 {
 	setTexturesFolder(textureFolderPath);
-	loadModel(meshPath);
+	loadModel(meshPath) ;
 }
 
 //OBJECT
@@ -28,7 +28,7 @@ void Model::loadModel(std::string path)
 {
 
 	Assimp::Importer modelImporter;
-	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		debug("Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n", MessageAlias::CriticalError);
@@ -65,6 +65,9 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 		if (mesh->HasNormals()) {
 			vertex.aNormal = ai_glmVec(mesh->mNormals[i]);
 		}
+		else {
+			vertex.aNormal = glm::vec3(0);
+		}
 
 		if (mesh->mTextureCoords[0]) {
 			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
@@ -72,6 +75,10 @@ Mesh Model::processMesh(const aiScene* scene, aiMesh* mesh)
 		else {
 			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
 		}
+
+		// random
+		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
 
 		vertices.push_back(vertex);
 	}
@@ -180,9 +187,9 @@ void Model::draw()
 		}
 
 		mesh.vertexArray.bind();
-		glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
-		debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElementsInstanced");
-		//glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+		//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
+		debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElements");
+		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 		mesh.vertexArray.unbind();
 		glActiveTexture(GL_TEXTURE0);
 	}

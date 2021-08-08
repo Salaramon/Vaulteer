@@ -36,9 +36,6 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +52,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DebugLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMapFBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Technique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightingTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,9 +96,6 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GLSLCPPBinder.h">
@@ -116,12 +131,72 @@
     <ClInclude Include="DebugAliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLCPPBinder.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapFBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Technique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightingTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.shader">
+    <None Include="geometry_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vertex.shader">
+    <None Include="shadow_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shadow_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GLSLSourceFiles.toml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="light_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="light_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="geometry_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="deferred_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="deferred_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightsource_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightsource_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">

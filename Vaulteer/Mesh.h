@@ -6,7 +6,6 @@
 #include "ElementBuffer.h"
 #include "VertexArray.h"
 
-
 #include "Shader.h"
 
 #include "DebugLogger.h"
@@ -38,13 +37,13 @@ public:
 
 	
 	inline static LocationVector locInfo = {
-		Binder::vertex::locations::aPos,
-		Binder::vertex::locations::aNormal,
-		Binder::vertex::locations::aTexCoords
+		Binder::geometry_vertex::locations::aPos,
+		Binder::geometry_vertex::locations::aNormal,
+		Binder::geometry_vertex::locations::aTexCoords
 	};
 
 	inline static LocationVector locDivisors = {
-		Binder::vertex::locations::instanceMatrix
+		//Binder::geometry_vertex::locations::instanceMatrix
 	};
 
 	Vertices vertices;

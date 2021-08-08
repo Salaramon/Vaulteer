@@ -111,8 +111,9 @@ VertexBuffer<Store>::VertexBuffer() {
 template<class Store>
 void VertexBuffer<Store>::insert(const std::vector<Store>& vertices)
 {
+	size_t si = vertices.size() * sizeof(Store);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Store), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, si, vertices.data(), GL_STATIC_DRAW);
 	debug("Vertices inserted into buffer: " + std::to_string(buffer) + "\n");
 }
 

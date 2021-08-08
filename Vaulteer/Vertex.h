@@ -11,8 +11,8 @@ public:
 		log.debug("Vertex created.\n");
 
 	}
-	decltype(Binder::vertex::locations::aPos)::type aPos;
-	decltype(Binder::vertex::locations::aNormal)::type aNormal;
-	decltype(Binder::vertex::locations::aTexCoords)::type aTexCoords;
+	decltype(Binder::geometry_vertex::locations::aPos)::type aPos;
+	decltype(Binder::geometry_vertex::locations::aNormal)::type aNormal;
+	decltype(Binder::geometry_vertex::locations::aTexCoords)::type aTexCoords;
 };
 

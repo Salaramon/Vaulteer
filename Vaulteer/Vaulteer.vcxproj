@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -166,13 +166,19 @@
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
     <ClCompile Include="Buffer.cpp" />
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
+    <ClCompile Include="GBuffer.cpp" />
+    <ClCompile Include="GeometryTechnique.cpp" />
+    <ClCompile Include="LightingTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="MyCamera.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShadowMapFBO.cpp" />
+    <ClCompile Include="ShadowTechnique.cpp" />
+    <ClCompile Include="Technique.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -184,16 +190,25 @@
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="ElementBuffer.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FunctionExpressionGeneration.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
+    <ClInclude Include="GeometryTechnique.h" />
+    <ClInclude Include="LightTypes.h" />
+    <ClInclude Include="LightingTechnique.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MyCamera.h" />
+    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShadowMapFBO.h" />
+    <ClInclude Include="ShadowTechnique.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Technique.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UniformParametersFunctionOverloadsGenerator.h" />
     <ClInclude Include="Vertex.h" />
@@ -201,9 +216,17 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.shader" />
+    <None Include="deferred_frag.glsl" />
+    <None Include="deferred_vertex.glsl" />
+    <None Include="geometry_frag.glsl" />
+    <None Include="geometry_vertex.glsl" />
+    <None Include="lightsource_frag.glsl" />
+    <None Include="lightsource_vertex.glsl" />
+    <None Include="light_frag.glsl" />
+    <None Include="light_vertex.glsl" />
+    <None Include="shadow_frag.glsl" />
+    <None Include="shadow_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />
-    <None Include="vertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

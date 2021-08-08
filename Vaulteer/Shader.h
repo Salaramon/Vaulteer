@@ -54,6 +54,9 @@ private:
 		ShaderProgram() {
 			id = glCreateProgram();
 		}
+		~ShaderProgram() {
+			glDeleteProgram(id);
+		}
 		unsigned int id;
 	};
 
@@ -147,11 +150,19 @@ private:
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2) {									debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ")\n", "glUniform2f");																		glUniform2f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3) {					debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ")\n", "glUniform3f");										glUniform3f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) {	debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ", " + std::to_string(value4) + ")\n", "glUniform4f");		glUniform4f(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
-		void operator()(Binder::UniformInfo uniform, GLint value1) {													debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1i");																										glUniform1i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
+		void operator()(Binder::UniformInfo uniform, GLint value1) {
+			debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1i");																										
+			int loc = glGetUniformLocation(shader->shaderProgram.id, uniform.name);
+			glUniform1i(loc, value1); 
+		}
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2) {										debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ")\n", "glUniform2i");																		glUniform2i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3) {						debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ")\n", "glUniform3i");										glUniform3i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3, GLint value4) {			debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ", " + std::to_string(value4) + ")\n", "glUniform4i");		glUniform4i(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
-		void operator()(Binder::UniformInfo uniform, GLuint value1) {													debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1ui");																									glUniform1ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1); }
+		void operator()(Binder::UniformInfo uniform, GLuint value1) {	
+			debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1ui");	
+			int loc = glGetUniformLocation(shader->shaderProgram.id, uniform.name);
+			glUniform1ui(loc, value1); 
+		}
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2) {									debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ")\n", "glUniform2ui");																	glUniform2ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2); }
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3) {						debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ")\n", "glUniform3ui");									glUniform3ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3); }
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) {		debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ", " + std::to_string(value3) + ", " + std::to_string(value4) + ")\n", "glUniform4ui");	glUniform4ui(glGetUniformLocation(shader->shaderProgram.id, uniform.name), value1, value2, value3, value4); }
@@ -169,7 +180,13 @@ private:
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec4& value) {							debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniform4uiv");																									glUniform4uiv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, &value[0]); }
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2& value) {		debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix2fv");																								glUniformMatrix2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3& value) {		debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix3fv");																								glUniformMatrix3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) {		debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix4fv");																								glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
+		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) {		
+			debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(count) + ")\n", "glUniformMatrix4fv");
+
+			bool i = glIsProgram(shader->shaderProgram.id);
+			int loc = glGetUniformLocation(shader->shaderProgram.id, uniform.name);
+			glUniformMatrix4fv(loc, count, transpose, &value[0][0]);
+		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x3& value) {	debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix2x3fv");																								glUniformMatrix2x3fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3x2& value) {	debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix3x2fv");																								glUniformMatrix3x2fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x4& value) {	debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + glm::to_string(value) + ")\n", "glUniformMatrix2x4fv");																								glUniformMatrix2x4fv(glGetUniformLocation(shader->shaderProgram.id, uniform.name), count, transpose, &value[0][0]); }
