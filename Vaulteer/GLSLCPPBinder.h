@@ -2,17 +2,25 @@
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <string>
 #include <tuple>
 #include <array>
 
 namespace Binder {
 
+	struct String : public std::string {
+		using std::string::basic_string;
+		operator const char*() const{
+			return c_str();
+		}
+	};
+
 	struct LocationInfo {
 		LocationInfo() : loc(0), type(""), name(""), array(0), size(0) {}
-		LocationInfo(const GLuint loc, const char* type, const char* name, const size_t array, const GLint size) : loc(loc), type(type), name(name), array(array), size(size) {}
+		LocationInfo(const GLuint loc, String type, String name, const size_t array, const GLint size) : loc(loc), type(type), name(name), array(array), size(size) {}
 		const GLuint loc;
-		const char* type;
-		const char* name;
+		String type;
+		String name;
 		const GLint size;
 		const size_t array;
 		size_t flag;
@@ -20,14 +28,14 @@ namespace Binder {
 
 	template<class T = void>
 	struct Location : public LocationInfo {
-		Location(const GLuint loc, const char* type, const char* name, const size_t array, const GLint size) : LocationInfo(loc, type, name, array, size) {}
+		Location(const GLuint loc, String type, String name, const size_t array, const GLint size) : LocationInfo(loc, type, name, array, size) {}
 		using type = T;	};
 
 	struct UniformInfo {
 		UniformInfo() : type(""), name(""), array(0), size(0) {}
-		UniformInfo(const char* type, const char* name, const size_t array, const GLint size) : type(type), name(name), array(array), size(size) {}
-		const char* type;
-		const char* name;
+		UniformInfo(String type, String name, const size_t array, const GLint size) : type(type), name(name), array(array), size(size) {}
+		String type;
+		String name;
 		const size_t array;
 		const GLint size;
 		size_t flag;
@@ -35,7 +43,7 @@ namespace Binder {
 
 	template<class T = void>
 	struct Uniform : public UniformInfo {
-		Uniform(const char* type, const char* name, const size_t array, const GLint size) : UniformInfo(type, name, array, size) {}
+		Uniform(String type, String name, const size_t array, const GLint size) : UniformInfo(type, name, array, size) {}
 		using type = T;	};
 
 	constexpr bool strings_equal(char const* a, char const* b) {
@@ -105,24 +113,59 @@ namespace Binder {
 		constexpr char deferred_vertex[] = "deferred_vertex.glsl";
 		constexpr char geometry_frag[] = "geometry_frag.glsl";
 		constexpr char geometry_vertex[] = "geometry_vertex.glsl";
-		constexpr char light_frag[] = "light_frag.glsl";
-		constexpr char light_vertex[] = "light_vertex.glsl";
 		constexpr char lightsource_frag[] = "lightsource_frag.glsl";
 		constexpr char lightsource_vertex[] = "lightsource_vertex.glsl";
 		constexpr char shadow_frag[] = "shadow_frag.glsl";
 		constexpr char shadow_vertex[] = "shadow_vertex.glsl";
 	}
 
+	struct Attenuation{
+		Attenuation(String name)  :
+			aConstant{Uniform<float>("float", String(name + "." + "aConstant"), 0, 4)},
+			aLinear{Uniform<float>("float", String(name + "." + "aLinear"), 0, 4)},
+			aQuadratic{Uniform<float>("float", String(name + "." + "aQuadratic"), 0, 4)}
+		{}
+
+			Uniform<float> aConstant;
+			Uniform<float> aLinear;
+			Uniform<float> aQuadratic;
+	};
+
+	struct BaseLight{
+		BaseLight(String name)  :
+			color{Uniform<glm::vec3>("vec3", String(name + "." + "color"), 0, 12)},
+			ambientIntensity{Uniform<float>("float", String(name + "." + "ambientIntensity"), 0, 4)},
+			diffuseIntensity{Uniform<float>("float", String(name + "." + "diffuseIntensity"), 0, 4)}
+		{}
+
+			Uniform<glm::vec3> color;
+			Uniform<float> ambientIntensity;
+			Uniform<float> diffuseIntensity;
+	};
+
+	struct PointLight{
+		PointLight(String name)  :
+			light{BaseLight(String(name + "." + "light"))},
+			att{Attenuation(String(name + "." + "att"))},
+			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)}
+		{}
+
+			BaseLight light;
+			Attenuation att;
+			Uniform<glm::vec3> position;
+	};
+
 	namespace deferred_frag {
 		namespace locations{
 		};
 		namespace uniforms{
-			inline Uniform<> gPosition("sampler2D", "gPosition", 0, 0);
-			inline Uniform<> gNormal("sampler2D", "gNormal", 0, 0);
-			inline Uniform<> gColor("sampler2D", "gColor", 0, 0);
-			inline Uniform<glm::vec3> worldCameraPos("vec3", "worldCameraPos", 0, 12);
-			inline Uniform<float> materialSpecularIntensity("float", "materialSpecularIntensity", 0, 4);
-			inline Uniform<float> materialShininess("float", "materialShininess", 0, 4);
+			 inline Uniform<> gPosition(Uniform<>("sampler2D", String("gPosition"), 0, 0));
+			 inline Uniform<> gNormal(Uniform<>("sampler2D", String("gNormal"), 0, 0));
+			 inline Uniform<> gColor(Uniform<>("sampler2D", String("gColor"), 0, 0));
+			 inline Uniform<glm::vec3> worldCameraPos(Uniform<glm::vec3>("vec3", String("worldCameraPos"), 0, 12));
+			 inline PointLight pointLights[32]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]")), PointLight(String("pointLights[4]")), PointLight(String("pointLights[5]")), PointLight(String("pointLights[6]")), PointLight(String("pointLights[7]")), PointLight(String("pointLights[8]")), PointLight(String("pointLights[9]")), PointLight(String("pointLights[10]")), PointLight(String("pointLights[11]")), PointLight(String("pointLights[12]")), PointLight(String("pointLights[13]")), PointLight(String("pointLights[14]")), PointLight(String("pointLights[15]")), PointLight(String("pointLights[16]")), PointLight(String("pointLights[17]")), PointLight(String("pointLights[18]")), PointLight(String("pointLights[19]")), PointLight(String("pointLights[20]")), PointLight(String("pointLights[21]")), PointLight(String("pointLights[22]")), PointLight(String("pointLights[23]")), PointLight(String("pointLights[24]")), PointLight(String("pointLights[25]")), PointLight(String("pointLights[26]")), PointLight(String("pointLights[27]")), PointLight(String("pointLights[28]")), PointLight(String("pointLights[29]")), PointLight(String("pointLights[30]")), PointLight(String("pointLights[31]"))};
+			 inline Uniform<float> materialSpecularIntensity(Uniform<float>("float", String("materialSpecularIntensity"), 0, 4));
+			 inline Uniform<float> materialShininess(Uniform<float>("float", String("materialShininess"), 0, 4));
 		};
 	};
 
@@ -139,7 +182,7 @@ namespace Binder {
 		namespace locations{
 		};
 		namespace uniforms{
-			inline Uniform<> diffuse1("sampler2D", "diffuse1", 0, 0);
+			 inline Uniform<> diffuse1(Uniform<>("sampler2D", String("diffuse1"), 0, 0));
 		};
 	};
 
@@ -150,24 +193,10 @@ namespace Binder {
 			inline Location<glm::vec2> aTexCoords(2, "vec2", "aTexCoords", 0, 8);
 		};
 		namespace uniforms{
-			inline Uniform<glm::mat4> model("mat4", "model", 0, 64);
-			inline Uniform<glm::mat4> view("mat4", "view", 0, 64);
-			inline Uniform<glm::mat4> projection("mat4", "projection", 0, 64);
-			inline Uniform<glm::mat4> normal("mat4", "normal", 0, 64);
-		};
-	};
-
-	namespace light_frag {
-		namespace locations{
-		};
-		namespace uniforms{
-		};
-	};
-
-	namespace light_vertex {
-		namespace locations{
-		};
-		namespace uniforms{
+			 inline Uniform<glm::mat4> view(Uniform<glm::mat4>("mat4", String("view"), 0, 64));
+			 inline Uniform<glm::mat4> projection(Uniform<glm::mat4>("mat4", String("projection"), 0, 64));
+			 inline Uniform<glm::mat4> normal(Uniform<glm::mat4>("mat4", String("normal"), 0, 64));
+			 inline Uniform<glm::mat4> model(Uniform<glm::mat4>("mat4", String("model"), 0, 64));
 		};
 	};
 
@@ -175,7 +204,7 @@ namespace Binder {
 		namespace locations{
 		};
 		namespace uniforms{
-			inline Uniform<glm::vec3> lightColor("vec3", "lightColor", 0, 12);
+			 inline Uniform<glm::vec3> lightColor(Uniform<glm::vec3>("vec3", String("lightColor"), 0, 12));
 		};
 	};
 
@@ -186,9 +215,9 @@ namespace Binder {
 			inline Location<glm::vec2> aTexCoords(2, "vec2", "aTexCoords", 0, 8);
 		};
 		namespace uniforms{
-			inline Uniform<glm::mat4> model("mat4", "model", 0, 64);
-			inline Uniform<glm::mat4> view("mat4", "view", 0, 64);
-			inline Uniform<glm::mat4> projection("mat4", "projection", 0, 64);
+			 inline Uniform<glm::mat4> model(Uniform<glm::mat4>("mat4", String("model"), 0, 64));
+			 inline Uniform<glm::mat4> view(Uniform<glm::mat4>("mat4", String("view"), 0, 64));
+			 inline Uniform<glm::mat4> projection(Uniform<glm::mat4>("mat4", String("projection"), 0, 64));
 		};
 	};
 
@@ -196,7 +225,7 @@ namespace Binder {
 		namespace locations{
 		};
 		namespace uniforms{
-			inline Uniform<> shadowMap("sampler2D", "shadowMap", 0, 0);
+			 inline Uniform<> shadowMap(Uniform<>("sampler2D", String("shadowMap"), 0, 0));
 		};
 	};
 
@@ -208,8 +237,8 @@ namespace Binder {
 			inline Location<glm::mat4> instanceMatrix(3, "mat4", "instanceMatrix", 0, 64);
 		};
 		namespace uniforms{
-			inline Uniform<glm::mat4> view("mat4", "view", 0, 64);
-			inline Uniform<glm::mat4> projection("mat4", "projection", 0, 64);
+			 inline Uniform<glm::mat4> view(Uniform<glm::mat4>("mat4", String("view"), 0, 64));
+			 inline Uniform<glm::mat4> projection(Uniform<glm::mat4>("mat4", String("projection"), 0, 64));
 		};
 	};
 

@@ -14,7 +14,7 @@ void LightingTechnique::init() {
     shader.setUniform(gColor, 2);
 }
 
-void LightingTechnique::setDirectionalLight(const DirectionalLight& light) {
+void LightingTechnique::setDirectionalLight(const GLSLDirectionalLight& light) {
     using namespace Binder::deferred_frag::uniforms;
     /*shader.setUniform("directionalLight.light.color", light.color);
     shader.setUniform("directionalLight.light.ambientIntensity", light.ambientIntensity);
@@ -23,23 +23,21 @@ void LightingTechnique::setDirectionalLight(const DirectionalLight& light) {
     shader.setUniform("directionalLight.direction", glm::normalize(light.direction));*/
 }
 
-void LightingTechnique::setPointLight(const PointLight& light, const int& index) {
+void LightingTechnique::setPointLight(const GLSLPointLight& light, const int& index) {
     using namespace Binder::deferred_frag::uniforms;
-    std::string indexStr = "pointLights[" + std::to_string(index) + "].";
 
+    shader.setUniform(pointLights[index].light.color, 1, light.color);
+    shader.setUniform(pointLights[index].light.ambientIntensity, light.ambientIntensity);
+    shader.setUniform(pointLights[index].light.diffuseIntensity, light.diffuseIntensity);
 
-    shader.setUniform({ "vec3", std::string(indexStr + "light.color").c_str(), 0, 12 }, 1, light.color);
-    shader.setUniform({ "float", std::string(indexStr + "light.ambientIntensity").c_str(), 0, 4 }, light.ambientIntensity);
-    shader.setUniform({ "float", std::string(indexStr + "light.diffuseIntensity").c_str(), 0, 4 }, light.diffuseIntensity);
+    shader.setUniform(pointLights[index].att.aConstant, light.attenuation.constant);
+    shader.setUniform(pointLights[index].att.aLinear, light.attenuation.linear);
+    shader.setUniform(pointLights[index].att.aQuadratic, light.attenuation.quadratic);
 
-    shader.setUniform({ "float", std::string(indexStr + "att.aConstant").c_str(), 0, 4 }, light.attenuation.constant);
-    shader.setUniform({ "float", std::string(indexStr + "att.aLinear").c_str(), 0, 4 }, light.attenuation.linear);
-    shader.setUniform({ "float", std::string(indexStr + "att.aQuadratic").c_str(), 0, 4 }, light.attenuation.quadratic);
-
-    shader.setUniform({ "vec3", std::string(indexStr + "position").c_str(), 0, 12 }, 1, light.position);
+    shader.setUniform(pointLights[index].position, 1, light.position);
 }
 
-void LightingTechnique::setSpotLight(const SpotLight& light) {
+void LightingTechnique::setSpotLight(const GLSLSpotLight& light) {
     using namespace Binder::deferred_frag::uniforms;
     /*shader.setVector("spotLight.base.light.color", light.color);
     shader.setFloat("spotLight.base.light.ambientIntensity", light.ambientIntensity);

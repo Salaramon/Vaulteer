@@ -10,9 +10,9 @@ public:
 
 	virtual void init();
 
-	void setDirectionalLight(const DirectionalLight& light);
-	void setPointLight(const PointLight& light, const int& index);
-	void setSpotLight(const SpotLight& light);
+	void setDirectionalLight(const GLSLDirectionalLight& light);
+	void setPointLight(const GLSLPointLight& light, const int& index);
+	void setSpotLight(const GLSLSpotLight& light);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);
 	void setMaterialSpecularIntensity(const float intensity);

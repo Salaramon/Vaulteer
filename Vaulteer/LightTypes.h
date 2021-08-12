@@ -2,27 +2,27 @@
 
 #include <glm/glm.hpp>
 
-struct BaseLight {
+struct GLSLBaseLight {
 	glm::vec3 color;
 	float ambientIntensity;
 	float diffuseIntensity;
 };
 
-struct DirectionalLight : public BaseLight {
+struct GLSLDirectionalLight : public GLSLBaseLight {
 	glm::vec3 direction;
 };
 
-struct PointLight : public BaseLight {
+struct GLSLPointLight : public GLSLBaseLight {
 	glm::vec3 position;
 
-	struct Attenuation {
+	struct GLSLAttenuation {
 		float constant;
 		float linear;
 		float quadratic;
 	} attenuation;
 };
 
-struct SpotLight : public PointLight {
+struct GLSLSpotLight : public GLSLPointLight {
 	glm::vec3 direction;
 	float cutoff;
 };

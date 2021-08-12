@@ -22,7 +22,7 @@
 #include "GBuffer.h"
 #include "GeometryTechnique.h"
 
-#include "GLSLCPPBinder.h"
+
 
 #include "Shader.h"
 
@@ -75,6 +75,7 @@ glm::vec3 getColor(float offset) {
 
 
 int main() {
+	DebugLogger<>::disableLogging();
 	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
 
 	DebugLogger<FUNCTION> log(ObjectAlias::Main);
@@ -112,7 +113,7 @@ int main() {
 	GeometryTechnique geometryTech("geometry_vertex.glsl", "geometry_frag.glsl");
 	LightingTechnique lightingTech("deferred_vertex.glsl", "deferred_frag.glsl");
 	ShadowTechnique shadowTech("shadow_vertex.glsl", "shadow_frag.glsl");
-	Shader lightSourceShader = Shader("lightsource_vertex.glsl", "lightsource_frag.glsl");
+	Shader lightSourceShader("lightsource_vertex.glsl", "lightsource_frag.glsl");
 
 	// bind texture type to named uniform (geometry_frag needs color info)
 	Texture::uniformTextureTypes.emplace(aiTextureType_NONE, Binder::geometry_frag::uniforms::diffuse1);
@@ -147,8 +148,8 @@ int main() {
 	glm::vec3 lightPositions[NUM_LIGHTS];
 	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
-	PointLight pointLights[NUM_LIGHTS];
-	PointLight::Attenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
+	GLSLPointLight pointLights[NUM_LIGHTS];
+	GLSLPointLight::GLSLAttenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
 
 	srand((int) glfwGetTime());
 	for (int i = 0; i < NUM_LIGHTS; i++) {
@@ -263,7 +264,7 @@ int main() {
 
 			model.draw();
 		}
-
+		
 
 		/*
 		// shadow map pass
