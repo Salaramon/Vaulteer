@@ -107,13 +107,13 @@ int main() {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	ShadowMapFBO shadowMap = ShadowMapFBO();
-	shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	//ShadowMapFBO shadowMap = ShadowMapFBO();
+	//shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	GeometryTechnique geometryTech("geometry_vertex.glsl", "geometry_frag.glsl");
-	LightingTechnique lightingTech("deferred_vertex.glsl", "deferred_frag.glsl");
-	ShadowTechnique shadowTech("shadow_vertex.glsl", "shadow_frag.glsl");
-	Shader lightSourceShader("lightsource_vertex.glsl", "lightsource_frag.glsl");
+	//GeometryTechnique geometryTech("geometry_vertex.glsl", "geometry_frag.glsl");
+	//LightingTechnique lightingTech("deferred_vertex.glsl", "deferred_frag.glsl");
+	//ShadowTechnique shadowTech("shadow_vertex.glsl", "shadow_frag.glsl");
+	Shader lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
 
 	// bind texture type to named uniform (geometry_frag needs color info)
 	Texture::uniformTextureTypes.emplace(aiTextureType_NONE, Binder::geometry_frag::uniforms::diffuse1);
@@ -128,7 +128,7 @@ int main() {
 	Model model("teapot.obj");
 	Model cube("cube.obj");
 	Model quad("quad.obj");
-	model.setShaderContext(&geometryTech.shader);
+	//model.setShaderContext(&geometryTech.shader);
 
 	unsigned int nullTextureID;
 	glGenTextures(1, &nullTextureID);
@@ -178,20 +178,20 @@ int main() {
 		gbuffer.bindForWriting();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		geometryTech.use();
+		//geometryTech.use();
 		glm::mat4 origModelMat(1.0f);
 		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3.f, 2.0f, 0 * 3.f));
-		geometryTech.setModel(modelMat);
+		//geometryTech.setModel(modelMat);
 
-		geometryTech.setView(camera.getViewMatrix());
-		geometryTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+		//geometryTech.setView(camera.getViewMatrix());
+		//geometryTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
-		geometryTech.setTexture(nullTextureID);
+		//geometryTech.setTexture(nullTextureID);
 		model.draw();
-		geometryTech.setModel(glm::scale(glm::translate(origModelMat, glm::vec3(0, 3.0f, 0)), glm::vec3(3.0f, 3.0f, 1.0f)));
+		//geometryTech.setModel(glm::scale(glm::translate(origModelMat, glm::vec3(0, 3.0f, 0)), glm::vec3(3.0f, 3.0f, 1.0f)));
 		quad.draw();
 
-		geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
+		//geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
 		cube.draw();
 
 		// unbind gbuffer
@@ -202,7 +202,7 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		lightingTech.use();
+		//lightingTech.use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Position]);
 		glActiveTexture(GL_TEXTURE1);
@@ -227,13 +227,13 @@ int main() {
 				pointLights[i].color = lightCurrentColor[i];
 			else
 				pointLights[i].color = glm::vec3(0.0);
-			lightingTech.setPointLight(pointLights[i], i);
+			//lightingTech.setPointLight(pointLights[i], i);
 		}
 
-		lightingTech.setWorldCameraPos(camera.position);
+		//lightingTech.setWorldCameraPos(camera.position);
 
-		lightingTech.setMaterialSpecularIntensity(1.0f);
-		lightingTech.setMaterialShininess(32.0f);
+		//lightingTech.setMaterialSpecularIntensity(1.0f);
+		//lightingTech.setMaterialShininess(32.0f);
 
 		// render quad to default framebuffer
 		quad.draw();

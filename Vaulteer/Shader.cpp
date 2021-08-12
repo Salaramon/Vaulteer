@@ -1,91 +1,72 @@
 #include "Shader.h"
 
-Shader::Shader(std::string pathGSGLVertexCode, std::string pathGSGLFragmentCode) : setUniform(this)
-{
-	debug("Loading vertex shader: " + pathGSGLVertexCode + " and vertex shader: " + pathGSGLFragmentCode + "\n");
-	setup(file_to_string(pathGSGLVertexCode), file_to_string(pathGSGLFragmentCode));
-}
-
 void Shader::use()
 {
-	glUseProgram(shaderProgram.id);
+	glUseProgram(shaderProgramID);
 }
 
 size_t Shader::getShaderID()
 {
-	return shaderProgram.id;
+	return shaderProgramID;
 }
 
-void Shader::setup(std::string stringVertex, std::string stringFragment)
+void Shader::loadShader(std::string path, GLenum type)
 {
-	
-	const char
-		* stringGSGLVertexCode = stringVertex.c_str(),
-		* stringGSGLFragmentCode = stringFragment.c_str();
+	std::string shaderCode = file_to_string(path);
+	const char* rawCode = shaderCode.c_str();
 
-	Shader_Vertex shaderVertex;
-	Shader_Fragment shaderFragment;
+	shaderIDs.push_back(glCreateShader(type));
 
-	Shader_Shader 
-		* vertexShader = &shaderVertex,
-		* fragmentShader = &shaderFragment;
-
-	shader_compile(vertexShader, &stringGSGLVertexCode);
-	shader_compile(fragmentShader, &stringGSGLFragmentCode);
-
-	shaderProgram_addShader(vertexShader);
-	shaderProgram_addShader(fragmentShader);
-
-	shaderProgram_link();
-
+	shader_compile(shaderIDs.back(), &rawCode);
+	shaderProgram_addShader(shaderIDs.back());
 }
 
 
-void Shader::shaderProgram_addShader(Shader_Shader* shader)
+void Shader::shaderProgram_addShader(GLuint id)
 {
-	glAttachShader(shaderProgram.id, shader->id);
+	glAttachShader(shaderProgramID, id);
 }
 
 
 bool Shader::shaderProgram_link()
 {
-	glLinkProgram(shaderProgram.id);
+	glLinkProgram(shaderProgramID);
 
 	return shaderProgram_catchError();
 }
 
 
-bool Shader::shader_compile(Shader_Shader* shader, const char** code)
+bool Shader::shader_compile(GLuint id, const char** code)
 {
-	glShaderSource(shader->id, 1, code, NULL);
-	glCompileShader(shader->id);
+	glShaderSource(id, 1, code, NULL);
+	glCompileShader(id);
 
-	return shader_catchError(shader);
+	return shader_catchError(id);
 }
 
 
 bool Shader::shaderProgram_catchError()
 {
 	//Scope is needed for bind for some reason depite also giving it pointer to the class.
-	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, shaderProgram.id, std::placeholders::_1);
+	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, shaderProgramID, std::placeholders::_1);
 
 	if (!getProgramInfo(GL_LINK_STATUS))
 	{
-		getErrorMessage(glGetProgramInfoLog, shaderProgram.id, getProgramInfo(GL_INFO_LOG_LENGTH), "Error: Could not link shader:");
+		getErrorMessage(glGetProgramInfoLog, shaderProgramID, getProgramInfo(GL_INFO_LOG_LENGTH), "Error: Could not link shader:");
 		return true;
 	}
 
 	return false;
 }
 
-bool Shader::shader_catchError(Shader_Shader* shader)
+bool Shader::shader_catchError(GLuint id)
 {
 	//glGetShaderiv wapped in an lambda to make it parameters less verbose.
-	auto getShaderInfo = std::bind(&Shader::getDebugInfo<decltype(glGetShaderiv)>, this, glGetShaderiv, shader->id, std::placeholders::_1);
+	auto getShaderInfo = std::bind(&Shader::getDebugInfo<decltype(glGetShaderiv)>, this, glGetShaderiv, id, std::placeholders::_1);
 
 	if (!getShaderInfo(GL_COMPILE_STATUS))
 	{
-		getErrorMessage(glGetShaderInfoLog, shader->id, getShaderInfo(GL_INFO_LOG_LENGTH), "Error: Could not compile shader:");
+		getErrorMessage(glGetShaderInfoLog, id, getShaderInfo(GL_INFO_LOG_LENGTH), "Error: Could not compile shader:");
 
 		return true;
 	}

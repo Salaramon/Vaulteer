@@ -170,15 +170,30 @@
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GBuffer.cpp" />
-    <ClCompile Include="GeometryTechnique.cpp" />
-    <ClCompile Include="LightingTechnique.cpp" />
+    <ClCompile Include="GeometryTechnique.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="LightingTechnique.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="MyCamera.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShadowMapFBO.cpp" />
-    <ClCompile Include="ShadowTechnique.cpp" />
-    <ClCompile Include="Technique.cpp" />
+    <ClCompile Include="ShadowMapFBO.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ShadowTechnique.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Technique.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -195,9 +210,15 @@
     <ClInclude Include="FunctionExpressionGeneration.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
-    <ClInclude Include="GeometryTechnique.h" />
+    <ClInclude Include="GeometryTechnique.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="LightTypes.h" />
-    <ClInclude Include="LightingTechnique.h" />
+    <ClInclude Include="LightingTechnique.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyCamera.h" />
@@ -205,10 +226,19 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShadowMapFBO.h" />
-    <ClInclude Include="ShadowTechnique.h" />
+    <ClInclude Include="ShadowMapFBO.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="ShadowTechnique.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="stb_image.h" />
-    <ClInclude Include="Technique.h" />
+    <ClInclude Include="Technique.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UniformParametersFunctionOverloadsGenerator.h" />
     <ClInclude Include="Vertex.h" />
