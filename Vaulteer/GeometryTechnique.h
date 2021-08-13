@@ -4,7 +4,7 @@ class GeometryTechnique :
     public Technique
 {
 public:
-	GeometryTechnique(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
+	using Technique::Technique;
 
 	void setModel(const glm::mat4& model);
 	void setView(const glm::mat4& view);

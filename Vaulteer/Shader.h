@@ -57,6 +57,8 @@ public:
 	Shader(Infos ...infos)  : setUniform(this) {
 		shaderProgramID = glCreateProgram();
 		Parameter_Reader<Infos...> reader(this, infos...);
+
+		shaderProgram_link();
 	};
 
 	~Shader() {

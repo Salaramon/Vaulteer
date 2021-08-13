@@ -3,14 +3,13 @@
 
 #include "Shader.h"
 
-class Technique
+class Technique : public Shader
 {
 public:
-	Technique(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
+	using Shader::Shader;
 
 	virtual void init() {};
 	void use();
 
-	Shader shader;
 protected:
 };

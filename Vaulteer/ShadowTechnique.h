@@ -5,7 +5,7 @@
 class ShadowTechnique : public Technique
 {
 public:
-	ShadowTechnique(std::string pathGLSLVertexShader, std::string pathGLSLFragmentShader);
+	using Technique::Technique;
 
 	void setModel(const glm::mat4& model);
 	void setView(const glm::mat4& view);

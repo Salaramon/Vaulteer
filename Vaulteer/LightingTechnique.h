@@ -6,7 +6,7 @@
 {
 
 public:
-	LightingTechnique(std::string pathGLSLVertexCode, std::string pathGLSLFragmentCode);
+	using Technique::Technique;
 
 	virtual void init();
 
