@@ -1,6 +1,11 @@
 #include "Model.h"
 
-Model::Model(std::string meshPath)
+Model::Model(std::string meshPath, const size_t nrInstances) :
+	modelRotation(nrInstances, glm::mat4(1.0f)),
+	modelScale(nrInstances, glm::mat4(1.0f)),
+	modelTranslation(nrInstances, glm::mat4(1.0f)),
+	instances(nrInstances, glm::mat4(1.0f)),
+	instanceBuffer(instances)
 {
 	debug("Loading model: " + meshPath + "\n");
 	loadModel(meshPath);
@@ -128,9 +133,9 @@ glm::vec3 Model::ai_glmVec(aiVector3D aiVec)
 }
 
 
-void Model::setShaderContext(Shader* shader)
+void Model::setShaderContext(Technique* technique)
 {
-	Model::shader = shader;
+	Model::technique = technique;
 }
 
 void Model::rotate(float angle, glm::vec3 axis)
@@ -169,12 +174,12 @@ void Model::setScale(float x, float y, float z)
 	instanceSelection = 0;
 }
 
-void Model::draw()
+void Model::draw(Technique& technique)
 {
-	//shader->setUniform(Binder::vertex::uniforms::model, 1, GL_FALSE, modelMatrix);
 
 	for (size_t i = 0; i < instances.size(); i++) {
 		instances[i] = modelTranslation[i] * modelScale[i] * modelRotation[i];
+		technique.setModel(instances[i]);
 	}
 	//CAN BE OPTIMIZED TO ONLY REPLACE THE DATA THAT WAS CHANGED IN THE ARRAY
 	instanceBuffer.replace(0, instances);
@@ -182,7 +187,7 @@ void Model::draw()
 	for (Mesh& mesh : meshes) {
 		for (GLint i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
-			shader->setUniform(textures[i].uniform, i);
+			technique.setUniform(textures[i].uniform, i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 		}
 

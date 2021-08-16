@@ -6,15 +6,16 @@ void LightingTechnique::init() {
     setUniform(gPosition, 0);
     setUniform(gNormal, 1);
     setUniform(gColor, 2);
+    setUniform(shadowMap, 3);
 }
 
 void LightingTechnique::setDirectionalLight(const GLSLDirectionalLight& light) {
     using namespace Binder::deferred_frag::uniforms;
-    /*setUniform("directionalLight.light.color", light.color);
-    setUniform("directionalLight.light.ambientIntensity", light.ambientIntensity);
-    setUniform("directionalLight.light.diffuseIntensity", light.diffuseIntensity);
+    setUniform(directionalLight.light.color, 1,light.color);
+    setUniform(directionalLight.light.ambientIntensity, light.ambientIntensity);
+    setUniform(directionalLight.light.diffuseIntensity, light.diffuseIntensity);
 
-    setUniform("directionalLight.direction", glm::normalize(light.direction));*/
+    setUniform(directionalLight.direction, 1, glm::normalize(light.direction));
 }
 
 void LightingTechnique::setPointLight(const GLSLPointLight& light, const int& index) {
@@ -57,4 +58,8 @@ void LightingTechnique::setMaterialSpecularIntensity(const float intensity) {
 
 void LightingTechnique::setMaterialShininess(const float shininess) {
     setUniform(Binder::deferred_frag::uniforms::materialShininess, shininess);
+}
+
+void LightingTechnique::setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix) {
+    setUniform(Binder::deferred_frag::uniforms::lightSpaceMatrix, 1, GL_FALSE, lightSpaceMatrix);
 }

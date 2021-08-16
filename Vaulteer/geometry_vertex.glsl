@@ -6,20 +6,21 @@ layout(location = 2) in vec2 aTexCoords;
 out vec3 fragPosition;
 out vec3 fragNormal;
 out vec2 TexCoords;
+out vec4 fragPositionLightSpace;
 
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 normal;
-uniform mat4 model;
 
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main() {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-
     fragPosition = (model * vec4(aPos, 1.0)).xyz;
     fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     TexCoords = aTexCoords;
+
+    gl_Position = projection * view * vec4(fragPosition, 1.0);
 }

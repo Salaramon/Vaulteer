@@ -14,11 +14,11 @@ public:
 	bool init(unsigned int width, unsigned int height);
 
 	void bindWrite();
-	void bindRead(GLenum TextureUnit);
+	void bindRead();
 
+	unsigned int shadowMapTexId;
 private:
 
 	unsigned int FBO;
-	unsigned int shadowMapTexId;
 };
 

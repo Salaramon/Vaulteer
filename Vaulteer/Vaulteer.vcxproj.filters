@@ -169,10 +169,10 @@
     <None Include="geometry_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shadow_frag.glsl">
+    <None Include="depth_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shadow_vertex.glsl">
+    <None Include="depth_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">
@@ -200,6 +200,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shadow_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shadow_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -75,7 +75,7 @@ glm::vec3 getColor(float offset) {
 
 
 int main() {
-	DebugLogger<>::disableLogging();
+	//DebugLogger<>::disableLogging();
 	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
 
 	DebugLogger<FUNCTION> log(ObjectAlias::Main);
@@ -107,12 +107,15 @@ int main() {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	//ShadowMapFBO shadowMap = ShadowMapFBO();
-	//shadowMap.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+	ShadowMapFBO shadowMap = ShadowMapFBO();
+	shadowMap.init(SHADOW_WIDTH, SHADOW_HEIGHT);
 
 	GeometryTechnique geometryTech("geometry_vertex.glsl", GL_VERTEX_SHADER, "geometry_frag.glsl", GL_FRAGMENT_SHADER);
 	LightingTechnique lightingTech("deferred_vertex.glsl", GL_VERTEX_SHADER, "deferred_frag.glsl", GL_FRAGMENT_SHADER);
-	ShadowTechnique shadowTech("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
+	ShadowTechnique shadowTech("depth_vertex.glsl", GL_VERTEX_SHADER, "depth_frag.glsl", GL_FRAGMENT_SHADER);
+	Shader shadowShader("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
 	Shader lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
 
 	// bind texture type to named uniform (geometry_frag needs color info)
@@ -141,15 +144,14 @@ int main() {
 
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
 	const int NUM_LIGHTS = 32;
 	glm::vec3 lightPositions[NUM_LIGHTS];
 	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
 	GLSLPointLight pointLights[NUM_LIGHTS];
 	GLSLPointLight::GLSLAttenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
+
+	GLSLDirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, glm::vec3(0.0f, -1.0f, 1.0f) };
 
 	srand((int) glfwGetTime());
 	for (int i = 0; i < NUM_LIGHTS; i++) {
@@ -159,6 +161,9 @@ int main() {
 		pointLights[i] = { glm::vec3(randf(0.0f, 1.0f), randf(0.0f, 1.0f), randf(0.0f, 1.0f)), 0.01f, 0.2f, lightPositions[i], att };
 	}
 
+	float near_plane = 1.0f, far_plane = 20.0f;
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+
 
 	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
 	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
@@ -166,11 +171,21 @@ int main() {
 	while (window.is_running()) {
 
 		lastFrame = deltaTime;
-		deltaTime = glfwGetTime() - startTime;
+		deltaTime = glfwGetTime() - lastFrame;
 
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		log.debug("Color buffer bit and depth bit cleared.\n", "glClear");
+
+		// moving light
+		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
+
+		glm::mat4 lightView = glm::lookAt(-dirLight.direction * 10.0f,
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, .0f, 1.0f));
+
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
 
 		// geometry pass
         // -----------------------------------------------------------------------------------------------------------------------
@@ -179,28 +194,41 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		geometryTech.use();
-		glm::mat4 origModelMat(1.0f);
-		glm::mat4 modelMat = glm::translate(origModelMat, glm::vec3(0 * 3.f, 2.0f, 0 * 3.f));
-		geometryTech.setModel(modelMat);
 
 		geometryTech.setView(camera.getViewMatrix());
 		geometryTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-
 		geometryTech.setTexture(nullTextureID);
-		model.draw();
-		geometryTech.setModel(glm::scale(glm::translate(origModelMat, glm::vec3(0, 3.0f, 0)), glm::vec3(3.0f, 3.0f, 1.0f)));
-		quad.draw();
 
-		geometryTech.setModel(glm::scale(origModelMat, glm::vec3(100.0f, 1.0f, 100.0f)));
-		cube.draw();
+ 		model.setPosition(0 * 3.f, 2.0f, 0 * 3.f);
+		model.draw(geometryTech);
+
+		cube.setScale(100.0f, 1.0f, 100.0f);
+		cube.draw(geometryTech);
 
 		// unbind gbuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		// shadow pass
+		// -----------------------------------------------------------------------------------------------------------------------
+		shadowMap.bindWrite();
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		shadowTech.use();
+		shadowTech.setLightSpaceMatrix(lightSpaceMatrix);
+
+		model.draw(shadowTech);
+
+		cube.draw(shadowTech);
+
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
 		// light pass
         // -----------------------------------------------------------------------------------------------------------------------
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		lightingTech.use();
 		glActiveTexture(GL_TEXTURE0);
@@ -209,6 +237,8 @@ int main() {
  		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Normal]);
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Color]);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
 
 		glm::vec3 lightCurrentPos[NUM_LIGHTS];
 		glm::vec3 lightCurrentColor[NUM_LIGHTS];
@@ -223,20 +253,30 @@ int main() {
 
 		for (int i = 0; i < NUM_LIGHTS; i++) {
 			pointLights[i].position = lightCurrentPos[i];
-			if (lightCurrentPos[i].z > 0.0)
+			//if (lightCurrentPos[i].z > 0.0)
 				pointLights[i].color = lightCurrentColor[i];
-			else
-				pointLights[i].color = glm::vec3(0.0);
+			//else
+			//	pointLights[i].color = glm::vec3(0.0);
 			lightingTech.setPointLight(pointLights[i], i);
 		}
+		
+		lightingTech.setDirectionalLight(dirLight);
 
 		lightingTech.setWorldCameraPos(camera.position);
+		lightingTech.setLightSpaceMatrix(lightSpaceMatrix);
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
 
+		/*
+		shadowShader.use();
+		shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
+		*/
+
 		// render quad to default framebuffer
-		quad.draw();
+		quad.draw(lightingTech);
 
 		// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
 		// ----------------------------------------------------------------------------------
@@ -250,7 +290,7 @@ int main() {
 
 		// light source pass
 
-		lightSourceShader.use();
+		/*lightSourceShader.use();
 		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
 		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
 
@@ -262,26 +302,8 @@ int main() {
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
 			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1,  pointLights[i].color);
 
-			model.draw();
+			model.draw(lightSourceShader);
 		}
-		
-
-		/*
-		// shadow map pass
-		shadowMap.bindWrite();
-		shadowTech.use();
-		
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		glm::mat4 sh_model(1.0f);
-
-		shadowTech.setModel(sh_model);
-		shadowTech.setView(spotlight.getViewMatrix());
-		shadowTech.setProjection(spotlight.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
-
-		model.draw();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		*/
 
 		glfwSwapBuffers(window.getRawWindow());
@@ -292,7 +314,8 @@ int main() {
 		DebugLogger<>::disableLogging();
 	}
 
-	DebugLogger<>::setDefaultClassAccessLimit(8);
+	DebugLogger<>::setDefaultMessageNameMessageLimit(0);
+	DebugLogger<>::setMessageNameMessageLimit("glUniform1i", 1000);
 	//Not working??
 	DebugLogger<>::printOrderedByMessage();
 

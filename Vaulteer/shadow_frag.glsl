@@ -1,14 +1,13 @@
 #version 330 core
 out vec4 FragColor;
-
-uniform sampler2D shadowMap;
-
+  
 in vec2 TexCoords;
 
-void main()
-{
-    float Depth = texture(shadowMap, TexCoords).x;
-    Depth = (1.0 - Depth) * 15.0;
-    FragColor = vec4(1 - Depth);
-}
+uniform sampler2D depthMap;
 
+void main()
+{   
+    //FragColor = TexCoords.xyxy;
+    float depthValue = texture(depthMap, TexCoords).r;
+    FragColor = vec4(vec3(depthValue), 1.0);
+}  

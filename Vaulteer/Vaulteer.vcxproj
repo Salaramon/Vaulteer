@@ -274,9 +274,11 @@
     <None Include="lightsource_vertex.glsl" />
     <None Include="light_frag.glsl" />
     <None Include="light_vertex.glsl" />
+    <None Include="depth_frag.glsl" />
+    <None Include="depth_vertex.glsl" />
+    <None Include="GLSLSourceFiles.toml" />
     <None Include="shadow_frag.glsl" />
     <None Include="shadow_vertex.glsl" />
-    <None Include="GLSLSourceFiles.toml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

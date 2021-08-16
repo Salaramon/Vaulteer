@@ -16,7 +16,7 @@
 
 #include "Mesh.h"
 #include "Texture.h"
-#include "Shader.h"
+#include "Technique.h"
 
 #include "DebugLogger.h"
 
@@ -25,25 +25,25 @@ typedef std::vector<Texture> Textures;
 class Model : public DebugLogger<Model>
 {
 public:
-	Model(std::string meshPath);
+	Model(std::string meshPath, const size_t instances = 1);
 	Model(std::string meshPath, std::string textureFolderPath, const size_t instances = 1);
 
 	Model& operator[](size_t instance);
 
-	void setShaderContext(Shader* shader);
+	void setShaderContext(Technique* technique);
 	void rotate(float angle, glm::vec3 axis);
 	void setRotation(float angle, glm::vec3 axis);
 	void move(float x, float y, float z);
 	void setPosition(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void setScale(float x, float y, float z);
-	void draw();
+	void draw(Technique& technique);
 private:
 
 
-	std::vector<glm::mat4> modelScale;
-	std::vector<glm::mat4> modelTranslation;
-	std::vector<glm::mat4> modelRotation;
+	std::vector<glm::mat4> modelScale = {};
+	std::vector<glm::mat4> modelTranslation = {};
+	std::vector<glm::mat4> modelRotation = {};
 
 	void loadModel(std::string path);
 
@@ -61,7 +61,7 @@ private:
 	std::vector<Mesh> meshes;
 	std::string texturesFolder;
 
-	Shader* shader;
+	Technique* technique;
 
 	void setTexturesFolder(std::string path);
 
