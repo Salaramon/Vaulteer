@@ -121,3 +121,4 @@ glm::vec3 Camera::getUp()
 	glm::quat qF = orientation * glm::quat(0, 0, -1, 0) * glm::conjugate(orientation);
 	return glm::vec3({ qF.x, qF.y, qF.z });
 }
+

@@ -13,7 +13,7 @@
 #include "Model.h"
 #include "MyCamera.h"
 #include "Camera.h"
-#include "ShadowMapFBO.h"
+#include "ShadowBuffer.h"
 #include "LightingTechnique.h"
 #include "ShadowTechnique.h"
 #include "LightTypes.h"
@@ -28,6 +28,8 @@
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
+#include "ShadowCascade.h"
+
 
 void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
 	GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​) {
@@ -35,6 +37,7 @@ void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
 	std::cout << std::string(message​) + '\n' << std::endl;
 	log.debug(std::string(message​) + '\n');
 }
+
 
 void handleCamera(MyCamera& camera) {
 	float sens = 0.155f;
@@ -73,7 +76,6 @@ glm::vec3 getColor(float offset) {
 	return glm::vec3(diff0, diff1, diff2);
 }
 
-
 int main() {
 	//DebugLogger<>::disableLogging();
 	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
@@ -109,14 +111,18 @@ int main() {
 
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-	ShadowMapFBO shadowMap = ShadowMapFBO();
-	shadowMap.init(SHADOW_WIDTH, SHADOW_HEIGHT);
+	ShadowBuffer shadowMap = ShadowBuffer(SHADOW_WIDTH, SHADOW_HEIGHT);
+	ShadowCascade shadowCascade = ShadowCascade(1.0f, 20.0f); // TODO: placeholder constants, like MyCamera projection near/far plane constants
+
+	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GeometryTechnique geometryTech("geometry_vertex.glsl", GL_VERTEX_SHADER, "geometry_frag.glsl", GL_FRAGMENT_SHADER);
 	LightingTechnique lightingTech("deferred_vertex.glsl", GL_VERTEX_SHADER, "deferred_frag.glsl", GL_FRAGMENT_SHADER);
 	ShadowTechnique shadowTech("depth_vertex.glsl", GL_VERTEX_SHADER, "depth_frag.glsl", GL_FRAGMENT_SHADER);
-	Shader shadowShader("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
-	Shader lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
+
+	ShadowTechnique shadowShader("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
+
+	Technique lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
 
 	// bind texture type to named uniform (geometry_frag needs color info)
 	Texture::uniformTextureTypes.emplace(aiTextureType_NONE, Binder::geometry_frag::uniforms::diffuse1);
@@ -126,7 +132,6 @@ int main() {
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	Model model("teapot.obj");
 	Model cube("cube.obj");
@@ -140,7 +145,9 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
-	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f));
+	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
+	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
+	cameraCopy.camera_far = 10.f;
 
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
@@ -161,9 +168,9 @@ int main() {
 		pointLights[i] = { glm::vec3(randf(0.0f, 1.0f), randf(0.0f, 1.0f), randf(0.0f, 1.0f)), 0.01f, 0.2f, lightPositions[i], att };
 	}
 
-	float near_plane = 1.0f, far_plane = 20.0f;
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 
+	float event_check_f = false;
+	int timeoutOrig = 40, timeout = 40;
 
 	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
 	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
@@ -180,11 +187,7 @@ int main() {
 		// moving light
 		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
 
-		glm::mat4 lightView = glm::lookAt(-dirLight.direction * 10.0f,
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, .0f, 1.0f));
-
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+		shadowCascade.updateBounds(camera, dirLight.direction);
 
 
 		// geometry pass
@@ -195,8 +198,8 @@ int main() {
 
 		geometryTech.use();
 
-		geometryTech.setView(camera.getViewMatrix());
-		geometryTech.setProjection(camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+		geometryTech.setView(camera.getStaticView());
+		geometryTech.setProjection(camera.getStaticProjection());
 		geometryTech.setTexture(nullTextureID);
 
  		model.setPosition(0 * 3.f, 2.0f, 0 * 3.f);
@@ -215,7 +218,8 @@ int main() {
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		shadowTech.use();
-		shadowTech.setLightSpaceMatrix(lightSpaceMatrix);
+		shadowTech.setLightSpaceMatrix(shadowCascade.getLightSpaceMatrix());
+
 
 		model.draw(shadowTech);
 
@@ -254,30 +258,37 @@ int main() {
 		for (int i = 0; i < NUM_LIGHTS; i++) {
 			pointLights[i].position = lightCurrentPos[i];
 			//if (lightCurrentPos[i].z > 0.0)
-				pointLights[i].color = lightCurrentColor[i];
+			//	pointLights[i].color = lightCurrentColor[i];
 			//else
-			//	pointLights[i].color = glm::vec3(0.0);
+				pointLights[i].color = glm::vec3(0.0);
 			lightingTech.setPointLight(pointLights[i], i);
 		}
 		
 		lightingTech.setDirectionalLight(dirLight);
 
 		lightingTech.setWorldCameraPos(camera.position);
-		lightingTech.setLightSpaceMatrix(lightSpaceMatrix);
+		lightingTech.setLightSpaceMatrix(shadowCascade.getLightSpaceMatrix());
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
 
-		/*
-		shadowShader.use();
-		shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
-		*/
+		if (event_check_f) {
+			shadowShader.use();
+			shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
 
+			quad.draw(shadowShader);
+		}
+		else {
+			quad.draw(lightingTech);
+		}
+		
 		// render quad to default framebuffer
-		quad.draw(lightingTech);
-
+		//quad.draw(lightingTech);
+		
+		glClear(GL_DEPTH_BUFFER_BIT);
+		/*
 		// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
 		// ----------------------------------------------------------------------------------
 		gbuffer.bindForReading();
@@ -306,10 +317,63 @@ int main() {
 		}
 		*/
 
+		lightSourceShader.use();
+		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
+		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
+
+		glm::vec3 cascadeCorners[8];
+		std::vector<float> b = shadowCascade.bounds;
+		cascadeCorners[0] = glm::vec3(b[0], b[2], b[4]);
+		cascadeCorners[1] = glm::vec3(b[1], b[2], b[4]);
+		cascadeCorners[2] = glm::vec3(b[0], b[3], b[4]);
+		cascadeCorners[3] = glm::vec3(b[1], b[3], b[4]);
+		cascadeCorners[4] = glm::vec3(b[0], b[2], b[5]);
+		cascadeCorners[5] = glm::vec3(b[1], b[2], b[5]);
+		cascadeCorners[6] = glm::vec3(b[0], b[3], b[5]);
+		cascadeCorners[7] = glm::vec3(b[1], b[3], b[5]);
+		
+
+		for (int i = 0; i < shadowCascade.cameraFrustumWS.size(); i++) {
+			glm::vec3 pos = glm::vec3(shadowCascade.cameraFrustumWS[i].x, shadowCascade.cameraFrustumWS[i].y, shadowCascade.cameraFrustumWS[i].z);
+			glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, -0.05, 0));
+			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
+			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
+			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 0.2f, 1.0f));
+			model.draw(lightSourceShader);
+		}
+
+		for (int i = 0; i < 8; i++) {
+			glm::vec3 pos = cascadeCorners[i];
+			glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, -0.05, 0));
+			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
+			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
+			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(1.0f, 0.2f, 0.2f));
+			model.draw(lightSourceShader);
+		}
+
+		/*glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), cameraCopy.position + glm::vec3(0, -0.05, 0));
+		modelMat = glm::scale(modelMat, glm::vec3(0.4f));
+		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
+		lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 1.0f, 0.2f));
+		model.draw(lightSourceShader);*/
+
+
 		glfwSwapBuffers(window.getRawWindow());
 
 		Event::Poll();
 		handleCamera(camera);
+
+		//cameraCopy.position = camera.position;
+		//cameraCopy.front = camera.front;
+		//cameraCopy.right = camera.right;
+		//cameraCopy.rotate(0.2f, 0.0f);
+		//cameraCopy.move(glm::vec3(sinf(glfwGetTime()*4) * 0.2f, 0.0f, cosf(glfwGetTime()*4) * 0.2f));
+
+
+		if (timeout-- < 0 && Event::Check << (Event::Key == Event::KEY::F && Event::State == Event::STATE::DOWN)) {
+			event_check_f = !event_check_f;
+			timeout = timeoutOrig;
+		}
 
 		DebugLogger<>::disableLogging();
 	}

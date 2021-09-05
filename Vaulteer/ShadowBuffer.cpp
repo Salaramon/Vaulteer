@@ -1,10 +1,12 @@
-#include "ShadowMapFBO.h"
+#include "ShadowBuffer.h"
 
-ShadowMapFBO::ShadowMapFBO()
+ShadowBuffer::ShadowBuffer(const unsigned int width, const unsigned int height) :
+	width(width), height(height)
 {
+	init();
 }
 
-ShadowMapFBO::~ShadowMapFBO()
+ShadowBuffer::~ShadowBuffer()
 {
 	if (FBO != 0) {
 		glDeleteFramebuffers(1, &FBO);
@@ -15,7 +17,7 @@ ShadowMapFBO::~ShadowMapFBO()
 	}
 }
 
-bool ShadowMapFBO::init(const unsigned int width, const unsigned int height)
+bool ShadowBuffer::init()
 {
 	glGenFramebuffers(1, &FBO);
 
@@ -45,12 +47,12 @@ bool ShadowMapFBO::init(const unsigned int width, const unsigned int height)
 	return true;
 }
 
-void ShadowMapFBO::bindWrite()
+void ShadowBuffer::bindWrite()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
 }
 
-void ShadowMapFBO::bindRead()
+void ShadowBuffer::bindRead()
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 }

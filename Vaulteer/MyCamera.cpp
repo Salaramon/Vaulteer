@@ -1,7 +1,7 @@
 #include "MyCamera.h"
 
-MyCamera::MyCamera(glm::vec3 position, glm::vec3 cameraFront, glm::vec3 cameraUp, glm::vec3 cameraRight) 
-	: position(position), front(cameraFront), up(cameraUp), right(cameraRight)
+MyCamera::MyCamera(glm::vec3 position, glm::vec3 cameraFront, glm::vec3 cameraUp, glm::vec3 cameraRight, float width, float height)
+	: position(position), front(cameraFront), up(cameraUp), right(cameraRight), width(width), height(height)
 {
 }
 
@@ -20,13 +20,33 @@ void MyCamera::rotate(float yaw, float pitch)
 	updateRotation();
 }
 
+glm::mat4 MyCamera::getStaticView()
+{
+	if (staticView == nullptr)
+		return getViewMatrix();
+	return *staticView;
+}
+
+glm::mat4 MyCamera::getStaticProjection()
+{
+	if (staticProjection == nullptr)
+		return getProjectionMatrix();
+	return *staticProjection;
+}
+
 glm::mat4 MyCamera::getViewMatrix() {
 	return glm::lookAt(position, position + front, up);
 }
 
-glm::mat4 MyCamera::getProjectionMatrix(float width, float height) {
+glm::mat4 MyCamera::getProjectionMatrix() {
 	//return glm::ortho(-16.f, 16.f, -10.f, 10.f, 0.1f, 250.0f);
-	return glm::perspectiveFov(glm::radians(camera_fov), width, height, 1.0f, 1000.0f);
+	return glm::perspectiveFov(glm::radians(camera_fov), width, height, camera_near, camera_far);
+}
+
+void MyCamera::setViewport(float width, float height)
+{
+	this->width = width;
+	this->height = height;
 }
 
 void MyCamera::updateRotation() {

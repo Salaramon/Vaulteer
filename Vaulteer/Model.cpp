@@ -187,7 +187,7 @@ void Model::draw(Technique& technique)
 	for (Mesh& mesh : meshes) {
 		for (GLint i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
-			technique.setUniform(textures[i].uniform, i);
+			//technique.setUniform(textures[i].uniform, i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 		}
 

@@ -2,23 +2,24 @@
 
 #include <glad/glad.h>
 #include <glfw3.h>
-
+#include <glm/glm.hpp>
 #include <iostream>
+#include <limits>
 
-class ShadowMapFBO
+class ShadowBuffer
 {
 public:
-	ShadowMapFBO();
-	~ShadowMapFBO();
+	ShadowBuffer(unsigned int width, unsigned int height);
+	~ShadowBuffer();
 
-	bool init(unsigned int width, unsigned int height);
+	bool init();
 
 	void bindWrite();
 	void bindRead();
 
 	unsigned int shadowMapTexId;
+	unsigned int width, height;
 private:
-
 	unsigned int FBO;
 };
 

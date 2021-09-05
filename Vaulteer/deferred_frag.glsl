@@ -112,7 +112,7 @@ float calcShadow(vec4 fragPosLightSpace)
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 
-    int sampling = 3;
+    int sampling = 1;
     for(int x = -sampling; x <= sampling; ++x)
     {
         for(int y = -sampling; y <= sampling; ++y)
@@ -139,6 +139,10 @@ void main()
     vec4 fragPositionLightSpace = lightSpaceMatrix * vec4(fragPosition, 1.0);
 
     float shadow = calcShadow(fragPositionLightSpace);
+    if (shadow > 0) {
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        return;
+    }
     vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow);
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
