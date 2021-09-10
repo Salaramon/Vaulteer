@@ -158,9 +158,9 @@ void main()
     // shadow calc
     
     vec3 col[NUM_CASCADES];
-    col[0] = vec3(0.1, 0.0, 0.0);
-    col[1] = vec3(0.0, 0.1, 0.0);
-    col[2] = vec3(0.0, 0.0, 0.1);
+    col[0] = vec3(1.0, 0.8, 0.8);
+    col[1] = vec3(0.8, 1.0, 0.8);
+    col[2] = vec3(0.8, 0.8, 1.0);
     
     int cascadeIndex = 0;
     for (int i = 0; i < NUM_CASCADES; i++) {
@@ -173,7 +173,7 @@ void main()
     vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
     float shadow = calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex)); 
 
-    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow);
+    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow) * vec4(col[cascadeIndex], 1.0);
 
     // light calc
 

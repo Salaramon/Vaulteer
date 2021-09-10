@@ -129,10 +129,13 @@ int main() {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-	Model model("teapot.obj");
+	Model model1("teapot.obj");
+	Model model2("teapot.obj");
+	Model model3("teapot.obj");
+	Model model4("teapot.obj");
 	Model cube("cube.obj");
 	Model quad("quad.obj");
-	model.setShaderContext(&geometryTech);
+	model1.setShaderContext(&geometryTech);
 
 	unsigned int nullTextureID;
 	glGenTextures(1, &nullTextureID);
@@ -145,7 +148,7 @@ int main() {
 	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 	//camera.camera_far = 30.f;
 
-	std::vector<float> cascadeBounds = { camera.camera_near, 15.0f, 40.0f, 100.0f };
+	std::vector<float> cascadeBounds = { camera.camera_near, 10.0f, 25.0f, 100.0f };
 
 	ShadowRenderer shadowRenderer = ShadowRenderer(camera, cascadeBounds);
 
@@ -205,8 +208,14 @@ int main() {
 		geometryTech.setProjection(camera.getStaticProjection());
 		geometryTech.setTexture(nullTextureID);
 
- 		model.setPosition(0 * 3.f, 2.0f, 0 * 3.f);
-		model.draw(geometryTech);
+ 		model1.setPosition(0 * 3.f, 2.0f, 0 * 8.f);
+ 		model2.setPosition(0 * 3.f, 2.0f, 1 * 8.f);
+ 		model3.setPosition(0 * 3.f, 2.0f, 2 * 8.f);
+ 		model4.setPosition(0 * 3.f, 2.0f, 3 * 8.f);
+ 		model1.draw(geometryTech);
+		model2.draw(geometryTech);
+		model3.draw(geometryTech);
+		model4.draw(geometryTech);
 
 		cube.setScale(100.0f, 1.0f, 100.0f);
 		cube.draw(geometryTech);
@@ -231,7 +240,10 @@ int main() {
 			shadowTech.setLightSpaceMatrix(cascade.getLightSpaceMatrix());
 
 			// TODO - this draws the scene; make render() method in shadowRenderer when scene container is made
-			model.draw(shadowTech);
+			model1.draw(shadowTech);
+			model2.draw(shadowTech);
+			model3.draw(shadowTech);
+			model4.draw(shadowTech);
 
 			cube.draw(shadowTech);
 		}
@@ -328,45 +340,6 @@ int main() {
 			model.draw(lightSourceShader);
 		}
 		*/
-
-		if (!event_check_g) {
-			lightSourceShader.use();
-			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
-			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
-
-			ShadowCascade shadowCascade = shadowRenderer.getCascade(0);
-
-			glm::vec3 cascadeCorners[8];
-			std::vector<float> b = shadowCascade.bounds;
-			cascadeCorners[0] = glm::vec3(b[0], b[2], b[4]);
-			cascadeCorners[1] = glm::vec3(b[1], b[2], b[4]);
-			cascadeCorners[2] = glm::vec3(b[0], b[3], b[4]);
-			cascadeCorners[3] = glm::vec3(b[1], b[3], b[4]);
-			cascadeCorners[4] = glm::vec3(b[0], b[2], b[5]);
-			cascadeCorners[5] = glm::vec3(b[1], b[2], b[5]);
-			cascadeCorners[6] = glm::vec3(b[0], b[3], b[5]);
-			cascadeCorners[7] = glm::vec3(b[1], b[3], b[5]);
-		
-
-			for (int i = 0; i < shadowCascade.cameraFrustumWS.size(); i++) {
-				float teapotscale = (i < 4 ? 0.01f : 0.1f);
-				glm::vec3 pos = glm::vec3(shadowCascade.cameraFrustumWS[i].x, shadowCascade.cameraFrustumWS[i].y, shadowCascade.cameraFrustumWS[i].z);
-				glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, teapotscale/2, 0));
-				modelMat = glm::scale(modelMat, glm::vec3(1.f) * teapotscale);
-				lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-				lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 0.2f, 1.0f));
-				cube.draw(lightSourceShader);
-			}
-
-			for (int i = 0; i < 8; i++) {
-				glm::vec3 pos = cascadeCorners[i];
-				glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos);
-				modelMat = glm::scale(modelMat, glm::vec3(0.1f));
-				lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-				lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(1.0f, 0.2f, 0.2f));
-				model.draw(lightSourceShader);
-			}
-		}
 
 		/*glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), cameraCopy.position + glm::vec3(0, -0.05, 0));
 		modelMat = glm::scale(modelMat, glm::vec3(0.4f));
