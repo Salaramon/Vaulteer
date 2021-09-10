@@ -111,8 +111,6 @@ int main() {
 
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-	ShadowBuffer shadowMap = ShadowBuffer(SHADOW_WIDTH, SHADOW_HEIGHT);
-	ShadowCascade shadowCascade = ShadowCascade(1.0f, 20.0f); // TODO: placeholder constants, like MyCamera projection near/far plane constants
 
 	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -147,7 +145,12 @@ int main() {
 
 	MyCamera camera(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
-	cameraCopy.camera_far = 10.f;
+	//camera.camera_far = 30.f;
+
+	ShadowBuffer shadowMap = ShadowBuffer(SHADOW_WIDTH, SHADOW_HEIGHT);
+	ShadowCascade shadowCascade = ShadowCascade(camera.camera_near, 15.0f);
+	ShadowCascade shadowCascade2 = ShadowCascade(15.0f, 40.0f);
+	ShadowCascade shadowCascade3 = ShadowCascade(40.0f, 100.0f);
 
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
@@ -169,8 +172,8 @@ int main() {
 	}
 
 
-	float event_check_f = false;
-	int timeoutOrig = 40, timeout = 40;
+	float event_check_f = false, event_check_g = false;
+	int timeoutOrig = 40, timeout_f = 40, timeout_g = 40;
 
 	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
 	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
@@ -187,7 +190,8 @@ int main() {
 		// moving light
 		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
 
-		shadowCascade.updateBounds(camera, dirLight.direction);
+		MyCamera* cam = (event_check_f ? &cameraCopy : &camera);
+		shadowCascade.updateBounds(*cam, dirLight.direction);
 
 
 		// geometry pass
@@ -235,12 +239,11 @@ int main() {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		lightingTech.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Position]);
-		glActiveTexture(GL_TEXTURE1);
- 		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Normal]);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, gbuffer.textures[GBuffer::Color]);
+
+		for (int i = 0; i < GBuffer::GBufferTextureType::NumTextures; i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, gbuffer.textures[i]);
+		}
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
 
@@ -272,7 +275,7 @@ int main() {
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
 
-		if (event_check_f) {
+		if (event_check_g) {
 			shadowShader.use();
 			shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
@@ -317,38 +320,41 @@ int main() {
 		}
 		*/
 
-		lightSourceShader.use();
-		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
-		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
+		if (!event_check_g) {
+			lightSourceShader.use();
+			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
+			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
 
-		glm::vec3 cascadeCorners[8];
-		std::vector<float> b = shadowCascade.bounds;
-		cascadeCorners[0] = glm::vec3(b[0], b[2], b[4]);
-		cascadeCorners[1] = glm::vec3(b[1], b[2], b[4]);
-		cascadeCorners[2] = glm::vec3(b[0], b[3], b[4]);
-		cascadeCorners[3] = glm::vec3(b[1], b[3], b[4]);
-		cascadeCorners[4] = glm::vec3(b[0], b[2], b[5]);
-		cascadeCorners[5] = glm::vec3(b[1], b[2], b[5]);
-		cascadeCorners[6] = glm::vec3(b[0], b[3], b[5]);
-		cascadeCorners[7] = glm::vec3(b[1], b[3], b[5]);
+			glm::vec3 cascadeCorners[8];
+			std::vector<float> b = shadowCascade.bounds;
+			cascadeCorners[0] = glm::vec3(b[0], b[2], b[4]);
+			cascadeCorners[1] = glm::vec3(b[1], b[2], b[4]);
+			cascadeCorners[2] = glm::vec3(b[0], b[3], b[4]);
+			cascadeCorners[3] = glm::vec3(b[1], b[3], b[4]);
+			cascadeCorners[4] = glm::vec3(b[0], b[2], b[5]);
+			cascadeCorners[5] = glm::vec3(b[1], b[2], b[5]);
+			cascadeCorners[6] = glm::vec3(b[0], b[3], b[5]);
+			cascadeCorners[7] = glm::vec3(b[1], b[3], b[5]);
 		
 
-		for (int i = 0; i < shadowCascade.cameraFrustumWS.size(); i++) {
-			glm::vec3 pos = glm::vec3(shadowCascade.cameraFrustumWS[i].x, shadowCascade.cameraFrustumWS[i].y, shadowCascade.cameraFrustumWS[i].z);
-			glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, -0.05, 0));
-			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
-			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 0.2f, 1.0f));
-			model.draw(lightSourceShader);
-		}
+			for (int i = 0; i < shadowCascade.cameraFrustumWS.size(); i++) {
+				float teapotscale = (i < 4 ? 0.01f : 0.1f);
+				glm::vec3 pos = glm::vec3(shadowCascade.cameraFrustumWS[i].x, shadowCascade.cameraFrustumWS[i].y, shadowCascade.cameraFrustumWS[i].z);
+				glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, teapotscale/2, 0));
+				modelMat = glm::scale(modelMat, glm::vec3(1.f) * teapotscale);
+				lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
+				lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 0.2f, 1.0f));
+				cube.draw(lightSourceShader);
+			}
 
-		for (int i = 0; i < 8; i++) {
-			glm::vec3 pos = cascadeCorners[i];
-			glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos + glm::vec3(0, -0.05, 0));
-			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
-			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(1.0f, 0.2f, 0.2f));
-			model.draw(lightSourceShader);
+			for (int i = 0; i < 8; i++) {
+				glm::vec3 pos = cascadeCorners[i];
+				glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), pos);
+				modelMat = glm::scale(modelMat, glm::vec3(0.1f));
+				lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
+				lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(1.0f, 0.2f, 0.2f));
+				model.draw(lightSourceShader);
+			}
 		}
 
 		/*glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), cameraCopy.position + glm::vec3(0, -0.05, 0));
@@ -363,16 +369,21 @@ int main() {
 		Event::Poll();
 		handleCamera(camera);
 
-		//cameraCopy.position = camera.position;
-		//cameraCopy.front = camera.front;
-		//cameraCopy.right = camera.right;
 		//cameraCopy.rotate(0.2f, 0.0f);
 		//cameraCopy.move(glm::vec3(sinf(glfwGetTime()*4) * 0.2f, 0.0f, cosf(glfwGetTime()*4) * 0.2f));
 
 
-		if (timeout-- < 0 && Event::Check << (Event::Key == Event::KEY::F && Event::State == Event::STATE::DOWN)) {
+		if (timeout_f-- < 0 && Event::Check << (Event::Key == Event::KEY::F && Event::State == Event::STATE::DOWN)) {
 			event_check_f = !event_check_f;
-			timeout = timeoutOrig;
+			timeout_f = timeoutOrig;
+
+			cameraCopy.position = camera.position;
+			cameraCopy.front = camera.front;
+			cameraCopy.right = camera.right;
+		}
+		if (timeout_g-- < 0 && Event::Check << (Event::Key == Event::KEY::G && Event::State == Event::STATE::DOWN)) {
+			event_check_g = !event_check_g;
+			timeout_g = timeoutOrig;
 		}
 
 		DebugLogger<>::disableLogging();

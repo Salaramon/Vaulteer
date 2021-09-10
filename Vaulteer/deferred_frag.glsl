@@ -108,7 +108,8 @@ float calcShadow(vec4 fragPosLightSpace)
     float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
 
-    float bias = 0.005;
+
+    float bias = 0.01;
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 
@@ -122,7 +123,7 @@ float calcShadow(vec4 fragPosLightSpace)
         }    
     }
     shadow /= pow(sampling * 2 + 1, 2.0);
-    return shadow;
+    return shadow / 1.5;
 }
 
 
@@ -139,10 +140,6 @@ void main()
     vec4 fragPositionLightSpace = lightSpaceMatrix * vec4(fragPosition, 1.0);
 
     float shadow = calcShadow(fragPositionLightSpace);
-    if (shadow > 0) {
-        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        return;
-    }
     vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow);
 
     for (int i = 0; i < MAX_LIGHTS; i++) {

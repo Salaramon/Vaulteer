@@ -70,7 +70,7 @@ Event::TIME Event::getTime(EventID id)
 
 bool Event::Poll() 
 {
-	DebugLogger<Event> log;
+ 	DebugLogger<Event> log;
 	log.debug("Events started polling.\n");
 
 	lastPollTime = currentPollTime;
