@@ -59,7 +59,16 @@ uniform float materialShininess;
 
 // functions
 
-vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, vec3 fragNormal) {
+sampler2D getShadowMap(int cascadeIndex) {
+    switch(cascadeIndex) {
+    case 0: return shadowMap_0;
+    case 1: return shadowMap_1;
+    case 2: return shadowMap_2;
+    default: return shadowMap_0;
+    }
+}
+
+vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, vec3 fragNormal, float shadow) {
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
     vec4 specularColor = vec4(0.0);
@@ -81,10 +90,14 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, 
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
         specularFactor = kEnergyConservation * pow(specularFactor, shininess);
-        specularColor = vec4(light.color * materialSpecularIntensity * specularFactor, 1.0);
+        specularColor = vec4(light.color * min(materialSpecularIntensity * specularFactor, 1.0 - shadow), 1.0);
     }
 
-    return (ambientColor + diffuseColor + specularColor);
+    float adjustFactor = max(ambientColor.r + diffuseColor.r + specularColor.r, ambientColor.g + diffuseColor.g + specularColor.g);
+          adjustFactor = max(ambientColor.b + diffuseColor.b + specularColor.b, adjustFactor);
+          adjustFactor = max(adjustFactor, 1.0);
+
+    return (ambientColor + diffuseColor + specularColor) * vec4(1.0 / adjustFactor);
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
@@ -96,12 +109,12 @@ vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
         + pointLight.att.aLinear * lightDistance
         + pointLight.att.aQuadratic * (lightDistance * lightDistance));
 
-    return calcLightInternal(pointLight.light, lightDirection, fragPosition, fragNormal) / attenuation;
+    return calcLightInternal(pointLight.light, lightDirection, fragPosition, fragNormal, 0.0) / attenuation;
 }
 
-vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fragNormal) {
+vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fragNormal, float shadow) {
     vec3 lightDirection = normalize(dirLight.direction);
-    return calcLightInternal(dirLight.light, lightDirection, fragPosition, fragNormal);
+    return calcLightInternal(dirLight.light, lightDirection, fragPosition, fragNormal, shadow);
 }
 
 float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
@@ -131,16 +144,7 @@ float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
         }    
     }
     shadow /= pow(sampling * 2 + 1, 2.0);
-    return shadow / 1.5;
-}
-
-sampler2D getShadowMap(int cascadeIndex) {
-    switch(cascadeIndex) {
-    case 0: return shadowMap_0;
-    case 1: return shadowMap_1;
-    case 2: return shadowMap_2;
-    default: return shadowMap_0;
-    }
+    return shadow;
 }
 
 void main()
@@ -173,7 +177,7 @@ void main()
     vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
     float shadow = calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex)); 
 
-    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow) * vec4(col[cascadeIndex], 1.0);
+    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, shadow) * (1.0 - shadow / 2);
 
     // light calc
 

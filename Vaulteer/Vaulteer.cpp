@@ -84,7 +84,7 @@ int main() {
 	int init = glfwInit();
 	log.debug("GLFW initialization: " + std::to_string(init) + "\n", "glfwInit");
 
-	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
+	const int WINDOW_WIDTH = 1920, WINDOW_HEIGHT = 1080;
 
 	Window window("Vaulteer", WINDOW_WIDTH, WINDOW_HEIGHT);
 
