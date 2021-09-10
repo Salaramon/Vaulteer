@@ -10,6 +10,8 @@ class ShadowBuffer
 {
 public:
 	ShadowBuffer(unsigned int width, unsigned int height);
+	ShadowBuffer(ShadowBuffer&& mv);
+
 	~ShadowBuffer();
 
 	bool init();

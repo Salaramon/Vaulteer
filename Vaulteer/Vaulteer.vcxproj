@@ -197,6 +197,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ShadowCascade.cpp" />
+    <ClCompile Include="ShadowRenderer.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -224,6 +225,7 @@
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="ShadowCascade.h" />
+    <ClInclude Include="ShadowRenderer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />

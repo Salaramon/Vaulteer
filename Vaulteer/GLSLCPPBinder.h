@@ -177,9 +177,13 @@ namespace Binder {
 			 inline Uniform<> gPosition(Uniform<>("sampler2D", String("gPosition"), 0, 0));
 			 inline Uniform<> gNormal(Uniform<>("sampler2D", String("gNormal"), 0, 0));
 			 inline Uniform<> gColor(Uniform<>("sampler2D", String("gColor"), 0, 0));
-			 inline Uniform<> shadowMap(Uniform<>("sampler2D", String("shadowMap"), 0, 0));
+			 inline Uniform<> shadowMap_0(Uniform<>("sampler2D", String("shadowMap_0"), 0, 0));
+			 inline Uniform<> shadowMap_1(Uniform<>("sampler2D", String("shadowMap_1"), 0, 0));
+			 inline Uniform<> shadowMap_2(Uniform<>("sampler2D", String("shadowMap_2"), 0, 0));
+			 inline Uniform<glm::mat4> lightSpaceMatrices[3](Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[0]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[1]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[2]"), 3, 64));
+			 inline Uniform<float> cascadeFarPlanes[3](Uniform<float>("float", String("cascadeFarPlanes[0]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[1]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[2]"), 3, 4));
 			 inline Uniform<glm::vec3> worldCameraPos(Uniform<glm::vec3>("vec3", String("worldCameraPos"), 0, 12));
-			 inline Uniform<glm::mat4> lightSpaceMatrix(Uniform<glm::mat4>("mat4", String("lightSpaceMatrix"), 0, 64));
+			 inline Uniform<glm::mat4> cameraViewMat(Uniform<glm::mat4>("mat4", String("cameraViewMat"), 0, 64));
 			 inline DirectionalLight directionalLight{DirectionalLight(String("directionalLight"))};
 			 inline PointLight pointLights[32]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]")), PointLight(String("pointLights[4]")), PointLight(String("pointLights[5]")), PointLight(String("pointLights[6]")), PointLight(String("pointLights[7]")), PointLight(String("pointLights[8]")), PointLight(String("pointLights[9]")), PointLight(String("pointLights[10]")), PointLight(String("pointLights[11]")), PointLight(String("pointLights[12]")), PointLight(String("pointLights[13]")), PointLight(String("pointLights[14]")), PointLight(String("pointLights[15]")), PointLight(String("pointLights[16]")), PointLight(String("pointLights[17]")), PointLight(String("pointLights[18]")), PointLight(String("pointLights[19]")), PointLight(String("pointLights[20]")), PointLight(String("pointLights[21]")), PointLight(String("pointLights[22]")), PointLight(String("pointLights[23]")), PointLight(String("pointLights[24]")), PointLight(String("pointLights[25]")), PointLight(String("pointLights[26]")), PointLight(String("pointLights[27]")), PointLight(String("pointLights[28]")), PointLight(String("pointLights[29]")), PointLight(String("pointLights[30]")), PointLight(String("pointLights[31]"))};
 			 inline Uniform<float> materialSpecularIntensity(Uniform<float>("float", String("materialSpecularIntensity"), 0, 4));

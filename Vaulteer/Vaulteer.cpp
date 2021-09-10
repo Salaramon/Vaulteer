@@ -13,7 +13,6 @@
 #include "Model.h"
 #include "MyCamera.h"
 #include "Camera.h"
-#include "ShadowBuffer.h"
 #include "LightingTechnique.h"
 #include "ShadowTechnique.h"
 #include "LightTypes.h"
@@ -22,12 +21,12 @@
 #include "GBuffer.h"
 #include "GeometryTechnique.h"
 
-
-
 #include "Shader.h"
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
+#include "ShadowRenderer.h"
+#include "ShadowBuffer.h"
 #include "ShadowCascade.h"
 
 
@@ -105,14 +104,13 @@ int main() {
 	Event::AddEventHandlingForWindow(&window);
 	glfwSetInputMode(window.getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	//glEnable(GL_FRAMEBUFFER_SRGB);
+	//log.debug("SRGB enabled.\n");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-
-
-	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+ 	GBuffer gbuffer = GBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	GeometryTechnique geometryTech("geometry_vertex.glsl", GL_VERTEX_SHADER, "geometry_frag.glsl", GL_FRAGMENT_SHADER);
 	LightingTechnique lightingTech("deferred_vertex.glsl", GL_VERTEX_SHADER, "deferred_frag.glsl", GL_FRAGMENT_SHADER);
@@ -147,14 +145,11 @@ int main() {
 	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 	//camera.camera_far = 30.f;
 
-	ShadowBuffer shadowMap = ShadowBuffer(SHADOW_WIDTH, SHADOW_HEIGHT);
-	ShadowCascade shadowCascade = ShadowCascade(camera.camera_near, 15.0f);
-	ShadowCascade shadowCascade2 = ShadowCascade(15.0f, 40.0f);
-	ShadowCascade shadowCascade3 = ShadowCascade(40.0f, 100.0f);
+	std::vector<float> cascadeBounds = { camera.camera_near, 15.0f, 40.0f, 100.0f };
 
-	//glEnable(GL_FRAMEBUFFER_SRGB);
+	ShadowRenderer shadowRenderer = ShadowRenderer(camera, cascadeBounds);
 
-	const int NUM_LIGHTS = 32;
+ 	const int NUM_LIGHTS = 32;
 	glm::vec3 lightPositions[NUM_LIGHTS];
 	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
@@ -191,7 +186,11 @@ int main() {
 		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
 
 		MyCamera* cam = (event_check_f ? &cameraCopy : &camera);
-		shadowCascade.updateBounds(*cam, dirLight.direction);
+
+		for (int i = 0; i < shadowRenderer.numCascades; i++) {
+			ShadowCascade& cascade = shadowRenderer.getCascade(i);
+			cascade.updateBounds(*cam, dirLight.direction);
+		}
 
 
 		// geometry pass
@@ -215,21 +214,28 @@ int main() {
 		// unbind gbuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// shadow pass
+		// shadow map pass
 		// -----------------------------------------------------------------------------------------------------------------------
-		shadowMap.bindWrite();
-		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
+		glViewport(0, 0, shadowRenderer.SHADOW_WIDTH, shadowRenderer.SHADOW_HEIGHT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		shadowTech.use();
-		shadowTech.setLightSpaceMatrix(shadowCascade.getLightSpaceMatrix());
 
+		for (int i = 0; i < shadowRenderer.numCascades; i++) {
+			ShadowBuffer& buffer = shadowRenderer.getBuffer(i);
+			ShadowCascade& cascade = shadowRenderer.getCascade(i);
 
-		model.draw(shadowTech);
+			buffer.bindWrite();
+			glClear(GL_DEPTH_BUFFER_BIT);
+			shadowTech.setLightSpaceMatrix(cascade.getLightSpaceMatrix());
 
-		cube.draw(shadowTech);
+			// TODO - this draws the scene; make render() method in shadowRenderer when scene container is made
+			model.draw(shadowTech);
 
-
+			cube.draw(shadowTech);
+		}
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -244,8 +250,10 @@ int main() {
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, gbuffer.textures[i]);
 		}
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
+		for (int i = 0; i < shadowRenderer.numCascades; i++) {
+			glActiveTexture(GL_TEXTURE0 + GBuffer::GBufferTextureType::NumTextures + i);
+			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getBuffer(i).shadowMapTexId);
+		}
 
 		glm::vec3 lightCurrentPos[NUM_LIGHTS];
 		glm::vec3 lightCurrentColor[NUM_LIGHTS];
@@ -270,7 +278,8 @@ int main() {
 		lightingTech.setDirectionalLight(dirLight);
 
 		lightingTech.setWorldCameraPos(camera.position);
-		lightingTech.setLightSpaceMatrix(shadowCascade.getLightSpaceMatrix());
+		lightingTech.setCameraViewMat(camera.getViewMatrix());
+		lightingTech.setShadowMapData(shadowRenderer);
 
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
@@ -279,7 +288,7 @@ int main() {
 			shadowShader.use();
 			shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shadowMap.shadowMapTexId);
+			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getBuffer(0).shadowMapTexId);
 
 			quad.draw(shadowShader);
 		}
@@ -324,6 +333,8 @@ int main() {
 			lightSourceShader.use();
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
+
+			ShadowCascade shadowCascade = shadowRenderer.getCascade(0);
 
 			glm::vec3 cascadeCorners[8];
 			std::vector<float> b = shadowCascade.bounds;

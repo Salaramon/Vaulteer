@@ -6,6 +6,13 @@ ShadowBuffer::ShadowBuffer(const unsigned int width, const unsigned int height) 
 	init();
 }
 
+ShadowBuffer::ShadowBuffer(ShadowBuffer&& mv) : width(mv.width), height(mv.height) {
+	this->FBO = mv.FBO;
+	this->shadowMapTexId = mv.shadowMapTexId;
+	mv.FBO = 0;
+	mv.shadowMapTexId = 0;
+}
+
 ShadowBuffer::~ShadowBuffer()
 {
 	if (FBO != 0) {

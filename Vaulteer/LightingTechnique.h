@@ -1,6 +1,7 @@
 #pragma once
 #include "Technique.h"
 #include "LightTypes.h"
+#include "ShadowRenderer.h"
 
  class LightingTechnique : public Technique
 {
@@ -16,10 +17,11 @@ public:
 	void setSpotLight(const GLSLSpotLight& light);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);
+	void setCameraViewMat(const glm::mat4& viewMat);
 	void setMaterialSpecularIntensity(const float intensity);
 	void setMaterialShininess(const float shininess);
 
-	void setLightSpaceMatrix(const glm::mat4 &lightSpaceMatrix);
+	void setShadowMapData(ShadowRenderer& shadowRenderer);
 
 private:
 };

@@ -28,19 +28,27 @@ struct PointLight {
     vec3 position;
 };
 
-// gbuffer data
+// constants 
+const int NUM_CASCADES = 3;
+const int MAX_LIGHTS = 32;
 
+// gbuffer data
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gColor;
-uniform sampler2D shadowMap;
+
+// shadow maps
+uniform sampler2D shadowMap_0;
+uniform sampler2D shadowMap_1;
+uniform sampler2D shadowMap_2;
+
+uniform mat4 lightSpaceMatrices[NUM_CASCADES];
+uniform float cascadeFarPlanes[NUM_CASCADES];
 
 // uniforms
 
-const int MAX_LIGHTS = 32;
-
 uniform vec3 worldCameraPos;
-uniform mat4 lightSpaceMatrix;
+uniform mat4 cameraViewMat;
 
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_LIGHTS];
@@ -96,7 +104,7 @@ vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fra
     return calcLightInternal(dirLight.light, lightDirection, fragPosition, fragNormal);
 }
 
-float calcShadow(vec4 fragPosLightSpace)
+float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -126,6 +134,14 @@ float calcShadow(vec4 fragPosLightSpace)
     return shadow / 1.5;
 }
 
+sampler2D getShadowMap(int cascadeIndex) {
+    switch(cascadeIndex) {
+    case 0: return shadowMap_0;
+    case 1: return shadowMap_1;
+    case 2: return shadowMap_2;
+    default: return shadowMap_0;
+    }
+}
 
 void main()
 {
@@ -136,17 +152,36 @@ void main()
     vec3 fragPosition = texture(gPosition, TexCoords).xyz;
     vec3 fragNormal = texture(gNormal, TexCoords).xyz;
     vec3 diffuse = texture(gColor, TexCoords).rgb;
+ 
+    float fragDepth = abs((cameraViewMat * vec4(fragPosition, 1.0)).z);
+    
+    // shadow calc
+    
+    vec3 col[NUM_CASCADES];
+    col[0] = vec3(0.1, 0.0, 0.0);
+    col[1] = vec3(0.0, 0.1, 0.0);
+    col[2] = vec3(0.0, 0.0, 0.1);
+    
+    int cascadeIndex = 0;
+    for (int i = 0; i < NUM_CASCADES; i++) {
+        if (fragDepth < cascadeFarPlanes[i]) {
+            cascadeIndex = i;
+            break;
+        }
+    }
 
-    vec4 fragPositionLightSpace = lightSpaceMatrix * vec4(fragPosition, 1.0);
+    vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
+    float shadow = calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex)); 
 
-    float shadow = calcShadow(fragPositionLightSpace);
     vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal) * (1.0 - shadow);
+
+    // light calc
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
         totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal);
     }
 
     const float gamma = 2.2;
-    vec4 fragColor = vec4(diffuse, 1.0) + totalLight;
+    vec4 fragColor =  totalLight;
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }

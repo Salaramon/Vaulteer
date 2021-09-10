@@ -3,10 +3,13 @@
 
 void LightingTechnique::init() {
     using namespace Binder::deferred_frag::uniforms;
+
     setUniform(gPosition, 0);
     setUniform(gNormal, 1);
     setUniform(gColor, 2);
-    setUniform(shadowMap, 3);
+    setUniform(shadowMap_0, 3);
+    setUniform(shadowMap_1, 4);
+    setUniform(shadowMap_2, 5);
 }
 
 void LightingTechnique::setDirectionalLight(const GLSLDirectionalLight& light) {
@@ -52,6 +55,10 @@ void LightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
     setUniform(Binder::deferred_frag::uniforms::worldCameraPos, 1, cameraPos);
 }
 
+void LightingTechnique::setCameraViewMat(const glm::mat4& viewMat) {
+    setUniform(Binder::deferred_frag::uniforms::cameraViewMat, 1, GL_FALSE, viewMat);
+}
+
 void LightingTechnique::setMaterialSpecularIntensity(const float intensity) {
     setUniform(Binder::deferred_frag::uniforms::materialSpecularIntensity, intensity);
 }
@@ -60,6 +67,9 @@ void LightingTechnique::setMaterialShininess(const float shininess) {
     setUniform(Binder::deferred_frag::uniforms::materialShininess, shininess);
 }
 
-void LightingTechnique::setLightSpaceMatrix(const glm::mat4& lightSpaceMatrix) {
-    setUniform(Binder::deferred_frag::uniforms::lightSpaceMatrix, 1, GL_FALSE, lightSpaceMatrix);
+void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {
+    for (unsigned int i = 0; i < shadowRenderer.numCascades; i++) {
+        setUniform(Binder::deferred_frag::uniforms::lightSpaceMatrices[i], 1, GL_FALSE, shadowRenderer.getCascade(i).getLightSpaceMatrix());
+        setUniform(Binder::deferred_frag::uniforms::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
+    }
 }

@@ -24,12 +24,10 @@ public:
 	std::vector<float> bounds;
 	std::vector<glm::vec4> cameraFrustumWS;
 
-private:
 	float zNear, zFar;
+private:
 	glm::mat4 lightView, lightProjection;
 
 	glm::vec4 frustumCorners[8];
-
-	float somedepth = 0.0f;
 };
 
