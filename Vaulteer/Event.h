@@ -6,6 +6,8 @@
 #include <set>
 #include <chrono>
 #include <array>
+#include <unordered_map>
+#include <functional>
 
 #include "Window.h"
 #include "DebugLogger.h"
@@ -14,24 +16,13 @@ class Event : public DebugLogger<Event>
 {
 public:
 
-	typedef double_t TIME;
-	typedef double_t CURSOR_X;
-	typedef double_t CURSOR_Y;
-	typedef double_t SCROLL_X;
-	typedef double_t SCROLL_Y;
-	typedef Window WINDOW_CONTEXT;
-
 	static void AddEventHandlingForWindow(Window* window);
 
 	static bool Poll();
 
-	typedef size_t EventID;
-
-	TIME getTime(EventID id);
-
-	enum class KEY {
+	enum class enumKEY {
 		UNKNOWN = -1,
-		START_OF_KEYBOARDKEYS = KEY::UNKNOWN,
+		START_OF_KEYBOARDKEYS = enumKEY::UNKNOWN,
 		SPACE = 32,
 		APOSTROPHE = 39,
 		COMMA = 44,
@@ -153,136 +144,298 @@ public:
 		RIGHT_SUPER = 347,
 		MENU = 348,
 
-		START_OF_MOUSEKEYS = KEY::MENU,
+		START_OF_MOUSEKEYS = enumKEY::MENU,
 		MOUSE_LEFT = 349,
 		MOUSE_RIGHT = 350,
 		MOUSE_MIDDLE = 351
 	};
 
-	enum class ACTION {
+	enum class enumACTION {
 		RELEASE = 0,
 		PRESS = 1,
 		REPEAT = 2,
-		NONE = 3
 	};
 
-	enum class STATE {
+	enum class enumSTATE {
 		UP = 0,
 		DOWN = 1
 	};
 
-	struct BooleanCheck {
-		BooleanCheck(std::vector<size_t> value);
-		bool eventHappened();
-		std::vector<size_t> eventIDs;
-		BooleanCheck operator&&(BooleanCheck&& value);
-	};
-
-	struct _Check {
-		bool operator<<(BooleanCheck&& result);
-	};
-	
-	struct _Count {
-		size_t operator<<(BooleanCheck&& result);
-	};
-	
-
-
-	struct _Key {
-		BooleanCheck operator==(KEY key);
-	};
-	struct _Action {
-		BooleanCheck operator==(ACTION key);
-	};
-	struct _State {
-		BooleanCheck operator==(STATE state);
-	};
-
-	struct Time {
-		template<class FLOAT_TYPE>
-		bool operator<(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator<=(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>=(FLOAT_TYPE timePoint);
-		double_t timeStamp;
-	};
-	struct _CursorX{
-		BooleanCheck operator<(CURSOR_X position);
-		BooleanCheck operator>(CURSOR_X position);
-		BooleanCheck operator<=(CURSOR_X position);
-		BooleanCheck operator>=(CURSOR_X position);
-	};
-	struct _CursorY {
-		BooleanCheck operator<(CURSOR_Y position);
-		BooleanCheck operator>(CURSOR_Y position);
-		BooleanCheck operator<=(CURSOR_Y position);
-		BooleanCheck operator>=(CURSOR_Y position);
-	};
-	struct ScrollX {
-		template<class FLOAT_TYPE>
-		bool operator<(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator<=(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>=(FLOAT_TYPE timePoint);
-		SCROLL_X pos;
-	};
-	struct ScrollY {
-		template<class FLOAT_TYPE>
-		bool operator<(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator<=(FLOAT_TYPE timePoint);
-		template<class FLOAT_TYPE>
-		bool operator>=(FLOAT_TYPE timePoint);
-		SCROLL_Y pos;
-	};
-	struct WindowContext {
-		bool operator==(WINDOW_CONTEXT windowContext);
-	};
-
 	struct Button {
-		KEY Key;
-		ACTION Action;
-		STATE State;
-		TIME Time;
+		enumKEY key;
+		enumACTION action;
 	};
 	struct Cursor {
-		CURSOR_X CursorX;
-		CURSOR_Y CursorY;
-		TIME Time;
+		double_t x;
+		double_t y;
 	};
 	struct Wheel {
-		SCROLL_X ScrollX;
-		SCROLL_Y ScrollY;
-		TIME Time;
+		double_t ScrollX;
+		double_t ScrollY;
 	};
 
-	typedef std::vector<Button> KeyEvents;
-	typedef std::vector<Cursor> CursorEvents;
 
+	struct BooleanCheck {
+		BooleanCheck(bool result) : result(result) {}
+		BooleanCheck operator&&(BooleanCheck check){
+			return check.result && result;
+		}
+		BooleanCheck operator||(BooleanCheck check) {
+			return check.result || result;
+		}
+		operator bool() {
+			return result;
+		}
 
-	struct _Cursor {
-		CursorEvents operator<<(BooleanCheck&& result);
+	private:
+		bool result;
 	};
 
-	static _Key Key;
-	static _Action Action;
-	static _State State;
+	struct KeyAction {
+	public:
+		KeyAction(enumACTION actionID) : actionID(actionID) {}
+		
+		enumACTION actionID;
 
-	static _CursorX CursorX;
-	static _CursorY CursorY;
+		std::vector<Button> possibleEvents;
+	};
 
-	static _Check Check;
-	static _Count Count;
+	struct KeyState {
+	public:
+		KeyState(enumSTATE stateID) : stateID(stateID) {}
 
-	static _Cursor CursorEventList;
+		enumSTATE stateID;
+	};
+
+	struct KeyName {
+	public:
+		KeyName(enumKEY keyID) : keyID(keyID){}
+
+		BooleanCheck operator>>(KeyAction& data) {
+			for (auto& button : buttonEvents) {
+				if (button.key == keyID && button.action == data.actionID) {
+					return true;
+				}
+			}
+			return false;
+		}
+		BooleanCheck operator>>(KeyState& data) {
+			auto it = buttonStates.find(keyID);
+			if(it != buttonStates.end()) {
+				return it->second == data.stateID;
+			}
+			return false;
+		}
+
+		enumKEY keyID;
+	};
+
+	struct KEY {
+		inline static KeyName UNKNOWN{ enumKEY::UNKNOWN };
+		inline static KeyName SPACE{ enumKEY::SPACE };
+		inline static KeyName APOSTROPHE{ enumKEY::APOSTROPHE };
+		inline static KeyName COMMA{ enumKEY::COMMA };
+		inline static KeyName MINUS{ enumKEY::MINUS };
+		inline static KeyName PERIOD{ enumKEY::PERIOD };
+		inline static KeyName SLASH{ enumKEY::SLASH };
+		inline static KeyName _0{ enumKEY::_0 };
+		inline static KeyName _1{ enumKEY::_1 };
+		inline static KeyName _2{ enumKEY::_2 };
+		inline static KeyName _3{ enumKEY::_3 };
+		inline static KeyName _4{ enumKEY::_4 };
+		inline static KeyName _5{ enumKEY::_5 };
+		inline static KeyName _6{ enumKEY::_6 };
+		inline static KeyName _7{ enumKEY::_7 };
+		inline static KeyName _8{ enumKEY::_8 };
+		inline static KeyName _9{ enumKEY::_9 };
+		inline static KeyName SEMICOLON{ enumKEY::SEMICOLON };
+		inline static KeyName EQUAL{ enumKEY::EQUAL };
+		inline static KeyName A{ enumKEY::A };
+		inline static KeyName B{ enumKEY::B };
+		inline static KeyName C{ enumKEY::C };
+		inline static KeyName D{ enumKEY::D };
+		inline static KeyName E{ enumKEY::E };
+		inline static KeyName F{ enumKEY::F };
+		inline static KeyName G{ enumKEY::G };
+		inline static KeyName H{ enumKEY::H };
+		inline static KeyName I{ enumKEY::I };
+		inline static KeyName J{ enumKEY::J };
+		inline static KeyName K{ enumKEY::K };
+		inline static KeyName L{ enumKEY::L };
+		inline static KeyName M{ enumKEY::M };
+		inline static KeyName N{ enumKEY::N };
+		inline static KeyName O{ enumKEY::O };
+		inline static KeyName P{ enumKEY::P };
+		inline static KeyName Q{ enumKEY::Q };
+		inline static KeyName R{ enumKEY::R };
+		inline static KeyName S{ enumKEY::S };
+		inline static KeyName T{ enumKEY::T };
+		inline static KeyName U{ enumKEY::U };
+		inline static KeyName V{ enumKEY::V };
+		inline static KeyName W{ enumKEY::W };
+		inline static KeyName X{ enumKEY::X };
+		inline static KeyName Y{ enumKEY::Y };
+		inline static KeyName Z{ enumKEY::Z };
+		inline static KeyName LEFT_BRACKET{ enumKEY::LEFT_BRACKET };
+		inline static KeyName BACKSLASH{ enumKEY::BACKSLASH };
+		inline static KeyName RIGHT_BRACKET{ enumKEY::RIGHT_BRACKET };
+		inline static KeyName GRAVE_ACCENT{ enumKEY::GRAVE_ACCENT };
+		inline static KeyName WORLD_1{ enumKEY::WORLD_1 };
+		inline static KeyName WORLD_2{ enumKEY::WORLD_2 };
+		inline static KeyName ESCAPE{ enumKEY::ESCAPE };
+		inline static KeyName ENTER{ enumKEY::ENTER };
+		inline static KeyName TAB{ enumKEY::TAB };
+		inline static KeyName BACKSPACE{ enumKEY::BACKSPACE };
+		inline static KeyName INSERT{ enumKEY::INSERT };
+		inline static KeyName DELETE{ enumKEY::DELETE };
+		inline static KeyName RIGHT{ enumKEY::RIGHT };
+		inline static KeyName LEFT{ enumKEY::LEFT };
+		inline static KeyName DOWN{ enumKEY::DOWN };
+		inline static KeyName UP{ enumKEY::UP };
+		inline static KeyName PAGE_UP{ enumKEY::PAGE_UP };
+		inline static KeyName PAGE_DOWN{ enumKEY::PAGE_DOWN };
+		inline static KeyName HOME{ enumKEY::HOME };
+		inline static KeyName END{ enumKEY::END };
+		inline static KeyName CAPS_LOCK{ enumKEY::CAPS_LOCK };
+		inline static KeyName SCROLL_LOCK{ enumKEY::SCROLL_LOCK };
+		inline static KeyName NUM_LOCK{ enumKEY::NUM_LOCK };
+		inline static KeyName PRINT_SCREEN{ enumKEY::PRINT_SCREEN };
+		inline static KeyName PAUSE{ enumKEY::PAUSE };
+		inline static KeyName F1{ enumKEY::F1 };
+		inline static KeyName F2{ enumKEY::F2 };
+		inline static KeyName F3{ enumKEY::F3 };
+		inline static KeyName F4{ enumKEY::F4 };
+		inline static KeyName F5{ enumKEY::F5 };
+		inline static KeyName F6{ enumKEY::F6 };
+		inline static KeyName F7{ enumKEY::F7 };
+		inline static KeyName F8{ enumKEY::F8 };
+		inline static KeyName F9{ enumKEY::F9 };
+		inline static KeyName F10{ enumKEY::F10 };
+		inline static KeyName F11{ enumKEY::F11 };
+		inline static KeyName F12{ enumKEY::F12 };
+		inline static KeyName F13{ enumKEY::F13 };
+		inline static KeyName F14{ enumKEY::F14 };
+		inline static KeyName F15{ enumKEY::F15 };
+		inline static KeyName F16{ enumKEY::F16 };
+		inline static KeyName F17{ enumKEY::F17 };
+		inline static KeyName F18{ enumKEY::F18 };
+		inline static KeyName F19{ enumKEY::F19 };
+		inline static KeyName F20{ enumKEY::F20 };
+		inline static KeyName F21{ enumKEY::F21 };
+		inline static KeyName F22{ enumKEY::F22 };
+		inline static KeyName F23{ enumKEY::F23 };
+		inline static KeyName F24{ enumKEY::F24 };
+		inline static KeyName F25{ enumKEY::F25 };
+		inline static KeyName KP_0{ enumKEY::KP_0 };
+		inline static KeyName KP_1{ enumKEY::KP_1 };
+		inline static KeyName KP_2{ enumKEY::KP_2 };
+		inline static KeyName KP_3{ enumKEY::KP_3 };
+		inline static KeyName KP_4{ enumKEY::KP_4 };
+		inline static KeyName KP_5{ enumKEY::KP_5 };
+		inline static KeyName KP_6{ enumKEY::KP_6 };
+		inline static KeyName KP_7{ enumKEY::KP_7 };
+		inline static KeyName KP_8{ enumKEY::KP_8 };
+		inline static KeyName KP_9{ enumKEY::KP_9 };
+		inline static KeyName KP_DECIMAL{ enumKEY::KP_DECIMAL };
+		inline static KeyName KP_DIVIDE{ enumKEY::KP_DIVIDE };
+		inline static KeyName KP_MULTIPLY{ enumKEY::KP_MULTIPLY };
+		inline static KeyName KP_SUBTRACT{ enumKEY::KP_SUBTRACT };
+		inline static KeyName KP_ADD{ enumKEY::KP_ADD };
+		inline static KeyName KP_ENTER{ enumKEY::KP_ENTER };
+		inline static KeyName KP_EQUAL{ enumKEY::KP_EQUAL };
+		inline static KeyName LEFT_SHIFT{ enumKEY::LEFT_SHIFT };
+		inline static KeyName LEFT_CONTROL{ enumKEY::LEFT_CONTROL };
+		inline static KeyName LEFT_ALT{ enumKEY::LEFT_ALT };
+		inline static KeyName LEFT_SUPER{ enumKEY::LEFT_SUPER };
+		inline static KeyName RIGHT_SHIFT{ enumKEY::RIGHT_SHIFT };
+		inline static KeyName RIGHT_CONTROL{ enumKEY::RIGHT_CONTROL };
+		inline static KeyName RIGHT_ALT{ enumKEY::RIGHT_ALT };
+		inline static KeyName RIGHT_SUPER{ enumKEY::RIGHT_SUPER };
+		inline static KeyName MENU{ enumKEY::MENU };
+		inline static KeyName MOUSE_LEFT{ enumKEY::MOUSE_LEFT };
+		inline static KeyName MOUSE_RIGHT{ enumKEY::MOUSE_RIGHT };
+		inline static KeyName MOUSE_MIDDLE{ enumKEY::MOUSE_MIDDLE };
+
+	};
+
+	struct STATE {
+		inline static KeyState UP{ enumSTATE::UP };
+		inline static KeyState DOWN{ enumSTATE::DOWN };
+	};
+
+	struct ACTION {
+		inline static KeyAction RELEASE{ enumACTION::RELEASE };
+		inline static KeyAction PRESS{ enumACTION::PRESS };
+		inline static KeyAction REPEAT{ enumACTION::REPEAT };
+	};
+
+	
+
+	static void keyHandler(GLFWwindow* window, enumKEY key, enumACTION action);
+
+	struct doubleConverter {
+	public:
+		doubleConverter(int value) : value(static_cast<double_t>(value)) {}
+		operator double_t() { return value; }
+		double_t value;
+	};
+
+	struct CursorPosition {
+	public:
+		CursorPosition(size_t offset) : offset(offset) {}
+		//bool operator<(doubleConverter axis) { return check(axis, std::less<bool>()); }
+		//bool operator>(doubleConverter axis) { return check(axis, std::greater<bool>()); }
+		//bool operator<=(doubleConverter axis) { return check(axis, std::less_equal<bool>()); }
+		//bool operator>=(doubleConverter axis) { return check(axis, std::greater_equal<bool>()); }
+
+		friend BooleanCheck operator<(const double_t lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator>(const double_t lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator<=(const double_t lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator>=(const double_t lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator<(const CursorPosition& lhs, const double_t rhs);
+		friend BooleanCheck operator>(const CursorPosition& lhs, const double_t rhs);
+		friend BooleanCheck operator<=(const CursorPosition& lhs, const double_t rhs);
+		friend BooleanCheck operator>=(const CursorPosition& lhs, const double_t rhs);
+
+		template<class Func>
+		bool check(double_t axis, Func func) const  {
+			for (auto& pos : cursorEvents) {
+				double_t cur = *(reinterpret_cast<double_t*>((&pos)) + (offset / sizeof(double_t)));
+				if (func(cur, axis)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		double_t get() const{
+			if (!cursorEvents.empty()) {
+				double_t cur = *(reinterpret_cast<double_t*>((&cursorEvents.back())) + (offset / sizeof(double_t)));
+				return cur;
+			}
+			else {
+				return 0;
+			}
+		}
+
+		double_t delta() const {
+			if (!cursorEvents.empty()) {
+				double_t front = *(reinterpret_cast<double_t*>((&cursorEvents.front())) + (offset / sizeof(double_t)));
+				double_t back = *(reinterpret_cast<double_t*>((&cursorEvents.back())) + (offset / sizeof(double_t)));
+				return back - front;
+			}
+			else {
+				return 0;
+			}
+		}
+
+		const size_t offset;
+	};
+
+	struct CURSOR {
+		inline static const CursorPosition X{ offsetof(Cursor,x) };
+		inline static const CursorPosition Y{ offsetof(Cursor,y) };
+	};
 
 	static double_t now();
 	static double_t delta();
@@ -296,9 +449,10 @@ private:
 	//static void char_callback(GLFWwindow* window, unsigned int codepoint);
 	//static void window_focus_callback(GLFWwindow* window, int focused);
 
-	static std::vector<Button> buttonEvents;
-	static std::vector<Cursor> cursorEvents;
-	static std::vector<Wheel> wheelEvents;
+	inline static std::vector<Button> buttonEvents;
+	inline static std::unordered_map<enumKEY, enumSTATE> buttonStates;
+	inline static std::vector<Cursor> cursorEvents;
+	inline static std::vector<Wheel> wheelEvents;
 	
 	static std::future<void> catchEvents;
 	//static std::unordered_map<Event*,Window*> windowContexts;
@@ -308,9 +462,6 @@ private:
 
 	static double_t lastPollTime;
 	static double_t currentPollTime;
-
-	static const size_t NUMBER_OF_POSSIBLE_KEYS = 124;
-	static const std::array<intmax_t, NUMBER_OF_POSSIBLE_KEYS> allKeyValues;
 };
 
 //Create own value type to make compact position checking
