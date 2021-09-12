@@ -25,9 +25,8 @@
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
-#include "ShadowRenderer.h"
-#include "ShadowBuffer.h"
-#include "ShadowCascade.h"
+
+#include "TypeDefUtils.h"
 
 
 void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
@@ -84,7 +83,7 @@ int main() {
 	int init = glfwInit();
 	log.debug("GLFW initialization: " + std::to_string(init) + "\n", "glfwInit");
 
-	const int WINDOW_WIDTH = 1920, WINDOW_HEIGHT = 1080;
+	const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 
 	Window window("Vaulteer", WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -148,7 +147,7 @@ int main() {
 	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 	//camera.camera_far = 30.f;
 
-	std::vector<float> cascadeBounds = { camera.camera_near, 10.0f, 25.0f, 100.0f };
+	std::vector<float> cascadeBounds = { camera.camera_near, 20.0f, 50.0f, 100.0f };
 
 	ShadowRenderer shadowRenderer = ShadowRenderer(camera, cascadeBounds);
 
@@ -157,9 +156,8 @@ int main() {
 	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
 	GLSLPointLight pointLights[NUM_LIGHTS];
-	GLSLPointLight::GLSLAttenuation att = { 1.0f, 0.19f, 0.132f }; // for no dropoff: { 1.0f, .0f, .0f }
+	GLSLPointLight::GLSLAttenuation att = { 1.0f, 0.19f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
 
-	GLSLDirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, glm::vec3(0.0f, -1.0f, 1.0f) };
 
 	srand((int) glfwGetTime());
 	for (int i = 0; i < NUM_LIGHTS; i++) {
@@ -177,6 +175,8 @@ int main() {
 	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
 	
 	while (window.is_running()) {
+
+		GLSLDirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, glm::vec3(sinf(glfwGetTime() / 4), -1.0f, cosf(glfwGetTime() / 4)) };
 
 		lastFrame = deltaTime;
 		deltaTime = glfwGetTime() - lastFrame;
@@ -232,7 +232,7 @@ int main() {
 		shadowTech.use();
 
 		for (int i = 0; i < shadowRenderer.numCascades; i++) {
-			ShadowBuffer& buffer = shadowRenderer.getBuffer(i);
+			ShadowBuffer& buffer = shadowRenderer.getCascadeBuffer(i);
 			ShadowCascade& cascade = shadowRenderer.getCascade(i);
 
 			buffer.bindWrite();
@@ -264,7 +264,7 @@ int main() {
 		}
 		for (int i = 0; i < shadowRenderer.numCascades; i++) {
 			glActiveTexture(GL_TEXTURE0 + GBuffer::GBufferTextureType::NumTextures + i);
-			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getBuffer(i).shadowMapTexId);
+			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getCascadeBuffer(i).getTextureId());
 		}
 
 		glm::vec3 lightCurrentPos[NUM_LIGHTS];
@@ -293,6 +293,8 @@ int main() {
 		lightingTech.setCameraViewMat(camera.getViewMatrix());
 		lightingTech.setShadowMapData(shadowRenderer);
 
+		//lightingTech.setFogColor(glm::vec3(getColor(fmod(glfwGetTime(), 3.0f))));
+
 		lightingTech.setMaterialSpecularIntensity(1.0f);
 		lightingTech.setMaterialShininess(32.0f);
 
@@ -300,7 +302,7 @@ int main() {
 			shadowShader.use();
 			shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getBuffer(0).shadowMapTexId);
+			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getCascadeBuffer(0).getTextureId());
 
 			quad.draw(shadowShader);
 		}

@@ -22,6 +22,8 @@ void ShadowCascade::setProjection(const glm::mat4& projection) {
 }
 
 void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
+	// calculate frustum corners
+
  	float fov = camera.camera_fov;
 	float aspect_ratio_h = camera.width / camera.height;
 	float tanHalfFOV = tanf(std::ctradians(fov / 2));
@@ -42,14 +44,20 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 	frustumCorners[6] = glm::vec4(-xf, yf, zFar, 1.0f);
 	frustumCorners[7] = glm::vec4(xf, yf, zFar, 1.0f);
 
+	// set light as origin in light view matrix
+
 	glm::mat4 lightMat = glm::lookAt(glm::vec3(0.0f), lightDirection, glm::vec3(0.f, 1.f, 0.f));
 	lightView = lightMat;
+
+	// get inverse camera matrix, but flip camera orientation to not render shadows behind us
 
 	camera.front = -camera.front;
 	camera.right = -camera.right;
 	glm::mat4 cameraInverseMat = glm::inverse(camera.getViewMatrix());
 	camera.front = -camera.front;
 	camera.right = -camera.right;
+
+	// find minimum bounding box for frustum (in light space)
 
 	glm::vec4 frustumCornersLightSpace[8];
 	float minX = std::numeric_limits<float>::max();
@@ -75,32 +83,13 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 		minZ = fmin(minZ, frustumCornersLightSpace[i].z);
 		maxZ = fmax(maxZ, frustumCornersLightSpace[i].z);
 	}
+	// near/far plane for light set to always see between these (light space) z coordinates, 
+	// so objects outside camera view can see shadows 
 	minZ = fmin(minZ, 0.0f);
 	maxZ = fmax(maxZ, 5.0f);
 
+	// max and mins flipped
  	lightProjection = glm::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
-
-	minX = std::numeric_limits<float>::max();
-	maxX = -std::numeric_limits<float>::max();
-	minY = std::numeric_limits<float>::max();
-	maxY = -std::numeric_limits<float>::max();
-	minZ = std::numeric_limits<float>::max();
-	maxZ = -std::numeric_limits<float>::max();
-	for (unsigned int i = 0; i < 8; i++) {
-		// Transform the frustum coordinate from view to world space
-		frustumCornersLightSpace[i] = cameraInverseMat * frustumCorners[i];
-
-		minX = fmin(minX, frustumCornersLightSpace[i].x);
-		maxX = fmax(maxX, frustumCornersLightSpace[i].x);
-		minY = fmin(minY, frustumCornersLightSpace[i].y);
-		maxY = fmax(maxY, frustumCornersLightSpace[i].y);
-		minZ = fmin(minZ, frustumCornersLightSpace[i].z);
-		maxZ = fmax(maxZ, frustumCornersLightSpace[i].z);
-	}
-	minY = fmin(minY, 0.0f);
-	maxY = fmax(maxY, -10.0f);
-
-	bounds = { minX, maxX, minY, maxY, minZ, maxZ };
 
 
 	//camera.staticView = &lightView;

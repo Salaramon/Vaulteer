@@ -171,6 +171,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="DebugLogger.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -197,6 +198,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ShadowCascade.cpp" />
+    <ClCompile Include="ShadowCubeBuffer.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -223,9 +225,12 @@
     </ClInclude>
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="ShadowCascade.h" />
+    <ClInclude Include="ShadowCubeBuffer.h" />
     <ClInclude Include="ShadowRenderer.h" />
+    <ClInclude Include="TypeDefUtils.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />

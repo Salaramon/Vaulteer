@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <glad/glad.h>
 
 #include "MyCamera.h"
+#include "ShadowCubeBuffer.h"
 #include "ShadowBuffer.h"
 #include "ShadowCascade.h"
 
@@ -18,10 +18,10 @@ public:
 	void setCamera(MyCamera& camera);
 	void updateBounds(glm::vec3 lightDirection);
 
-	void addBuffer(ShadowBuffer& buffer);
-	void addCascade(ShadowCascade& cascade);
+	void addPointBuffer(int cubeSize);
+	void addSpotBuffer(int mapSize);
 
-	ShadowBuffer& getBuffer(int index);
+	ShadowBuffer& getCascadeBuffer(int index);
 	ShadowCascade& getCascade(int index);
 
 	// TODO this will be used eventually - need structure for scene and all assorted objects though...
@@ -31,7 +31,10 @@ public:
 
 private:
 	MyCamera& camera;
-	std::vector<ShadowBuffer> buffers;
+	std::vector<ShadowCubeBuffer> pointBuffers;
+	std::vector<ShadowBuffer> spotBuffers;
+
+	std::vector<ShadowBuffer> cascadeBuffers;
 	std::vector<ShadowCascade> cascades;
 };
 

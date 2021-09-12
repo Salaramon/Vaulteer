@@ -7,7 +7,7 @@
 class MyCamera
 {
 public:
-	float camera_fov = 40.f;
+	float camera_fov = 60.f;
 	float camera_near = 0.1f, camera_far = 1000.0f;
 
 	float cameraYaw = 0.f, cameraPitch = 0.f;

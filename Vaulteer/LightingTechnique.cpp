@@ -73,3 +73,7 @@ void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {
         setUniform(Binder::deferred_frag::uniforms::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
     }
 }
+
+void LightingTechnique::setFogColor(const glm::vec3& color) {
+    setUniform(Binder::deferred_frag::uniforms::fogColor, 1, color);
+}

@@ -1,27 +1,22 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <glfw3.h>
-#include <glm/glm.hpp>
 #include <iostream>
-#include <limits>
 
-class ShadowBuffer
-{
+#include "FrameBuffer.h"
+
+/*
+	Shadow buffer that uses a 2D texture to store depth data
+*/
+class ShadowBuffer : public FrameBuffer {
+private:
+	uint width, height;
 public:
-	ShadowBuffer(unsigned int width, unsigned int height);
-	ShadowBuffer(ShadowBuffer&& mv);
+	ShadowBuffer(uint w, uint h);
+	ShadowBuffer(ShadowBuffer&& mv) noexcept;
 
 	~ShadowBuffer();
 
-	bool init();
+	uint initTexture(uint width, uint height);
 
-	void bindWrite();
-	void bindRead();
-
-	unsigned int shadowMapTexId;
-	unsigned int width, height;
-private:
-	unsigned int FBO;
 };
 

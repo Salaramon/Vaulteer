@@ -23,6 +23,8 @@ public:
 
 	void setShadowMapData(ShadowRenderer& shadowRenderer);
 
+	void setFogColor(const glm::vec3& color);
+
 private:
 };
 

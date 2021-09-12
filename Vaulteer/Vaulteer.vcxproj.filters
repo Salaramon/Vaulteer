@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\shadow">
+      <UniqueIdentifier>{377aadb0-b135-45ca-9170-31677ab24b43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{c161b128-2bfe-4173-93f0-28b39ade564d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shadow">
+      <UniqueIdentifier>{ab16739e-9eda-4b83-9bca-53fe83b97a0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vaulteer.cpp">
@@ -60,13 +69,7 @@
     <ClCompile Include="MyCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Technique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightingTechnique.cpp">
@@ -75,13 +78,25 @@
     <ClCompile Include="GeometryTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowCascade.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowBuffer.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCascade.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
     <ClCompile Include="ShadowRenderer.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowTechnique.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCubeBuffer.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,13 +164,7 @@
     <ClInclude Include="MyCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Technique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowTechnique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LightingTechnique.h">
@@ -173,61 +182,76 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowCascade.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TypeDefUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowBuffer.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCascade.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
     <ClInclude Include="ShadowRenderer.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowTechnique.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCubeBuffer.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="geometry_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="depth_frag.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="depth_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="light_frag.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="light_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="geometry_frag.glsl">
+    <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="deferred_frag.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="deferred_vertex.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="depth_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="depth_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="geometry_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="geometry_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="light_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="light_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="lightsource_frag.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="lightsource_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="GLSLSourceFiles.toml">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shadow_frag.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shadow_vertex.glsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
