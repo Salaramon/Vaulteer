@@ -1,17 +1,29 @@
 #pragma once
 
 #include <iostream>
+#include <unordered_map>
 
+#include "Window.h"
 #include "Camera.h"
 #include "Event.h"
 #include "Model.h"
-class Game
+#include "Renderer.h"
+#include "Scene.h"
+
+#include "DebugLogger.h"
+#include "DebugAliases.h"
+class Game : public DebugLogger<Game>
 {
 public:
+	Game(Window& window);
 	void loadResources();
-	void run();
+	size_t run();
+	void setWindow(Window& window);
 private:
-	std::vector<Model> models;
+	ModelData& modelByName(std::string name);
+
+	Window* window;
+	std::unordered_map<std::string, ModelData> models;
 
 };
 

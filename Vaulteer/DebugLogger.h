@@ -559,7 +559,7 @@ public:
 		objectMapWithMessagePrintLimit.insert_or_assign(absoluteObjectInstance, limit);
 	}
 
-	size_t getObjectKey() {
+	size_t getObjectKey() const{
 		return absoluteObjectInstance;
 	}
 

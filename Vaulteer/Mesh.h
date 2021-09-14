@@ -13,13 +13,12 @@
 class Mesh : public DebugLogger<Mesh>
 {
 public:
-	Mesh(Vertices vertices, Indices indices, VertexBuffer<glm::mat4>& instanceBuffer) :
+	Mesh(Vertices vertices, Indices indices) :
 		vertices(vertices),
 		indices(indices),
 		vertexBuffer(vertices, vertexArray, locInfo),
 		indexBuffer(indices, vertexArray)
 	{
-		instanceBuffer.bindVertexArray(vertexArray, locDivisors, locDivisors);
 		debug("Mesh created.\n");
 	}
 	Mesh(Mesh&& other) noexcept : 
@@ -33,6 +32,13 @@ public:
 	}
 	~Mesh() {
 		debug("Mesh destroyed.\n");
+	}
+
+	void makeInstanced(VertexBuffer<glm::mat4>& instanceBuffer) {
+		//relocated from constructor to here. 
+		//Should locInfo an divisors be defined in the shader which it belongs to 
+		//and a static function in mesh be used to set what will be used for instancing and other settings if any?
+		instanceBuffer.bindVertexArray(vertexArray, locDivisors, locDivisors);
 	}
 
 	

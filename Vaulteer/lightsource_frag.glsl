@@ -1,12 +1,10 @@
 #version 330 core
 out vec4 FragColor;
 
-// uniforms
+uniform sampler2D diffuse1;
+in vec2 TexCoords;
 
-uniform vec3 lightColor;
-
-// functions
-
-void main() {
-    FragColor = vec4(lightColor, 1.0);
+void main()
+{
+    FragColor = texture(diffuse1, TexCoords);
 }

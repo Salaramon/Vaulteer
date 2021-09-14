@@ -1,0 +1,142 @@
+#include "ModelData.h"
+
+ModelData::ModelData(std::string meshPath)
+{
+	debug("Loading model: " + meshPath + "\n");
+	loadModel(meshPath);
+}
+
+ModelData::ModelData(std::string meshPath, std::string textureFolderPath)
+{
+	setTexturesFolder(textureFolderPath);
+	loadModel(meshPath);
+}
+
+
+void ModelData::loadModel(std::string path)
+{
+
+	Assimp::Importer modelImporter;
+	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		debug("Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n", MessageAlias::CriticalError);
+	}
+
+	if (scene) {
+		processNode(scene, scene->mRootNode);
+	}
+}
+
+void ModelData::processNode(const aiScene* scene, aiNode* node)
+{
+	for (size_t i = 0; i < node->mNumMeshes; i++) {
+		aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+
+		meshes.emplace_back(std::move(processMesh(scene, aiMesh)));
+	}
+
+	for (size_t i = 0; i < node->mNumChildren; i++) {
+		processNode(scene, node->mChildren[i]);
+	}
+}
+
+Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
+{
+	Vertices vertices;
+	Indices indices;
+	std::vector<Texture> textures;
+
+	for (size_t i = 0; i < mesh->mNumVertices; i++) {
+		Vertex vertex;
+		vertex.aPos = ai_glmVec(mesh->mVertices[i]);
+
+		if (mesh->HasNormals()) {
+			vertex.aNormal = ai_glmVec(mesh->mNormals[i]);
+		}
+		else {
+			vertex.aNormal = glm::vec3(0);
+		}
+
+		if (mesh->mTextureCoords[0]) {
+			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+		}
+		else {
+			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
+		}
+
+		// random
+		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
+
+		vertices.push_back(vertex);
+	}
+
+
+	for (size_t i = 0; i < mesh->mNumFaces; i++) {
+		aiFace face = mesh->mFaces[i];
+		for (size_t j = 0; j < face.mNumIndices; j++) {
+			indices.push_back((face.mIndices[j]));
+		}
+	}
+
+	if (mesh->mMaterialIndex >= 0) {
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		getTextureUniforms(material);
+	}
+
+
+
+	return Mesh(vertices, indices);
+}
+
+void ModelData::getTextureUniforms(aiMaterial* material)
+{
+	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
+		aiTextureType type = static_cast<aiTextureType>(i);
+		for (size_t j = 0; j < material->GetTextureCount(type); j++) {
+			aiString string;
+			material->GetTexture(type, j, &string);
+			std::string texturePath = texturesFolder + "\\" + string.C_Str();
+			auto uniformTT_Iterator = Texture::uniformTextureTypes.find(type);
+			if (textureFiles.insert(texturePath).second) {
+				if (uniformTT_Iterator != Texture::uniformTextureTypes.end()) {
+					textures.push_back(Texture(texturePath, uniformTT_Iterator->second));
+				}
+				else {
+					debug("Uniform for texture type " + std::to_string(type) + " not available.\n\tSee assimp's aiTextureTypes.\n");
+				}
+			}
+		}
+	}
+}
+
+glm::vec3 ModelData::ai_glmVec(aiVector3D aiVec)
+{
+	return { aiVec.x, aiVec.y, aiVec.z };
+}
+
+void ModelData::setTexturesFolder(std::string path)
+{
+	texturesFolder = path;
+}
+
+
+void ModelData::draw(const Shader& shader)
+{
+
+	for (Mesh& mesh : meshes) {
+		for (GLint i = 0; i < textures.size(); i++) {
+			textures[i].activate(shader, i);
+		}
+
+		mesh.vertexArray.bind();
+		//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
+		debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElements");
+		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+		mesh.vertexArray.unbind();
+
+		//Is setting active texture back to 0 unnecessary?
+		glActiveTexture(GL_TEXTURE0);
+	}
+}

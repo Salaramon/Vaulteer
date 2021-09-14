@@ -48,15 +48,17 @@ int main() {
 
 
 	Event::AddEventHandlingForWindow(&window);
+	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::lightsource_frag::uniforms::lightColor);
 
 	//Game game("resourceFolder?");
 
+	Game game(window);
+	size_t gameFlags = 1;
 
-	Game game;
-	size_t count = 0;
-	double startTime = glfwGetTime();
-	while (window.is_running()) {
-		game.run();
+	while (gameFlags) {
+		game.setWindow(window);
+		game.loadResources();
+		gameFlags = game.run();
 	}
 
 	

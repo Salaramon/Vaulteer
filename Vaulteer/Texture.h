@@ -11,12 +11,16 @@
 
 #include "GLSLCPPBinder.h"
 
+#include "Shader.h"
+
 #include "DebugLogger.h"
 
 class Texture : public DebugLogger<Texture>
 {
 public:
 	Texture(std::string path, Binder::UniformInfo uniform);
+
+	void activate(const Shader& shader, GLint index);
 
 	Binder::UniformInfo uniform;
 	GLuint textureID;
@@ -30,7 +34,6 @@ public:
 
 	inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 private:
-	void initialize(std::string path, Binder::UniformInfo uniform);
 	
 	void loadTexture(std::string path);
 };

@@ -36,12 +36,19 @@ bool Event::Poll()
 {
 	DebugLogger<Event> log;
 	log.debug("Events started polling.\n");
-
-	lastPollTime = currentPollTime;
-	currentPollTime = glfwGetTime();
-	
+	if (firstPoll) {
+		currentPollTime = glfwGetTime();
+		lastPollTime = currentPollTime;
+		firstPoll = false;
+	}
+	else {
+		lastPollTime = currentPollTime;
+		currentPollTime = glfwGetTime();
+	}
+	Cursor carry = cursorEvents.back();
 	buttonEvents.clear();
 	cursorEvents.clear();
+	cursorEvents.push_back(carry);
 	wheelEvents.clear();
 	
 	glfwPollEvents();

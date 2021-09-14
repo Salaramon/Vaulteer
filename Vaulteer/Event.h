@@ -462,6 +462,8 @@ private:
 
 	static double_t lastPollTime;
 	static double_t currentPollTime;
+
+	inline static bool firstPoll = true;
 };
 
 //Create own value type to make compact position checking

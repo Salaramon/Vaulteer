@@ -4,10 +4,10 @@ Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float render
 	renderDistance(renderDistance),
 	position(position),
 	fov(fov),
-	aspectRatio(aspectRatio)
+	aspectRatio(aspectRatio),
+	orientation(glm::vec3(.0f, .0f, .0f))
 {
-	setRotation(direction, roll);
-	updateRotation();
+	//setRotation(direction, roll);
 
 	debug("Camera created at: " + glm::to_string(position) + "\n");
 }
@@ -15,9 +15,9 @@ Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float render
 Camera::Camera(float renderDistance, float fov, float aspectRatio) :
 	renderDistance(renderDistance),
 	fov(fov),
-	aspectRatio(aspectRatio)
+	aspectRatio(aspectRatio),
+	orientation(glm::vec3(.0f, .0f, .0f))
 {
-	updateRotation();
 
 	debug("Camera created at: " + glm::to_string(position) + "\n");
 }
@@ -39,29 +39,34 @@ void Camera::move(glm::vec3 direction)
 
 void Camera::rotate(float yaw, float pitch, float roll)
 {
-	angleUp += pitch;
-	angleRight += yaw;
-	angleFront += roll;
-
-	updateRotation();
+	Camera::yaw = yaw;
+	Camera::pitch = pitch;
+	Camera::roll = roll;
 }
 
 void Camera::setRotation(float yaw, float pitch, float roll)
 {
-	angleUp = pitch;
-	angleRight = yaw;
-	angleFront = roll;
-
-	updateRotation();
+	
 	
 }
 
 void Camera::setRotation(glm::vec3 direction, float roll) {
-	
-	orientation = glm::quatLookAt(glm::normalize(direction), getUp());
-	angleFront = roll;
+	/*
+	glm::vec3 up = getUp();
+	if (std::abs(glm::dot(up, direction)) == 1) {
+		up.x = (bool)up.x ? 0 : 1;
+		up.y = (bool)up.y ? 0 : 1;
+		up.z = (bool)up.z ? 0 : 1;
+		glm::normalize(up);
+	}
 
-	updateRotation();
+	orientation = glm::quatLookAt(glm::normalize(direction), up);
+	*/
+	//orientation *= glm::angleAxis(glm::radians(-roll), glm::vec3(0, 0, 1));
+}
+
+void Camera::lockUp(glm::vec3 fixedUp) {
+	lockedUp = fixedUp;
 }
 
 void Camera::setPosition(float posX, float posY, float posZ)
@@ -69,26 +74,39 @@ void Camera::setPosition(float posX, float posY, float posZ)
 	position = { posX, posY, posZ };
 }
 
+void Camera::apply()
+{
+	if (pitch != 0 || yaw != 0 || roll != 0) {
+		glm::quat xRotation = glm::angleAxis(glm::radians(-pitch), glm::vec3(1, 0, 0));
+		glm::quat yRotation = glm::angleAxis(glm::radians(-yaw), glm::vec3(0, 1, 0));
+		glm::quat zRotation = glm::angleAxis(glm::radians(-roll), glm::vec3(0, 0, 1));
+
+		if (lockedUp == glm::vec3(0.f)) {
+			orientation *= xRotation* yRotation* zRotation;
+		}
+		else {
+			glm::quat finalOrientation = orientation * xRotation * yRotation * zRotation;
+			glm::quat finalFront = finalOrientation * glm::quat(0, 0, 0, -1) * glm::conjugate(finalOrientation);
+			glm::vec3 frontVec = glm::normalize(glm::vec3(finalFront.x, finalFront.y, finalFront.z));
+			glm::quat newOri = glm::quatLookAt(frontVec, lockedUp);
+			orientation = newOri;
+		}
+	}
+}
+
 glm::mat4 Camera::getProjectionMatrix()
 {
 	return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, renderDistance);
 }
 
+glm::mat4 Camera::getFrustumMatrix()
+{
+    return glm::mat4();
+}
+
 glm::vec3 Camera::getPosition()
 {
 	return position;
-}
-
-void Camera::updateRotation() {
-	glm::quat xRotation = glm::angleAxis(glm::radians(-angleUp), glm::vec3(1, 0, 0));
-	glm::quat yRotation = glm::angleAxis(glm::radians(-angleRight), glm::vec3(0, 1, 0));
-	glm::quat zRotation = glm::angleAxis(glm::radians(-angleFront), glm::vec3(0, 0, 1));
-
-	orientation *= xRotation * yRotation * zRotation;
-
-	angleUp = 0.0f;
-	angleRight = 0.0f;
-	angleFront = 0.0f;
 }
 
 /*

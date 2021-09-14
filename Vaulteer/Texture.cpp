@@ -6,6 +6,13 @@ Texture::Texture(std::string path, Binder::UniformInfo uniform) : uniform(unifor
 	loadTexture(path);
 }
 
+void Texture::activate(const Shader& shader, GLint index)
+{
+	glActiveTexture(GL_TEXTURE0 + index);
+	shader.setUniform(uniform, index);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
 
 void Texture::loadTexture(std::string path) {
 	glGenTextures(1, &textureID);
