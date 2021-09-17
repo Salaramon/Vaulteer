@@ -227,6 +227,7 @@
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ShadowCascade.h" />
     <ClInclude Include="ShadowCubeBuffer.h" />
     <ClInclude Include="ShadowRenderer.h" />

@@ -21,6 +21,7 @@ public:
 
 	std::vector<float> bounds;
 	std::vector<glm::vec4> cameraFrustumWS;
+	glm::vec4 cascadeCorners[8];
 
 	float zNear, zFar;
 private:

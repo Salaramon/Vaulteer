@@ -6,6 +6,8 @@
 #include "ShadowCubeBuffer.h"
 #include "ShadowBuffer.h"
 #include "ShadowCascade.h"
+#include "ShadowTechnique.h"
+#include "Scene.h"
 
 
 class ShadowRenderer
@@ -13,7 +15,9 @@ class ShadowRenderer
 public:
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-	ShadowRenderer(MyCamera& camera, std::vector<float> cascadeBounds);
+	unsigned int numCascades;
+
+	ShadowRenderer(ShadowTechnique& shadowTech, MyCamera& camera, std::vector<float> cascadeBounds);
 
 	void setCamera(MyCamera& camera);
 	void updateBounds(glm::vec3 lightDirection);
@@ -24,17 +28,18 @@ public:
 	ShadowBuffer& getCascadeBuffer(int index);
 	ShadowCascade& getCascade(int index);
 
-	// TODO this will be used eventually - need structure for scene and all assorted objects though...
-	//void render(Scene& scene);
-
-	unsigned int numCascades;
+	void render(Scene& scene);
 
 private:
+	ShadowTechnique& shadowTech;
 	MyCamera& camera;
+
 	std::vector<ShadowCubeBuffer> pointBuffers;
 	std::vector<ShadowBuffer> spotBuffers;
 
 	std::vector<ShadowBuffer> cascadeBuffers;
 	std::vector<ShadowCascade> cascades;
+
+	void drawScene(Scene& scene);
 };
 

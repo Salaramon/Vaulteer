@@ -22,5 +22,5 @@ void main() {
     fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     TexCoords = aTexCoords;
 
-    gl_Position = projection * view * vec4(fragPosition, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

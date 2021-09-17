@@ -136,7 +136,7 @@ float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 
-    int sampling = 1;
+    int sampling = 0;
     for(int x = -sampling; x <= sampling; ++x)
     {
         for(int y = -sampling; y <= sampling; ++y)
@@ -165,28 +165,35 @@ void main()
 
     // shadow calc
     
-    vec3 col[NUM_CASCADES];
+    vec3 col[NUM_CASCADES + 1];
     col[0] = vec3(1.0, 0.8, 0.8);
     col[1] = vec3(0.8, 1.0, 0.8);
     col[2] = vec3(0.8, 0.8, 1.0);
+    col[3] = vec3(1.0, 1.0, 1.0);
     
     int cascadeIndex = 0;
-    for (int i = 0; i < NUM_CASCADES; i++) {
+    /*for (int i = 0; i < NUM_CASCADES; i++) {
         if (fragDepth < cascadeFarPlanes[i]) {
             cascadeIndex = i;
             break;
         }
-    }
+        cascadeIndex = NUM_CASCADES; 
+    }*/
 
     vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
     float shadow = cascadeIndex > -1 ? 
             calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex)) : 
             0.0; 
+    if (shadow > 0.1) {
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        return;
+    }
+
     float dirLightShadowFactor = (1.0 - shadow / 2);
 
     // light calc
 
-    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, shadow) * dirLightShadowFactor;
+    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, shadow) * dirLightShadowFactor* vec4(col[cascadeIndex], 1.0);
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
         totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal);
