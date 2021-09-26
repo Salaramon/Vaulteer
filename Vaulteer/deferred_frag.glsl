@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 in vec2 TexCoords;
 
 out vec4 FragColor;
@@ -26,11 +26,19 @@ struct PointLight {
     BaseLight light;
     Attenuation att;
     vec3 position;
+    float radius;
 };
 
-// constants 
+struct SpotLight {
+    PointLight light;
+    Attenuation att;
+    vec3 position;
+    float radius;
+};
+
+// constants
 const int NUM_CASCADES = 3;
-const int MAX_LIGHTS = 32;
+const int MAX_LIGHTS = 4;
 
 // gbuffer data
 uniform sampler2D gPosition;
@@ -44,6 +52,15 @@ uniform sampler2D shadowMap_2;
 
 uniform mat4 lightSpaceMatrices[NUM_CASCADES];
 uniform float cascadeFarPlanes[NUM_CASCADES];
+
+// shadow cube maps
+uniform samplerCube shadowCubeMap_0;
+uniform samplerCube shadowCubeMap_1;
+uniform samplerCube shadowCubeMap_2;
+uniform samplerCube shadowCubeMap_3;
+
+uniform float cubeMapFarPlanes[MAX_LIGHTS];
+
 
 // uniforms
 
@@ -59,6 +76,15 @@ uniform float materialShininess;
 uniform vec3 fogColor;
 
 
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);   
+
 // functions
 
 sampler2D getShadowMap(int cascadeIndex) {
@@ -67,6 +93,16 @@ sampler2D getShadowMap(int cascadeIndex) {
     case 1: return shadowMap_1;
     case 2: return shadowMap_2;
     default: return shadowMap_0;
+    }
+}
+
+samplerCube getShadowCubeMap(int pointLightIndex) {
+    switch(pointLightIndex) {
+    case 0: return shadowCubeMap_0;
+    case 1: return shadowCubeMap_1;
+    case 2: return shadowCubeMap_2;
+    case 3: return shadowCubeMap_3;
+    default: return shadowCubeMap_0;
     }
 }
 
@@ -105,13 +141,19 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, 
 vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
     vec3 lightDirection = fragPosition - pointLight.position;
     float lightDistance = length(lightDirection);
+    if (lightDistance > pointLight.radius)
+        return vec4(0.0);
+
+    float radiusCutoffFactor = min(1.0, (pointLight.radius - lightDistance) / (pointLight.radius / 10));
+
     lightDirection = normalize(lightDirection);
 
     float attenuation = (pointLight.att.aConstant
         + pointLight.att.aLinear * lightDistance
         + pointLight.att.aQuadratic * (lightDistance * lightDistance));
+    attenuation = max(1.0, attenuation);
 
-    return calcLightInternal(pointLight.light, lightDirection, fragPosition, fragNormal, 0.0) / attenuation;
+    return (calcLightInternal(pointLight.light, lightDirection, fragPosition, fragNormal, 0.0) / attenuation) * radiusCutoffFactor;
 }
 
 vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fragNormal, float shadow) {
@@ -119,8 +161,8 @@ vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fra
     return calcLightInternal(dirLight.light, lightDirection, fragPosition, fragNormal, shadow);
 }
 
-float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
-{
+
+float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap, int cascadeIndex) {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5; 
@@ -131,16 +173,13 @@ float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
     float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
 
-
     float bias = 0.01;
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = (15.0 / cascadeFarPlanes[cascadeIndex]) / textureSize(shadowMap, 0);
 
-    int sampling = 0;
-    for(int x = -sampling; x <= sampling; ++x)
-    {
-        for(int y = -sampling; y <= sampling; ++y)
-        {
+    int sampling = 3;
+    for(int x = -sampling; x <= sampling; ++x) {
+        for(int y = -sampling; y <= sampling; ++y) {
             float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
         }    
@@ -149,9 +188,34 @@ float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap)
     return shadow;
 }
 
-void main()
-{
-    const float gamma = 2.2;
+float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightIndex) {
+    // get vector between fragment position and light position
+    vec3 fragToLight = fragPos - pointLights[pointLightIndex].position;
+    // use the light to fragment vector to sample from the depth map
+    float currentDepth = length(fragToLight);
+
+    // now test for shadows
+    float bias = 0.1;
+    float shadow = 0.0;
+
+    int samples = 20;
+    float viewDistance = length(worldCameraPos - fragPos);
+    float diskRadius = 0.05;
+    for(int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(shadowCubeMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= cubeMapFarPlanes[pointLightIndex];   // undo mapping [0;1]
+        if(currentDepth - bias > closestDepth)
+            shadow += 1.0;
+    }
+    shadow /= float(samples);  
+
+    return shadow;
+}
+
+
+void main() {
+    const float gamma = 2.0;
 
     if (texture(gPosition, TexCoords).w == 1.0) {
         FragColor = vec4(pow(fogColor, vec3(1.0 / gamma)), 1.0);
@@ -165,38 +229,30 @@ void main()
 
     // shadow calc
     
-    vec3 col[NUM_CASCADES + 1];
-    col[0] = vec3(1.0, 0.8, 0.8);
-    col[1] = vec3(0.8, 1.0, 0.8);
-    col[2] = vec3(0.8, 0.8, 1.0);
-    col[3] = vec3(1.0, 1.0, 1.0);
-    
     int cascadeIndex = 0;
-    /*for (int i = 0; i < NUM_CASCADES; i++) {
+    for (int i = 0; i < NUM_CASCADES; i++) {
         if (fragDepth < cascadeFarPlanes[i]) {
             cascadeIndex = i;
             break;
         }
         cascadeIndex = NUM_CASCADES; 
-    }*/
-
-    vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
-    float shadow = cascadeIndex > -1 ? 
-            calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex)) : 
-            0.0; 
-    if (shadow > 0.1) {
-        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        return;
     }
 
-    float dirLightShadowFactor = (1.0 - shadow / 2);
+    vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
+    float dirLightShadow = cascadeIndex > -1 ? 
+            calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex), cascadeIndex) : 
+            0.0; 
+
+    float dirLightShadowFactor = (1.0 - dirLightShadow / 2);
 
     // light calc
 
-    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, shadow) * dirLightShadowFactor* vec4(col[cascadeIndex], 1.0);
+    vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, dirLightShadow) * dirLightShadowFactor;
+
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
-        totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal);
+        float pointLightShadow = calcShadowCube(fragPosition, getShadowCubeMap(i), i);
+        totalLight += calcPointLight(pointLights[i], fragPosition, fragNormal) * (1.0 - pointLightShadow);
     }
 
     //float fogFactor = min(fragDepth / 20.0, 1.0);

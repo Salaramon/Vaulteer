@@ -54,7 +54,8 @@ namespace Binder {
 		if (strings_equal("geometry_vertex.glsl", a)) { return 1; }
 		if (strings_equal("lightsource_vertex.glsl", a)) { return 2; }
 		if (strings_equal("depth_vertex.glsl", a)) { return 3; }
-		if (strings_equal("shadow_vertex.glsl", a)) { return 4; }
+		if (strings_equal("shadow_cube_vertex.glsl", a)) { return 4; }
+		if (strings_equal("shadow_cascade_vertex.glsl", a)) { return 5; }
 	};
 
 	template<class... Args>
@@ -97,7 +98,13 @@ namespace Binder {
 		inline static const std::array<LocationInfo, 1> locations = {
 		LocationInfo(0, "vec3", "aPos", 0, 12)};
 	};
-	struct AttributeStructure_shadow_vertex{
+	struct AttributeStructure_shadow_cube_vertex{
+		glm::vec3 aPos;
+		inline static const std::array<size_t, 1> offsets = {0};
+		inline static const std::array<LocationInfo, 1> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12)};
+	};
+	struct AttributeStructure_shadow_cascade_vertex{
 		glm::vec3 aPos;
 		glm::vec2 aTexCoords;
 		inline static const std::array<size_t, 2> offsets = {0,12};
@@ -108,7 +115,7 @@ namespace Binder {
 
 	struct AttributeObject {
 		template<char const* str>
-		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_geometry_vertex,AttributeStructure_lightsource_vertex,AttributeStructure_depth_vertex,AttributeStructure_shadow_vertex>::type<str>;
+		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_geometry_vertex,AttributeStructure_lightsource_vertex,AttributeStructure_depth_vertex,AttributeStructure_shadow_cube_vertex,AttributeStructure_shadow_cascade_vertex>::type<str>;
 	};
 
 	namespace file_names{
@@ -120,8 +127,11 @@ namespace Binder {
 		constexpr char lightsource_vertex[] = "lightsource_vertex.glsl";
 		constexpr char depth_frag[] = "depth_frag.glsl";
 		constexpr char depth_vertex[] = "depth_vertex.glsl";
-		constexpr char shadow_frag[] = "shadow_frag.glsl";
-		constexpr char shadow_vertex[] = "shadow_vertex.glsl";
+		constexpr char shadow_cube_vertex[] = "shadow_cube_vertex.glsl";
+		constexpr char shadow_cube_geometry[] = "shadow_cube_geometry.glsl";
+		constexpr char shadow_cube_frag[] = "shadow_cube_frag.glsl";
+		constexpr char shadow_cascade_vertex[] = "shadow_cascade_vertex.glsl";
+		constexpr char shadow_cascade_frag[] = "shadow_cascade_frag.glsl";
 	}
 
 	struct Attenuation{
@@ -162,12 +172,28 @@ namespace Binder {
 		PointLight(String name)  :
 			light{BaseLight(String(name + "." + "light"))},
 			att{Attenuation(String(name + "." + "att"))},
-			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)}
+			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)},
+			radius{Uniform<float>("float", String(name + "." + "radius"), 0, 4)}
 		{}
 
 			BaseLight light;
 			Attenuation att;
 			Uniform<glm::vec3> position;
+			Uniform<float> radius;
+	};
+
+	struct SpotLight{
+		SpotLight(String name)  :
+			light{PointLight(String(name + "." + "light"))},
+			att{Attenuation(String(name + "." + "att"))},
+			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)},
+			radius{Uniform<float>("float", String(name + "." + "radius"), 0, 4)}
+		{}
+
+			PointLight light;
+			Attenuation att;
+			Uniform<glm::vec3> position;
+			Uniform<float> radius;
 	};
 
 	namespace deferred_frag {
@@ -182,10 +208,15 @@ namespace Binder {
 			 inline Uniform<> shadowMap_2(Uniform<>("sampler2D", String("shadowMap_2"), 0, 0));
 			 inline Uniform<glm::mat4> lightSpaceMatrices[3](Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[0]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[1]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[2]"), 3, 64));
 			 inline Uniform<float> cascadeFarPlanes[3](Uniform<float>("float", String("cascadeFarPlanes[0]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[1]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[2]"), 3, 4));
+			 inline Uniform<> shadowCubeMap_0(Uniform<>("samplerCube", String("shadowCubeMap_0"), 0, 0));
+			 inline Uniform<> shadowCubeMap_1(Uniform<>("samplerCube", String("shadowCubeMap_1"), 0, 0));
+			 inline Uniform<> shadowCubeMap_2(Uniform<>("samplerCube", String("shadowCubeMap_2"), 0, 0));
+			 inline Uniform<> shadowCubeMap_3(Uniform<>("samplerCube", String("shadowCubeMap_3"), 0, 0));
+			 inline Uniform<float> cubeMapFarPlanes[4](Uniform<float>("float", String("cubeMapFarPlanes[0]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[1]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[2]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[3]"), 4, 4));
 			 inline Uniform<glm::vec3> worldCameraPos(Uniform<glm::vec3>("vec3", String("worldCameraPos"), 0, 12));
 			 inline Uniform<glm::mat4> cameraViewMat(Uniform<glm::mat4>("mat4", String("cameraViewMat"), 0, 64));
 			 inline DirectionalLight directionalLight{DirectionalLight(String("directionalLight"))};
-			 inline PointLight pointLights[32]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]")), PointLight(String("pointLights[4]")), PointLight(String("pointLights[5]")), PointLight(String("pointLights[6]")), PointLight(String("pointLights[7]")), PointLight(String("pointLights[8]")), PointLight(String("pointLights[9]")), PointLight(String("pointLights[10]")), PointLight(String("pointLights[11]")), PointLight(String("pointLights[12]")), PointLight(String("pointLights[13]")), PointLight(String("pointLights[14]")), PointLight(String("pointLights[15]")), PointLight(String("pointLights[16]")), PointLight(String("pointLights[17]")), PointLight(String("pointLights[18]")), PointLight(String("pointLights[19]")), PointLight(String("pointLights[20]")), PointLight(String("pointLights[21]")), PointLight(String("pointLights[22]")), PointLight(String("pointLights[23]")), PointLight(String("pointLights[24]")), PointLight(String("pointLights[25]")), PointLight(String("pointLights[26]")), PointLight(String("pointLights[27]")), PointLight(String("pointLights[28]")), PointLight(String("pointLights[29]")), PointLight(String("pointLights[30]")), PointLight(String("pointLights[31]"))};
+			 inline PointLight pointLights[4]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]"))};
 			 inline Uniform<float> materialSpecularIntensity(Uniform<float>("float", String("materialSpecularIntensity"), 0, 4));
 			 inline Uniform<float> materialShininess(Uniform<float>("float", String("materialShininess"), 0, 4));
 			 inline Uniform<glm::vec3> fogColor(Uniform<glm::vec3>("vec3", String("fogColor"), 0, 12));
@@ -261,20 +292,46 @@ namespace Binder {
 		};
 	};
 
-	namespace shadow_frag {
+	namespace shadow_cube_vertex {
 		namespace locations{
+			inline Location<glm::vec3> aPos(0, "vec3", "aPos", 0, 12);
 		};
 		namespace uniforms{
-			 inline Uniform<> depthMap(Uniform<>("sampler2D", String("depthMap"), 0, 0));
+			 inline Uniform<glm::mat4> model(Uniform<glm::mat4>("mat4", String("model"), 0, 64));
 		};
 	};
 
-	namespace shadow_vertex {
+	namespace shadow_cube_geometry {
+		namespace locations{
+		};
+		namespace uniforms{
+			 inline Uniform<glm::mat4> shadowMatrices[6](Uniform<glm::mat4>("mat4", String("shadowMatrices[0]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[1]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[2]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[3]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[4]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[5]"), 6, 64));
+		};
+	};
+
+	namespace shadow_cube_frag {
+		namespace locations{
+		};
+		namespace uniforms{
+			 inline Uniform<glm::vec3> lightPos(Uniform<glm::vec3>("vec3", String("lightPos"), 0, 12));
+			 inline Uniform<float> farPlane(Uniform<float>("float", String("farPlane"), 0, 4));
+		};
+	};
+
+	namespace shadow_cascade_vertex {
 		namespace locations{
 			inline Location<glm::vec3> aPos(0, "vec3", "aPos", 0, 12);
 			inline Location<glm::vec2> aTexCoords(2, "vec2", "aTexCoords", 0, 8);
 		};
 		namespace uniforms{
+		};
+	};
+
+	namespace shadow_cascade_frag {
+		namespace locations{
+		};
+		namespace uniforms{
+			 inline Uniform<> depthMap(Uniform<>("sampler2D", String("depthMap"), 0, 0));
 		};
 	};
 

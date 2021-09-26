@@ -2,8 +2,7 @@
 
 #include "Technique.h"
 
-class ShadowTechnique : public Technique
-{
+class ShadowTechnique : public Technique {
 public:
 	using Technique::Technique;
 

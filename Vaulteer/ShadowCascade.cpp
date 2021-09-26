@@ -45,10 +45,9 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 	frustumCorners[7] = glm::vec4(xf, yf, -zFar, 1.0f);
 
 	// set light as origin in light view matrix
-	glm::mat4 lightMat = glm::lookAt(glm::vec3(0.0f), lightDirection, glm::vec3(0.f, 1.f, 0.f));
-	lightView = lightMat;
+	lightView = glm::lookAt(glm::vec3(0.0f), lightDirection, glm::vec3(0.f, 1.f, 0.f));
 
-	// get inverse camera matrix, but flip camera orientation to not render shadows behind us
+	// get inverse camera matrix
 	glm::mat4 cameraInverseMat = glm::inverse(camera.getViewMatrix());
 
 	// find minimum bounding box for frustum (in light space)
@@ -68,7 +67,7 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 		cameraFrustumWS.push_back(vW);
 
 		// Transform the frustum coordinate from world to light space
-		frustumCornersLightSpace[i] = lightMat * vW;
+		frustumCornersLightSpace[i] = lightView * vW;
 
 		minX = fmin(minX, frustumCornersLightSpace[i].x);
 		maxX = fmax(maxX, frustumCornersLightSpace[i].x);
@@ -82,26 +81,17 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 	// max and mins flipped
  	lightProjection = glm::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
 
-	cascadeCorners[0] = glm::vec4(minX, minY, -maxZ, 1.0f);
-	cascadeCorners[1] = glm::vec4(maxX, minY, -maxZ, 1.0f);
-	cascadeCorners[2] = glm::vec4(minX, maxY, -maxZ, 1.0f);
-	cascadeCorners[3] = glm::vec4(maxX, maxY, -maxZ, 1.0f);
-	cascadeCorners[4] = glm::vec4(minX, minY, -minZ, 1.0f);
-	cascadeCorners[5] = glm::vec4(maxX, minY, -minZ, 1.0f);
-	cascadeCorners[6] = glm::vec4(minX, maxY, -minZ, 1.0f);
-	cascadeCorners[7] = glm::vec4(maxX, maxY, -minZ, 1.0f);
-
-	glm::vec3 dir = lightDirection;
+	cascadeCorners[0] = glm::vec4(minX, minY, minZ, 1.0f);
+	cascadeCorners[1] = glm::vec4(maxX, minY, minZ, 1.0f);
+	cascadeCorners[2] = glm::vec4(minX, maxY, minZ, 1.0f);
+	cascadeCorners[3] = glm::vec4(maxX, maxY, minZ, 1.0f);
+	cascadeCorners[4] = glm::vec4(minX, minY, maxZ, 1.0f);
+	cascadeCorners[5] = glm::vec4(maxX, minY, maxZ, 1.0f);
+	cascadeCorners[6] = glm::vec4(minX, maxY, maxZ, 1.0f);
+	cascadeCorners[7] = glm::vec4(maxX, maxY, maxZ, 1.0f);
 
  	for (unsigned int i = 0; i < 8; i++) {
-		cascadeCorners[i] = glm::inverse(lightMat) * cascadeCorners[i];
-		
-		//cascadeCorners[i] = { cascadeCorners[i].y, cascadeCorners[i].x, cascadeCorners[i].z, cascadeCorners[i].w };     // light dir  1 -1  0
-		//cascadeCorners[i] = { -cascadeCorners[i].y, -cascadeCorners[i].x, cascadeCorners[i].z, cascadeCorners[i].w };   // light dir -1 -1  0
-
-		//cascadeCorners[i] = { cascadeCorners[i].x, cascadeCorners[i].z, cascadeCorners[i].y, cascadeCorners[i].w };     // light dir  0 -1  1
-		//cascadeCorners[i] = { cascadeCorners[i].x, -cascadeCorners[i].z, -cascadeCorners[i].y, cascadeCorners[i].w };   // light dir  0 -1 -1
-	
-		cascadeCorners[i] = { cascadeCorners[i].x, cascadeCorners[i].z, cascadeCorners[i].y, cascadeCorners[i].w };
+		cascadeCorners[i] = glm::inverse(lightView) * cascadeCorners[i];
+		cascadeCorners[i] = { cascadeCorners[i].x, cascadeCorners[i].y, cascadeCorners[i].z, cascadeCorners[i].w };
 	}
 }

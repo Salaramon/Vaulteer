@@ -99,6 +99,9 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowCubeTechnique.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -212,6 +215,9 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowCubeTechnique.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GLSLSourceFiles.toml">
@@ -250,10 +256,19 @@
     <None Include="lightsource_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_frag.glsl">
+    <None Include="shadow_cube_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_vertex.glsl">
+    <None Include="shadow_cube_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shadow_cascade_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shadow_cascade_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shadow_cube_geometry.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

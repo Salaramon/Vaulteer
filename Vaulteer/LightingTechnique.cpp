@@ -10,6 +10,10 @@ void LightingTechnique::init() {
     setUniform(shadowMap_0, 3);
     setUniform(shadowMap_1, 4);
     setUniform(shadowMap_2, 5);
+    setUniform(shadowCubeMap_0, 6);
+    setUniform(shadowCubeMap_1, 7);
+    setUniform(shadowCubeMap_2, 8);
+    setUniform(shadowCubeMap_3, 9);
 }
 
 void LightingTechnique::setDirectionalLight(const GLSLDirectionalLight& light) {
@@ -31,6 +35,8 @@ void LightingTechnique::setPointLight(const GLSLPointLight& light, const int& in
     setUniform(pointLights[index].att.aConstant, light.attenuation.constant);
     setUniform(pointLights[index].att.aLinear, light.attenuation.linear);
     setUniform(pointLights[index].att.aQuadratic, light.attenuation.quadratic);
+
+    setUniform(pointLights[index].radius, light.radius);
 
     setUniform(pointLights[index].position, 1, light.position);
 }
@@ -68,9 +74,14 @@ void LightingTechnique::setMaterialShininess(const float shininess) {
 }
 
 void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {
+    using namespace Binder::deferred_frag;
     for (unsigned int i = 0; i < shadowRenderer.numCascades; i++) {
-        setUniform(Binder::deferred_frag::uniforms::lightSpaceMatrices[i], 1, GL_FALSE, shadowRenderer.getCascade(i).getLightSpaceMatrix());
-        setUniform(Binder::deferred_frag::uniforms::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
+        setUniform(uniforms::lightSpaceMatrices[i], 1, GL_FALSE, shadowRenderer.getCascade(i).getLightSpaceMatrix());
+        setUniform(uniforms::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
+    }
+
+    for (unsigned int i = 0; i < shadowRenderer.numPointBuffers; i++) {
+        setUniform(uniforms::cubeMapFarPlanes[i], shadowRenderer.getPointBuffer(i).farPlane);
     }
 }
 

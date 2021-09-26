@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "LightingTechnique.h"
 #include "ShadowTechnique.h"
+#include "ShadowCubeTechnique.h"
 #include "LightTypes.h"
 
 #include "Event.h"
@@ -115,7 +116,8 @@ int main() {
 	LightingTechnique lightingTech("deferred_vertex.glsl", GL_VERTEX_SHADER, "deferred_frag.glsl", GL_FRAGMENT_SHADER);
 	ShadowTechnique shadowTech("depth_vertex.glsl", GL_VERTEX_SHADER, "depth_frag.glsl", GL_FRAGMENT_SHADER);
 
-	ShadowTechnique shadowShader("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
+	ShadowTechnique shadowCascadeShader("shadow_cascade_vertex.glsl", GL_VERTEX_SHADER, "shadow_cascade_frag.glsl", GL_FRAGMENT_SHADER);
+	ShadowCubeTechnique shadowCubeShader("shadow_cube_vertex.glsl", GL_VERTEX_SHADER, "shadow_cube_geometry.glsl", GL_GEOMETRY_SHADER, "shadow_cube_frag.glsl", GL_FRAGMENT_SHADER);
 
 	Technique lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
 
@@ -148,24 +150,30 @@ int main() {
 	MyCamera cameraCopy(glm::vec3(.0f, 3.0f, -3.f), glm::vec3(.0f, .0f, 1.0f), glm::vec3(.0f, 1.0f, .0f), glm::vec3(.0f, .5f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT);
 	//camera.camera_far = 30.f;
 
-	std::vector<float> cascadeBounds = { 1.0f, 15.0f };
+	std::vector<float> cascadeBounds = { 1.0f, 25.0f, 60.0f, 150.0f };
 
-	ShadowRenderer shadowRenderer = ShadowRenderer(shadowTech, camera, cascadeBounds);
+	ShadowRenderer shadowRenderer = ShadowRenderer(shadowTech, shadowCubeShader, camera, cascadeBounds);
 
- 	const int NUM_LIGHTS = 32;
+ 	const int NUM_LIGHTS = 4;
 	glm::vec3 lightPositions[NUM_LIGHTS];
 	float lightColorOffsets[NUM_LIGHTS];
 	int8_t lightDirs[NUM_LIGHTS];
 	GLSLPointLight pointLights[NUM_LIGHTS];
-	GLSLPointLight::GLSLAttenuation att = { 1.0f, 0.19f, 0.032f }; // for no dropoff: { 1.0f, .0f, .0f }
+	GLSLAttenuation att = { 1.0f, -0.20f, 0.062f }; // for no dropoff: { 1.0f, .0f, .0f }
 
 
 	srand((int) glfwGetTime());
+
 	for (int i = 0; i < NUM_LIGHTS; i++) {
 		lightDirs[i] = (rand() % 2) * 2 - 1;
-		lightPositions[i] = glm::vec3(0.0, randf(1.0f, 3.0f), randf(-10.0f, 10.0f));
-		lightColorOffsets[i] = randf(0.0f, 3.0f);
-		pointLights[i] = { glm::vec3(randf(0.0f, 1.0f), randf(0.0f, 1.0f), randf(0.0f, 1.0f)), 0.01f, 0.2f, lightPositions[i], att };
+		float pos = randf(-100.0f, 10.0f);
+		float posScale = 10.0f;
+		lightPositions[i] = glm::vec3(cosf(pos) * posScale, randf(1.2f, 12.0f), sinf(pos) * posScale);
+		lightColorOffsets[i] = 0.0f;
+		pointLights[i] = { glm::vec3(1.0f), 0.1f, 0.4f, lightPositions[i], att };
+		pointLights[i].radius = GLSLPointLight::calculateRadius(pointLights[i]);
+
+		shadowRenderer.addPointBuffer(1024, pointLights[i]);
 	}
 
 
@@ -193,6 +201,12 @@ int main() {
 
 		// moving light
 		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
+		glm::vec3 lightCurrentPos[NUM_LIGHTS];
+		glm::vec3 lightCurrentColor[NUM_LIGHTS];
+		for (int i = 0; i < NUM_LIGHTS; i++) {
+			lightCurrentPos[i] = lightPositions[i];
+			//lightCurrentColor[i] = getColor(fmod(lightColorOffsets[i] + glfwGetTime(), 3.0f));
+		}
 
 		MyCamera* cam = (event_check_c ? &cameraCopy : &camera);
 
@@ -227,11 +241,13 @@ int main() {
 		// shadow map pass
 		// -----------------------------------------------------------------------------------------------------------------------
 
+		shadowRenderer.setCamera(*cam);
+		shadowRenderer.updateCascadeBounds(dirLight.direction);
 
-		for (int i = 0; i < shadowRenderer.numCascades; i++) {
-			ShadowCascade& cascade = shadowRenderer.getCascade(i);
-			cascade.updateBounds(*cam, dirLight.direction);
+		for (int i = 0; i < NUM_LIGHTS; i++) {
+			shadowRenderer.getPointBuffer(i).lightPos = pointLights[i].position;
 		}
+
 		shadowRenderer.render(scene);
 
 		// light pass
@@ -249,24 +265,16 @@ int main() {
 			glActiveTexture(GL_TEXTURE0 + GBuffer::GBufferTextureType::NumTextures + i);
 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getCascadeBuffer(i).getTextureId());
 		}
-
-		glm::vec3 lightCurrentPos[NUM_LIGHTS];
-		glm::vec3 lightCurrentColor[NUM_LIGHTS];
-		for (int i = 0; i < NUM_LIGHTS; i++) {
-			lightCurrentPos[i] = glm::vec3(
-				lightDirs[i] * sinf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].x,
-				lightPositions[i].y, 
-				lightDirs[i] * cosf(glfwGetTime() + lightPositions[i].y) * lightPositions[i].z);
-
-			lightCurrentColor[i] = getColor(fmod(lightColorOffsets[i] + glfwGetTime() * lightColorOffsets[i], 3.0f));
+		for (int i = 0; i < shadowRenderer.numPointBuffers; i++) {
+			GLenum texUnit = GBuffer::GBufferTextureType::NumTextures + shadowRenderer.numCascades + i;
+			glActiveTexture(GL_TEXTURE0 + texUnit);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, shadowRenderer.getPointBuffer(i).getTextureId());
 		}
 
+
 		for (int i = 0; i < NUM_LIGHTS; i++) {
-			pointLights[i].position = lightCurrentPos[i];
-			//if (lightCurrentPos[i].z > 0.0)
-			//	pointLights[i].color = lightCurrentColor[i];
-			//else
-			pointLights[i].color = glm::vec3(0.0);
+			//pointLights[i].position = lightCurrentPos[i];
+			//pointLights[i].color = lightCurrentColor[i];
 			lightingTech.setPointLight(pointLights[i], i);
 		}
 		
@@ -282,12 +290,12 @@ int main() {
 		lightingTech.setMaterialShininess(32.0f);
 
 		if (event_check_g) {
-			shadowShader.use();
-			shadowShader.setUniform(Binder::shadow_frag::uniforms::depthMap, 0);
+			shadowCascadeShader.use();
+			shadowCascadeShader.setUniform(Binder::shadow_cascade_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getCascadeBuffer(0).getTextureId());
 
-			quad.draw(shadowShader);
+			quad.draw(shadowCascadeShader);
 		}
 		else {
 			quad.draw(lightingTech);
@@ -300,7 +308,7 @@ int main() {
 		
 		// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
 		// ----------------------------------------------------------------------------------
-		/*gbuffer.bindForReading();
+		gbuffer.bindForReading();
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
 		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
 		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
@@ -310,29 +318,23 @@ int main() {
 
 		// light source pass
 
-		/*lightSourceShader.use();
+		lightSourceShader.use();
 		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
-		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix(WINDOW_WIDTH, WINDOW_HEIGHT));
+		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
 
 		for (int i = 0; i < NUM_LIGHTS; i++) {
-			glm::mat4 modelMat = glm::translate(origModelMat, lightCurrentPos[i] + glm::vec3(0, -0.05, 0));
+			glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), lightCurrentPos[i] + glm::vec3(0, -0.05, 0));
 			modelMat = glm::scale(modelMat, glm::vec3(0.1f));
 			modelMat = glm::rotate(modelMat, (float)glfwGetTime() * 3, glm::vec3(0.0f, 1.0f, 0.0f));
 
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
 			lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1,  pointLights[i].color);
 
-			model.draw(lightSourceShader);
+			model1.draw(lightSourceShader);
 		}
-		*/
+		
 
-		/*glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), cameraCopy.position + glm::vec3(0, -0.05, 0));
-		modelMat = glm::scale(modelMat, glm::vec3(0.4f));
-		lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-		lightSourceShader.setUniform(Binder::lightsource_frag::uniforms::lightColor, 1, glm::vec3(0.2f, 1.0f, 0.2f));
-		model.draw(lightSourceShader);*/
-
-		if (true) {
+		if (false) {
 			ShadowCascade& shadowCascade = shadowRenderer.getCascade(0);
 
 			lightSourceShader.use();
@@ -364,11 +366,8 @@ int main() {
 		Event::Poll();
 		handleCamera(camera);
 
-		//cameraCopy.rotate(0.2f, 0.0f);
-		//cameraCopy.move(glm::vec3(sinf(glfwGetTime()*4) * 0.2f, 0.0f, cosf(glfwGetTime()*4) * 0.2f));
 
-
-		if (timeout_f-- < 0 && Event::Check << (Event::Key == Event::KEY::F && Event::State == Event::STATE::DOWN)) {
+		if (timeout_f-- < 0 && Event::Check << (Event::Key == Event::KEY::F && Event::Action == Event::ACTION::PRESS)) {
 			event_check_f = !event_check_f;
 			timeout_f = timeoutOrig;
 		}

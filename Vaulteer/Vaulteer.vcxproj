@@ -199,6 +199,7 @@
     </ClCompile>
     <ClCompile Include="ShadowCascade.cpp" />
     <ClCompile Include="ShadowCubeBuffer.cpp" />
+    <ClCompile Include="ShadowCubeTechnique.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -230,6 +231,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShadowCascade.h" />
     <ClInclude Include="ShadowCubeBuffer.h" />
+    <ClInclude Include="ShadowCubeTechnique.h" />
     <ClInclude Include="ShadowRenderer.h" />
     <ClInclude Include="TypeDefUtils.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -296,8 +298,11 @@
     <None Include="depth_frag.glsl" />
     <None Include="depth_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />
-    <None Include="shadow_frag.glsl" />
-    <None Include="shadow_vertex.glsl" />
+    <None Include="shadow_cascade_frag.glsl" />
+    <None Include="shadow_cascade_vertex.glsl" />
+    <None Include="shadow_cube_frag.glsl" />
+    <None Include="shadow_cube_geometry.glsl" />
+    <None Include="shadow_cube_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

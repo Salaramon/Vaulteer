@@ -1,13 +1,15 @@
 #include "ShadowCubeBuffer.h"
 
 
-ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize) : FrameBuffer(initTexture(cubeSize, cubeSize)), 
-	cubeSize(cubeSize)
+ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize, const GLSLPointLight pointLight) : FrameBuffer(initTexture(cubeSize, cubeSize)),
+	cubeSize(cubeSize), lightPos(pointLight.position), farPlane(GLSLPointLight::calculateRadius(pointLight))
 {}
 
-ShadowCubeBuffer::ShadowCubeBuffer(ShadowCubeBuffer&& mv) noexcept : 
+ShadowCubeBuffer::ShadowCubeBuffer(ShadowCubeBuffer&& mv) noexcept :
 	FrameBuffer(std::move(mv)),
-	cubeSize(mv.cubeSize) 
+	cubeSize(mv.cubeSize),
+	lightPos(mv.lightPos),
+	farPlane(mv.farPlane)
 {}
 
 ShadowCubeBuffer::~ShadowCubeBuffer() {
@@ -30,4 +32,26 @@ uint ShadowCubeBuffer::initTexture(uint width, uint height) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	return texId;
+}
+
+std::vector<glm::mat4> ShadowCubeBuffer::getShadowTransforms() {
+	std::vector<glm::mat4> shadowTransforms;
+
+	float nearPlane = 1.0f;
+	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, nearPlane, farPlane);
+
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj *
+		glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+ 	return shadowTransforms;
 }
