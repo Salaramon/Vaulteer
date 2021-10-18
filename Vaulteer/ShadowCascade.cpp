@@ -6,6 +6,8 @@ ShadowCascade::ShadowCascade(float zNear, float zFar) :
 	for (int i = 0; i < 8; i++) {
 		glm::vec4 corner((float)((i & 4) / 2 - 1), (float)((i & 2) - 1), (float)((i & 1) * 2 - 1), 1.0f);
 		frustumCorners[i] = corner;
+
+		cascadeCorners[i] = glm::vec4(0.f);
 	}
 }
 
@@ -81,6 +83,7 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 	// max and mins flipped
  	lightProjection = glm::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
 
+	// set cascade corner bounds in light space
 	cascadeCorners[0] = glm::vec4(minX, minY, minZ, 1.0f);
 	cascadeCorners[1] = glm::vec4(maxX, minY, minZ, 1.0f);
 	cascadeCorners[2] = glm::vec4(minX, maxY, minZ, 1.0f);
@@ -90,6 +93,7 @@ void ShadowCascade::updateBounds(MyCamera& camera, glm::vec3 lightDirection) {
 	cascadeCorners[6] = glm::vec4(minX, maxY, maxZ, 1.0f);
 	cascadeCorners[7] = glm::vec4(maxX, maxY, maxZ, 1.0f);
 
+	// translate corner bounds to world space again for later visualization
  	for (unsigned int i = 0; i < 8; i++) {
 		cascadeCorners[i] = glm::inverse(lightView) * cascadeCorners[i];
 		cascadeCorners[i] = { cascadeCorners[i].x, cascadeCorners[i].y, cascadeCorners[i].z, cascadeCorners[i].w };

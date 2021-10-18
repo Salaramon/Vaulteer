@@ -13,6 +13,7 @@
 */
 class ShadowCubeBuffer : public FrameBuffer {
 public:
+	ShadowCubeBuffer(const uint cubeSize, const glm::vec3 lightPosition, const float farPlane);
 	ShadowCubeBuffer(const uint cubeSize, const GLSLPointLight pointLight);
 	ShadowCubeBuffer(ShadowCubeBuffer&& mv) noexcept;
 

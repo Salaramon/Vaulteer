@@ -16,6 +16,7 @@
 #include "LightingTechnique.h"
 #include "ShadowTechnique.h"
 #include "ShadowCubeTechnique.h"
+#include "ShadowMapTechnique.h"
 #include "LightTypes.h"
 
 #include "Event.h"
@@ -114,10 +115,13 @@ int main() {
 
 	GeometryTechnique geometryTech("geometry_vertex.glsl", GL_VERTEX_SHADER, "geometry_frag.glsl", GL_FRAGMENT_SHADER);
 	LightingTechnique lightingTech("deferred_vertex.glsl", GL_VERTEX_SHADER, "deferred_frag.glsl", GL_FRAGMENT_SHADER);
-	ShadowTechnique shadowTech("depth_vertex.glsl", GL_VERTEX_SHADER, "depth_frag.glsl", GL_FRAGMENT_SHADER);
 
-	ShadowTechnique shadowCascadeShader("shadow_cascade_vertex.glsl", GL_VERTEX_SHADER, "shadow_cascade_frag.glsl", GL_FRAGMENT_SHADER);
+	ShadowTechnique shadowShader("shadow_vertex.glsl", GL_VERTEX_SHADER, "shadow_frag.glsl", GL_FRAGMENT_SHADER);
 	ShadowCubeTechnique shadowCubeShader("shadow_cube_vertex.glsl", GL_VERTEX_SHADER, "shadow_cube_geometry.glsl", GL_GEOMETRY_SHADER, "shadow_cube_frag.glsl", GL_FRAGMENT_SHADER);
+	
+	ShadowMapTechnique shadowMapShader("shadow_map_vertex.glsl", GL_VERTEX_SHADER, "shadow_map_frag.glsl", GL_FRAGMENT_SHADER);
+	
+	Technique shadowSpotlightShader("shadow_cascade_vertex.glsl", GL_VERTEX_SHADER, "shadow_cascade_frag.glsl", GL_FRAGMENT_SHADER);
 
 	Technique lightSourceShader("lightsource_vertex.glsl", GL_VERTEX_SHADER, "lightsource_frag.glsl", GL_FRAGMENT_SHADER);
 
@@ -137,7 +141,7 @@ int main() {
 	Model quad("quad.obj");
 	model1.setShaderContext(&geometryTech);
 
-	Scene scene = { cube, model1, model2, model3, model4 };
+	ModelVec scene = { cube, model1, model2, model3, model4 };
 
 	unsigned int nullTextureID;
 	glGenTextures(1, &nullTextureID);
@@ -152,26 +156,27 @@ int main() {
 
 	std::vector<float> cascadeBounds = { 1.0f, 25.0f, 60.0f, 150.0f };
 
-	ShadowRenderer shadowRenderer = ShadowRenderer(shadowTech, shadowCubeShader, camera, cascadeBounds);
+	ShadowRenderer shadowRenderer = ShadowRenderer(camera, cascadeBounds);
 
  	const int NUM_LIGHTS = 4;
 	glm::vec3 lightPositions[NUM_LIGHTS];
-	float lightColorOffsets[NUM_LIGHTS];
-	int8_t lightDirs[NUM_LIGHTS];
+	glm::vec3 lightColors[NUM_LIGHTS];
 	GLSLPointLight pointLights[NUM_LIGHTS];
 	GLSLAttenuation att = { 1.0f, -0.20f, 0.062f }; // for no dropoff: { 1.0f, .0f, .0f }
 
+	lightColors[0] = glm::vec3(0.f, 0.f, 1.f);
+	lightColors[1] = glm::vec3(0.f, 1.f, 0.f);
+	lightColors[2] = glm::vec3(1.f, 0.f, 0.f);
+	lightColors[3] = glm::vec3(1.f, 1.f, 0.f);
 
 	srand((int) glfwGetTime());
 
 	for (int i = 0; i < NUM_LIGHTS; i++) {
-		lightDirs[i] = (rand() % 2) * 2 - 1;
 		float pos = randf(-100.0f, 10.0f);
 		float posScale = 10.0f;
 		lightPositions[i] = glm::vec3(cosf(pos) * posScale, randf(1.2f, 12.0f), sinf(pos) * posScale);
-		lightColorOffsets[i] = 0.0f;
+
 		pointLights[i] = { glm::vec3(1.0f), 0.1f, 0.4f, lightPositions[i], att };
-		pointLights[i].radius = GLSLPointLight::calculateRadius(pointLights[i]);
 
 		shadowRenderer.addPointBuffer(1024, pointLights[i]);
 	}
@@ -200,12 +205,11 @@ int main() {
 		log.debug("Color buffer bit and depth bit cleared.\n", "glClear");
 
 		// moving light
-		//dirLight.direction = glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime()));
 		glm::vec3 lightCurrentPos[NUM_LIGHTS];
 		glm::vec3 lightCurrentColor[NUM_LIGHTS];
 		for (int i = 0; i < NUM_LIGHTS; i++) {
 			lightCurrentPos[i] = lightPositions[i];
-			//lightCurrentColor[i] = getColor(fmod(lightColorOffsets[i] + glfwGetTime(), 3.0f));
+			lightCurrentColor[i] = lightColors[i];
 		}
 
 		MyCamera* cam = (event_check_c ? &cameraCopy : &camera);
@@ -248,7 +252,9 @@ int main() {
 			shadowRenderer.getPointBuffer(i).lightPos = pointLights[i].position;
 		}
 
-		shadowRenderer.render(scene);
+		shadowRenderer.renderCascades(scene, shadowShader);
+		shadowRenderer.renderPointLights(scene, shadowCubeShader);
+		shadowRenderer.renderSpotLights(scene, shadowShader);
 
 		// light pass
         // -----------------------------------------------------------------------------------------------------------------------
@@ -273,12 +279,12 @@ int main() {
 
 
 		for (int i = 0; i < NUM_LIGHTS; i++) {
-			//pointLights[i].position = lightCurrentPos[i];
-			//pointLights[i].color = lightCurrentColor[i];
+			pointLights[i].position = lightCurrentPos[i];
+			pointLights[i].color = lightCurrentColor[i];
 			lightingTech.setPointLight(pointLights[i], i);
 		}
 		
-		lightingTech.setDirectionalLight(dirLight);
+		//lightingTech.setDirectionalLight(dirLight);
 
 		lightingTech.setWorldCameraPos(camera.position);
 		lightingTech.setCameraViewMat(camera.getViewMatrix());
@@ -290,12 +296,12 @@ int main() {
 		lightingTech.setMaterialShininess(32.0f);
 
 		if (event_check_g) {
-			shadowCascadeShader.use();
-			shadowCascadeShader.setUniform(Binder::shadow_cascade_frag::uniforms::depthMap, 0);
+			shadowMapShader.use();
+			shadowMapShader.setUniform(Binder::shadow_map_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getCascadeBuffer(0).getTextureId());
 
-			quad.draw(shadowCascadeShader);
+			quad.draw(shadowMapShader);
 		}
 		else {
 			quad.draw(lightingTech);
@@ -333,7 +339,7 @@ int main() {
 			model1.draw(lightSourceShader);
 		}
 		
-
+		// visualization for cascade bounds
 		if (false) {
 			ShadowCascade& shadowCascade = shadowRenderer.getCascade(0);
 

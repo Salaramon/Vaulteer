@@ -4,6 +4,16 @@ ShadowBuffer::ShadowBuffer(const uint w, const uint h) : FrameBuffer(initTexture
 	width(w), height(h)
 {}
 
+ShadowBuffer::ShadowBuffer(const uint size) : FrameBuffer(initTexture(size, size)), width(size), height(size) 
+{}
+
+ShadowBuffer::ShadowBuffer(const GLSLSpotLight& spotLight) {
+	int size = GLSLSpotLight::calculateSizeAcross(spotLight);
+	width = size; 
+	height = size;
+	initTexture(width, height);
+}
+
 ShadowBuffer::ShadowBuffer(ShadowBuffer&& mv) noexcept : 
 	FrameBuffer(std::move(mv)),
 	width(mv.width), height(mv.height) 

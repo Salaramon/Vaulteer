@@ -9,7 +9,7 @@
 #include "ShadowCascade.h"
 #include "ShadowTechnique.h"
 #include "ShadowCubeTechnique.h"
-#include "Scene.h"
+#include "ModelVec.h"
 
 
 class ShadowRenderer
@@ -19,32 +19,36 @@ public:
 
 	unsigned int numCascades;
 	unsigned int numPointBuffers;
+	unsigned int numSpotBuffers;
 
-	ShadowRenderer(ShadowTechnique& shadowTech, ShadowCubeTechnique& shadowCubeTech, MyCamera& camera, std::vector<float> cascadeBounds);
+	ShadowRenderer(MyCamera& camera, std::vector<float> cascadeBounds);
 
 	void setCamera(MyCamera& camera);
 	void updateCascadeBounds(glm::vec3 lightDirection);
 
-	void addPointBuffer(int cubeSize, const GLSLPointLight& pointLight);
-	void addSpotBuffer(int mapSize);
+	void addPointBuffer(int cubeResolution, const GLSLPointLight& pointLight);
+	void addSpotBuffer(const GLSLSpotLight& spotLight);
 
 	ShadowBuffer& getCascadeBuffer(int index);
 	ShadowCascade& getCascade(int index);
 	ShadowCubeBuffer& getPointBuffer(int index);
 
-	void render(Scene& scene);
+	void renderCascades(ModelVec& scene, ShadowTechnique& technique);
+	void renderPointLights(ModelVec& scene, ShadowCubeTechnique& technique);
+	void renderSpotLights(ModelVec& scene, ShadowTechnique& technique);
 
 private:
-	ShadowTechnique& shadowTech;
-	ShadowCubeTechnique& shadowCubeTech;
 	MyCamera& camera;
-
-	std::vector<ShadowCubeBuffer> pointBuffers;
-	std::vector<ShadowBuffer> spotBuffers;
 
 	std::vector<ShadowBuffer> cascadeBuffers;
 	std::vector<ShadowCascade> cascades;
 
-	void drawScene(Scene& scene, Technique& shader);
+	std::vector<ShadowCubeBuffer> pointBuffers;
+	std::vector<GLSLPointLight> pointLights;
+
+	std::vector<ShadowBuffer> spotBuffers;
+	std::vector<GLSLSpotLight> spotLights;
+
+	void drawScene(ModelVec& scene, Technique& shader);
 };
 

@@ -1,7 +1,7 @@
 #include "ShadowRenderer.h"
 
-ShadowRenderer::ShadowRenderer(ShadowTechnique& shadowTech, ShadowCubeTechnique& shadowCubeTech, MyCamera& camera, std::vector<float> cascadeBounds)
-	: shadowTech(shadowTech), shadowCubeTech(shadowCubeTech), camera(camera), numCascades(cascadeBounds.size() - 1), numPointBuffers(0) {
+ShadowRenderer::ShadowRenderer(MyCamera& camera, std::vector<float> cascadeBounds)
+		: camera(camera), numCascades(cascadeBounds.size() - 1), numPointBuffers(0), numSpotBuffers(0) {
 	for (int i = 0; i < numCascades; i++) {
 		cascades.emplace_back(cascadeBounds[i], cascadeBounds[i + (size_t)1]);
 		cascadeBuffers.emplace_back(SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -18,25 +18,35 @@ void ShadowRenderer::updateCascadeBounds(glm::vec3 lightDirection) {
 	}
 }
 
-void ShadowRenderer::render(Scene& scene) {
+void ShadowRenderer::renderCascades(ModelVec& scene, ShadowTechnique& technique) {
 	// save current viewport for restoration later
 	GLint m_viewport[4];
 	glGetIntegerv(GL_VIEWPORT, m_viewport);
 
-	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-
-	shadowTech.use();
+	technique.use();
 
 	for (int i = 0; i < cascades.size(); i++) {
-		cascadeBuffers[i].bindWrite();
+		ShadowBuffer& buffer = cascadeBuffers[i];
+		glViewport(0, 0, buffer.width, buffer.height);
+
+		buffer.bindWrite();
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowTech.setLightSpaceMatrix(cascades[i].getLightSpaceMatrix());
+		technique.setLightSpaceMatrix(cascades[i].getLightSpaceMatrix());
 
-		drawScene(scene, shadowTech);
+		drawScene(scene, technique);
 	}
 
-	shadowCubeTech.use();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
+}
+
+void ShadowRenderer::renderPointLights(ModelVec& scene, ShadowCubeTechnique& technique) {
+	// save current viewport for restoration later
+	GLint m_viewport[4];
+	glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+	technique.use();
 
 	for (int i = 0; i < numPointBuffers; i++) {
 		ShadowCubeBuffer& buffer = pointBuffers[i];
@@ -49,20 +59,43 @@ void ShadowRenderer::render(Scene& scene) {
 		glm::mat4 modelMat(1.0f);
 		modelMat = glm::translate(modelMat, buffer.lightPos);
 
-		shadowCubeTech.setModel(modelMat);
-		shadowCubeTech.setFarPlane(buffer.farPlane);
-		shadowCubeTech.setLightPos(buffer.lightPos);
-		shadowCubeTech.setShadowMatrices(buffer.getShadowTransforms());
+		technique.setModel(modelMat);
+		technique.setFarPlane(buffer.farPlane);
+		technique.setLightPos(buffer.lightPos);
+		technique.setShadowMatrices(buffer.getShadowTransforms());
 
-		drawScene(scene, shadowCubeTech);
+		drawScene(scene, technique);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
 }
 
-void ShadowRenderer::drawScene(Scene& scene, Technique& shader) {
+void ShadowRenderer::renderSpotLights(ModelVec& scene, ShadowTechnique& technique) {
+	// save current viewport for restoration later
+	GLint m_viewport[4];
+	glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+	technique.use();
+
+	for (int i = 0; i < numSpotBuffers; i++) {
+		ShadowBuffer& buffer = spotBuffers[i];
+		glViewport(0, 0, buffer.width, buffer.height);
+
+		buffer.bindWrite();
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		GLSLSpotLight& spotLight = spotLights[i];
+		technique.setLightSpaceMatrix(GLSLSpotLight::getLightSpaceMatrix(spotLight));
+
+		drawScene(scene, technique);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
+}
+
+void ShadowRenderer::drawScene(ModelVec& scene, Technique& shader) {
 	for (Model& model : scene) {
 		model.draw(shader);
 	}
@@ -80,11 +113,11 @@ ShadowCubeBuffer& ShadowRenderer::getPointBuffer(int index) {
 	return pointBuffers[index];
 }
 
-void ShadowRenderer::addPointBuffer(int cubeSize, const GLSLPointLight& pointLight) {
-	pointBuffers.emplace_back(cubeSize, pointLight);
+void ShadowRenderer::addPointBuffer(int cubeResolution, const GLSLPointLight& pointLight) {
+	pointBuffers.emplace_back(cubeResolution, pointLight);
 	numPointBuffers++;
 }
 
-void ShadowRenderer::addSpotBuffer(int mapSize) {
-	spotBuffers.emplace_back(mapSize, mapSize);
+void ShadowRenderer::addSpotBuffer(const GLSLSpotLight& spotLight) {
+	spotBuffers.emplace_back(spotLight);
 }

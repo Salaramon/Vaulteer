@@ -102,6 +102,9 @@
     <ClCompile Include="ShadowCubeTechnique.cpp">
       <Filter>Source Files\shadow</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMapTechnique.cpp">
+      <Filter>Source Files\shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -212,10 +215,13 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="ModelVec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShadowCubeTechnique.h">
+      <Filter>Header Files\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapTechnique.h">
       <Filter>Header Files\shadow</Filter>
     </ClInclude>
   </ItemGroup>
@@ -232,10 +238,10 @@
     <None Include="deferred_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="depth_frag.glsl">
+    <None Include="shadow_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="depth_vertex.glsl">
+    <None Include="shadow_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="geometry_frag.glsl">
@@ -262,10 +268,10 @@
     <None Include="shadow_cube_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_cascade_vertex.glsl">
+    <None Include="depth_map_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_cascade_frag.glsl">
+    <None Include="depth_map_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shadow_cube_geometry.glsl">

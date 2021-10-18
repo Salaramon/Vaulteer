@@ -1,5 +1,7 @@
 #include "FrameBuffer.h"
 
+FrameBuffer::FrameBuffer() {}
+
 FrameBuffer::FrameBuffer(uint frameBufferTexId) : frameBufferTexId(frameBufferTexId) {
 	initFramebuffer();
 }

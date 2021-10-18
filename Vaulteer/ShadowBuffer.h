@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "LightTypes.h"
 #include "FrameBuffer.h"
 
 /*
@@ -9,14 +10,16 @@
 */
 class ShadowBuffer : public FrameBuffer {
 private:
-	uint width, height;
 public:
+	uint width, height;
+
 	ShadowBuffer(uint w, uint h);
+	ShadowBuffer(uint size);
+	ShadowBuffer(const GLSLSpotLight& spotLight);
 	ShadowBuffer(ShadowBuffer&& mv) noexcept;
 
 	~ShadowBuffer();
 
 	uint initTexture(uint width, uint height);
-
 };
 

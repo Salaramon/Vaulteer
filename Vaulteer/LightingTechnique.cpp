@@ -36,7 +36,7 @@ void LightingTechnique::setPointLight(const GLSLPointLight& light, const int& in
     setUniform(pointLights[index].att.aLinear, light.attenuation.linear);
     setUniform(pointLights[index].att.aQuadratic, light.attenuation.quadratic);
 
-    setUniform(pointLights[index].radius, light.radius);
+    setUniform(pointLights[index].radius, GLSLPointLight::calculateRadius(light));
 
     setUniform(pointLights[index].position, 1, light.position);
 }

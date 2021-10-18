@@ -19,7 +19,6 @@ public:
 	void setProjection(const glm::mat4& projection);
 	void updateBounds(MyCamera& camera, glm::vec3 lightDirection);
 
-	std::vector<float> bounds;
 	std::vector<glm::vec4> cameraFrustumWS;
 	glm::vec4 cascadeCorners[8];
 

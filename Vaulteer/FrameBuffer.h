@@ -10,6 +10,7 @@
 */
 class FrameBuffer {
 public:
+	FrameBuffer();
 	FrameBuffer(uint frameBufferTexId);
 	FrameBuffer(uint frameBufferTexId, uint FBO);
 	FrameBuffer(FrameBuffer&& mv) noexcept;

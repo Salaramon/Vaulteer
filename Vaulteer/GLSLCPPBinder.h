@@ -53,9 +53,9 @@ namespace Binder {
 		if (strings_equal("deferred_vertex.glsl", a)) { return 0; }
 		if (strings_equal("geometry_vertex.glsl", a)) { return 1; }
 		if (strings_equal("lightsource_vertex.glsl", a)) { return 2; }
-		if (strings_equal("depth_vertex.glsl", a)) { return 3; }
+		if (strings_equal("shadow_vertex.glsl", a)) { return 3; }
 		if (strings_equal("shadow_cube_vertex.glsl", a)) { return 4; }
-		if (strings_equal("shadow_cascade_vertex.glsl", a)) { return 5; }
+		if (strings_equal("shadow_map_vertex.glsl", a)) { return 5; }
 	};
 
 	template<class... Args>
@@ -92,7 +92,7 @@ namespace Binder {
 		LocationInfo(1, "vec3", "aNormal", 0, 12),
 		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
 	};
-	struct AttributeStructure_depth_vertex{
+	struct AttributeStructure_shadow_vertex{
 		glm::vec3 aPos;
 		inline static const std::array<size_t, 1> offsets = {0};
 		inline static const std::array<LocationInfo, 1> locations = {
@@ -104,7 +104,7 @@ namespace Binder {
 		inline static const std::array<LocationInfo, 1> locations = {
 		LocationInfo(0, "vec3", "aPos", 0, 12)};
 	};
-	struct AttributeStructure_shadow_cascade_vertex{
+	struct AttributeStructure_shadow_map_vertex{
 		glm::vec3 aPos;
 		glm::vec2 aTexCoords;
 		inline static const std::array<size_t, 2> offsets = {0,12};
@@ -115,7 +115,7 @@ namespace Binder {
 
 	struct AttributeObject {
 		template<char const* str>
-		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_geometry_vertex,AttributeStructure_lightsource_vertex,AttributeStructure_depth_vertex,AttributeStructure_shadow_cube_vertex,AttributeStructure_shadow_cascade_vertex>::type<str>;
+		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_geometry_vertex,AttributeStructure_lightsource_vertex,AttributeStructure_shadow_vertex,AttributeStructure_shadow_cube_vertex,AttributeStructure_shadow_map_vertex>::type<str>;
 	};
 
 	namespace file_names{
@@ -125,13 +125,13 @@ namespace Binder {
 		constexpr char geometry_vertex[] = "geometry_vertex.glsl";
 		constexpr char lightsource_frag[] = "lightsource_frag.glsl";
 		constexpr char lightsource_vertex[] = "lightsource_vertex.glsl";
-		constexpr char depth_frag[] = "depth_frag.glsl";
-		constexpr char depth_vertex[] = "depth_vertex.glsl";
+		constexpr char shadow_frag[] = "shadow_frag.glsl";
+		constexpr char shadow_vertex[] = "shadow_vertex.glsl";
 		constexpr char shadow_cube_vertex[] = "shadow_cube_vertex.glsl";
 		constexpr char shadow_cube_geometry[] = "shadow_cube_geometry.glsl";
 		constexpr char shadow_cube_frag[] = "shadow_cube_frag.glsl";
-		constexpr char shadow_cascade_vertex[] = "shadow_cascade_vertex.glsl";
-		constexpr char shadow_cascade_frag[] = "shadow_cascade_frag.glsl";
+		constexpr char shadow_map_vertex[] = "shadow_map_vertex.glsl";
+		constexpr char shadow_map_frag[] = "shadow_map_frag.glsl";
 	}
 
 	struct Attenuation{
@@ -275,14 +275,14 @@ namespace Binder {
 		};
 	};
 
-	namespace depth_frag {
+	namespace shadow_frag {
 		namespace locations{
 		};
 		namespace uniforms{
 		};
 	};
 
-	namespace depth_vertex {
+	namespace shadow_vertex {
 		namespace locations{
 			inline Location<glm::vec3> aPos(0, "vec3", "aPos", 0, 12);
 		};
@@ -318,7 +318,7 @@ namespace Binder {
 		};
 	};
 
-	namespace shadow_cascade_vertex {
+	namespace shadow_map_vertex {
 		namespace locations{
 			inline Location<glm::vec3> aPos(0, "vec3", "aPos", 0, 12);
 			inline Location<glm::vec2> aTexCoords(2, "vec2", "aTexCoords", 0, 8);
@@ -327,7 +327,7 @@ namespace Binder {
 		};
 	};
 
-	namespace shadow_cascade_frag {
+	namespace shadow_map_frag {
 		namespace locations{
 		};
 		namespace uniforms{

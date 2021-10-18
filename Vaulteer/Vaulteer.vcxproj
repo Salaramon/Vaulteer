@@ -200,6 +200,7 @@
     <ClCompile Include="ShadowCascade.cpp" />
     <ClCompile Include="ShadowCubeBuffer.cpp" />
     <ClCompile Include="ShadowCubeTechnique.cpp" />
+    <ClCompile Include="ShadowMapTechnique.cpp" />
     <ClCompile Include="ShadowRenderer.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -228,10 +229,11 @@
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="Scene.h" />
+    <ClInclude Include="ModelVec.h" />
     <ClInclude Include="ShadowCascade.h" />
     <ClInclude Include="ShadowCubeBuffer.h" />
     <ClInclude Include="ShadowCubeTechnique.h" />
+    <ClInclude Include="ShadowMapTechnique.h" />
     <ClInclude Include="ShadowRenderer.h" />
     <ClInclude Include="TypeDefUtils.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -295,11 +297,11 @@
     <None Include="lightsource_vertex.glsl" />
     <None Include="light_frag.glsl" />
     <None Include="light_vertex.glsl" />
-    <None Include="depth_frag.glsl" />
-    <None Include="depth_vertex.glsl" />
+    <None Include="shadow_frag.glsl" />
+    <None Include="shadow_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />
-    <None Include="shadow_cascade_frag.glsl" />
-    <None Include="shadow_cascade_vertex.glsl" />
+    <None Include="depth_map_frag.glsl" />
+    <None Include="depth_map_vertex.glsl" />
     <None Include="shadow_cube_frag.glsl" />
     <None Include="shadow_cube_geometry.glsl" />
     <None Include="shadow_cube_vertex.glsl" />
