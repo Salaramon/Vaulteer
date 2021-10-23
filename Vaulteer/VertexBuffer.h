@@ -15,7 +15,9 @@ public:
 
 	VertexBuffer(std::vector<Store>& vertices);
 
-	VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
+	VertexBuffer(std::vector<Store> vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
+
+	//VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
 
 	VertexBuffer(VertexBuffer&& other) noexcept;
 
@@ -43,7 +45,7 @@ inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices)
 }
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors) : DebugLogger<VertexBuffer<void>>()
+inline VertexBuffer<Store>::VertexBuffer(std::vector<Store> vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors)
 {
 	initialize();
 	debug("VertexBuffer destroyed. Buffer: " + std::to_string(buffer) + "\n");
@@ -51,6 +53,7 @@ inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices, VertexArr
 	insert(vertices);
 	bindVertexArray(vertexArray, locInfo, divisors);
 }
+
 
 template<class Store>
 inline VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :

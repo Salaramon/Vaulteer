@@ -3,18 +3,20 @@
 #include <vector>
 #include <memory>
 
-#include "Model.h"
 #include "Camera.h"
+#include "SceneLayer.h"
 
 class Scene
 {
 	friend class RenderPass;
+	friend class Renderer;
 public:
-	Model* addModel(Model model);
-	Camera* addCamera(Camera camera);
+	Camera* addCamera(Camera&& camera);
+	SceneLayer* addLayer(SceneLayer&& layer);
 	void setActiveCamera(Camera* camera);
+	Camera* getActiveCamera();
 private:
-	std::vector<std::unique_ptr<Model>> models;
+	std::vector<std::unique_ptr<SceneLayer>> sceneLayers;
 	std::vector<std::unique_ptr<Camera>> cameras;
 	Camera* activeCamera = nullptr;
 };

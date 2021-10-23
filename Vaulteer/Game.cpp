@@ -7,40 +7,103 @@ Game::Game(Window& window) :
 
 void Game::loadResources()
 {
+	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>( "Crate/Crate1.obj", "Crate" )));
+	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
+	models.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
+		glm::vec3(5, 5, 5), glm::vec3(10, 5, 5),
+		glm::vec3(5, 5, 5), glm::vec3(10, 10, 5),
+		glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
 
-	models.emplace(std::make_pair<std::string, ModelData>("Crate", {"Crate/Crate1.obj", "Crate" }));
+		glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), 
+		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
+		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
+	)));
+
+	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
+		1, 1,
+		std::vector<glm::vec4>({
+			glm::vec4(0,0,1,1) 
+		}),
+		std::vector<Vertex>({ 
+			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
+			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10) 
+		}
+	))));
+
+	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos2", std::make_unique<ModelData>(
+		1, 1,
+		std::vector<glm::vec4>({
+			glm::vec4(1, 1, 1, 1) 
+		}), 
+		std::vector<Vertex>({
+			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
+			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10) 
+	}))));
 }
 
 size_t Game::run()
 {
 	
+	//glEnable(GL_LINE_SMOOTH);
+
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	Scene gameScene;
+
+	//Renderer
+	Renderer renderer;
+
+	//Shaders
+	Shader meshShader(Binder::file_names::forward_vertex, GL_VERTEX_SHADER, Binder::file_names::forward_frag, GL_FRAGMENT_SHADER);
+	Shader lineShader(Binder::file_names::line_vertex, GL_VERTEX_SHADER, Binder::file_names::line_frag, GL_FRAGMENT_SHADER);
+
+	//Scenes
+	Scene scene;
+
+	//RenderStratas
+	RenderStrata meshStrata;
+	RenderStrata lineStrata;
+
+	//Setting up cameras in the scene.
+	Camera* camera = scene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	//Select the active camera.
+	scene.setActiveCamera(camera);
+
+	//Set up render passe(s) for each render strata.
+	RenderPass* meshPass = meshStrata.addRenderPass(ForwardPass<Data, Return>(meshShader));
+	RenderPass* linePass = lineStrata.addRenderPass(LinePass(lineShader));
+
 	
+
+	//Set up scene layer(s) for each scene.
+	SceneLayer* meshLayer = scene.addLayer(SceneLayer(meshStrata));
+	SceneLayer* lineLayer = scene.addLayer(SceneLayer(lineStrata));
+	
+	//Add models to scene layers(s)
 	std::vector<Model*> models;
 
 	//Generate floor
-	intmax_t width = 14;
-	intmax_t height = 14;
-	for (intmax_t i = -7; i < width; i++) {
-		for (intmax_t j = -7; j < height; j++) {
-			models.push_back(gameScene.addModel(Model(modelByName("Crate"))));
+	intmax_t width = 8;
+	intmax_t height = 8;
+	for (intmax_t i = -(width/2); i < width; i++) {
+		for (intmax_t j = -(height/2); j < height; j++) {
+			models.push_back(meshLayer->addModel(modelByName("crate")));
 			models.back()->setPosition(2*i, 0, 2*j);
 		}
 	}
 
-	Shader shader(Binder::file_names::lightsource_vertex, GL_VERTEX_SHADER, Binder::file_names::lightsource_frag, GL_FRAGMENT_SHADER);
+	//models.push_back(lineLayer->addModel(modelByName("line")));
+	models.push_back(meshLayer->addModel(modelByName("chaos1")));
+	//models.push_back(meshLayer->addModel(modelByName("chaos2")));
+	//models.back()->setPolygonMode(Model::Polygon::Line);
+	//models.back()->setPolygonLineWidth(5);
 
-	RenderPass worldPass(shader);
-	Renderer renderer;
-	renderer.addRenderPass(worldPass);
+	//models.push_back(lineLayer->addModel(modelByName("line")));
+	//models.back()->setPolygonLineWidth(5);
+
+	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
 
-	Camera* camera = gameScene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	camera->lockUp(worldUp);
 	camera->setPosition(0, 10, 0);
-	
-	gameScene.setActiveCamera(camera);
 
 	double_t vel = 0;
 
@@ -78,21 +141,16 @@ size_t Game::run()
 			camera->rotate(0, 0, -(float)Event::delta() * (speed / sens));
 		}
 
-		/*
-		glm::vec3 cameraPos = camera.getPosition();
-		
-		if (vel < 52) {
-			vel = vel + (9.81 * Event::delta());
+		if (Event::KEY::T >> Event::ACTION::PRESS) {
+			if (true) {
+				
+			}
+			else {
+				
+			}
+			
 		}
-		
-		cameraPos.y = cameraPos.y - vel;
-		camera.setPosition(cameraPos.x, cameraPos.y, cameraPos.z);
 
-		if (cameraPos.y < 4) {
-			camera.setPosition(cameraPos.x, 4, cameraPos.z);
-			vel = 0;
-		}
-		*/
 		camera->apply();
 
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
@@ -100,11 +158,23 @@ size_t Game::run()
 
 		
 		
-		renderer.render(gameScene);
+		renderer.render(scene);
 
 		glfwSwapBuffers(window->getRawWindow());
+
+		DebugLogger<>::disableLogging();
 	}
+
+	//DebugLogger<>::setDefaultClassMessageLimit(0);
+	//DebugLogger<>::setClassMessageLimit("FUNCTION", 99999);
+	//DebugLogger<>::setMessageNameMessageLimit(ObjectAlias::OpenGLMessage, 99999);
 	
+
+	//DebugLogger<>::setDefaultClassMessageLimit(0);
+	//DebugLogger<>::setClassMessageLimit("Shader", 99999);
+
+	DebugLogger<>::printOrderedByClass();
+
 	return 0;
 }
 
@@ -113,13 +183,13 @@ void Game::setWindow(Window& window)
 	Game::window = &window;
 }
 
-ModelData& Game::modelByName(std::string name)
+Model Game::modelByName(std::string name)
 {
 	auto it = models.find(name);
 	if (it == models.end()) {
 		debug("Model name not found.", MessageAlias::CriticalError);
 	}
 	else {
-		return it->second;
+		return Model(*it->second);
 	}
 }

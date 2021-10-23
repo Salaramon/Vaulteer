@@ -9,9 +9,15 @@
 #include "Model.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "SceneLayer.h"
+#include "RenderStrata.h"
+#include "ForwardPass.h"
+#include "LinePass.h"
+#include "GraphicsData.h"
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
+
 class Game : public DebugLogger<Game>
 {
 public:
@@ -19,11 +25,15 @@ public:
 	void loadResources();
 	size_t run();
 	void setWindow(Window& window);
+	/*
+	template<class Data>
+	using loadModel = std::make_pair<std::string, std::unique_ptr<Data>>;
+	*/
 private:
-	ModelData& modelByName(std::string name);
+	Model modelByName(std::string name);
 
 	Window* window;
-	std::unordered_map<std::string, ModelData> models;
+	std::unordered_map<std::string, std::unique_ptr<GraphicsData>> models;
 
 };
 

@@ -1,18 +1,24 @@
 #include "Scene.h"
 
-Model* Scene::addModel(Model model)
+Camera* Scene::addCamera(Camera&& camera)
 {
-	models.push_back(std::make_unique<Model>(model));
-	return models.back().get();
+    cameras.emplace_back(std::make_unique<Camera>(camera));
+	return cameras.back().get();
 }
 
-Camera* Scene::addCamera(Camera camera)
+SceneLayer* Scene::addLayer(SceneLayer&& layer)
 {
-    cameras.push_back(std::make_unique<Camera>(camera));
-	return cameras.back().get();;
+	sceneLayers.emplace_back(std::make_unique<SceneLayer>(std::move(layer)));
+	sceneLayers.back()->parentScene = this;
+	return sceneLayers.back().get();
 }
 
 void Scene::setActiveCamera(Camera* camera)
 {
 	activeCamera = camera;
+}
+
+Camera* Scene::getActiveCamera()
+{
+	return activeCamera;
 }

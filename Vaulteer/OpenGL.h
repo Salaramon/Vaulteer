@@ -14,7 +14,7 @@ public:
 		if (directMessaging) {
 			std::cout << std::string(message​) + '\n' << std::endl;
 		}
-		log.debug(std::string(message​) + '\n');
+		log.debug(std::string(message​) + '\n', MessageAlias::OpenGLMessage);
 	}
 
 	//Face culling enumerations
@@ -22,9 +22,9 @@ public:
 	inline static const GLenum BACK = GL_BACK;
 
 	//Debug enumeration
-	inline static const GLenum SYNC = 0x00;
+	inline static const GLenum SYNC = 0x01;
 
-	inline static void initialize();
+	static void initialize();
 
 	static void enableDepthTest();
 	static void disableDepthTest();

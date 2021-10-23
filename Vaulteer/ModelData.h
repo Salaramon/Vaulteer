@@ -14,20 +14,45 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "GraphicsData.h"
+
 #include "Mesh.h"
 #include "Texture.h"
+#include "VertexHash.h"
 
 #include "DebugLogger.h"
 
-class ModelData : public DebugLogger<ModelData>
+class ModelData : public DebugLogger<ModelData>, public GraphicsData
 {
 public:
+
+	struct ModelVertexHash : public VertexHash<Vertex> {
+	public:
+		size_t hash_combine(size_t lhs, size_t rhs) const {
+			lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);
+			return lhs;
+		}
+
+		bool operator()(const Vertex& a, const Vertex& b)const override
+		{
+			return a.aPos.x == b.aPos.x && a.aPos.y == b.aPos.y && a.aPos.z == b.aPos.z;
+		}
+
+		size_t operator()(const Vertex& k) const override
+		{
+			return hash_combine(
+				hash_combine(std::hash<float>()(k.aPos.x), std::hash<float>()(k.aPos.y)),
+				std::hash<float>()(k.aPos.z));
+		}
+	};
+
+	ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices);
 	ModelData(std::string meshPath);
 	ModelData(std::string meshPath, std::string textureFolderPath);
 
 	void loadModel(std::string path);
 
-	void draw(const Shader& shader);
+	void draw(const Shader& shader) override;
 
 private:
 
@@ -47,4 +72,3 @@ private:
 
 	std::unordered_set<std::string>  textureFiles;
 };
-

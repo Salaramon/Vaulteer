@@ -24,6 +24,7 @@ void initializeGLFW() {
 }
 
 void initializeOpenGL() {
+	OpenGL::initialize();
 	OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	OpenGL::enableDirectDebugMessageing();
@@ -36,6 +37,7 @@ void cleanup() {
 int main() {
 	//Logger settings
 	DebugLogger<>::disableLogging();
+	//DebugLogger<>::breakAtMessage(206180);
 	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
 	
 	//Initialization
@@ -48,8 +50,8 @@ int main() {
 
 
 	Event::AddEventHandlingForWindow(&window);
-	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::lightsource_frag::uniforms::lightColor);
-
+	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
+	//Texture::uniformTextureTypes.emplace(aiTextureType_SPECULAR, Binder::lightsource_frag::uniforms::lightColor);
 	//Game game("resourceFolder?");
 
 	Game game(window);

@@ -10,6 +10,14 @@ namespace ObjectAlias {
 }
 
 namespace MessageAlias {
+	constexpr char OpenGLMessage[] = "OpenGLMessage";
+
 	constexpr char ShaderOutput[] = "ShaderOutput";
+
+	//Break on critical error
 	constexpr char CriticalError[] = "CriticalError";
+
+	constexpr char Error[] = "Error";
+	constexpr char Warining[] = "Warning";
+	constexpr char Message[] = "Message";
 }

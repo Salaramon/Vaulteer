@@ -165,11 +165,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
+    <ClCompile Include="BaseSceneLayer.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
+    <ClCompile Include="ForwardPass.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GeometryTechnique.cpp">
@@ -178,22 +180,31 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GraphicsData.cpp" />
     <ClCompile Include="LightingTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Line.cpp" />
+    <ClCompile Include="LineData.cpp" />
+    <ClCompile Include="LinePass.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="MyCamera.cpp" />
     <ClCompile Include="OpenGL.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="PolyTree.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="RenderStrata.cpp" />
+    <ClCompile Include="RenderStratum.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneConcept.cpp" />
+    <ClCompile Include="SceneLayer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -217,19 +228,31 @@
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexArray.cpp" />
+    <ClCompile Include="VertexHash.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseSceneLayer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
+    <ClInclude Include="ForwardPass.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GraphicsData.h" />
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="LineData.h" />
+    <ClInclude Include="LinePass.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="OpenGL.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="PolyTree.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RenderStrata.h" />
+    <ClInclude Include="RenderStratum.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneConcept.h" />
+    <ClInclude Include="SceneLayer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
@@ -279,6 +302,7 @@
     <ClInclude Include="UniformParametersFunctionOverloadsGenerator.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexArray.h" />
+    <ClInclude Include="VertexHash.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -286,10 +310,12 @@
     <None Include="deferred_vertex.glsl" />
     <None Include="geometry_frag.glsl" />
     <None Include="geometry_vertex.glsl" />
-    <None Include="lightsource_frag.glsl" />
-    <None Include="lightsource_vertex.glsl" />
+    <None Include="forward_frag.glsl" />
+    <None Include="forward_vertex.glsl" />
     <None Include="light_frag.glsl" />
     <None Include="light_vertex.glsl" />
+    <None Include="line_frag.glsl" />
+    <None Include="line_vertex.glsl" />
     <None Include="shadow_frag.glsl" />
     <None Include="shadow_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />

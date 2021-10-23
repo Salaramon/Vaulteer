@@ -1,15 +1,20 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
-#include "RenderPass.h"
+#include "Scene.h"
 
 class Renderer
 {
 public:
-	void addRenderPass(RenderPass pass);
 	void render(Scene& scene);
-private:
-	std::vector<RenderPass> renderPasses;
+
+	/*
+	g_pLightsPipelineBack->GetRasterizerState().SetCullMode( RasterizerState::CullMode::Front );
+	g_pLightsPipelineBack->GetDepthStencilState().SetDepthMode( disableDepthWrites );
+	g_pLightsPipelineBack->GetBlendState().SetBlendMode( alphaBlending );
+	*/
+
 };
 

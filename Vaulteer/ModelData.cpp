@@ -1,5 +1,16 @@
 #include "ModelData.h"
 
+ModelData::ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices)
+{
+	std::vector<Vertex> vert;
+	std::vector<GLuint> indi;
+	storePointsAndIndices<ModelVertexHash>(indi, vert, vertices);
+	textures.emplace_back(Binder::forward_frag::uniforms::diffuse1, width, height, colors);
+	//Implement a set color in texture, and make texture take an abstract amount of pixel data to set.
+	//Take argument in this function for binder uniform, for the call above.
+	meshes.emplace_back(vert, indi);
+}
+
 ModelData::ModelData(std::string meshPath)
 {
 	debug("Loading model: " + meshPath + "\n");
