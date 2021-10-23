@@ -258,7 +258,7 @@ namespace Binder {
 		namespace locations{
 		};
 		namespace uniforms{
-			 inline Uniform<glm::vec3> lightColor(Uniform<glm::vec3>("vec3", String("lightColor"), 0, 12));
+			 inline Uniform<> diffuse1(Uniform<>("sampler2D", String("diffuse1"), 0, 0));
 		};
 	};
 
