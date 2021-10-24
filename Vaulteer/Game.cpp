@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "Scene.h"
+
 Game::Game(Window& window) : 
 	window(&window)
 {
@@ -49,33 +51,30 @@ size_t Game::run()
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer renderer;
 
 	//Shaders
 	Shader meshShader(Binder::file_names::forward_vertex, GL_VERTEX_SHADER, Binder::file_names::forward_frag, GL_FRAGMENT_SHADER);
 	Shader lineShader(Binder::file_names::line_vertex, GL_VERTEX_SHADER, Binder::file_names::line_frag, GL_FRAGMENT_SHADER);
 
 	//Scenes
-	Scene scene;
+	//Scene scene;
+	Scene<Camera> scene;
 
 	//RenderStratas
-	RenderStrata meshStrata;
-	RenderStrata lineStrata;
+
 
 	//Setting up cameras in the scene.
-	Camera* camera = scene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	//Camera* camera = scene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	Camera cam = Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight());
+	Camera* camera = &cam;
+	
 	//Select the active camera.
-	scene.setActiveCamera(camera);
+	//scene.setActiveCamera(camera);
 
 	//Set up render passe(s) for each render strata.
-	RenderPass* meshPass = meshStrata.addRenderPass(ForwardPass<Data, Return>(meshShader));
-	RenderPass* linePass = lineStrata.addRenderPass(LinePass(lineShader));
+
 
 	
-
-	//Set up scene layer(s) for each scene.
-	SceneLayer* meshLayer = scene.addLayer(SceneLayer(meshStrata));
-	SceneLayer* lineLayer = scene.addLayer(SceneLayer(lineStrata));
 	
 	//Add models to scene layers(s)
 	std::vector<Model*> models;
@@ -85,13 +84,13 @@ size_t Game::run()
 	intmax_t height = 8;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
-			models.push_back(meshLayer->addModel(modelByName("crate")));
+			//models.push_back(meshLayer->addModel(modelByName("crate")));
 			models.back()->setPosition(2*i, 0, 2*j);
 		}
 	}
 
 	//models.push_back(lineLayer->addModel(modelByName("line")));
-	models.push_back(meshLayer->addModel(modelByName("chaos1")));
+	//models.push_back(meshLayer->addModel(modelByName("chaos1")));
 	//models.push_back(meshLayer->addModel(modelByName("chaos2")));
 	//models.back()->setPolygonMode(Model::Polygon::Line);
 	//models.back()->setPolygonLineWidth(5);
@@ -102,8 +101,8 @@ size_t Game::run()
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
 
-	camera->lockUp(worldUp);
-	camera->setPosition(0, 10, 0);
+	//camera->lockUp(worldUp);
+	//camera->setPosition(0, 10, 0);
 
 	double_t vel = 0;
 
@@ -158,7 +157,7 @@ size_t Game::run()
 
 		
 		
-		renderer.render(scene);
+		//renderer.render(scene);
 
 		glfwSwapBuffers(window->getRawWindow());
 

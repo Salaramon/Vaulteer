@@ -7,12 +7,8 @@
 #include "Camera.h"
 #include "Event.h"
 #include "Model.h"
-#include "Renderer.h"
-#include "Scene.h"
-#include "SceneLayer.h"
-#include "RenderStrata.h"
-#include "ForwardPass.h"
-#include "LinePass.h"
+
+
 #include "GraphicsData.h"
 
 #include "DebugLogger.h"

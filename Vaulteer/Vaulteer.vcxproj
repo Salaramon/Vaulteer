@@ -171,7 +171,6 @@
     <ClCompile Include="DebugLogger.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
-    <ClCompile Include="ForwardPass.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GeometryTechnique.cpp">
@@ -189,7 +188,6 @@
     </ClCompile>
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineData.cpp" />
-    <ClCompile Include="LinePass.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
@@ -198,13 +196,8 @@
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="PolyTree.cpp" />
     <ClCompile Include="Renderable.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="RenderPass.cpp" />
-    <ClCompile Include="RenderStrata.cpp" />
-    <ClCompile Include="RenderStratum.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneConcept.cpp" />
-    <ClCompile Include="SceneLayer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -236,23 +229,17 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
-    <ClInclude Include="ForwardPass.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsData.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineData.h" />
-    <ClInclude Include="LinePass.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="PolyTree.h" />
     <ClInclude Include="Renderable.h" />
-    <ClInclude Include="RenderPass.h" />
-    <ClInclude Include="RenderStrata.h" />
-    <ClInclude Include="RenderStratum.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneConcept.h" />
-    <ClInclude Include="SceneLayer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
@@ -276,7 +263,6 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyCamera.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMapFBO.h">

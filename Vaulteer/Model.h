@@ -18,7 +18,6 @@
 #include "ModelData.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "RenderStrata.h"
 
 #include "Renderable.h"
 
