@@ -8,13 +8,14 @@
 
 public:
 	using Technique::Technique;
+	using fragUnis = Binder::deferred_frag::uniforms;
 
 	virtual void init();
 	virtual void setModel(const glm::mat4& modelMat) {};
 
 	void setDirectionalLight(const GLSLDirectionalLight& light);
-	void setPointLight(const GLSLPointLight& light, const int& index);
-	void setSpotLight(const GLSLSpotLight& light);
+	void setPointLight(const GLSLPointLight& light, const int index);
+	void setSpotLight(const GLSLSpotLight& light, const int index);
 
 	void setWorldCameraPos(const glm::vec3& cameraPos);
 	void setCameraViewMat(const glm::mat4& viewMat);
