@@ -45,7 +45,7 @@ void Game::loadResources()
 
 size_t Game::run()
 {
-	
+	ForwardTechnique();
 	//glEnable(GL_LINE_SMOOTH);
 
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -60,13 +60,12 @@ size_t Game::run()
 	//Scene scene;
 	Scene<Camera> scene;
 
-	//RenderStratas
-
+	//TODO: create SceneObject class as a base class to all scene objects
+	// use this class to restrict classes which can be passed to scene and give them must have function through virtual inheritance if necessary.
 
 	//Setting up cameras in the scene.
 	//Camera* camera = scene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
-	Camera cam = Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight());
-	Camera* camera = &cam;
+	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	
 	//Select the active camera.
 	//scene.setActiveCamera(camera);

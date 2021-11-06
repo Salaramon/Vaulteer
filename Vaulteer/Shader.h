@@ -60,6 +60,11 @@ public:
 
 		shaderProgram_link();
 	};
+	
+	Shader(const Shader& other) : setUniform(this) {
+		shaderProgramID = other.shaderProgramID;
+		shaderIDs = other.shaderIDs;
+	}
 
 	~Shader() {
 		glDeleteProgram(shaderProgramID);

@@ -15,13 +15,6 @@ using SceneContainer = std::tuple<typename std::vector<std::unique_ptr<SceneObje
 template<class... SceneObjects>
 class _Scene {};
 
-template<class Container, class T, class... Rest>
-class _Scene<Container, T, Rest...> : public std::enable_if<(sizeof...(Rest) != 1), _Scene<Container, Rest...>>::type, public _Scene<Container, T> {
-public:
-	_Scene(Container& containerDispatch) : _Scene<Container, T>::_Scene(containerDispatch) {}
-	using _Scene<Container, T>::addObject;
-};
-
 template<class Container, class T>
 class _Scene<Container, T> {
 public:
@@ -29,6 +22,7 @@ public:
 
 	T* addObject(T&& object) {
 		std::get<std::vector<std::unique_ptr<T>>>(objectVectors).emplace_back(std::make_unique<T>(std::move(object)));
+		return std::get<std::vector<std::unique_ptr<T>>>(objectVectors).back().get();
 	}
 
 private:
@@ -36,14 +30,14 @@ private:
 };
 
 template<class... SceneObjects>
-class Scene : public _Scene<SceneObjects...>
+class Scene : public _Scene<SceneContainer<SceneObjects...>, SceneObjects>...
 {
 public:
 	SceneContainer<SceneObjects...> objectVectors;
 	
-	Scene() : _Scene<SceneObjects...>::_Scene(objectVectors) {}
+	Scene() : _Scene<SceneContainer<SceneObjects...>, SceneObjects...>::_Scene(objectVectors) {}
 
-	using _Scene<SceneObjects...>::addObject;
+	using _Scene<SceneContainer<SceneObjects...>, SceneObjects...>::addObject;
 
 private:
 	

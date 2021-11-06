@@ -14,6 +14,10 @@
 #include "DebugLogger.h"
 #include "DebugAliases.h"
 
+
+#include "ShaderProgram.h"
+#include "ForwardTechnique.h"
+
 class Game : public DebugLogger<Game>
 {
 public:

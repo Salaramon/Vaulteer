@@ -171,6 +171,8 @@
     <ClCompile Include="DebugLogger.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
+    <ClCompile Include="ForwardRenderer.cpp" />
+    <ClCompile Include="ForwardTechnique.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GeometryTechnique.cpp">
@@ -181,10 +183,8 @@
     </ClCompile>
     <ClCompile Include="GraphicsData.cpp" />
     <ClCompile Include="LightingTechnique.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineData.cpp" />
@@ -197,8 +197,9 @@
     <ClCompile Include="PolyTree.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneConcept.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -229,6 +230,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
+    <ClInclude Include="ForwardRenderer.h" />
+    <ClInclude Include="ForwardTechnique.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsData.h" />
     <ClInclude Include="Line.h" />
@@ -239,7 +242,8 @@
     <ClInclude Include="PolyTree.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneConcept.h" />
+    <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
@@ -255,10 +259,8 @@
     </ClInclude>
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="LightingTechnique.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
