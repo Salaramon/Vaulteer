@@ -29,7 +29,7 @@ public:
 	Texture(Texture&& other);
 	~Texture();
 
-	void activate(const Shader& shader, GLint index);
+	void activate(const Shader& shader, GLint index) const;
 
 	void setWrap(GLenum x, GLenum y);
 

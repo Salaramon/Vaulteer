@@ -1,7 +1,5 @@
 #include "Game.h"
 
-#include "Scene.h"
-
 Game::Game(Window& window) : 
 	window(&window)
 {
@@ -11,7 +9,7 @@ void Game::loadResources()
 {
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>( "Crate/Crate1.obj", "Crate" )));
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
-	models.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
+	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
 		glm::vec3(5, 5, 5), glm::vec3(10, 5, 5),
 		glm::vec3(5, 5, 5), glm::vec3(10, 10, 5),
 		glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
@@ -20,7 +18,6 @@ void Game::loadResources()
 		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
 		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 	)));
-
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
 		1, 1,
 		std::vector<glm::vec4>({
@@ -45,28 +42,18 @@ void Game::loadResources()
 
 size_t Game::run()
 {
-	ForwardTechnique();
 	//glEnable(GL_LINE_SMOOTH);
 
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-
-	//Shaders
-	Shader meshShader(Binder::file_names::forward_vertex, GL_VERTEX_SHADER, Binder::file_names::forward_frag, GL_FRAGMENT_SHADER);
-	Shader lineShader(Binder::file_names::line_vertex, GL_VERTEX_SHADER, Binder::file_names::line_frag, GL_FRAGMENT_SHADER);
-
+	Renderer<ForwardRenderer> renderer;
+	
 	//Scenes
-	//Scene scene;
-	Scene<Camera> scene;
-
-	//TODO: create SceneObject class as a base class to all scene objects
-	// use this class to restrict classes which can be passed to scene and give them must have function through virtual inheritance if necessary.
+	Renderer<ForwardRenderer>::Scene scene;
 
 	//Setting up cameras in the scene.
-	//Camera* camera = scene.addCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
-	
 	//Select the active camera.
 	//scene.setActiveCamera(camera);
 
@@ -76,19 +63,19 @@ size_t Game::run()
 	
 	
 	//Add models to scene layers(s)
-	std::vector<Model*> models;
+	std::vector<Object3D*> objects;
 
 	//Generate floor
 	intmax_t width = 8;
 	intmax_t height = 8;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
-			//models.push_back(meshLayer->addModel(modelByName("crate")));
-			models.back()->setPosition(2*i, 0, 2*j);
+			objects.push_back(scene.addObject(modelByName(models, "crate")));
+			objects.back()->setPosition(2*i, 0, 2*j);
 		}
 	}
 
-	//models.push_back(lineLayer->addModel(modelByName("line")));
+	objects.push_back(scene.addObject(modelByName(lines, "line")));
 	//models.push_back(meshLayer->addModel(modelByName("chaos1")));
 	//models.push_back(meshLayer->addModel(modelByName("chaos2")));
 	//models.back()->setPolygonMode(Model::Polygon::Line);
@@ -100,8 +87,8 @@ size_t Game::run()
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
 
-	//camera->lockUp(worldUp);
-	//camera->setPosition(0, 10, 0);
+	camera->lockUp(worldUp);
+	camera->setPosition(0, 10, 0);
 
 	double_t vel = 0;
 
@@ -114,10 +101,10 @@ size_t Game::run()
 
 		
 		camera->rotate(Event::CURSOR::X.delta() * sens / 1.35, Event::CURSOR::Y.delta() * sens, 0);
-		if (Event::KEY::LEFT_SHIFT >> Event::STATE::DOWN) {
+		if (Event::KEY::SPACE >> Event::STATE::DOWN) {
 			camera->move(worldUp * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::LEFT_CONTROL >> Event::STATE::DOWN) {
+		if (Event::KEY::LEFT_SHIFT >> Event::STATE::DOWN) {
 			camera->move(-worldUp * (float)Event::delta() * speed);
 		}
 		if (Event::KEY::W >> Event::STATE::DOWN) {
@@ -132,10 +119,10 @@ size_t Game::run()
 		if (Event::KEY::D >> Event::STATE::DOWN) {
 			camera->move(-camera->getRight() * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::Q >> Event::STATE::DOWN) {
+		if (Event::KEY::E >> Event::STATE::DOWN) {
 			camera->rotate(0, 0, (float)Event::delta() * (speed / sens));
 		}
-		if (Event::KEY::E >> Event::STATE::DOWN) {
+		if (Event::KEY::Q >> Event::STATE::DOWN) {
 			camera->rotate(0, 0, -(float)Event::delta() * (speed / sens));
 		}
 
@@ -156,7 +143,7 @@ size_t Game::run()
 
 		
 		
-		//renderer.render(scene);
+		renderer.render(scene);
 
 		glfwSwapBuffers(window->getRawWindow());
 
@@ -179,15 +166,4 @@ size_t Game::run()
 void Game::setWindow(Window& window)
 {
 	Game::window = &window;
-}
-
-Model Game::modelByName(std::string name)
-{
-	auto it = models.find(name);
-	if (it == models.end()) {
-		debug("Model name not found.", MessageAlias::CriticalError);
-	}
-	else {
-		return Model(*it->second);
-	}
 }

@@ -69,9 +69,6 @@
     <ClCompile Include="ShadowTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightingTechnique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeometryTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,12 +90,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renderable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LineData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,12 +102,6 @@
     <ClCompile Include="VertexHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BaseSceneLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ForwardRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -124,6 +109,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LineTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -200,9 +194,6 @@
     <ClInclude Include="ShadowTechnique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LightingTechnique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LightTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -227,12 +218,6 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Renderable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LineData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -245,12 +230,6 @@
     <ClInclude Include="VertexHash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseSceneLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ForwardRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -258,6 +237,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LineTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

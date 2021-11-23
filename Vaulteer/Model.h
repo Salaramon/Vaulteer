@@ -18,12 +18,12 @@
 #include "ModelData.h"
 #include "Texture.h"
 #include "Shader.h"
-
-#include "Renderable.h"
+#include "Object3D.h"
 
 #include "DebugLogger.h"
 
-class Model : public DebugLogger<Model>, public Renderable
+template<class Data>
+class Model : public DebugLogger<Model<char>>, public Object3D
 {
 public:
 
@@ -41,17 +41,8 @@ public:
 
 	Model(Model&) = delete;
 	Model(Model&& model);
-	Model(GraphicsData& data);
-	Model(ModelData& data);
-	Model(LineData& data);
+	Model(Data& data);
 
-	glm::mat4 getModelMatrix();
-	void rotate(float angle, glm::vec3 axis);
-	void setRotation(float angle, glm::vec3 axis);
-	void move(float x, float y, float z);
-	void setPosition(float x, float y, float z);
-	void scale(float x, float y, float z);
-	void setScale(float x, float y, float z);
 	void setPolygonFaces(GLenum faces);
 	void setPolygonMode(GLenum mode);
 	void setPolygonLineWidth(GLfloat width);
@@ -60,20 +51,72 @@ public:
 	GLenum getPolygonMode();
 	GLfloat getPolygonLineWidth();
 
-	GraphicsData* getData();
+	Data* getData();
 
-	void render(const Shader& shader) override;
+	//void render(const Shader& shader) override;
 private:
 
-	GraphicsData* model = nullptr;
-
-	glm::mat4 modelScale;
-	glm::mat4 modelTranslation;
-	glm::mat4 modelRotation;
+	Data* model = nullptr;
 
 	GLenum polygonFaces = Faces::Both;
 	GLenum polygonMode = Polygon::Fill;
 	GLfloat polygonLineWidth = 1;
 
 };
+
+template<class Data>
+inline Model<Data>::Model(Model&& model) :
+	model(std::move(model.model)),
+	polygonFaces(std::move(model.polygonFaces)),
+	polygonMode(std::move(model.polygonMode)),
+	polygonLineWidth(std::move(model.polygonLineWidth))
+{}
+
+template<class Data>
+inline Model<Data>::Model(Data& data) : 
+	Object3D(),
+	model(&data)
+{}
+
+template<class Data>
+inline void Model<Data>::setPolygonFaces(GLenum faces)
+{
+	polygonFaces = faces;
+}
+
+template<class Data>
+inline void Model<Data>::setPolygonMode(GLenum mode)
+{
+	polygonMode = mode;
+}
+
+template<class Data>
+inline void Model<Data>::setPolygonLineWidth(GLfloat width)
+{
+	polygonLineWidth = width;
+}
+
+template<class Data>
+inline GLenum Model<Data>::getPolygonFaces()
+{
+	return polygonFaces;
+}
+
+template<class Data>
+inline GLenum Model<Data>::getPolygonMode()
+{
+	return polygonMode;
+}
+
+template<class Data>
+inline GLfloat Model<Data>::getPolygonLineWidth()
+{
+	return polygonLineWidth;
+}
+
+template<class Data>
+inline Data* Model<Data>::getData()
+{
+	return model;
+}
 

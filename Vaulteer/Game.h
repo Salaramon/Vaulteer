@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Event.h"
 #include "Model.h"
+#include "Scene.h"
 
 
 #include "GraphicsData.h"
@@ -14,7 +15,8 @@
 #include "DebugLogger.h"
 #include "DebugAliases.h"
 
-
+#include "Renderer.h"
+#include "ForwardRenderer.h"
 #include "ShaderProgram.h"
 #include "ForwardTechnique.h"
 
@@ -30,10 +32,23 @@ public:
 	using loadModel = std::make_pair<std::string, std::unique_ptr<Data>>;
 	*/
 private:
-	Model modelByName(std::string name);
+	template<class T>
+	Model<T> modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name);
 
 	Window* window;
-	std::unordered_map<std::string, std::unique_ptr<GraphicsData>> models;
+	std::unordered_map<std::string, std::unique_ptr<ModelData>> models;
+	std::unordered_map<std::string, std::unique_ptr<LineData>> lines;
 
 };
 
+template<class T>
+Model<T> Game::modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name)
+{
+	auto it = container.find(name);
+	if (it == container.end()) {
+		debug("Model name not found.", MessageAlias::CriticalError);
+	}
+	else {
+		return Model<T>(*it->second);
+	}
+}

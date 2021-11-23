@@ -24,7 +24,7 @@ Texture::~Texture()
 	cleanup();
 }
 
-void Texture::activate(const Shader& shader, GLint index)
+void Texture::activate(const Shader& shader, GLint index) const
 {
 	shader.setUniform(uniform, index);
 	glBindTextureUnit(index, textureID);

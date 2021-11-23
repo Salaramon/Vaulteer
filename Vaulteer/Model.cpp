@@ -1,6 +1,6 @@
 #include "Model.h"
 
-
+/*
 Model::Model(Model&& model) :
 	model(std::move(model.model)),
 	modelScale(std::move(model.modelScale)),
@@ -111,3 +111,4 @@ void Model::render(const Shader& shader)
 }
 
 
+*/

@@ -165,7 +165,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
-    <ClCompile Include="BaseSceneLayer.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
@@ -182,22 +181,18 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GraphicsData.cpp" />
-    <ClCompile Include="LightingTechnique.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineData.cpp" />
+    <ClCompile Include="LineTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="MyCamera.cpp" />
+    <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="PolyTree.cpp" />
-    <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp">
@@ -226,7 +221,6 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseSceneLayer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
@@ -234,15 +228,15 @@
     <ClInclude Include="ForwardTechnique.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsData.h" />
-    <ClInclude Include="Line.h" />
     <ClInclude Include="LineData.h" />
+    <ClInclude Include="LineTechnique.h" />
     <ClInclude Include="ModelData.h" />
+    <ClInclude Include="Object3D.h" />
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="PolyTree.h" />
-    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneObject.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
@@ -258,10 +252,6 @@
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="LightTypes.h" />
-    <ClInclude Include="LightingTechnique.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyCamera.h" />

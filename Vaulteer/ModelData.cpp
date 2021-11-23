@@ -151,3 +151,13 @@ void ModelData::draw(const Shader& shader)
 		glActiveTexture(GL_TEXTURE0);
 	}
 }
+
+const std::vector<Mesh>& ModelData::getMeshes()
+{
+	return meshes;
+}
+
+const std::vector<Texture>& ModelData::getTextures()
+{
+	return textures;
+}

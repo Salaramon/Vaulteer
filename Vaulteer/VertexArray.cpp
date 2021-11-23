@@ -11,20 +11,13 @@ VertexArray::~VertexArray()
 	debug("VertexArray destroyed. VAO: " + std::to_string(VAO) + "\n", "DECONSTRUCTOR");
 }
 
-void VertexArray::bind()
+void VertexArray::bind() const
 {
-	if(currentlyBound == nullptr){
-		currentlyBound = this;
-		glBindVertexArray(VAO);
-	}
-	else {
-		debug("VertexArray is already bound! VAO: " + std::to_string(VAO) + "\n");
-	}
+	glBindVertexArray(VAO);
 }
 
-void VertexArray::unbind()
+void VertexArray::unbind() const
 {
-	currentlyBound = nullptr;
 	glBindVertexArray(0);
 }
 

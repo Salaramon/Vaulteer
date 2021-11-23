@@ -66,6 +66,13 @@ public:
 		shaderIDs = other.shaderIDs;
 	}
 
+	Shader(Shader&& other) : setUniform(this) {
+		shaderProgramID = other.shaderProgramID;
+		shaderIDs = other.shaderIDs;
+		other.shaderProgramID = 0;
+		other.shaderIDs.clear();
+	}
+
 	~Shader() {
 		glDeleteProgram(shaderProgramID);
 		for (GLuint id : shaderIDs) {

@@ -50,8 +50,6 @@ public:
 	void setColor(glm::vec4 color);
 	glm::vec4 getColor();
 
-private:
-
 	std::vector<Point> points;
 	Indices indices;
 

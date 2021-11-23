@@ -24,8 +24,8 @@ public:
 	~VertexArray();
 	operator GLuint() const { return VAO; }
 
-	void bind();
-	void unbind();
+	void bind() const;
+	void unbind() const;
 
 private:
 	void cleanup();

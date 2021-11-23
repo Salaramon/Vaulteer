@@ -12,6 +12,9 @@
 template<class... SceneObjects>
 using SceneContainer = std::tuple<typename std::vector<std::unique_ptr<SceneObjects>>...>;
 
+template<class SceneObject>
+using SceneObjects = std::vector<std::unique_ptr<SceneObject>>;
+
 template<class... SceneObjects>
 class _Scene {};
 
@@ -35,9 +38,14 @@ class Scene : public _Scene<SceneContainer<SceneObjects...>, SceneObjects>...
 public:
 	SceneContainer<SceneObjects...> objectVectors;
 	
-	Scene() : _Scene<SceneContainer<SceneObjects...>, SceneObjects...>::_Scene(objectVectors) {}
+	Scene() : _Scene<SceneContainer<SceneObjects...>, SceneObjects>::_Scene(objectVectors)... {}
 
-	using _Scene<SceneContainer<SceneObjects...>, SceneObjects...>::addObject;
+	using _Scene<SceneContainer<SceneObjects...>, SceneObjects>::addObject...;
+	
+	template<class O>
+	const std::vector<std::unique_ptr<O>>& getVector() {
+		return std::get<std::vector<std::unique_ptr<O>>>(objectVectors);
+	}
 
 private:
 	

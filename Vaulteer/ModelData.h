@@ -53,6 +53,8 @@ public:
 	void loadModel(std::string path);
 
 	void draw(const Shader& shader) override;
+	const std::vector<Mesh>& getMeshes();
+	const std::vector<Texture>& getTextures();
 
 private:
 
