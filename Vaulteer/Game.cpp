@@ -9,6 +9,7 @@ void Game::loadResources()
 {
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>( "Crate/Crate1.obj", "Crate" )));
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
+	/*
 	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
 		glm::vec3(5, 5, 5), glm::vec3(10, 5, 5),
 		glm::vec3(5, 5, 5), glm::vec3(10, 10, 5),
@@ -18,6 +19,7 @@ void Game::loadResources()
 		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
 		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 	)));
+	*/
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
 		1, 1,
 		std::vector<glm::vec4>({
@@ -38,6 +40,25 @@ void Game::loadResources()
 			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
 			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10) 
 	}))));
+
+	std::vector<Point> spherePoints;
+	const size_t resolution = 256;
+	const size_t curves = 256;
+
+	for (size_t i = 0; i < curves; i++) {
+		for (size_t j = 0; j < resolution; j++) {
+			spherePoints.push_back(Point(
+				std::cos(glm::radians((360.0 * static_cast<double>(j)) / resolution))*std::sin(glm::radians((360.0 * static_cast<double>(i)) / curves)),
+				std::cos(glm::radians((360.0 * static_cast<double>(j)) / resolution))* std::cos(glm::radians((360.0 * static_cast<double>(i)) / curves)),
+				std::sin(glm::radians((360.0 * static_cast<double>(j)) / resolution))
+			));
+		}
+	}
+
+	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("sphere", std::make_unique<LineData>(
+		spherePoints
+	)));
+
 }
 
 size_t Game::run()
@@ -66,8 +87,8 @@ size_t Game::run()
 	std::vector<Object3D*> objects;
 
 	//Generate floor
-	intmax_t width = 8;
-	intmax_t height = 8;
+	intmax_t width = 16;
+	intmax_t height = 16;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
 			objects.push_back(scene.addObject(modelByName(models, "crate")));
@@ -75,7 +96,10 @@ size_t Game::run()
 		}
 	}
 
-	objects.push_back(scene.addObject(modelByName(lines, "line")));
+	objects.push_back(scene.addObject(modelByName(lines, "sphere")));
+	objects.back()->setPosition(0, 5, 0);
+	objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
+	//objects.back()->setScale(1000, 1000, 1000);
 	//models.push_back(meshLayer->addModel(modelByName("chaos1")));
 	//models.push_back(meshLayer->addModel(modelByName("chaos2")));
 	//models.back()->setPolygonMode(Model::Polygon::Line);

@@ -1,5 +1,13 @@
 #include "LineData.h"
 
+LineData::LineData(std::vector<Point> lines) : 
+	vertexArray(),
+	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, lines), vertexArray, locInfo),
+	color(1, 1, 1, 1),
+	pointCount(lines.size()),
+	elementBuffer(indices, vertexArray)
+{}
+
 void LineData::draw(const Shader& shader)
 {
 	vertexArray.bind();

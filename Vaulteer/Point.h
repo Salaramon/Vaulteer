@@ -7,13 +7,15 @@
 class Point
 {
 public:
-	Point(glm::vec3 point) {
-		aPos = point;
+	Point(glm::vec3 point) : aPos(point) {
 	}
 	Point(float x, float y, float z) {
 		aPos = glm::vec3(x, y, z);
 	}
-	
+	Point operator=(glm::vec3 point) {
+		return Point(point);
+	}
+
 
 	decltype(Binder::line_vertex::locations::aPos)::type aPos;
 };
