@@ -174,12 +174,15 @@ void Model::setScale(float x, float y, float z)
 	instanceSelection = 0;
 }
 
+glm::dmat4 Model::getModelMat() {
+	return modelTranslation[instanceSelection] * modelScale[instanceSelection] * modelRotation[instanceSelection];
+}
+
 void Model::draw(Technique& technique)
 {
-
 	for (size_t i = 0; i < instances.size(); i++) {
-		instances[i] = modelTranslation[i] * modelScale[i] * modelRotation[i];
-		technique.setModel(instances[i]);
+		glm::dmat4 model = modelTranslation[i] * modelScale[i] * modelRotation[i];
+		instances[i] = model;
 	}
 	//CAN BE OPTIMIZED TO ONLY REPLACE THE DATA THAT WAS CHANGED IN THE ARRAY
 	instanceBuffer.replace(0, instances);

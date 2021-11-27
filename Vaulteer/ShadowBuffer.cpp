@@ -9,9 +9,11 @@ ShadowBuffer::ShadowBuffer(const uint size) : FrameBuffer(initTexture(size, size
 
 ShadowBuffer::ShadowBuffer(const GLSLSpotLight& spotLight) {
 	int size = GLSLSpotLight::calculateSizeAcross(spotLight);
+	size = 512;
 	width = size; 
 	height = size;
-	initTexture(width, height);
+	frameBufferTexId = initTexture(width, height);
+ 	initFramebuffer();
 }
 
 ShadowBuffer::ShadowBuffer(ShadowBuffer&& mv) noexcept : 

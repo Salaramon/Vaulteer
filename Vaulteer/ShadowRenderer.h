@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "MyCamera.h"
 
 #include "ShadowCubeBuffer.h"
@@ -25,6 +23,7 @@ public:
 
 	void setCamera(MyCamera& camera);
 	void updateCascadeBounds(glm::vec3 lightDirection);
+	void updateSpotLight(uint index, GLSLSpotLight& spotLight);
 
 	void addPointBuffer(int cubeResolution, const GLSLPointLight& pointLight);
 	void addSpotBuffer(const GLSLSpotLight& spotLight);
@@ -32,6 +31,7 @@ public:
 	ShadowBuffer& getCascadeBuffer(int index);
 	ShadowCascade& getCascade(int index);
 	ShadowCubeBuffer& getPointBuffer(int index);
+	ShadowBuffer& getSpotBuffer(int index);
 
 	void renderCascades(ModelVec& scene, ShadowTechnique& technique);
 	void renderPointLights(ModelVec& scene, ShadowCubeTechnique& technique);

@@ -30,10 +30,12 @@ struct PointLight {
 };
 
 struct SpotLight {
-    PointLight light;
+    BaseLight light;
     Attenuation att;
     vec3 position;
     float radius;
+    vec3 direction;
+    float angle;
 };
 
 // constants
@@ -53,6 +55,9 @@ uniform sampler2D shadowMap_2;
 uniform mat4 lightSpaceMatrices[NUM_CASCADES];
 uniform float cascadeFarPlanes[NUM_CASCADES];
 
+uniform sampler2D shadowSpotMap_0;
+uniform mat4 spotLightSpaceMatrices[1];
+
 // shadow cube maps
 uniform samplerCube shadowCubeMap_0;
 uniform samplerCube shadowCubeMap_1;
@@ -70,6 +75,8 @@ uniform mat4 cameraViewMat;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_LIGHTS];
 
+uniform SpotLight spotLights[1];
+
 uniform float materialSpecularIntensity;
 uniform float materialShininess;
 
@@ -86,6 +93,10 @@ vec3 sampleOffsetDirections[20] = vec3[]
 );   
 
 // functions
+
+float rand(vec2 co) {
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
 sampler2D getShadowMap(int cascadeIndex) {
     switch(cascadeIndex) {
@@ -127,33 +138,38 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 fragPosition, 
         /*vec3 reflectDir = reflect(lightDirection, fragNormal);
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
-        specularFactor = kEnergyConservation * pow(specularFactor, shininess);
-        specularColor = vec4(light.color * min(materialSpecularIntensity * specularFactor, 1.0 - shadow), 1.0);
+        specularFactor = materialSpecularIntensity * kEnergyConservation * pow(specularFactor, shininess);
+        float shadowFactor = 1.0 - shadow;
+        specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
     }
 
     float adjustFactor = max(ambientColor.r + diffuseColor.r + specularColor.r, ambientColor.g + diffuseColor.g + specularColor.g);
           adjustFactor = max(ambientColor.b + diffuseColor.b + specularColor.b, adjustFactor);
           adjustFactor = max(adjustFactor, 1.0);
 
-    return (ambientColor + diffuseColor + specularColor) * vec4(1.0 / adjustFactor);
+    return (ambientColor + diffuseColor + specularColor);
+}
+
+vec4 calcPointLightInternal(BaseLight light, Attenuation att, vec3 lightDirection, float radius, float lightDistance, vec3 fragPosition, vec3 fragNormal) {
+    if (lightDistance > radius)
+        return vec4(0.0);
+
+    float radiusCutoffFactor = min(1.0, (radius - lightDistance) / (radius / 10));
+
+    lightDirection = normalize(lightDirection);
+
+    float attenuation = 1 / (att.aConstant
+        + att.aLinear * lightDistance
+        + att.aQuadratic * (lightDistance * lightDistance));
+
+    return (calcLightInternal(light, lightDirection, fragPosition, fragNormal, 0.0) * attenuation) * radiusCutoffFactor;
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 fragPosition, vec3 fragNormal) {
     vec3 lightDirection = fragPosition - pointLight.position;
     float lightDistance = length(lightDirection);
-    if (lightDistance > pointLight.radius)
-        return vec4(0.0);
 
-    float radiusCutoffFactor = min(1.0, (pointLight.radius - lightDistance) / (pointLight.radius / 10));
-
-    lightDirection = normalize(lightDirection);
-
-    float attenuation = (pointLight.att.aConstant
-        + pointLight.att.aLinear * lightDistance
-        + pointLight.att.aQuadratic * (lightDistance * lightDistance));
-    attenuation = max(1.0, attenuation);
-
-    return (calcLightInternal(pointLight.light, lightDirection, fragPosition, fragNormal, 0.0) / attenuation) * radiusCutoffFactor;
+    return calcPointLightInternal(pointLight.light, pointLight.att, lightDirection, pointLight.radius, lightDistance, fragPosition, fragNormal);
 }
 
 vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fragNormal, float shadow) {
@@ -161,8 +177,24 @@ vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fra
     return calcLightInternal(dirLight.light, lightDirection, fragPosition, fragNormal, shadow);
 }
 
+vec4 calcSpotLight(SpotLight spotLight, vec3 fragPosition, vec3 fragNormal, float shadow) {
+    vec3 lightDirection = fragPosition - spotLight.position;
+    float theta = dot(normalize(lightDirection), spotLight.direction);
+    float angle = cos(spotLight.angle / 2);
+    
+    vec4 light = vec4(0.0);
+    if(theta > angle) {
+        float angleFactor = min(1.0, (theta - angle) / (theta / 5));
+        float lightDistance = length(lightDirection);
+        light = calcPointLightInternal(spotLight.light, spotLight.att, lightDirection, spotLight.radius, lightDistance, fragPosition, fragNormal) * angleFactor;
+    }
+    return light;
+}
 
-float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap, int cascadeIndex) {
+
+float calcShadow(vec3 fragPos, mat4 lightSpaceMat, sampler2D shadowMap, float farPlane) {
+    vec4 fragPosLightSpace = lightSpaceMat * vec4(fragPos, 1.0);
+
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5; 
@@ -175,7 +207,7 @@ float calcShadow(vec4 fragPosLightSpace, sampler2D shadowMap, int cascadeIndex) 
 
     float bias = 0.01;
     float shadow = 0.0;
-    vec2 texelSize = (15.0 / cascadeFarPlanes[cascadeIndex]) / textureSize(shadowMap, 0);
+    vec2 texelSize = (15.0 / farPlane) / textureSize(shadowMap, 0);
 
     int sampling = 3;
     for(int x = -sampling; x <= sampling; ++x) {
@@ -216,12 +248,21 @@ float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightInde
 
 void main() {
     const float gamma = 2.0;
-
+    
     if (texture(gPosition, TexCoords).w == 1.0) {
         FragColor = vec4(pow(fogColor, vec3(1.0 / gamma)), 1.0);
         return;
-    } 
-    vec3 fragPosition = texture(gPosition, TexCoords).xyz;
+    }
+
+    vec3 fragPosition = (inverse(cameraViewMat) * vec4(texture(gPosition, TexCoords).xyz, 1.0)).xyz;
+    
+
+    //float c = rand(vec2(fragPosition.x + fragPosition.y - fragPosition.z, fragPosition.x - fragPosition.y + fragPosition.z));
+    //FragColor = vec4(c, c, c, 1.0);
+
+    //FragColor = vec4(fragPosition.x, fragPosition.y, fragPosition.z, 1.0);
+    //return;
+
     vec3 fragNormal = texture(gNormal, TexCoords).xyz;
     vec3 diffuse = texture(gColor, TexCoords).rgb;
  
@@ -238,9 +279,8 @@ void main() {
         cascadeIndex = NUM_CASCADES; 
     }
 
-    vec4 fragPositionLightSpace = lightSpaceMatrices[cascadeIndex] * vec4(fragPosition, 1.0);
     float dirLightShadow = cascadeIndex > -1 ? 
-            calcShadow(fragPositionLightSpace, getShadowMap(cascadeIndex), cascadeIndex) : 
+            calcShadow(fragPosition, lightSpaceMatrices[cascadeIndex], getShadowMap(cascadeIndex), cascadeFarPlanes[cascadeIndex]) : 
             0.0; 
 
     float dirLightShadowFactor = (1.0 - dirLightShadow / 2);
@@ -248,6 +288,10 @@ void main() {
     // light calc
 
     vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, dirLightShadow) * dirLightShadowFactor;
+
+    float spotLightShadow = calcShadow(fragPosition, spotLightSpaceMatrices[0], shadowSpotMap_0, spotLights[0].radius);
+
+    totalLight += calcSpotLight(spotLights[0], fragPosition, fragNormal, spotLightShadow) * (1.0 - spotLightShadow);
 
 
     for (int i = 0; i < MAX_LIGHTS; i++) {

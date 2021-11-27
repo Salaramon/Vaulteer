@@ -232,49 +232,52 @@
     <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="deferred_frag.glsl">
+    <None Include="shaders\deferred_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="deferred_vertex.glsl">
+    <None Include="shaders\deferred_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_frag.glsl">
+    <None Include="shaders\depth_map_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_vertex.glsl">
+    <None Include="shaders\depth_map_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="geometry_frag.glsl">
+    <None Include="shaders\geometry_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="geometry_vertex.glsl">
+    <None Include="shaders\geometry_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="light_frag.glsl">
+    <None Include="shaders\light_frag.glsl.ignored">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="light_vertex.glsl">
+    <None Include="shaders\light_pass_frag.glsl.ignored">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="lightsource_frag.glsl">
+    <None Include="shaders\light_vertex.glsl.ignored">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="lightsource_vertex.glsl">
+    <None Include="shaders\lightsource_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_cube_frag.glsl">
+    <None Include="shaders\lightsource_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_cube_vertex.glsl">
+    <None Include="shaders\shadow_cube_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="depth_map_vertex.glsl">
+    <None Include="shaders\shadow_cube_geometry.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="depth_map_frag.glsl">
+    <None Include="shaders\shadow_cube_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shadow_cube_geometry.glsl">
+    <None Include="shaders\shadow_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shadow_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

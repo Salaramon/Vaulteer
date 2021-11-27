@@ -6,10 +6,8 @@ layout(location = 2) in vec2 aTexCoords;
 out vec3 fragPosition;
 out vec3 fragNormal;
 out vec2 TexCoords;
-out vec4 fragPositionLightSpace;
 
-uniform mat4 model;
-uniform mat4 view;
+uniform mat4 modelView;
 uniform mat4 projection;
 uniform mat4 normal;
 
@@ -18,9 +16,9 @@ float rand(vec2 co) {
 }
 
 void main() {
-    fragPosition = (model * vec4(aPos, 1.0)).xyz;
+    fragPosition = (modelView * vec4(aPos, 1.0)).xyz;
     fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     TexCoords = aTexCoords;
 
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    gl_Position = projection * modelView * vec4(aPos, 1.0);
 }

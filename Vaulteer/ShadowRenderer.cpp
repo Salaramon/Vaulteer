@@ -18,6 +18,10 @@ void ShadowRenderer::updateCascadeBounds(glm::vec3 lightDirection) {
 	}
 }
 
+void ShadowRenderer::updateSpotLight(uint index, GLSLSpotLight& spotLight) {
+	spotLights[index] = spotLight;
+}
+
 void ShadowRenderer::renderCascades(ModelVec& scene, ShadowTechnique& technique) {
 	// save current viewport for restoration later
 	GLint m_viewport[4];
@@ -86,6 +90,11 @@ void ShadowRenderer::renderSpotLights(ModelVec& scene, ShadowTechnique& techniqu
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		GLSLSpotLight& spotLight = spotLights[i];
+
+		glm::mat4 modelMat(1.0f);
+		modelMat = glm::translate(modelMat, spotLight.position);
+
+		technique.setModel(modelMat);
 		technique.setLightSpaceMatrix(GLSLSpotLight::getLightSpaceMatrix(spotLight));
 
 		drawScene(scene, technique);
@@ -97,6 +106,7 @@ void ShadowRenderer::renderSpotLights(ModelVec& scene, ShadowTechnique& techniqu
 
 void ShadowRenderer::drawScene(ModelVec& scene, Technique& shader) {
 	for (Model& model : scene) {
+		shader.setModel(model.getModelMat());
 		model.draw(shader);
 	}
 }
@@ -113,6 +123,10 @@ ShadowCubeBuffer& ShadowRenderer::getPointBuffer(int index) {
 	return pointBuffers[index];
 }
 
+ShadowBuffer& ShadowRenderer::getSpotBuffer(int index) {
+	return spotBuffers[index];
+}
+
 void ShadowRenderer::addPointBuffer(int cubeResolution, const GLSLPointLight& pointLight) {
 	pointBuffers.emplace_back(cubeResolution, pointLight);
 	numPointBuffers++;
@@ -120,4 +134,6 @@ void ShadowRenderer::addPointBuffer(int cubeResolution, const GLSLPointLight& po
 
 void ShadowRenderer::addSpotBuffer(const GLSLSpotLight& spotLight) {
 	spotBuffers.emplace_back(spotLight);
+	spotLights.emplace_back(spotLight);
+	numSpotBuffers++;
 }

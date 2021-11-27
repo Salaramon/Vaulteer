@@ -1,12 +1,9 @@
 #include "GeometryTechnique.h"
 
-void GeometryTechnique::setModel(const glm::mat4& model) {
-    setUniform(Binder::geometry_vertex::uniforms::model, 1, GL_FALSE, model);
+void GeometryTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
+    glm::fmat4 modelView = view * model;
+    setUniform(Binder::geometry_vertex::uniforms::modelView, 1, GL_FALSE, modelView);
     setNormal(model);
-}
-
-void GeometryTechnique::setView(const glm::mat4& view) {
-    setUniform(Binder::geometry_vertex::uniforms::view, 1, GL_FALSE, view);
 }
 
 void GeometryTechnique::setProjection(const glm::mat4& projection) {

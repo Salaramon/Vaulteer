@@ -27,7 +27,7 @@ public:
 
 	uint getTextureId();
 
-private:
+protected:
 	uint frameBufferTexId;
 	uint FBO;
 };

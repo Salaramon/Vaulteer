@@ -15,6 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Mesh.h"
+#include "MyCamera.h"
 #include "Texture.h"
 #include "Technique.h"
 
@@ -37,6 +38,8 @@ public:
 	void setPosition(float x, float y, float z);
 	void scale(float x, float y, float z);
 	void setScale(float x, float y, float z);
+
+	glm::dmat4 getModelMat();
 	void draw(Technique& technique);
 private:
 

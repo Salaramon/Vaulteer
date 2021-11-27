@@ -1,5 +1,7 @@
 #pragma once
 
+#include <corecrt_math_defines.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -48,16 +50,21 @@ struct GLSLSpotLight : public GLSLPointLight {
 		return size;
 	}
 
-	static glm::mat4 getLightSpaceMatrix(const GLSLSpotLight& spotLight) {
+	static glm::mat4 getProjectionMatrix(const GLSLSpotLight& spotLight) {
+		float farPlane = GLSLPointLight::calculateRadius(spotLight);
+		return glm::perspective(spotLight.cutoffAngle, 1.0f, 0.1f, farPlane);
+	}
+
+	static glm::mat4 getViewMatrix(const GLSLSpotLight& spotLight) {
 		glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
 		if (glm::abs(spotLight.direction) == up)
 			up = glm::vec3(0.f, 0.f, 1.f);
 
-		float farPlane = GLSLPointLight::calculateRadius(spotLight);
-		glm::mat4 viewMat = glm::lookAt(spotLight.position, spotLight.direction, up);
-		glm::mat4 projectionMat = glm::perspective(spotLight.cutoffAngle, 1.0f, 0.1f, farPlane);
+		return glm::lookAt(spotLight.position, spotLight.position + spotLight.direction, up);
+	}
 
-		return viewMat * projectionMat;
+	static glm::mat4 getLightSpaceMatrix(const GLSLSpotLight& spotLight) {
+		return getProjectionMatrix(spotLight) * getViewMatrix(spotLight);
 	}
 };
 

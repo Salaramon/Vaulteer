@@ -53,6 +53,7 @@ void LightingTechnique::setSpotLight(const GLSLSpotLight& light, const int index
     setUniform(fragUnis::spotLights[index].direction, 1, light.direction);
     setUniform(fragUnis::spotLights[index].angle, light.cutoffAngle);
 
+    setUniform(fragUnis::spotLights[index].radius, GLSLSpotLight::calculateRadius(light));
     setUniform(fragUnis::spotLightSpaceMatrices[index], 1, GL_FALSE, GLSLSpotLight::getLightSpaceMatrix(light));
 }
 
