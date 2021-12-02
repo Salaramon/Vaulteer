@@ -12,17 +12,8 @@
 
 #include <iostream>
 
-namespace std {
-	template<class Type> requires (std::is_integral_v<Type> || std::is_floating_point_v<Type>)
-	constexpr Type ctexp2(Type value) {
-		if (value != 0) {
-			return 2 * ctexp2(value - 1);
-		}
-		else {
-			return 1;
-		}
-	}
-}
+#include "MathUtils.h"
+
 
 template <typename _Ty, size_t _Size>
 std::array<_Ty, _Size> make_array(const _Ty& v) {
@@ -50,7 +41,7 @@ template<class Content, class Value, size_t dimensions>
 class TreeNode {
 public:
 	typedef std::array<Value, dimensions> Position;
-	typedef std::array<std::unique_ptr<TreeNode<Content, Value, dimensions>>, std::ctexp2(dimensions)> Orthants;
+	typedef std::array<std::unique_ptr<TreeNode<Content, Value, dimensions>>, mut::ctexp2(dimensions)> Orthants;
 
 	TreeNode(Value size = 0, Position position = make_array<Value, dimensions>(0), TreeNode<Content, Value, dimensions>* parent = nullptr, size_t nodeIndex = 0) :
 		size(size), position(position), parent(parent), nodeIndex(nodeIndex)
@@ -88,7 +79,7 @@ inline size_t TreeNode<Content, Value, dimensions>::getNodeID(const Position& po
 template<class Content, class Value, size_t dimensions>
 inline std::array<Value, dimensions> TreeNode<Content, Value, dimensions>::getOrthantPosition(const size_t orthantID)
 {
-	const size_t forEnd = std::ctexp2(position.size());
+	const size_t forEnd = mut::ctexp2(position.size());
 	Value orthantSize = getSubNodeSize();
 	Position orthantPosition;
 	size_t index = 0;

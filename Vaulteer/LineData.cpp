@@ -1,9 +1,9 @@
 #include "LineData.h"
 
-LineData::LineData(std::vector<Point> lines) : 
+LineData::LineData(glm::vec4 color, std::vector<Point> lines) :
 	vertexArray(),
 	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, lines), vertexArray, locInfo),
-	color(1, 1, 1, 1),
+	color(color),
 	pointCount(lines.size()),
 	elementBuffer(indices, vertexArray)
 {}

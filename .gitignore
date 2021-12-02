@@ -11,6 +11,7 @@ ASSIMP/
 GLAD/
 GLM/
 GLFW/
+Eigen/
 Vaulteer/backpack/
 Vaulteer/Crate/
 

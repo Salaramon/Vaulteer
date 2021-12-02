@@ -97,6 +97,13 @@ Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
 	}
 
 
+	std::vector<std::array<float, 3>> inVert;
+	for (size_t i = 0; i < vertices.size(); i++) {
+		inVert.push_back(*((std::array<float,3>*)(&vertices[i].aPos)));
+	}
+	std::vector<std::array<float, 3>> outVert;
+	std::vector<size_t> outInd;
+	processConvexShape<3,3>(inVert, outVert, outInd);
 
 	return Mesh(vertices, indices);
 }
