@@ -15,6 +15,9 @@ void LightingTechnique::init() {
     setUniform(fragUnis::shadowCubeMap_2, texId++);
     setUniform(fragUnis::shadowCubeMap_3, texId++);
     setUniform(fragUnis::shadowSpotMap_0, texId++);
+    setUniform(fragUnis::shadowSpotMap_1, texId++);
+    setUniform(fragUnis::shadowSpotMap_2, texId++);
+    setUniform(fragUnis::shadowSpotMap_3, texId++);
 }
 
 void LightingTechnique::setDirectionalLight(const GLSLDirectionalLight& light) {
@@ -50,7 +53,7 @@ void LightingTechnique::setSpotLight(const GLSLSpotLight& light, const int index
 
     setUniform(fragUnis::spotLights[index].position, 1, light.position);
 
-    setUniform(fragUnis::spotLights[index].direction, 1, light.direction);
+    setUniform(fragUnis::spotLights[index].direction, 1, glm::normalize(light.direction));
     setUniform(fragUnis::spotLights[index].angle, light.cutoffAngle);
 
     setUniform(fragUnis::spotLights[index].radius, GLSLSpotLight::calculateRadius(light));

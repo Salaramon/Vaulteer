@@ -9,7 +9,7 @@ ShadowBuffer::ShadowBuffer(const uint size) : FrameBuffer(initTexture(size, size
 
 ShadowBuffer::ShadowBuffer(const GLSLSpotLight& spotLight) {
 	int size = GLSLSpotLight::calculateSizeAcross(spotLight);
-	size = 512;
+	size = 512; // TODO
 	width = size; 
 	height = size;
 	frameBufferTexId = initTexture(width, height);
@@ -30,7 +30,7 @@ uint ShadowBuffer::initTexture(uint width, uint height) {
 	glGenTextures(1, &texId);
 	glBindTexture(GL_TEXTURE_2D, texId);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

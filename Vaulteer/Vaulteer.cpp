@@ -162,11 +162,14 @@ int main() {
 	ShadowRenderer shadowRenderer = ShadowRenderer(camera, cascadeBounds);
 
 	const int NUM_LIGHTS = 4;
+	const int NUM_SPOT_LIGHTS = 4;
 	glm::vec3 lightPositions[NUM_LIGHTS];
 	glm::vec3 lightColors[NUM_LIGHTS];
+	float lightPosOffsets[NUM_SPOT_LIGHTS];
+	float lightSpeeds[NUM_SPOT_LIGHTS];
 
 	GLSLPointLight pointLights[NUM_LIGHTS];
-	GLSLSpotLight spotLights[1];
+	GLSLSpotLight spotLights[NUM_SPOT_LIGHTS];
 
 	GLSLAttenuation att = { 1.0f, 0.02f, 0.062f }; // for no dropoff: { 1.0f, .0f, .0f }
 
@@ -190,13 +193,22 @@ int main() {
 	glm::vec3 dir(-0.423556805, -0.121436201, 0.897693098);
 	glm::vec3 pos(8.84644413, 5.45251179, -12.6091557);
 	dir = glm::vec3(0.f, -1.f, 0.f);
-	pos = glm::vec3(0.f, 8.f, 0.f); 
+	pos = glm::vec3(0.f, 9.3f, 0.f); 
 
-	spotLights[0] = {glm::vec3(1.0f),  0.1f, 1.0f, pos, att, dir, M_PI / 4 };
-	shadowRenderer.addSpotBuffer(spotLights[0]);
+	for (int i = 0; i < NUM_SPOT_LIGHTS; i++) {
+		float pos = randf(-10.0f, 10.0f);
+		float posScale = 10.0f;
+		lightPositions[i] = glm::vec3(cosf(pos) * posScale, randf(1.2f, 12.0f), sinf(pos) * posScale);
+		lightPosOffsets[i] = randf(0.0f, 128.0f);
+		lightSpeeds[i] = randf(0.8f, 1.0f);
 
-	float event_check_f = false, event_check_g = false, event_check_c = false;
-	int timeoutOrig = 40, timeout_f = 40, timeout_g = 40, timeout_c = 40;
+		spotLights[i] = { glm::vec3(1.0f),  0.1f, 1.0f, lightPositions[i], att, dir, (float) M_PI / 3 };
+		shadowRenderer.addSpotBuffer(spotLights[i]);
+	}
+
+
+	float event_check_f = false, event_check_g = false, event_check_c = false, event_check_v = false;
+	int timeoutOrig = 40, timeout_f = 40, timeout_g = 40, timeout_c = 40, timeout_v = 40;
 
 	float deltaTime = 0, lastFrame = 0, startTime = glfwGetTime();
 	std::cout << "Loaded in " << startTime << " seconds." << std::endl;
@@ -205,15 +217,10 @@ int main() {
 	
 	while (window.is_running()) {
 
-		dirTime = !event_check_f ? dirTime : glfwGetTime() / 4;
+		dirTime = event_check_f ? dirTime : glfwGetTime() / 4;
 
 		//GLSLDirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, glm::vec3(sinf(dirTime), -1.0f, cosf(dirTime)) };
 		GLSLDirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, glm::vec3(sinf(dirTime), -1.0f, cosf(dirTime)) };
-
-		if (event_check_c) {
-			spotLights[0].position = camera.position;
-			spotLights[0].direction = camera.front;
-		}
 
 		lastFrame = deltaTime;
 		deltaTime = glfwGetTime() - lastFrame;
@@ -223,14 +230,27 @@ int main() {
 		log.debug("Color buffer bit and depth bit cleared.\n", "glClear");
 
 		// moving light
-		glm::vec3 lightCurrentPos[NUM_LIGHTS];
-		glm::vec3 lightCurrentColor[NUM_LIGHTS];
-		for (int i = 0; i < NUM_LIGHTS; i++) {
-			lightCurrentPos[i] = lightPositions[i];
-			lightCurrentColor[i] = lightColors[i];
+		glm::vec3 lightCurrentPos[NUM_SPOT_LIGHTS];
+		glm::vec3 lightCurrentColor[NUM_SPOT_LIGHTS];
+		
+		if (event_check_f) {
+			for (int i = 0; i < NUM_SPOT_LIGHTS; i++) {
+				lightCurrentPos[i] = glm::vec3(sinf(glfwGetTime() / lightSpeeds[i] + lightPosOffsets[i]) * 2.f, 10.0f, 8.0 * 1.5); //  + sinf(glfwGetTime() / lightSpeeds[i] + lightPosOffsets[i]) * 10.f
+				lightCurrentColor[i] = lightColors[i];
+
+				spotLights[i].position = lightCurrentPos[i];
+				spotLights[i].color = lightColors[i];
+
+				spotLights[i].direction = glm::vec3(sinf((glfwGetTime() + lightPosOffsets[i]) / lightSpeeds[i]) / 2, -1.0f, 0.0f);
+			}
 		}
 
 		MyCamera* cam = (false ? &cameraCopy : &camera);
+
+		if (event_check_c) {
+			spotLights[0].position = cam->position;
+			spotLights[0].direction = cam->front;
+		}
 
 		// geometry pass
         // -----------------------------------------------------------------------------------------------------------------------
@@ -275,8 +295,9 @@ int main() {
 			if (shadowRenderer.numPointBuffers > i)
 				shadowRenderer.getPointBuffer(i).lightPos = pointLights[i].position;
 		}
-		for (int i = 0; i < 1; i++) {
-			shadowRenderer.updateSpotLight(i, spotLights[i]);
+		for (int i = 0; i < NUM_SPOT_LIGHTS; i++) {
+			if (shadowRenderer.numSpotBuffers > i)
+				shadowRenderer.updateSpotLight(i, spotLights[i]);
 		}
 
 		shadowRenderer.renderCascades(scene, shadowShader);
@@ -304,15 +325,16 @@ int main() {
 			glBindTexture(GL_TEXTURE_CUBE_MAP, shadowRenderer.getPointBuffer(i).getTextureId());
 		}
 		for (int i = 0; i < shadowRenderer.numSpotBuffers; i++) {
-			GLenum texUnit = GBuffer::GBufferTextureType::NumTextures + shadowRenderer.numCascades + shadowRenderer.numPointBuffers;
+ 			GLenum texUnit = GBuffer::GBufferTextureType::NumTextures + shadowRenderer.numCascades + shadowRenderer.numPointBuffers + i;
 			glActiveTexture(GL_TEXTURE0 + texUnit);
 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getSpotBuffer(i).getTextureId());
 		}
 
 
 		//lightingTech.setPointLight(pointLights[0], 0);
-		
-		lightingTech.setSpotLight(spotLights[0], 0);
+		for (int i = 0; i < NUM_SPOT_LIGHTS; i++) { 
+			lightingTech.setSpotLight(spotLights[i], i);
+		}
 		
 		//lightingTech.setDirectionalLight(dirLight);
 
@@ -326,10 +348,12 @@ int main() {
 		lightingTech.setMaterialShininess(32.0f);
 
 		if (event_check_g) {
+			int spotbuffer = event_check_v ? 1 : 0;
+
 			shadowMapShader.use();
 			shadowMapShader.setUniform(Binder::depth_map_frag::uniforms::depthMap, 0);
 			glActiveTexture(GL_TEXTURE0);
- 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getSpotBuffer(0).getTextureId());
+ 			glBindTexture(GL_TEXTURE_2D, shadowRenderer.getSpotBuffer(spotbuffer).getTextureId());
 
 			quad.draw(shadowMapShader);
 		}
@@ -407,7 +431,7 @@ int main() {
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::view, 1, GL_FALSE, camera.getViewMatrix());
 			lightSourceShader.setUniform(Binder::lightsource_vertex::uniforms::projection, 1, GL_FALSE, camera.getProjectionMatrix());
 
-			std::vector<glm::vec4> frustumCorners = getFrustumCornersWorldSpace(GLSLSpotLight::getViewMatrix(spotLight),
+ 			std::vector<glm::vec4> frustumCorners = getFrustumCornersWorldSpace(GLSLSpotLight::getViewMatrix(spotLight),
 																				GLSLSpotLight::getProjectionMatrix(spotLight));
 
  			for (int i = 0; i < frustumCorners.size(); i++) {
@@ -432,17 +456,17 @@ int main() {
 			event_check_f = !event_check_f;
 			timeout_f = timeoutOrig;
 		}
-		if (timeout_g-- < 0 && Event::Check << (Event::Key == Event::KEY::G && Event::State == Event::STATE::DOWN)) {
+		if (timeout_g-- < 0 && Event::Check << (Event::Key == Event::KEY::G && Event::Action == Event::ACTION::PRESS)) {
 			event_check_g = !event_check_g;
 			timeout_g = timeoutOrig;
 		}
-		if (timeout_c-- < 0 && Event::Check << (Event::Key == Event::KEY::C && Event::State == Event::STATE::DOWN)) {
+		if (timeout_c-- < 0 && Event::Check << (Event::Key == Event::KEY::C && Event::Action == Event::ACTION::PRESS)) {
 			event_check_c = !event_check_c;
 			timeout_c = timeoutOrig;
-
-			cameraCopy.position = camera.position;
-			cameraCopy.front = camera.front;
-			cameraCopy.right = camera.right;
+		}
+		if (timeout_v-- < 0 && Event::Check << (Event::Key == Event::KEY::V && Event::Action == Event::ACTION::PRESS)) {
+			event_check_v = !event_check_v;
+			timeout_v = timeoutOrig;
 		}
 
 		DebugLogger<>::disableLogging();

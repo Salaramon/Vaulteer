@@ -97,7 +97,7 @@ void ShadowRenderer::renderSpotLights(ModelVec& scene, ShadowTechnique& techniqu
 		technique.setModel(modelMat);
 		technique.setLightSpaceMatrix(GLSLSpotLight::getLightSpaceMatrix(spotLight));
 
-		drawScene(scene, technique);
+ 		drawScene(scene, technique);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

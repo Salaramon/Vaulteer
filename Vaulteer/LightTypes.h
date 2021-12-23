@@ -51,8 +51,8 @@ struct GLSLSpotLight : public GLSLPointLight {
 	}
 
 	static glm::mat4 getProjectionMatrix(const GLSLSpotLight& spotLight) {
-		float farPlane = GLSLPointLight::calculateRadius(spotLight);
-		return glm::perspective(spotLight.cutoffAngle, 1.0f, 0.1f, farPlane);
+		float farPlane = GLSLPointLight::calculateRadius(spotLight) * 8;
+		return glm::perspective(spotLight.cutoffAngle, 1.0f, 4.0f, farPlane);
 	}
 
 	static glm::mat4 getViewMatrix(const GLSLSpotLight& spotLight) {

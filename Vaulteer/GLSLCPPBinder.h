@@ -213,7 +213,10 @@ struct deferred_frag {
 			 inline static Uniform<glm::mat4> lightSpaceMatrices[3]{Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[0]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[1]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[2]"), 3, 64)};
 			 inline static Uniform<float> cascadeFarPlanes[3]{Uniform<float>("float", String("cascadeFarPlanes[0]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[1]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[2]"), 3, 4)};
 			 inline static Uniform<> shadowSpotMap_0{Uniform<>("sampler2D", String("shadowSpotMap_0"), 0, 0)};
-			 inline static Uniform<glm::mat4> spotLightSpaceMatrices[1]{Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[0]"), 1, 64)};
+			 inline static Uniform<> shadowSpotMap_1{Uniform<>("sampler2D", String("shadowSpotMap_1"), 0, 0)};
+			 inline static Uniform<> shadowSpotMap_2{Uniform<>("sampler2D", String("shadowSpotMap_2"), 0, 0)};
+			 inline static Uniform<> shadowSpotMap_3{Uniform<>("sampler2D", String("shadowSpotMap_3"), 0, 0)};
+			 inline static Uniform<glm::mat4> spotLightSpaceMatrices[4]{Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[0]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[1]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[2]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[3]"), 4, 64)};
 			 inline static Uniform<> shadowCubeMap_0{Uniform<>("samplerCube", String("shadowCubeMap_0"), 0, 0)};
 			 inline static Uniform<> shadowCubeMap_1{Uniform<>("samplerCube", String("shadowCubeMap_1"), 0, 0)};
 			 inline static Uniform<> shadowCubeMap_2{Uniform<>("samplerCube", String("shadowCubeMap_2"), 0, 0)};
@@ -223,7 +226,7 @@ struct deferred_frag {
 			 inline static Uniform<glm::mat4> cameraViewMat{Uniform<glm::mat4>("mat4", String("cameraViewMat"), 0, 64)};
 			 inline static DirectionalLight directionalLight{DirectionalLight(String("directionalLight"))};
 			 inline static PointLight pointLights[4]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]"))};
-			 inline static SpotLight spotLights[1]{SpotLight(String("spotLights[0]"))};
+			 inline static SpotLight spotLights[4]{SpotLight(String("spotLights[0]")), SpotLight(String("spotLights[1]")), SpotLight(String("spotLights[2]")), SpotLight(String("spotLights[3]"))};
 			 inline static Uniform<float> materialSpecularIntensity{Uniform<float>("float", String("materialSpecularIntensity"), 0, 4)};
 			 inline static Uniform<float> materialShininess{Uniform<float>("float", String("materialShininess"), 0, 4)};
 			 inline static Uniform<glm::vec3> fogColor{Uniform<glm::vec3>("vec3", String("fogColor"), 0, 12)};
