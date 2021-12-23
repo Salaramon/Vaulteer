@@ -219,7 +219,7 @@ float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightInde
 }
 
 vec4 calcPointLightInternal(BaseLight light, Attenuation att, vec3 lightDirection, float radius, float lightDistance, vec3 fragPosition, vec3 fragNormal) {
-    const float pointLightAngleDropoff = 10.0;
+    const float pointLightAngleDropoff = 10.0; // determines light fade rate at edge
 
     if (lightDistance > radius)
         return vec4(0.0);
@@ -248,7 +248,7 @@ vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 fragPosition, vec3 fra
 }
 
 vec4 calcSpotLight(SpotLight spotLight, vec3 fragPosition, vec3 fragNormal, int index) {
-    const float spotLightAngleDropoff = 5.0;
+    const float spotLightAngleDropoff = 5.0; // determines light fade rate at edge
     const float spotLightAngleThreshold = 0.002; // hides early shadowmap dropoff
 
     vec3 lightDirection = fragPosition - spotLight.position;
