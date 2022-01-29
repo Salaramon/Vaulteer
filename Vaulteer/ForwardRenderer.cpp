@@ -1,25 +1,31 @@
 #include "ForwardRenderer.h"
 
 
-void ForwardRenderer::render(Scene& scene)
-{
+void ForwardRenderer::render(Scene& scene) {
 	ForwardTechnique::shader->use();
 	const SceneObjects<typename Model<ModelData>>& modelDataVector = scene.getVector<Model<ModelData>>();
 	const SceneObjects<typename Camera>& cameraDataVector = scene.getVector<Camera>();
 
 	ForwardTechnique::setProjection(cameraDataVector.front()->getProjectionMatrix());
-	ForwardTechnique::setView(cameraDataVector.front()->getViewMatrix());
+
+	glm::mat4 viewMatrix = cameraDataVector.front()->getViewMatrix();
+	ForwardTechnique::setInverseViewMatrix(viewMatrix);
+
+	ForwardTechnique::shader->setUniform(Binder::forward_frag::uniforms::cameraPos, 1, cameraDataVector.front()->getPosition());
+	ForwardTechnique::shader->setUniform(Binder::forward_frag::uniforms::lightPos, 1, cameraDataVector.front()->getPosition());
+
 	for (auto& data : modelDataVector) {
-		ForwardTechnique::setModel(data->getModelMatrix());
+		ForwardTechnique::setModelView(data->getModelMatrix(), viewMatrix);
 
 		ModelData* modelData = data->getData();
 		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-		const std::vector<Texture>& modelDataTextures = modelData->getTextures();
+		const Texture2DArray& modelDataTextureArray = modelData->getTextureArray();
 
 		for (const Mesh& mesh : modelDataMeshes) {
-			for (GLint i = 0; i < modelDataTextures.size(); i++) {
-				modelDataTextures[i].activate(*ForwardTechnique::shader , i);
-			}
+			GLint texUnit = 0;
+
+			ForwardTechnique::shader->setUniform(Binder::forward_frag::uniforms::textureLib, texUnit);
+			glBindTextureUnit(texUnit, modelDataTextureArray.getTextureID());
 
 			mesh.vertexArray.bind();
 			//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
@@ -27,12 +33,11 @@ void ForwardRenderer::render(Scene& scene)
 			glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
 			mesh.vertexArray.unbind();
 
-			//Is setting active texture back to 0 unnecessary?
-			glActiveTexture(GL_TEXTURE0);
+			texUnit++;
 		}
 	}
 
-	LineTechnique::shader->use();
+	/*LineTechnique::shader->use();
 	const SceneObjects<typename Model<LineData>>& lineDataVector = scene.getVector<Model<LineData>>();
 
 	LineTechnique::setProjection(cameraDataVector.front()->getProjectionMatrix());
@@ -47,6 +52,6 @@ void ForwardRenderer::render(Scene& scene)
 		lineData->vertexArray.unbind();
 		//Is setting active texture back to 0 unnecessary?
 		glActiveTexture(GL_TEXTURE0);
-	}
+	}*/
 }
 

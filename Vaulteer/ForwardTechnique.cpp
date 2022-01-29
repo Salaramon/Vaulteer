@@ -1,16 +1,20 @@
 #include "ForwardTechnique.h"
 
-void ForwardTechnique::setModel(glm::mat4 matrix)
-{
-	shader->setUniform(Program::forward_vertex::uniforms::model, 1, GL_FALSE, matrix);
+void ForwardTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
+    glm::fmat4 modelView = view * model;
+    shader->setUniform(Binder::forward_vertex::uniforms::modelView, 1, GL_FALSE, modelView);
+    setNormal(model);
 }
 
-void ForwardTechnique::setView(glm::mat4 matrix)
+void ForwardTechnique::setProjection(const glm::mat4& projection)
 {
-	shader->setUniform(Program::forward_vertex::uniforms::view, 1, GL_FALSE, matrix);
+	shader->setUniform(Program::forward_vertex::uniforms::projection, 1, GL_FALSE, projection);
 }
 
-void ForwardTechnique::setProjection(glm::mat4 matrix)
-{
-	shader->setUniform(Program::forward_vertex::uniforms::projection, 1, GL_FALSE, matrix);
+void ForwardTechnique::setNormal(const glm::mat4& normal) {
+    shader->setUniform(Binder::forward_vertex::uniforms::normal, 1, GL_FALSE, glm::transpose(glm::inverse(normal)));
+}
+
+void ForwardTechnique::setInverseViewMatrix(const glm::mat4& view) {
+    shader->setUniform(Binder::forward_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(view));
 }

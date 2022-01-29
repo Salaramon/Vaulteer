@@ -5,7 +5,7 @@ ModelData::ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> color
 	std::vector<Vertex> vert;
 	std::vector<GLuint> indi;
 	storePointsAndIndices<ModelVertexHash>(indi, vert, vertices);
-	textures.emplace_back(Binder::forward_frag::uniforms::diffuse1, width, height, colors);
+	textureArray = std::make_unique<Texture2DArray>(width, height, colors);
 	//Implement a set color in texture, and make texture take an abstract amount of pixel data to set.
 	//Take argument in this function for binder uniform, for the call above.
 	meshes.emplace_back(vert, indi);
@@ -28,7 +28,7 @@ void ModelData::loadModel(std::string path)
 {
 
 	Assimp::Importer modelImporter;
-	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		debug("Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n", MessageAlias::CriticalError);
@@ -36,6 +36,8 @@ void ModelData::loadModel(std::string path)
 
 	if (scene) {
 		processNode(scene, scene->mRootNode);
+
+		textureArray = std::make_unique<Texture2DArray>(textureFiles);
 	}
 }
 
@@ -96,12 +98,10 @@ Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
 		getTextureUniforms(material);
 	}
 
-
-
 	return Mesh(vertices, indices);
 }
 
-void ModelData::getTextureUniforms(aiMaterial* material)
+void ModelData::getTextureUniforms(aiMaterial* material) 
 {
 	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
 		aiTextureType type = static_cast<aiTextureType>(i);
@@ -109,33 +109,27 @@ void ModelData::getTextureUniforms(aiMaterial* material)
 			aiString string;
 			material->GetTexture(type, j, &string);
 			std::string texturePath = texturesFolder + "\\" + string.C_Str();
-			auto uniformTT_Iterator = Texture::uniformTextureTypes.find(type);
-			if (textureFiles.insert(texturePath).second) {
-				if (uniformTT_Iterator != Texture::uniformTextureTypes.end()) {
-					textures.push_back(Texture(texturePath, uniformTT_Iterator->second));
-				}
-				else {
-					debug("Uniform for texture type " + std::to_string(type) + " not available.\n\tSee assimp's aiTextureTypes.\n");
-				}
-			}
+
+			if (std::count(textureFiles.begin(), textureFiles.end(), texturePath) == 0)
+				textureFiles.push_back(texturePath);
 		}
 	}
 }
+
 
 glm::vec3 ModelData::ai_glmVec(aiVector3D aiVec)
 {
 	return { aiVec.x, aiVec.y, aiVec.z };
 }
 
-void ModelData::setTexturesFolder(std::string path)
-{
+void ModelData::setTexturesFolder(std::string path) {
 	texturesFolder = path;
 }
 
 
-void ModelData::draw(const Shader& shader)
-{
-
+void ModelData::draw(const Shader& shader) {
+	// Deprecated - Renderer implements drawing
+	/*
 	for (Mesh& mesh : meshes) {
 		for (GLint i = 0; i < textures.size(); i++) {
 			textures[i].activate(shader, i);
@@ -150,14 +144,13 @@ void ModelData::draw(const Shader& shader)
 		//Is setting active texture back to 0 unnecessary?
 		glActiveTexture(GL_TEXTURE0);
 	}
+	*/
 }
 
-const std::vector<Mesh>& ModelData::getMeshes()
-{
+const std::vector<Mesh>& ModelData::getMeshes() {
 	return meshes;
 }
 
-const std::vector<Texture>& ModelData::getTextures()
-{
-	return textures;
+const Texture2DArray& ModelData::getTextureArray() {
+	return *textureArray.get();
 }

@@ -1,7 +1,5 @@
 #include "GBuffer.h"
 
-#define ARRAY_SIZE_IN_ELEMENTS(a) sizeof(a) / sizeof(a[0])
-
 
 GBuffer::GBuffer(unsigned int windowWidth, unsigned int windowHeight)
     : windowWidth(windowWidth), windowHeight(windowHeight)
@@ -25,7 +23,7 @@ bool GBuffer::init()
 
     initTexture(textures[Position], GL_RGBA16F, GL_RGBA, GL_FLOAT);
     initTexture(textures[Normal], GL_RGBA16F, GL_RGBA, GL_FLOAT);
-    initTexture(textures[Color], GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // intention is to combine color and specular data into single texture here - specular currently unused
+    initTexture(textures[Color], GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // TODO intention is to combine color and specular data into single texture here - specular(last byte) currently not implemented
     initTexture(depthTexture, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 
     GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -63,4 +61,9 @@ void GBuffer::bindForWriting()
 void GBuffer::bindForReading()
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+}
+
+void GBuffer::setReadBuffer(GBufferTextureType TextureType)
+{
+    glBindTexture(GL_TEXTURE_2D, textures[TextureType]);
 }

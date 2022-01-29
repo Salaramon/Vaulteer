@@ -11,5 +11,7 @@ public:
 	virtual void init() {};
 	void use();
 
+	virtual void setModel(const glm::mat4& modelMat) {};
+
 protected:
 };

@@ -3,8 +3,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,7 +18,7 @@
 #include "GraphicsData.h"
 
 #include "Mesh.h"
-#include "Texture.h"
+#include "Texture2DArray.h"
 #include "VertexHash.h"
 
 #include "DebugLogger.h"
@@ -53,8 +54,8 @@ public:
 	void loadModel(std::string path);
 
 	void draw(const Shader& shader) override;
+	const Texture2DArray& getTextureArray();
 	const std::vector<Mesh>& getMeshes();
-	const std::vector<Texture>& getTextures();
 
 private:
 
@@ -66,11 +67,12 @@ private:
 
 	glm::vec3 ai_glmVec(aiVector3D aiVec);
 
-	std::vector<Texture> textures;
+	//std::vector<std::pair<aiTextureType, Texture>> textures;
+	std::unique_ptr<Texture2DArray> textureArray;
 	std::vector<Mesh> meshes;
-	std::string texturesFolder;
 
 	void setTexturesFolder(std::string path);
 
-	std::unordered_set<std::string>  textureFiles;
+	std::string texturesFolder;
+	std::vector<std::string> textureFiles;
 };

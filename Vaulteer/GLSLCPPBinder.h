@@ -51,10 +51,13 @@ namespace Binder {
 }
 	constexpr unsigned int get_map_value(char const* a){
 		if (strings_equal("deferred_vertex.glsl", a)) { return 0; }
-		if (strings_equal("geometry_vertex.glsl", a)) { return 1; }
-		if (strings_equal("shadow_vertex.glsl", a)) { return 2; }
-		if (strings_equal("line_vertex.glsl", a)) { return 3; }
-		if (strings_equal("forward_vertex.glsl", a)) { return 4; }
+		if (strings_equal("depth_map_vertex.glsl", a)) { return 1; }
+		if (strings_equal("forward_vertex.glsl", a)) { return 2; }
+		if (strings_equal("geometry_vertex.glsl", a)) { return 3; }
+		if (strings_equal("lightsource_vertex.glsl", a)) { return 4; }
+		if (strings_equal("line_vertex.glsl", a)) { return 5; }
+		if (strings_equal("shadow_cube_vertex.glsl", a)) { return 6; }
+		if (strings_equal("shadow_vertex.glsl", a)) { return 7; }
 	};
 
 	template<class... Args>
@@ -71,33 +74,13 @@ namespace Binder {
 		LocationInfo(0, "vec3", "aPos", 0, 12),
 		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
 	};
-	struct AttributeStructure_geometry_vertex{
+	struct AttributeStructure_depth_map_vertex{
 		glm::vec3 aPos;
-		glm::vec3 aNormal;
 		glm::vec2 aTexCoords;
-		inline static const std::array<size_t, 3> offsets = {0,12,24};
-		inline static const std::array<LocationInfo, 3> locations = {
+		inline static const std::array<size_t, 2> offsets = {0,12};
+		inline static const std::array<LocationInfo, 2> locations = {
 		LocationInfo(0, "vec3", "aPos", 0, 12),
-		LocationInfo(1, "vec3", "aNormal", 0, 12),
 		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
-	};
-	struct AttributeStructure_shadow_vertex{
-		glm::vec3 aPos;
-		glm::vec3 aNormal;
-		glm::vec2 aTexCoords;
-		glm::mat4 instanceMatrix;
-		inline static const std::array<size_t, 4> offsets = {0,12,24,32};
-		inline static const std::array<LocationInfo, 4> locations = {
-		LocationInfo(0, "vec3", "aPos", 0, 12),
-		LocationInfo(1, "vec3", "aNormal", 0, 12),
-		LocationInfo(2, "vec2", "aTexCoords", 0, 8),
-		LocationInfo(3, "mat4", "instanceMatrix", 0, 64)};
-	};
-	struct AttributeStructure_line_vertex{
-		glm::vec3 aPos;
-		inline static const std::array<size_t, 1> offsets = {0};
-		inline static const std::array<LocationInfo, 1> locations = {
-		LocationInfo(0, "vec3", "aPos", 0, 12)};
 	};
 	struct AttributeStructure_forward_vertex{
 		glm::vec3 aPos;
@@ -109,23 +92,68 @@ namespace Binder {
 		LocationInfo(1, "vec3", "aNormal", 0, 12),
 		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
 	};
+	struct AttributeStructure_geometry_vertex{
+		glm::vec3 aPos;
+		glm::vec3 aNormal;
+		glm::vec2 aTexCoords;
+		inline static const std::array<size_t, 3> offsets = {0,12,24};
+		inline static const std::array<LocationInfo, 3> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12),
+		LocationInfo(1, "vec3", "aNormal", 0, 12),
+		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
+	};
+	struct AttributeStructure_lightsource_vertex{
+		glm::vec3 aPos;
+		glm::vec3 aNormal;
+		glm::vec2 aTexCoords;
+		inline static const std::array<size_t, 3> offsets = {0,12,24};
+		inline static const std::array<LocationInfo, 3> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12),
+		LocationInfo(1, "vec3", "aNormal", 0, 12),
+		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
+	};
+	struct AttributeStructure_line_vertex{
+		glm::vec3 aPos;
+		inline static const std::array<size_t, 1> offsets = {0};
+		inline static const std::array<LocationInfo, 1> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12)};
+	};
+	struct AttributeStructure_shadow_cube_vertex{
+		glm::vec3 aPos;
+		inline static const std::array<size_t, 1> offsets = {0};
+		inline static const std::array<LocationInfo, 1> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12)};
+	};
+	struct AttributeStructure_shadow_vertex{
+		glm::vec3 aPos;
+		inline static const std::array<size_t, 1> offsets = {0};
+		inline static const std::array<LocationInfo, 1> locations = {
+		LocationInfo(0, "vec3", "aPos", 0, 12)};
+	};
 
 	struct AttributeObject {
 		template<char const* str>
-		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_geometry_vertex,AttributeStructure_shadow_vertex,AttributeStructure_line_vertex,AttributeStructure_forward_vertex>::type<str>;
+		using Get = typename type_list<AttributeStructure_deferred_vertex,AttributeStructure_depth_map_vertex,AttributeStructure_forward_vertex,AttributeStructure_geometry_vertex,AttributeStructure_lightsource_vertex,AttributeStructure_line_vertex,AttributeStructure_shadow_cube_vertex,AttributeStructure_shadow_vertex>::type<str>;
 	};
 
 	namespace file_names{
-		constexpr char deferred_frag[] = "deferred_frag.glsl";
-		constexpr char deferred_vertex[] = "deferred_vertex.glsl";
-		constexpr char geometry_frag[] = "geometry_frag.glsl";
-		constexpr char geometry_vertex[] = "geometry_vertex.glsl";
-		constexpr char shadow_frag[] = "shadow_frag.glsl";
-		constexpr char shadow_vertex[] = "shadow_vertex.glsl";
-		constexpr char line_vertex[] = "line_vertex.glsl";
-		constexpr char line_frag[] = "line_frag.glsl";
-		constexpr char forward_vertex[] = "forward_vertex.glsl";
-		constexpr char forward_frag[] = "forward_frag.glsl";
+		constexpr char deferred_frag[] = "shaders/deferred_frag.glsl";
+		constexpr char deferred_vertex[] = "shaders/deferred_vertex.glsl";
+		constexpr char depth_map_frag[] = "shaders/depth_map_frag.glsl";
+		constexpr char depth_map_vertex[] = "shaders/depth_map_vertex.glsl";
+		constexpr char forward_frag[] = "shaders/forward_frag.glsl";
+		constexpr char forward_vertex[] = "shaders/forward_vertex.glsl";
+		constexpr char geometry_frag[] = "shaders/geometry_frag.glsl";
+		constexpr char geometry_vertex[] = "shaders/geometry_vertex.glsl";
+		constexpr char lightsource_frag[] = "shaders/lightsource_frag.glsl";
+		constexpr char lightsource_vertex[] = "shaders/lightsource_vertex.glsl";
+		constexpr char line_frag[] = "shaders/line_frag.glsl";
+		constexpr char line_vertex[] = "shaders/line_vertex.glsl";
+		constexpr char shadow_cube_frag[] = "shaders/shadow_cube_frag.glsl";
+		constexpr char shadow_cube_geometry[] = "shaders/shadow_cube_geometry.glsl";
+		constexpr char shadow_cube_vertex[] = "shaders/shadow_cube_vertex.glsl";
+		constexpr char shadow_frag[] = "shaders/shadow_frag.glsl";
+		constexpr char shadow_vertex[] = "shaders/shadow_vertex.glsl";
 	}
 
 	struct Attenuation{
@@ -152,16 +180,46 @@ namespace Binder {
 			Uniform<float> diffuseIntensity;
 	};
 
+	struct DirectionalLight{
+		DirectionalLight(String name)  :
+			light{BaseLight(String(name + "." + "light"))},
+			direction{Uniform<glm::vec3>("vec3", String(name + "." + "direction"), 0, 12)}
+		{}
+
+			BaseLight light;
+			Uniform<glm::vec3> direction;
+	};
+
 	struct PointLight{
 		PointLight(String name)  :
 			light{BaseLight(String(name + "." + "light"))},
 			att{Attenuation(String(name + "." + "att"))},
-			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)}
+			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)},
+			radius{Uniform<float>("float", String(name + "." + "radius"), 0, 4)}
 		{}
 
 			BaseLight light;
 			Attenuation att;
 			Uniform<glm::vec3> position;
+			Uniform<float> radius;
+	};
+
+	struct SpotLight{
+		SpotLight(String name)  :
+			light{BaseLight(String(name + "." + "light"))},
+			att{Attenuation(String(name + "." + "att"))},
+			position{Uniform<glm::vec3>("vec3", String(name + "." + "position"), 0, 12)},
+			radius{Uniform<float>("float", String(name + "." + "radius"), 0, 4)},
+			direction{Uniform<glm::vec3>("vec3", String(name + "." + "direction"), 0, 12)},
+			angle{Uniform<float>("float", String(name + "." + "angle"), 0, 4)}
+		{}
+
+			BaseLight light;
+			Attenuation att;
+			Uniform<glm::vec3> position;
+			Uniform<float> radius;
+			Uniform<glm::vec3> direction;
+			Uniform<float> angle;
 	};
 
 struct deferred_frag {
@@ -171,10 +229,29 @@ struct deferred_frag {
 			 inline static Uniform<> gPosition{Uniform<>("sampler2D", String("gPosition"), 0, 0)};
 			 inline static Uniform<> gNormal{Uniform<>("sampler2D", String("gNormal"), 0, 0)};
 			 inline static Uniform<> gColor{Uniform<>("sampler2D", String("gColor"), 0, 0)};
+			 inline static Uniform<> shadowMap_0{Uniform<>("sampler2D", String("shadowMap_0"), 0, 0)};
+			 inline static Uniform<> shadowMap_1{Uniform<>("sampler2D", String("shadowMap_1"), 0, 0)};
+			 inline static Uniform<> shadowMap_2{Uniform<>("sampler2D", String("shadowMap_2"), 0, 0)};
+			 inline static Uniform<glm::mat4> lightSpaceMatrices[3]{Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[0]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[1]"), 3, 64), Uniform<glm::mat4>("mat4", String("lightSpaceMatrices[2]"), 3, 64)};
+			 inline static Uniform<float> cascadeFarPlanes[3]{Uniform<float>("float", String("cascadeFarPlanes[0]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[1]"), 3, 4), Uniform<float>("float", String("cascadeFarPlanes[2]"), 3, 4)};
+			 inline static Uniform<> shadowSpotMap_0{Uniform<>("sampler2D", String("shadowSpotMap_0"), 0, 0)};
+			 inline static Uniform<> shadowSpotMap_1{Uniform<>("sampler2D", String("shadowSpotMap_1"), 0, 0)};
+			 inline static Uniform<> shadowSpotMap_2{Uniform<>("sampler2D", String("shadowSpotMap_2"), 0, 0)};
+			 inline static Uniform<> shadowSpotMap_3{Uniform<>("sampler2D", String("shadowSpotMap_3"), 0, 0)};
+			 inline static Uniform<glm::mat4> spotLightSpaceMatrices[4]{Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[0]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[1]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[2]"), 4, 64), Uniform<glm::mat4>("mat4", String("spotLightSpaceMatrices[3]"), 4, 64)};
+			 inline static Uniform<> shadowCubeMap_0{Uniform<>("samplerCube", String("shadowCubeMap_0"), 0, 0)};
+			 inline static Uniform<> shadowCubeMap_1{Uniform<>("samplerCube", String("shadowCubeMap_1"), 0, 0)};
+			 inline static Uniform<> shadowCubeMap_2{Uniform<>("samplerCube", String("shadowCubeMap_2"), 0, 0)};
+			 inline static Uniform<> shadowCubeMap_3{Uniform<>("samplerCube", String("shadowCubeMap_3"), 0, 0)};
+			 inline static Uniform<float> cubeMapFarPlanes[4]{Uniform<float>("float", String("cubeMapFarPlanes[0]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[1]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[2]"), 4, 4), Uniform<float>("float", String("cubeMapFarPlanes[3]"), 4, 4)};
 			 inline static Uniform<glm::vec3> worldCameraPos{Uniform<glm::vec3>("vec3", String("worldCameraPos"), 0, 12)};
-			 inline static PointLight pointLights[32]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]")), PointLight(String("pointLights[4]")), PointLight(String("pointLights[5]")), PointLight(String("pointLights[6]")), PointLight(String("pointLights[7]")), PointLight(String("pointLights[8]")), PointLight(String("pointLights[9]")), PointLight(String("pointLights[10]")), PointLight(String("pointLights[11]")), PointLight(String("pointLights[12]")), PointLight(String("pointLights[13]")), PointLight(String("pointLights[14]")), PointLight(String("pointLights[15]")), PointLight(String("pointLights[16]")), PointLight(String("pointLights[17]")), PointLight(String("pointLights[18]")), PointLight(String("pointLights[19]")), PointLight(String("pointLights[20]")), PointLight(String("pointLights[21]")), PointLight(String("pointLights[22]")), PointLight(String("pointLights[23]")), PointLight(String("pointLights[24]")), PointLight(String("pointLights[25]")), PointLight(String("pointLights[26]")), PointLight(String("pointLights[27]")), PointLight(String("pointLights[28]")), PointLight(String("pointLights[29]")), PointLight(String("pointLights[30]")), PointLight(String("pointLights[31]"))};
+			 inline static Uniform<glm::mat4> cameraViewMat{Uniform<glm::mat4>("mat4", String("cameraViewMat"), 0, 64)};
+			 inline static DirectionalLight directionalLight{DirectionalLight(String("directionalLight"))};
+			 inline static PointLight pointLights[4]{PointLight(String("pointLights[0]")), PointLight(String("pointLights[1]")), PointLight(String("pointLights[2]")), PointLight(String("pointLights[3]"))};
+			 inline static SpotLight spotLights[4]{SpotLight(String("spotLights[0]")), SpotLight(String("spotLights[1]")), SpotLight(String("spotLights[2]")), SpotLight(String("spotLights[3]"))};
 			 inline static Uniform<float> materialSpecularIntensity{Uniform<float>("float", String("materialSpecularIntensity"), 0, 4)};
 			 inline static Uniform<float> materialShininess{Uniform<float>("float", String("materialShininess"), 0, 4)};
+			 inline static Uniform<glm::vec3> fogColor{Uniform<glm::vec3>("vec3", String("fogColor"), 0, 12)};
 		};
 	};
 
@@ -187,11 +264,52 @@ struct deferred_vertex {
 		};
 	};
 
+struct depth_map_frag {
+	struct locations{
+		};
+		struct uniforms{
+			 inline static Uniform<> depthMap{Uniform<>("sampler2D", String("depthMap"), 0, 0)};
+		};
+	};
+
+struct depth_map_vertex {
+	struct locations{
+			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
+			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
+		};
+		struct uniforms{
+		};
+	};
+
+struct forward_frag {
+	struct locations{
+		};
+		struct uniforms{
+			 inline static Uniform<> textureLib{Uniform<>("sampler2DArray", String("textureLib"), 0, 0)};
+			 inline static Uniform<glm::mat4> inverseViewMat{Uniform<glm::mat4>("mat4", String("inverseViewMat"), 0, 64)};
+			 inline static Uniform<glm::vec3> cameraPos{Uniform<glm::vec3>("vec3", String("cameraPos"), 0, 12)};
+			 inline static Uniform<glm::vec3> lightPos{Uniform<glm::vec3>("vec3", String("lightPos"), 0, 12)};
+		};
+	};
+
+struct forward_vertex {
+	struct locations{
+			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
+			inline static Location<glm::vec3> aNormal{Location <glm::vec3>(1, "vec3", "aNormal", 0, 12)};
+			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
+		};
+		struct uniforms{
+			 inline static Uniform<glm::mat4> modelView{Uniform<glm::mat4>("mat4", String("modelView"), 0, 64)};
+			 inline static Uniform<glm::mat4> projection{Uniform<glm::mat4>("mat4", String("projection"), 0, 64)};
+			 inline static Uniform<glm::mat4> normal{Uniform<glm::mat4>("mat4", String("normal"), 0, 64)};
+		};
+	};
+
 struct geometry_frag {
 	struct locations{
 		};
 		struct uniforms{
-			 inline static Uniform<> diffuse1{Uniform<>("sampler2D", String("diffuse1"), 0, 0)};
+			 inline static Uniform<> textureLib{Uniform<>("sampler2DArray", String("textureLib"), 0, 0)};
 		};
 	};
 
@@ -202,37 +320,25 @@ struct geometry_vertex {
 			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
 		};
 		struct uniforms{
-			 inline static Uniform<glm::mat4> view{Uniform<glm::mat4>("mat4", String("view"), 0, 64)};
+			 inline static Uniform<glm::mat4> modelView{Uniform<glm::mat4>("mat4", String("modelView"), 0, 64)};
 			 inline static Uniform<glm::mat4> projection{Uniform<glm::mat4>("mat4", String("projection"), 0, 64)};
 			 inline static Uniform<glm::mat4> normal{Uniform<glm::mat4>("mat4", String("normal"), 0, 64)};
-			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
 		};
 	};
 
-struct shadow_frag {
+struct lightsource_frag {
 	struct locations{
 		};
 		struct uniforms{
-			 inline static Uniform<> shadowMap{Uniform<>("sampler2D", String("shadowMap"), 0, 0)};
+			 inline static Uniform<glm::vec3> lightColor{Uniform<glm::vec3>("vec3", String("lightColor"), 0, 12)};
 		};
 	};
 
-struct shadow_vertex {
+struct lightsource_vertex {
 	struct locations{
 			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
 			inline static Location<glm::vec3> aNormal{Location <glm::vec3>(1, "vec3", "aNormal", 0, 12)};
 			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
-			inline static Location<glm::mat4> instanceMatrix{Location <glm::mat4>(3, "mat4", "instanceMatrix", 0, 64)};
-		};
-		struct uniforms{
-			 inline static Uniform<glm::mat4> view{Uniform<glm::mat4>("mat4", String("view"), 0, 64)};
-			 inline static Uniform<glm::mat4> projection{Uniform<glm::mat4>("mat4", String("projection"), 0, 64)};
-		};
-	};
-
-struct line_vertex {
-	struct locations{
-			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
 		};
 		struct uniforms{
 			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
@@ -249,11 +355,9 @@ struct line_frag {
 		};
 	};
 
-struct forward_vertex {
+struct line_vertex {
 	struct locations{
 			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
-			inline static Location<glm::vec3> aNormal{Location <glm::vec3>(1, "vec3", "aNormal", 0, 12)};
-			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
 		};
 		struct uniforms{
 			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
@@ -262,11 +366,46 @@ struct forward_vertex {
 		};
 	};
 
-struct forward_frag {
+struct shadow_cube_frag {
 	struct locations{
 		};
 		struct uniforms{
-			 inline static Uniform<> diffuse1{Uniform<>("sampler2D", String("diffuse1"), 0, 0)};
+			 inline static Uniform<glm::vec3> lightPos{Uniform<glm::vec3>("vec3", String("lightPos"), 0, 12)};
+			 inline static Uniform<float> farPlane{Uniform<float>("float", String("farPlane"), 0, 4)};
+		};
+	};
+
+struct shadow_cube_geometry {
+	struct locations{
+		};
+		struct uniforms{
+			 inline static Uniform<glm::mat4> shadowMatrices[6]{Uniform<glm::mat4>("mat4", String("shadowMatrices[0]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[1]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[2]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[3]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[4]"), 6, 64), Uniform<glm::mat4>("mat4", String("shadowMatrices[5]"), 6, 64)};
+		};
+	};
+
+struct shadow_cube_vertex {
+	struct locations{
+			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
+		};
+		struct uniforms{
+			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
+		};
+	};
+
+struct shadow_frag {
+	struct locations{
+		};
+		struct uniforms{
+		};
+	};
+
+struct shadow_vertex {
+	struct locations{
+			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
+		};
+		struct uniforms{
+			 inline static Uniform<glm::mat4> lightSpaceMatrix{Uniform<glm::mat4>("mat4", String("lightSpaceMatrix"), 0, 64)};
+			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
 		};
 	};
 

@@ -69,9 +69,11 @@ size_t Game::run()
 
 	//Renderer
 	Renderer<ForwardRenderer> renderer;
+	//Renderer<GeometryRenderer> renderer;
 	
 	//Scenes
 	Renderer<ForwardRenderer>::Scene scene;
+	//Renderer<GeometryRenderer>::Scene scene;
 
 	//Setting up cameras in the scene.
 	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
@@ -87,8 +89,8 @@ size_t Game::run()
 	std::vector<Object3D*> objects;
 
 	//Generate floor
-	intmax_t width = 16;
-	intmax_t height = 16;
+	intmax_t width = 8;
+	intmax_t height = 8;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
 			objects.push_back(scene.addObject(modelByName(models, "crate")));
@@ -96,9 +98,14 @@ size_t Game::run()
 		}
 	}
 
-	objects.push_back(scene.addObject(modelByName(lines, "sphere")));
+	objects.push_back(scene.addObject(modelByName(models, "backpack")));
 	objects.back()->setPosition(0, 5, 0);
-	objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
+
+	objects.push_back(scene.addObject(modelByName(models, "crate")));
+	objects.back()->setPosition(1, 10, 1);
+	objects.back()->setScale(0.6, 0.6, 0.6);
+
+	//objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
 	//objects.back()->setScale(1000, 1000, 1000);
 	//models.push_back(meshLayer->addModel(modelByName("chaos1")));
 	//models.push_back(meshLayer->addModel(modelByName("chaos2")));

@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{c161b128-2bfe-4173-93f0-28b39ade564d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\texture">
+      <UniqueIdentifier>{5c350397-11c3-4da8-978c-3e5dd725f074}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\texture">
+      <UniqueIdentifier>{50b6ddf5-1147-4b00-9e57-19c53db35ebe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vaulteer.cpp">
@@ -27,13 +36,7 @@
     <ClCompile Include="..\GLAD\src\glad.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Event.cpp">
@@ -57,19 +60,10 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowMapFBO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowTechnique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryTechnique.cpp">
+    <ClCompile Include="DeferredGeometryTechnique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolyTree.cpp">
@@ -120,15 +114,48 @@
     <ClCompile Include="Object3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCascade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCubeBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCubeTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMapTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredLightingTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2DArray.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="CubemapTexture.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -182,12 +209,6 @@
     <ClInclude Include="GLSLCPPBinder.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="MyCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowMapFBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Technique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -197,7 +218,7 @@
     <ClInclude Include="LightTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeometryTechnique.h">
+    <ClInclude Include="DeferredGeometryTechnique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PolyTree.h">
@@ -248,49 +269,106 @@
     <ClInclude Include="Object3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredLightingTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCubeTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCascade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCubeBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeDefUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2DArray.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="CubemapTexture.h">
+      <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="geometry_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="shadow_frag.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="shadow_vertex.glsl">
+    <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="GLSLSourceFiles.toml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="light_frag.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\deferred_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="light_vertex.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\deferred_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="geometry_frag.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\depth_map_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="deferred_frag.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\depth_map_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="deferred_vertex.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\geometry_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="forward_frag.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\geometry_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="forward_vertex.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\light_frag.glsl.ignored">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="GLSLSourceFiles.toml">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\lightsource_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="line_frag.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\lightsource_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="line_vertex.glsl">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\shadow_cube_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shadow_cube_geometry.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shadow_cube_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shadow_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\shadow_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\forward_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\forward_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\line_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\line_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

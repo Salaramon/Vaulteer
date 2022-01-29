@@ -41,6 +41,9 @@ public:
 	glm::vec3 getRight();
 	glm::vec3 getUp();
 
+	float getFov();
+	float getAspectRatio();
+
 private:
 	glm::vec3 lockedUp = glm::vec3(0.0f);
 

@@ -34,7 +34,7 @@ void Event::AddEventHandlingForWindow(Window* window)
 
 bool Event::Poll() 
 {
-	DebugLogger<Event> log;
+ 	DebugLogger<Event> log;
 	log.debug("Events started polling.\n");
 	if (firstPoll) {
 		currentPollTime = glfwGetTime();

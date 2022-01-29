@@ -15,6 +15,8 @@ public:
 using ForwardShader = const ShaderUniformPair<Binder::forward_vertex, Binder::forward_frag>;
 using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_frag>;
 using DeferredShader = const ShaderUniformPair<Binder::deferred_vertex, Binder::deferred_frag>;
+using GeometryShader = const ShaderUniformPair<Binder::geometry_vertex, Binder::geometry_frag>;
+
 
 template<class ShaderBinder>
 constexpr const char* getShaderFile() {
@@ -26,6 +28,9 @@ constexpr const char* getShaderFile() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return Binder::file_names::deferred_vertex; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return Binder::file_names::deferred_frag; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return Binder::file_names::geometry_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return Binder::file_names::geometry_frag; }
 }
 
 template<class ShaderBinder>
@@ -38,6 +43,9 @@ constexpr const GLenum getShaderType() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr(std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return GL_FRAGMENT_SHADER; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr(std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return GL_FRAGMENT_SHADER; }
 }
 
 template<class ReturnType, class ShaderUniformType>
@@ -85,10 +93,9 @@ public:
 		shader = std::make_unique<Shader>(initializeShader());
 	}
 
-
-
 //protected:
 	inline static std::unique_ptr<Shader> shader = nullptr;
+
 	template<size_t... n>
 	static const Shader _initializeShader(std::index_sequence<n...>) {
 		return Shader((ShaderInfoFromType<n, Args>().value)...);
@@ -96,6 +103,10 @@ public:
 
 	static Shader initializeShader() {
 		return _initializeShader(std::make_index_sequence<sizeof...(Args)>{});
+	}
+
+	static void uniform(Binder::UniformInfo uniform) {
+
 	}
 };
 

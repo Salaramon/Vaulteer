@@ -2,16 +2,11 @@
 Halt_On_Error = false
 Generate_Log = true
 
-Shader_Files = [ 
-"deferred_frag.glsl", 
-"deferred_vertex.glsl", 
-"geometry_frag.glsl", 
-"geometry_vertex.glsl", 
-"shadow_frag.glsl", 
-"shadow_vertex.glsl",
-"line_vertex.glsl", 
-"line_frag.glsl",
-"forward_vertex.glsl",
-"forward_frag.glsl"
+Shader_Folders = [ 
+	"shaders"
 ]
+Shader_File_Extension = "glsl"
+
 GLM_Include = "glm/"
+
+# Shader_Files = [ "deferred_frag.glsl", "deferred_vertex.glsl", "geometry_frag.glsl", "geometry_vertex.glsl", "lightsource_frag.glsl", "lightsource_vertex.glsl", "shadow_frag.glsl", "shadow_vertex.glsl", "shadow_cube_vertex.glsl", "shadow_cube_geometry.glsl", "shadow_cube_frag.glsl", "depth_map_vertex.glsl", "depth_map_frag.glsl" ]

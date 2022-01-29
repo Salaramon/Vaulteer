@@ -167,26 +167,28 @@
     <ClCompile Include="..\GLAD\src\glad.c" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CubemapTexture.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="ForwardTechnique.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GBuffer.cpp" />
-    <ClCompile Include="GeometryTechnique.cpp">
+    <ClCompile Include="DeferredGeometryTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeometryRenderer.cpp" />
     <ClCompile Include="GraphicsData.cpp" />
+    <ClCompile Include="DeferredLightingTechnique.cpp" />
     <ClCompile Include="LineData.cpp" />
     <ClCompile Include="LineTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
-    <ClCompile Include="MyCamera.cpp" />
     <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="Point.cpp" />
@@ -195,12 +197,11 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="ShadowMapFBO.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="ShadowBuffer.cpp" />
+    <ClCompile Include="ShadowCascade.cpp" />
+    <ClCompile Include="ShadowCubeBuffer.cpp" />
+    <ClCompile Include="ShadowCubeTechnique.cpp" />
+    <ClCompile Include="ShadowMapTechnique.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -214,6 +215,7 @@
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Texture2DArray.cpp" />
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexArray.cpp" />
@@ -226,10 +228,14 @@
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="ForwardTechnique.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GeometryRenderer.h" />
     <ClInclude Include="GraphicsData.h" />
+    <ClInclude Include="DeferredLightingTechnique.h" />
     <ClInclude Include="LineData.h" />
     <ClInclude Include="LineTechnique.h" />
+    <ClInclude Include="MathUtils.h" />
     <ClInclude Include="ModelData.h" />
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="OpenGL.h" />
@@ -238,6 +244,13 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="ShadowCascade.h" />
+    <ClInclude Include="ShadowCubeBuffer.h" />
+    <ClInclude Include="ShadowCubeTechnique.h" />
+    <ClInclude Include="ShadowMapTechnique.h" />
+    <ClInclude Include="Texture2DArray.h" />
+    <ClInclude Include="CubemapTexture.h" />
+    <ClInclude Include="TypeDefUtils.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
@@ -245,7 +258,7 @@
     <ClInclude Include="FunctionExpressionGeneration.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
-    <ClInclude Include="GeometryTechnique.h">
+    <ClInclude Include="DeferredGeometryTechnique.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -254,10 +267,9 @@
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="MyCamera.h" />
     <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShadowMapFBO.h">
+    <ClInclude Include="ShadowBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -284,19 +296,25 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="deferred_frag.glsl" />
-    <None Include="deferred_vertex.glsl" />
-    <None Include="geometry_frag.glsl" />
-    <None Include="geometry_vertex.glsl" />
-    <None Include="forward_frag.glsl" />
-    <None Include="forward_vertex.glsl" />
-    <None Include="light_frag.glsl" />
-    <None Include="light_vertex.glsl" />
-    <None Include="line_frag.glsl" />
-    <None Include="line_vertex.glsl" />
-    <None Include="shadow_frag.glsl" />
-    <None Include="shadow_vertex.glsl" />
     <None Include="GLSLSourceFiles.toml" />
+    <None Include="shaders\deferred_frag.glsl" />
+    <None Include="shaders\deferred_vertex.glsl" />
+    <None Include="shaders\depth_map_frag.glsl" />
+    <None Include="shaders\depth_map_vertex.glsl" />
+    <None Include="shaders\forward_frag.glsl" />
+    <None Include="shaders\forward_vertex.glsl" />
+    <None Include="shaders\geometry_frag.glsl" />
+    <None Include="shaders\geometry_vertex.glsl" />
+    <None Include="shaders\lightsource_frag.glsl" />
+    <None Include="shaders\lightsource_vertex.glsl" />
+    <None Include="shaders\light_frag.glsl.ignored" />
+    <None Include="shaders\line_frag.glsl" />
+    <None Include="shaders\line_vertex.glsl" />
+    <None Include="shaders\shadow_cube_frag.glsl" />
+    <None Include="shaders\shadow_cube_geometry.glsl" />
+    <None Include="shaders\shadow_cube_vertex.glsl" />
+    <None Include="shaders\shadow_frag.glsl" />
+    <None Include="shaders\shadow_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

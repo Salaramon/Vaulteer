@@ -50,7 +50,7 @@ int main() {
 
 
 	Event::AddEventHandlingForWindow(&window);
-	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
+	//Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
 	//Texture::uniformTextureTypes.emplace(aiTextureType_SPECULAR, Binder::lightsource_frag::uniforms::lightColor);
 	//Game game("resourceFolder?");
 
