@@ -78,12 +78,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,8 +167,11 @@
     <ClCompile Include="..\GLAD\src\glad.c" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ClusteredForwardRenderer.cpp" />
+    <ClCompile Include="ClusterTileTechnique.cpp" />
     <ClCompile Include="CubemapTexture.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
+    <ClCompile Include="DepthMapTechnique.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
     <ClCompile Include="Event.cpp" />
@@ -182,7 +185,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeometryRenderer.cpp" />
+    <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="GraphicsData.cpp" />
     <ClCompile Include="DeferredLightingTechnique.cpp" />
     <ClCompile Include="LineData.cpp" />
@@ -201,7 +204,6 @@
     <ClCompile Include="ShadowCascade.cpp" />
     <ClCompile Include="ShadowCubeBuffer.cpp" />
     <ClCompile Include="ShadowCubeTechnique.cpp" />
-    <ClCompile Include="ShadowMapTechnique.cpp" />
     <ClCompile Include="ShadowTechnique.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -224,13 +226,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ClusteredForwardRenderer.h" />
+    <ClInclude Include="ClusterTileTechnique.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="ForwardTechnique.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GeometryRenderer.h" />
+    <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="GraphicsData.h" />
     <ClInclude Include="DeferredLightingTechnique.h" />
     <ClInclude Include="LineData.h" />
@@ -247,7 +251,7 @@
     <ClInclude Include="ShadowCascade.h" />
     <ClInclude Include="ShadowCubeBuffer.h" />
     <ClInclude Include="ShadowCubeTechnique.h" />
-    <ClInclude Include="ShadowMapTechnique.h" />
+    <ClInclude Include="DepthMapTechnique.h" />
     <ClInclude Include="Texture2DArray.h" />
     <ClInclude Include="CubemapTexture.h" />
     <ClInclude Include="TypeDefUtils.h" />
@@ -255,7 +259,6 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="FunctionExpressionGeneration.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
     <ClInclude Include="DeferredGeometryTechnique.h">
@@ -267,7 +270,6 @@
     <ClInclude Include="LightTypes.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -297,6 +299,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GLSLSourceFiles.toml" />
+    <None Include="shaders\cluster_tile_compute.glsl" />
     <None Include="shaders\deferred_frag.glsl" />
     <None Include="shaders\deferred_vertex.glsl" />
     <None Include="shaders\depth_map_frag.glsl" />
