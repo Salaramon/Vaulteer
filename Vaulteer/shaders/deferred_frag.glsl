@@ -283,10 +283,6 @@ void main() {
     vec3 diffuse = texture(gColor, TexCoords).rgb;
     float specIntensity = texture(gColor, TexCoords).a;
 
-    
-    FragColor = vec4(texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, 1.0);
-    return;
-
     //float material = texture(gMaterial, TexCoords).x;
  
     float fragDepth = abs((cameraViewMat * vec4(fragPosition, 1.0)).z);
