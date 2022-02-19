@@ -1,7 +1,7 @@
 #pragma once
 #include "Texture.h"
 
-class Texture2DArray : protected Texture {
+class Texture2DArray : public Texture {
 public:
     Texture2DArray(std::vector<std::string> paths, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2(), GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
     Texture2DArray(std::string path, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2(), GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);

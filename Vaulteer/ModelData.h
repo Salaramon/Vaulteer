@@ -26,7 +26,6 @@
 class ModelData : public DebugLogger<ModelData>, public GraphicsData
 {
 public:
-
 	struct ModelVertexHash : public VertexHash<Vertex> {
 	public:
 		size_t hash_combine(size_t lhs, size_t rhs) const {

@@ -5,10 +5,13 @@ Game::Game(Window& window) :
 {
 }
 
-void Game::loadResources()
-{
-	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>( "Crate/Crate1.obj", "Crate" )));
+void Game::loadResources() {
+	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>("Crate/Crate1.obj", "Crate" )));
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
+
+
+
+
 	/*
 	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
 		glm::vec3(5, 5, 5), glm::vec3(10, 5, 5),
@@ -68,12 +71,16 @@ size_t Game::run()
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer<ForwardRenderer> renderer;
-	//Renderer<GeometryRenderer> renderer;
+	Renderer<DeferredRenderer> renderer;
+	renderer.initialize(window->getWidth(), window->getHeight());
+
+	// TODO for dan: make function for printing and breaking at the same time (by message key)
+	DebugLogger<>::setClassAccessLimit("Shader", 10);
+	DebugLogger<>::printClass("Shader");
+	DebugLogger<>::disableLogging();
 	
 	//Scenes
-	Renderer<ForwardRenderer>::Scene scene;
-	//Renderer<GeometryRenderer>::Scene scene;
+	Renderer<DeferredRenderer>::Scene scene;
 
 	//Setting up cameras in the scene.
 	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));

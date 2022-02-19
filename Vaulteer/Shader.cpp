@@ -67,7 +67,6 @@ bool Shader::shader_catchError(GLuint id)
 	if (!getShaderInfo(GL_COMPILE_STATUS))
 	{
 		getErrorMessage(glGetShaderInfoLog, id, getShaderInfo(GL_INFO_LOG_LENGTH), "Error: Could not compile shader:");
-
 		return true;
 	}
 
@@ -113,5 +112,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderOutput);
+	debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
 }

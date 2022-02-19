@@ -7,9 +7,7 @@
 
 public:
 	using fragUnis = Binder::deferred_frag::uniforms;
-
-	virtual void init();
-	virtual void setModel(const glm::mat4& modelMat) {};
+	void init();
 
 	void setDirectionalLight(const DirectionalLight& light);
 	void setPointLight(const PointLight& light, const int index);

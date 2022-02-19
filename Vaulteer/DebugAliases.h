@@ -13,6 +13,7 @@ namespace MessageAlias {
 	constexpr char OpenGLMessage[] = "OpenGLMessage";
 
 	constexpr char ShaderOutput[] = "ShaderOutput";
+	constexpr char ShaderError[] = "ShaderError";
 
 	//Break on critical error
 	constexpr char CriticalError[] = "CriticalError";

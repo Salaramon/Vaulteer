@@ -53,17 +53,18 @@ void GBuffer::initTexture(GLuint texture, GLenum internalFormat, GLenum format, 
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture, 0);
 }
 
-void GBuffer::bindForWriting()
-{
+void GBuffer::bindForWriting() {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
 }
 
-void GBuffer::bindForReading()
-{
+void GBuffer::bindForReading() {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 }
 
-void GBuffer::setReadBuffer(GBufferTextureType TextureType)
-{
+void GBuffer::unbind() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GBuffer::setReadBuffer(GBufferTextureType TextureType) {
     glBindTexture(GL_TEXTURE_2D, textures[TextureType]);
 }

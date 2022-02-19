@@ -6,8 +6,7 @@ void ForwardTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& v
     setNormal(model);
 }
 
-void ForwardTechnique::setProjection(const glm::mat4& projection)
-{
+void ForwardTechnique::setProjection(const glm::mat4& projection) {
 	shader->setUniform(Program::forward_vertex::uniforms::projection, 1, GL_FALSE, projection);
 }
 

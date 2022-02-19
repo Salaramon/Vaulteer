@@ -17,6 +17,8 @@ using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_fra
 using DeferredShader = const ShaderUniformPair<Binder::deferred_vertex, Binder::deferred_frag>;
 using GeometryShader = const ShaderUniformPair<Binder::geometry_vertex, Binder::geometry_frag>;
 
+using ClusterTileComputeShader = const ShaderUniformPair<Binder::cluster_tile_compute>;
+
 
 template<class ShaderBinder>
 constexpr const char* getShaderFile() {
@@ -31,6 +33,8 @@ constexpr const char* getShaderFile() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return Binder::file_names::geometry_vertex; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return Binder::file_names::geometry_frag; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
 }
 
 template<class ShaderBinder>
@@ -46,6 +50,8 @@ constexpr const GLenum getShaderType() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr(std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return GL_FRAGMENT_SHADER; }
+
+	if constexpr(std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
 }
 
 template<class ReturnType, class ShaderUniformType>

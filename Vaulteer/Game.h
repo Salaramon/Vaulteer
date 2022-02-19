@@ -3,6 +3,8 @@
 #include <iostream>
 #include <unordered_map>
 
+#include <finders_interface.h>
+
 #include "Window.h"
 #include "Camera.h"
 #include "Event.h"
@@ -16,7 +18,7 @@
 #include "DebugAliases.h"
 
 #include "Renderer.h"
-#include "ForwardRenderer.h"
+#include "DeferredRenderer.h"
 #include "ShaderProgram.h"
 #include "ForwardTechnique.h"
 

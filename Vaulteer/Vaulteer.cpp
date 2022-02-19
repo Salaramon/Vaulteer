@@ -27,7 +27,7 @@ void initializeOpenGL() {
 	OpenGL::initialize();
 	OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
-	OpenGL::enableDirectDebugMessageing();
+	//OpenGL::enableDirectDebugMessageing();
 }
 
 void cleanup() {
@@ -36,10 +36,13 @@ void cleanup() {
 
 int main() {
 	//Logger settings
-	DebugLogger<>::disableLogging();
+	//DebugLogger<>::disableLogging();
 	//DebugLogger<>::breakAtMessage(206180);
 	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
-	
+	//DebugLogger<>::breakOnMessageName(MessageAlias::ShaderError);
+	DebugLogger<>::setDefaultClassAccessLimit(0);
+
+
 	//Initialization
 	initializeGLFW();
 

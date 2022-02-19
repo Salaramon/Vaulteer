@@ -5,7 +5,7 @@ Texture2DArray::Texture2DArray(std::vector<std::string> paths, bool mipmapEnable
     createTextureArrayFromFiles(paths);
     setWrap(repeatX, repeatY);
 
-    debug("Allocated texture array from a " + std::to_string(paths.size()) + " file vector: ID " + std::to_string(textureID));
+    debug("Allocated texture array from a " + std::to_string(paths.size()) + " file vector: ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2DArray::Texture2DArray(std::string path, bool mipmapEnabled, glm::vec2 offset, GLenum repeatX, GLenum repeatY) : 
@@ -13,15 +13,15 @@ Texture2DArray::Texture2DArray(std::string path, bool mipmapEnabled, glm::vec2 o
 }
 
 Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled, glm::vec2 offset, GLenum repeatX, GLenum repeatY) : Texture(width, height), numLayers(1) {
-    createTexture(GL_TEXTURE_2D_ARRAY);
+    createTexture(GL_TEXTURE_2D);
     setWrap(repeatX, repeatY);
 
-    debug("Allocated texture array: ID " + std::to_string(textureID));
+    debug("Allocated texture array: ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, std::vector<glm::vec4> colors) : Texture(width, height), numLayers(1) {
     createGeneratedTexture(colors);
-    debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID));
+    debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept : Texture(other) {
@@ -74,7 +74,7 @@ void Texture2DArray::createTextureArrayFromFiles(std::vector<std::string> paths)
 }
 
 void Texture2DArray::createTextureArray(GLenum internalFormat, GLenum format, std::vector<byte*> data) {
-    glTextureStorage3D(textureID, 4, internalFormat, width, height, numLayers);
+    glTextureStorage3D(textureID, 1, internalFormat, width, height, numLayers);
 
     for (GLint layer = 0; layer < data.size(); layer++) {
         glTextureSubImage3D(textureID, 0, offset.x, offset.y, layer, width, height, 1, format, GL_UNSIGNED_BYTE, data[layer]);

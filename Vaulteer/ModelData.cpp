@@ -37,7 +37,9 @@ void ModelData::loadModel(std::string path)
 	if (scene) {
 		processNode(scene, scene->mRootNode);
 
-		textureArray = std::make_unique<Texture2DArray>(textureFiles);
+		if (textureFiles.size() > 0) {
+			textureArray = std::make_unique<Texture2DArray>(textureFiles);
+		}
 	}
 }
 

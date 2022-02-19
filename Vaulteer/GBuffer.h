@@ -25,6 +25,8 @@ public:
 
     void bindForReading();
 
+    void unbind();
+
     void setReadBuffer(GBufferTextureType TextureType);
 
 
