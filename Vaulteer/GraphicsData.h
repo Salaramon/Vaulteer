@@ -6,7 +6,7 @@
 class GraphicsData
 {
 public:
-	virtual void draw(const Shader& shader) = 0;
+	//virtual void draw(const Shader& shader) = 0;
 
 protected:
 	

@@ -1,158 +1,56 @@
 #include "ModelData.h"
 
-ModelData::ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices)
-{
-	std::vector<Vertex> vert;
-	std::vector<GLuint> indi;
+ModelData::ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices) {
+	Vertices vert;
+	Indices indi;
 	storePointsAndIndices<ModelVertexHash>(indi, vert, vertices);
-	textureArray = std::make_unique<Texture2DArray>(width, height, colors);
-	//Implement a set color in texture, and make texture take an abstract amount of pixel data to set.
-	//Take argument in this function for binder uniform, for the call above.
 	meshes.emplace_back(vert, indi);
 }
 
-ModelData::ModelData(std::string meshPath)
-{
-	debug("Loading model: " + meshPath + "\n");
-	loadModel(meshPath);
+ModelData::ModelData(std::string modelPath, std::vector<Mesh> meshes) : modelPath(modelPath), meshes(meshes) {
+	debug("Loading model: " + modelPath + "\n");
 }
 
-ModelData::ModelData(std::string meshPath, std::string textureFolderPath)
-{
-	setTexturesFolder(textureFolderPath);
-	loadModel(meshPath);
-}
+ModelData::ModelData(ModelData&& other) noexcept :
+	modelPath(other.modelPath),
+	meshes(other.meshes),
+	unitByTexturePath(other.unitByTexturePath) {
+	std::cout << "Model moved: " << modelPath << std::endl;
+};
 
 
-void ModelData::loadModel(std::string path)
-{
-
-	Assimp::Importer modelImporter;
-	const aiScene* scene = modelImporter.ReadFile(path, aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		debug("Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n", MessageAlias::CriticalError);
-	}
-
-	if (scene) {
-		processNode(scene, scene->mRootNode);
-
-		if (textureFiles.size() > 0) {
-			textureArray = std::make_unique<Texture2DArray>(textureFiles);
-		}
-	}
-}
-
-void ModelData::processNode(const aiScene* scene, aiNode* node)
-{
-	for (size_t i = 0; i < node->mNumMeshes; i++) {
-		aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
-
-		meshes.emplace_back(std::move(processMesh(scene, aiMesh)));
-	}
-
-	for (size_t i = 0; i < node->mNumChildren; i++) {
-		processNode(scene, node->mChildren[i]);
-	}
-}
-
-Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
-{
-	Vertices vertices;
-	Indices indices;
-	std::vector<Texture> textures;
-
-	for (size_t i = 0; i < mesh->mNumVertices; i++) {
-		Vertex vertex;
-		vertex.aPos = ai_glmVec(mesh->mVertices[i]);
-
-		if (mesh->HasNormals()) {
-			vertex.aNormal = ai_glmVec(mesh->mNormals[i]);
-		}
-		else {
-			vertex.aNormal = glm::vec3(0);
-		}
-
-		if (mesh->mTextureCoords[0]) {
-			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
-		}
-		else {
-			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
-		}
-
-		// random
-		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
-
-		vertices.push_back(vertex);
-	}
-
-
-	for (size_t i = 0; i < mesh->mNumFaces; i++) {
-		aiFace face = mesh->mFaces[i];
-		for (size_t j = 0; j < face.mNumIndices; j++) {
-			indices.push_back((face.mIndices[j]));
-		}
-	}
-
-	if (mesh->mMaterialIndex >= 0) {
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		getTextureUniforms(material);
-	}
-
-	return Mesh(vertices, indices);
-}
-
-void ModelData::getTextureUniforms(aiMaterial* material) 
-{
-	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
-		aiTextureType type = static_cast<aiTextureType>(i);
-		for (size_t j = 0; j < material->GetTextureCount(type); j++) {
-			aiString string;
-			material->GetTexture(type, j, &string);
-			std::string texturePath = texturesFolder + "\\" + string.C_Str();
-
-			if (std::count(textureFiles.begin(), textureFiles.end(), texturePath) == 0)
-				textureFiles.push_back(texturePath);
-		}
-	}
-}
-
-
-glm::vec3 ModelData::ai_glmVec(aiVector3D aiVec)
-{
-	return { aiVec.x, aiVec.y, aiVec.z };
-}
-
-void ModelData::setTexturesFolder(std::string path) {
-	texturesFolder = path;
-}
-
-
-void ModelData::draw(const Shader& shader) {
-	// Deprecated - Renderer implements drawing
-	/*
-	for (Mesh& mesh : meshes) {
-		for (GLint i = 0; i < textures.size(); i++) {
-			textures[i].activate(shader, i);
-		}
-
-		mesh.vertexArray.bind();
-		//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
-		debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElements");
-		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
-		mesh.vertexArray.unbind();
-
-		//Is setting active texture back to 0 unnecessary?
-		glActiveTexture(GL_TEXTURE0);
-	}
-	*/
-}
-
-const std::vector<Mesh>& ModelData::getMeshes() {
+const std::vector<Mesh>& ModelData::getMeshes() const {
 	return meshes;
 }
 
-const Texture2DArray& ModelData::getTextureArray() {
-	return *textureArray.get();
+const GLint ModelData::getTextureID() const {
+	return textureID;
+}
+
+void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
+	this->textureID = texture.getTextureID();
+
+	for (auto& mesh : meshes) {
+		auto locator = mesh.material.at(aiTextureType_DIFFUSE);
+		Texture2DArray::TextureUnit diffuseUnit = texture.getUnit(locator.path);
+
+		// map vertices' texture coordinates to diffuse texture unit in packed library
+		for (auto& vertex : mesh.vertices) {
+			vertex.aTexCoords.x = vertex.aTexCoords.x * (double)diffuseUnit.w / texture.width  + (double)diffuseUnit.x / texture.width;
+			vertex.aTexCoords.y = vertex.aTexCoords.y * (double)diffuseUnit.h / texture.height + (double)diffuseUnit.y / texture.height;
+		}
+		mesh.updateBuffer();
+
+		// set material units to relative units for every material but diffuse
+		for (const auto& entry : mesh.material) {
+			if (entry.first == aiTextureType_DIFFUSE) { 
+				unitByTexturePath[locator.path] = diffuseUnit;
+				continue; 
+			}
+			Texture2DArray::TextureResourceLocator locator = entry.second;
+
+			Texture2DArray::TextureUnit unit = texture.getUnit(locator.path);
+			unitByTexturePath[locator.path] = unit.minus(unitByTexturePath[locator.path]);
+		}
+	}
 }

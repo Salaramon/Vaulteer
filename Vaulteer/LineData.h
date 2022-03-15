@@ -48,7 +48,7 @@ public:
 	LineData(glm::vec3 first, Args... args);
 	LineData(std::vector<Point> lines);
 	
-	void draw(const Shader& shader) override;
+	void draw(const Shader& shader);
 	void setColor(glm::vec4 color);
 	glm::vec4 getColor();
 
@@ -71,8 +71,8 @@ template<class... Args>
 requires (std::conjunction_v<std::is_same<glm::vec3, Args>...> && sizeof...(Args) % 2 == 0)
 inline LineData::LineData(glm::vec3 first, Args... args) :
 	vertexArray(),
-	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, {first, args... }), vertexArray, locInfo),
+	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... }), vertexArray, locInfo),
 	color(1, 1, 1, 1),
 	pointCount(sizeof...(Args) + 1),
-	elementBuffer(indices, vertexArray)
-{}
+	elementBuffer(indices, vertexArray) 
+{};

@@ -3,38 +3,38 @@
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
-	quad = std::make_unique<ModelData>("quad.obj");
+	ResourceLoader loader;
+	quad = std::make_unique<ModelData>(std::move(loader.importModel("quad.obj")));
 }
 
 void DeferredRenderer::render(Scene& scene) {
-	const SceneObjects<typename Model<ModelData>>& modelDataVector = scene.getVector<Model<ModelData>>();
-	const SceneObjects<typename Camera>& cameraDataVector = scene.getVector<Camera>();
+	const SceneObjects<Model<ModelData>>& modelVector = scene.getVector<Model<ModelData>>();
+	const SceneObjects<Camera>& cameraVector = scene.getVector<Camera>();
 
-	geometryPass(modelDataVector, cameraDataVector);
-	lightingPass(modelDataVector, cameraDataVector);
+	geometryPass(modelVector, cameraVector);
+	lightingPass(modelVector, cameraVector);
 }
 
-void DeferredRenderer::geometryPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector) {
+void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelVector, const SceneObjects<Camera>& cameraVector) {
 	DeferredGeometryTechnique::shader->use();
-	Camera* camera = cameraDataVector.front().get();
+	Camera* camera = cameraVector.front().get();
 
 	DeferredGeometryTechnique::setProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
 
 
 	GLint texUnit = 0;
-	DeferredGeometryTechnique::setTexture(texUnit);
+	DeferredGeometryTechnique::setTextureUnit(texUnit);
 	
 	gbuffer.get()->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
-	for (auto& data : modelDataVector) {
-		DeferredGeometryTechnique::setModelView(data->getModelMatrix(), viewMatrix);
+	for (auto& model : modelVector) {
+		DeferredGeometryTechnique::setModelView(model->getModelMatrix(), viewMatrix);
 
-		ModelData* modelData = data->getData();
+		ModelData* modelData = model->getData();
 		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-		const Texture2DArray& modelDataTextureArray = modelData->getTextureArray();
-		glBindTextureUnit(texUnit, modelDataTextureArray.getTextureID());
+		glBindTextureUnit(texUnit, modelData->getTextureID());
 
 		for (const Mesh& mesh : modelDataMeshes) {
 			mesh.vertexArray.bind();
@@ -48,10 +48,10 @@ void DeferredRenderer::geometryPass(const SceneObjects<typename Model<ModelData>
 	gbuffer.get()->unbind();
 }
 
-void DeferredRenderer::lightingPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector) {
+void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelVector, const SceneObjects<Camera>& cameraVector) {
 
 	DeferredLightingTechnique::shader->use();
-	Camera* camera = cameraDataVector.front().get();
+	Camera* camera = cameraVector.front().get();
 
 	glm::vec3 lightDir = glm::vec3(0.0f, -1.0f, 0.0f);
 	DirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, lightDir }; // TODO get from scene :3

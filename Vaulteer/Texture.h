@@ -20,8 +20,8 @@
 class Texture : public DebugLogger<Texture> {
 public:
     Texture();
-    Texture(bool mipmapEnabled, glm::vec2 offset);
-    Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2());
+    Texture(bool mipmapEnabled);
+    Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
 
     void setMinifyingFilter(GLenum filter);
     void setMagnifyingFilter(GLenum filter);
@@ -31,7 +31,6 @@ public:
     GLsizei width = -1, height = -1;
     GLint nrComponents = -1;
     bool mipmapEnabled = false;
-    glm::vec2 offset = glm::vec2();
 
     inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 protected:

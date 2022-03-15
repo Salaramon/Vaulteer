@@ -130,6 +130,9 @@
     <Filter Include="Header Files\Rendering\Buffers">
       <UniqueIdentifier>{3b9ba606-e0f4-4152-8baa-78d9388f0c62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Model\Data\Texture">
+      <UniqueIdentifier>{f12fe3e2-4c5c-4ce4-986f-edd00a681dea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Vaulteer.cpp">
@@ -264,6 +267,21 @@
     <ClCompile Include="PolyTree.cpp">
       <Filter>Source Files\Optimized Structures</Filter>
     </ClCompile>
+    <ClCompile Include="ResourcePack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PackedTexture2DArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -336,15 +354,6 @@
       <Filter>Header Files\Model\Data</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files\Model\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture2DArray.h">
-      <Filter>Header Files\Model\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="CubemapTexture.h">
-      <Filter>Header Files\Model\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
       <Filter>Header Files\Model\Data</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsData.h">
@@ -421,6 +430,33 @@
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files\Rendering\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubemapTexture.h">
+      <Filter>Header Files\Model\Data\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Model\Data\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2DArray.h">
+      <Filter>Header Files\Model\Data\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PackedTexture2DArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\Model\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

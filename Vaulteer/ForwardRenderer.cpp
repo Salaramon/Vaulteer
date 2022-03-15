@@ -19,13 +19,12 @@ void ForwardRenderer::render(Scene& scene) {
 
 		ModelData* modelData = data->getData();
 		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-		const Texture2DArray& modelDataTextureArray = modelData->getTextureArray();
 
 		for (const Mesh& mesh : modelDataMeshes) {
 			GLint texUnit = 0;
 
 			ForwardTechnique::shader->setUniform(Binder::forward_frag::uniforms::textureLib, texUnit);
-			glBindTextureUnit(texUnit, modelDataTextureArray.getTextureID());
+			//glBindTextureUnit(texUnit, modelDataTextureArray.getTextureID());
 
 			mesh.vertexArray.bind();
 			//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());

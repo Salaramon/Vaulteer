@@ -1,0 +1,111 @@
+#include "ResourceLoader.h"
+
+ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
+	// default flags
+	importFlags = (importFlags != -1 ? importFlags : aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	Assimp::Importer modelImporter;
+	const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		// TODO: still need logging in static context
+		std::cout << "Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n" << std::endl;
+	}
+
+	size_t index = objPath.find_last_of("/");
+	std::string folderPath = index != std::string::npos ? objPath.substr(0, index) + "/" : ".";
+
+	for (int i = 0; i < scene->mNumMaterials; i++) {
+		aiMaterial* material = scene->mMaterials[i];
+		materialLibrary.push_back(createMaterial(folderPath, material));
+	}
+
+	std::vector<Mesh> meshes;
+	if (scene) {
+		processNode(meshes, scene, scene->mRootNode);
+	}
+
+	numMaterials = materialLibrary.size();
+	return ModelData(objPath, meshes);
+}
+
+std::vector<Material>& ResourceLoader::getMaterialLibrary() {
+	return materialLibrary;
+}
+
+//void ResourceLoader::processNode(std::vector<Mesh>& meshes, std::vector<Material>& materials, const aiScene* scene, aiNode* node) {
+void ResourceLoader::processNode(std::vector<Mesh>& meshes, const aiScene* scene, aiNode* node) {
+
+	for (size_t i = 0; i < node->mNumMeshes; i++) {
+		aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+
+		//meshes.emplace_back(std::move(processMesh(materials, scene, aiMesh)));
+		meshes.emplace_back(std::move(processMesh(scene, aiMesh)));
+	}
+
+	for (size_t i = 0; i < node->mNumChildren; i++) {
+		//processNode(meshes, materials, scene, node->mChildren[i]);
+		processNode(meshes, scene, node->mChildren[i]);
+	}
+}
+
+//Mesh ResourceLoader::processMesh(std::vector<Material>& materials, const aiScene* scene, aiMesh* mesh) {
+Mesh ResourceLoader::processMesh(const aiScene* scene, aiMesh* mesh) {
+	Vertices vertices;
+	Indices indices;
+	std::vector<Texture> textures;
+
+	for (size_t i = 0; i < mesh->mNumVertices; i++) {
+		Vertex vertex;
+		vertex.aPos = ai_glmVec(mesh->mVertices[i]);
+
+		if (mesh->HasNormals()) {
+			vertex.aNormal = ai_glmVec(mesh->mNormals[i]);
+		}
+		else {
+			vertex.aNormal = glm::vec3(0);
+		}
+
+		if (mesh->mTextureCoords[0]) {
+			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+		}
+		else {
+			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
+		}
+
+		// random
+		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
+
+		vertices.push_back(vertex);
+	}
+
+
+	for (size_t i = 0; i < mesh->mNumFaces; i++) {
+		aiFace face = mesh->mFaces[i];
+		for (size_t j = 0; j < face.mNumIndices; j++) {
+			indices.push_back((face.mIndices[j]));
+		}
+	}
+
+	return Mesh(vertices, indices, materialLibrary.at(numMaterials + mesh->mMaterialIndex));
+}
+
+Material ResourceLoader::createMaterial(std::string folderPath, aiMaterial* material) {
+	Material created;
+	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
+		aiTextureType type = static_cast<aiTextureType>(i);
+
+		for (size_t j = 0; j < material->GetTextureCount(type); j++) {
+			aiString string;
+			material->GetTexture(type, j, &string);
+			Texture2DArray::TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
+			created[type] = loc;
+		}
+	}
+	return std::move(created);
+}
+
+glm::vec3 ResourceLoader::ai_glmVec(aiVector3D aiVec) {
+	return { aiVec.x, aiVec.y, aiVec.z };
+}

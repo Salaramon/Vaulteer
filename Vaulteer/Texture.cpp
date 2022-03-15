@@ -2,9 +2,9 @@
 
 Texture::Texture() {}
 
-Texture::Texture(bool mipmapEnabled, glm::vec2 offset) : mipmapEnabled(mipmapEnabled), offset(offset) {}
+Texture::Texture(bool mipmapEnabled) : mipmapEnabled(mipmapEnabled) {}
 
-Texture::Texture(GLsizei width, GLsizei height, bool mipmapEnabled, glm::vec2 offset) : width(width), height(height), mipmapEnabled(mipmapEnabled), offset(offset) {}
+Texture::Texture(GLsizei width, GLsizei height, bool mipmapEnabled) : width(width), height(height), mipmapEnabled(mipmapEnabled) {}
 
 
 std::pair<GLint, GLint> Texture::getFormatsFromComponents(int nrComponents) {

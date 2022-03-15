@@ -9,6 +9,7 @@
 #include "LineData.h"
 #include "Camera.h"
 #include "GBuffer.h"
+#include "ResourceLoader.h"
 
 class DeferredRenderer : public DeferredGeometryTechnique, public DeferredLightingTechnique
 {

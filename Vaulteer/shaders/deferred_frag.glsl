@@ -276,15 +276,12 @@ void main() {
     //float c = rand(vec2(fragPosition.x + fragPosition.y - fragPosition.z, fragPosition.x - fragPosition.y + fragPosition.z));
     //FragColor = vec4(c, c, c, 1.0);
 
-    //FragColor = vec4(fragPosition.x, fragPosition.y, fragPosition.z, 1.0);
-    //return;
-
     vec3 fragNormal = texture(gNormal, TexCoords).xyz;
     vec3 diffuse = texture(gColor, TexCoords).rgb;
     float specIntensity = texture(gColor, TexCoords).a;
 
-    
-    FragColor = vec4(texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, 1.0);
+    //FragColor = vec4(texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, 1.0); //spec demo
+    FragColor = vec4(diffuse, 1.0); // diffuse demo
     return;
 
     //float material = texture(gMaterial, TexCoords).x;

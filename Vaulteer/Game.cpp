@@ -6,11 +6,15 @@ Game::Game(Window& window) :
 }
 
 void Game::loadResources() {
-	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>("Crate/Crate1.obj", "Crate" )));
-	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
+	//models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>("Crate/Crate1.obj", "Crate" )));
+	//models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
 
-
-
+	std::vector<ModelResourceLocator> locators = { 
+		{ "backpack", "backpack/backpack.obj" },
+		{ "crate", "crate/crate1.obj" },
+		//{ "quad", "quad.obj" },
+	};
+	resourceManager.createPack(locators);
 
 	/*
 	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
@@ -88,9 +92,11 @@ size_t Game::run()
 	//scene.setActiveCamera(camera);
 
 	//Set up render passe(s) for each render strata.
-
-
+	// none
 	
+	Model<ModelData> crate = Model<ModelData>(resourceManager.getPack(0).getModelByName("crate"));
+	Model<ModelData> backpack = Model<ModelData>(resourceManager.getPack(0).getModelByName("backpack"));
+
 	
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
@@ -100,15 +106,15 @@ size_t Game::run()
 	intmax_t height = 8;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
-			objects.push_back(scene.addObject(modelByName(models, "crate")));
+			objects.push_back(scene.addObject(std::move(crate)));
 			objects.back()->setPosition(2*i, 0, 2*j);
 		}
 	}
 
-	objects.push_back(scene.addObject(modelByName(models, "backpack")));
+	objects.push_back(scene.addObject(std::move(backpack)));
 	objects.back()->setPosition(0, 5, 0);
 
-	objects.push_back(scene.addObject(modelByName(models, "crate")));
+	objects.push_back(scene.addObject(std::move(crate)));
 	objects.back()->setPosition(1, 10, 1);
 	objects.back()->setScale(0.6, 0.6, 0.6);
 
@@ -166,7 +172,7 @@ size_t Game::run()
 
 		if (Event::KEY::T >> Event::ACTION::PRESS) {
 			if (true) {
-				
+				std::cout << "lol you pressed t" << std::endl;
 			}
 			else {
 				

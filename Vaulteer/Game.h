@@ -3,14 +3,13 @@
 #include <iostream>
 #include <unordered_map>
 
-#include <finders_interface.h>
-
 #include "Window.h"
 #include "Camera.h"
 #include "Event.h"
 #include "Model.h"
 #include "Scene.h"
 
+#include "ResourceManager.h"
 
 #include "GraphicsData.h"
 
@@ -38,6 +37,9 @@ private:
 	Model<T> modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name);
 
 	Window* window;
+
+	ResourceManager resourceManager;
+
 	std::unordered_map<std::string, std::unique_ptr<ModelData>> models;
 	std::unordered_map<std::string, std::unique_ptr<LineData>> lines;
 

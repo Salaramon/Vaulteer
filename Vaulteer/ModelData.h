@@ -17,7 +17,7 @@
 
 #include "GraphicsData.h"
 
-#include "Mesh.h"
+#include "Resource.h"
 #include "Texture2DArray.h"
 #include "VertexHash.h"
 
@@ -47,31 +47,22 @@ public:
 	};
 
 	ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices);
-	ModelData(std::string meshPath);
-	ModelData(std::string meshPath, std::string textureFolderPath);
+	ModelData(std::string modelPath, std::vector<Mesh> meshes);
+	ModelData(ModelData&& other) noexcept;
 
-	void loadModel(std::string path);
+	const std::vector<Mesh>& getMeshes() const;
+	const GLint getTextureID() const;
 
-	void draw(const Shader& shader) override;
-	const Texture2DArray& getTextureArray();
-	const std::vector<Mesh>& getMeshes();
+	void updateWithTextureUnits(const Texture2DArray& texture);
 
 private:
+	std::string modelPath;
+	GLint textureID;
 
-	void processNode(const aiScene* scene, aiNode* node);
-
-	Mesh processMesh(const aiScene* scene, aiMesh* mesh);
-
-	void getTextureUniforms(aiMaterial* material);
-
-	glm::vec3 ai_glmVec(aiVector3D aiVec);
-
-	//std::vector<std::pair<aiTextureType, Texture>> textures;
-	std::unique_ptr<Texture2DArray> textureArray;
+	// populated on load (loadModel)
 	std::vector<Mesh> meshes;
+	
+	// populated after texture packing (updateWithTextureUnits)
+	std::unordered_map<std::string, Texture2DArray::TextureUnit> unitByTexturePath;
 
-	void setTexturesFolder(std::string path);
-
-	std::string texturesFolder;
-	std::vector<std::string> textureFiles;
 };

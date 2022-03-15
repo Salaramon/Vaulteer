@@ -165,6 +165,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="PackedTexture2DArray.cpp" />
+    <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClusteredForwardRenderer.cpp" />
@@ -197,6 +200,8 @@
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="PolyTree.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourcePack.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -225,6 +230,10 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="PackedTexture2DArray.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClusteredForwardRenderer.h" />
     <ClInclude Include="ClusterTileTechnique.h" />
@@ -246,6 +255,8 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="PolyTree.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ResourcePack.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ShadowCascade.h" />

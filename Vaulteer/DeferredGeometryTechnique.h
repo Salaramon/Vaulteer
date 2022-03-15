@@ -10,7 +10,7 @@ public:
 	void setProjection(const glm::mat4& projection);
 	void setNormal(const glm::mat4& model);
 
-	void setTexture(const GLint& texture);
+	void setTextureUnit(const GLint& texture);
 
 
 };

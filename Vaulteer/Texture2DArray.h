@@ -1,11 +1,58 @@
 #pragma once
+#include <rectpack2D/finders_interface.h>
+
 #include "Texture.h"
 
 class Texture2DArray : public Texture {
+protected:
+    // disallow flipping of textures in packing
+    using spaces_type = rectpack2D::empty_spaces<false, rectpack2D::default_empty_spaces>;
+    using rect_type = rectpack2D::output_rect_t<spaces_type>;
+
 public:
-    Texture2DArray(std::vector<std::string> paths, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2(), GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-    Texture2DArray(std::string path, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2(), GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-    Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled = true, glm::vec2 offset = glm::vec2(), GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
+    /// <summary>
+    /// Texture resource metadata 
+    /// </summary>
+    struct TextureResourceLocator {
+        std::string path;
+        aiTextureType type;
+    };
+
+    /// <summary>
+    /// Defining bounds of a subtexture in a texture collection. Includes texture type for filtering.
+    /// </summary>
+    struct TextureUnit : rect_type {
+        Texture2DArray* texture;
+
+        int layer;
+        aiTextureType type;
+        
+        TextureUnit() {};
+        TextureUnit(Texture2DArray* texture) : texture(texture), rect_type(0, 0, 0, 0), layer(0), type(aiTextureType_NONE) {}
+        TextureUnit(TextureUnit& unit, rect_type rect) : texture(unit.texture), layer(unit.layer), type(unit.type), rect_type(rect) {}
+        TextureUnit(Texture2DArray* texture, const int x, const int y, const int w, const int h, const int layer, aiTextureType type) : texture(texture), rect_type(x, y, w, h), layer(layer), type(type) {}
+
+        TextureUnit minus(TextureUnit& other) {
+            return TextureUnit(texture,
+                x - other.x,
+                y - other.y,
+                w - other.w,
+                h - other.h,
+                layer - other.layer, 
+                type);
+        }
+    };
+
+    struct Image2D {
+        TextureUnit unit;
+        std::string path;
+        byte* data;
+        bool loaded() { return data; }
+    };
+
+    Texture2DArray(std::vector<TextureResourceLocator> paths, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
+    Texture2DArray(TextureResourceLocator path, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
+    Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
     
     Texture2DArray(GLsizei width, GLsizei height, std::vector<glm::vec4> colors);
 
@@ -18,16 +65,26 @@ public:
 
     GLint getTextureID() const;
 
+    TextureUnit getUnit(std::string texturePath) const;
+
 protected:
-    void createTextureArrayFromFiles(std::vector<std::string> paths);
-    void createTextureArray(GLenum internalFormat, GLenum format, std::vector<byte*> data);
+    Texture2DArray();
+
+    void createUnpacked();
+
+    void createTextureArrayFromData(GLenum internalFormat, GLenum format, std::vector<Image2D> images);
 
     void setWrap(GLenum x, GLenum y);
 
     void createGeneratedTexture(std::vector<glm::vec4> colors);
 
-    std::vector<aiTextureType> textureTypes;
     GLsizei numLayers;
+
+    std::vector<TextureResourceLocator> locators;
+    std::vector<aiTextureType> types;
+
+    // units indexed by texture path
+    std::unordered_map<std::string, TextureUnit> units; 
 };
 
 template<class ...Args>

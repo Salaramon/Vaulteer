@@ -42,6 +42,7 @@ public:
 	Model(Model&) = delete;
 	Model(Model&& model);
 	Model(Data& data);
+	Model(Data* data);
 
 	void setPolygonFaces(GLenum faces);
 	void setPolygonMode(GLenum mode);
@@ -76,6 +77,12 @@ template<class Data>
 inline Model<Data>::Model(Data& data) : 
 	Object3D(),
 	model(&data)
+{}
+
+template<class Data>
+inline Model<Data>::Model(Data* data) : 
+	Object3D(),
+	model(data)
 {}
 
 template<class Data>
