@@ -27,6 +27,10 @@ const GLint ModelData::getTextureID() const {
 	return textureID;
 }
 
+const ModelData::ModelUnitTable& ModelData::getModelUnitTable() const {
+	return modelUnitTable;
+}
+
 void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 	this->textureID = texture.getTextureID();
 
@@ -45,12 +49,15 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 		for (const auto& entry : mesh.material) {
 			if (entry.first == aiTextureType_DIFFUSE) { 
 				unitByTexturePath[locator.path] = diffuseUnit;
+				modelUnitTable.setUnit(aiTextureType_DIFFUSE, diffuseUnit);
 				continue; 
 			}
 			Texture2DArray::TextureResourceLocator locator = entry.second;
 
 			Texture2DArray::TextureUnit unit = texture.getUnit(locator.path);
-			unitByTexturePath[locator.path] = unit.minus(unitByTexturePath[locator.path]);
+			unit = unit.minus(diffuseUnit);
+			unitByTexturePath[locator.path] = unit;
+			modelUnitTable.setUnit(entry.first, unit);
 		}
 	}
 }

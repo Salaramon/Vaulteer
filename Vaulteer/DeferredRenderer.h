@@ -23,7 +23,14 @@ public:
 	void geometryPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector);
 	void lightingPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector);
 
+	void reload() {
+		DeferredGeometryTechnique::reloadShader();
+		DeferredLightingTechnique::reloadShader();
+	}
+
 private:
 	std::unique_ptr<GBuffer> gbuffer;
 	std::unique_ptr<ModelData> quad;
+
+	unsigned int UBO;
 };

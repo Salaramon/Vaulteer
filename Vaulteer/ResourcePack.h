@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "ModelResourceLocator.h"
 #include "ResourceLoader.h"
+#include "PackedTexture2DArray.h"
 
 class ResourcePack : DebugLogger<ResourcePack> {
 public:
@@ -17,7 +19,7 @@ public:
 	void add(ModelResourceLocator modelLocator);
 	void addAll(std::vector<ModelResourceLocator> modelLocators);
 
-	/// Populates resourcesByName with all pack data
+	/// Imports all added models
 	void finalize();
 
 	GLint getTextureLibraryId();

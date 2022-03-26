@@ -4,13 +4,12 @@
 #include <assimp/scene.h>
 
 #include "ModelData.h"
-#include "Resource.h"
 
 class ResourceLoader {
 	std::vector<aiTextureType> renderable_texture_types = {
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
-		aiTextureType_NORMALS
+		aiTextureType_HEIGHT
 	};
 
 public:

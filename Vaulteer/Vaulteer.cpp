@@ -27,7 +27,8 @@ void initializeOpenGL() {
 	OpenGL::initialize();
 	OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
-	//OpenGL::enableDirectDebugMessageing();
+	//OpenGL::enableSRGB();
+	OpenGL::enableDirectDebugMessageing();
 }
 
 void cleanup() {

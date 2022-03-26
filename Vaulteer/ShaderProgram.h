@@ -111,8 +111,8 @@ public:
 		return _initializeShader(std::make_index_sequence<sizeof...(Args)>{});
 	}
 
-	static void uniform(Binder::UniformInfo uniform) {
-
+	static void reloadShader() {
+		shader = std::make_unique<Shader>(initializeShader());
 	}
 };
 

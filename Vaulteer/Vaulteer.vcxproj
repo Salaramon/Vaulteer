@@ -231,8 +231,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Material.h" />
+    <ClInclude Include="ModelResourceLocator.h" />
     <ClInclude Include="PackedTexture2DArray.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClusteredForwardRenderer.h" />

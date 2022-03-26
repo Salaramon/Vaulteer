@@ -78,3 +78,11 @@ void OpenGL::disableDirectDebugMessageing()
 	directMessaging = false;
 	log.debug("Direct messaging disabled: Messages will only be logged.\n", "disableDirectDebugMessageing()");
 }
+
+void OpenGL::enableSRGB() {
+	glEnable(GL_FRAMEBUFFER_SRGB);
+}
+
+void OpenGL::disableSRGB() {
+	glDisable(GL_FRAMEBUFFER_SRGB);
+}

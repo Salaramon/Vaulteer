@@ -2,7 +2,7 @@
 
 ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	// default flags
-	importFlags = (importFlags != -1 ? importFlags : aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
+	importFlags = (importFlags != -1 ? importFlags : aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	Assimp::Importer modelImporter;
 	const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);
@@ -66,11 +66,20 @@ Mesh ResourceLoader::processMesh(const aiScene* scene, aiMesh* mesh) {
 			vertex.aNormal = glm::vec3(0);
 		}
 
-		if (mesh->mTextureCoords[0]) {
+		if (mesh->HasTextureCoords(0)) {
 			vertex.aTexCoords = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 		}
 		else {
-			vertex.aTexCoords = glm::vec2(0.0f, 0.0f);
+			vertex.aTexCoords = glm::vec2(0.0f);
+		}
+
+		if (mesh->HasTangentsAndBitangents()) {
+			vertex.aTangent = ai_glmVec(mesh->mTangents[i]);
+			vertex.aBitangent = ai_glmVec(mesh->mBitangents[i]);
+		}
+		else {
+			vertex.aTangent = glm::vec3(0);
+			vertex.aBitangent = glm::vec3(0);
 		}
 
 		// random

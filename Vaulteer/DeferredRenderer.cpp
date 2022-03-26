@@ -5,6 +5,8 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 
 	ResourceLoader loader;
 	quad = std::make_unique<ModelData>(std::move(loader.importModel("quad.obj")));
+
+	glCreateBuffers(1, &UBO);
 }
 
 void DeferredRenderer::render(Scene& scene) {
@@ -22,18 +24,34 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 	DeferredGeometryTechnique::setProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
 
-
 	GLint texUnit = 0;
 	DeferredGeometryTechnique::setTextureUnit(texUnit);
 	
 	gbuffer.get()->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
+	// TEST
+	ModelData::ModelUnitData tables[] = { 
+		modelVector.at(0)->getData()->getModelUnitTable().diffuseUnit, 
+		modelVector.at(0)->getData()->getModelUnitTable().specularUnit, 
+		modelVector.at(0)->getData()->getModelUnitTable().normalMapUnit,
+		modelVector.at(1)->getData()->getModelUnitTable().diffuseUnit,
+		modelVector.at(1)->getData()->getModelUnitTable().specularUnit,
+		modelVector.at(1)->getData()->getModelUnitTable().normalMapUnit
+	};
+	// TEST
+	glNamedBufferData(UBO, sizeof(tables), tables, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, UBO);
+
 	for (auto& model : modelVector) {
 		DeferredGeometryTechnique::setModelView(model->getModelMatrix(), viewMatrix);
 
+		// TEST
+		DeferredGeometryTechnique::setModelNumber(model->getData()->getMeshes().size() > 1 ? 0 : 1);
+
 		ModelData* modelData = model->getData();
 		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
+
 		glBindTextureUnit(texUnit, modelData->getTextureID());
 
 		for (const Mesh& mesh : modelDataMeshes) {
@@ -53,8 +71,8 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 	DeferredLightingTechnique::shader->use();
 	Camera* camera = cameraVector.front().get();
 
-	glm::vec3 lightDir = glm::vec3(0.0f, -1.0f, 0.0f);
-	DirectionalLight dirLight = { glm::vec3(1.0f), 0.01f, 0.3f, lightDir }; // TODO get from scene :3
+	glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, -1.0f, -0.2f));
+	DirectionalLight dirLight = { glm::vec3(1.0f), 0.03f, 1.0f, lightDir }; // TODO get from scene :3
 
 
 	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());

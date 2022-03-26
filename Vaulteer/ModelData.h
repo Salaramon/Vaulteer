@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <string>
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
@@ -17,11 +16,12 @@
 
 #include "GraphicsData.h"
 
-#include "Resource.h"
 #include "Texture2DArray.h"
 #include "VertexHash.h"
+#include "Mesh.h"
 
 #include "DebugLogger.h"
+
 
 class ModelData : public DebugLogger<ModelData>, public GraphicsData
 {
@@ -46,12 +46,40 @@ public:
 		}
 	};
 
+	struct ModelUnitData {
+		int xDelta, yDelta, wDelta, hDelta, layerDelta;
+		ModelUnitData() : xDelta(0), yDelta(0), wDelta(0), hDelta(0), layerDelta(1) {}
+		ModelUnitData(Texture2DArray::TextureUnit& u) : xDelta(u.x), yDelta(u.y), wDelta(u.w), hDelta(u.h), layerDelta(u.layer) {}
+	};
+	struct ModelUnitTable {
+		ModelUnitData diffuseUnit, specularUnit, normalMapUnit;
+
+		ModelUnitTable() {}
+		void setUnit(aiTextureType ttype, Texture2DArray::TextureUnit& u) {
+			switch(ttype) {
+			case aiTextureType_DIFFUSE: diffuseUnit = u; break;
+			case aiTextureType_SPECULAR: specularUnit = u; break;
+			case aiTextureType_HEIGHT: normalMapUnit = u; break;
+			}
+		}
+
+		const ModelUnitData& operator[](size_t index) const {
+			switch (index) {
+			case 0: return diffuseUnit;
+			case 1: return specularUnit;
+			case 2: return normalMapUnit;
+			default: throw std::exception("invalid index");
+			}
+		}
+	};
+
 	ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices);
 	ModelData(std::string modelPath, std::vector<Mesh> meshes);
 	ModelData(ModelData&& other) noexcept;
 
 	const std::vector<Mesh>& getMeshes() const;
 	const GLint getTextureID() const;
+	const ModelUnitTable& getModelUnitTable() const;
 
 	void updateWithTextureUnits(const Texture2DArray& texture);
 
@@ -64,5 +92,6 @@ private:
 	
 	// populated after texture packing (updateWithTextureUnits)
 	std::unordered_map<std::string, Texture2DArray::TextureUnit> unitByTexturePath;
+	ModelUnitTable modelUnitTable;
 
 };

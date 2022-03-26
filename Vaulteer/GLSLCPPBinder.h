@@ -96,11 +96,15 @@ namespace Binder {
 		glm::vec3 aPos;
 		glm::vec3 aNormal;
 		glm::vec2 aTexCoords;
-		inline static const std::array<size_t, 3> offsets = {0,12,24};
-		inline static const std::array<LocationInfo, 3> locations = {
+		glm::vec3 aTangent;
+		glm::vec3 aBitangent;
+		inline static const std::array<size_t, 5> offsets = {0,12,24,32,44};
+		inline static const std::array<LocationInfo, 5> locations = {
 		LocationInfo(0, "vec3", "aPos", 0, 12),
 		LocationInfo(1, "vec3", "aNormal", 0, 12),
-		LocationInfo(2, "vec2", "aTexCoords", 0, 8)};
+		LocationInfo(2, "vec2", "aTexCoords", 0, 8),
+		LocationInfo(3, "vec3", "aTangent", 0, 12),
+		LocationInfo(4, "vec3", "aBitangent", 0, 12)};
 	};
 	struct AttributeStructure_lightsource_vertex{
 		glm::vec3 aPos;
@@ -233,6 +237,22 @@ namespace Binder {
 			Uniform<float> angle;
 	};
 
+	struct ModelUnitData{
+		ModelUnitData(String name)  :
+			xDelta{Uniform<int>("int", String(name + "." + "xDelta"), 0, 4)},
+			yDelta{Uniform<int>("int", String(name + "." + "yDelta"), 0, 4)},
+			wDelta{Uniform<int>("int", String(name + "." + "wDelta"), 0, 4)},
+			hDelta{Uniform<int>("int", String(name + "." + "hDelta"), 0, 4)},
+			layerDelta{Uniform<int>("int", String(name + "." + "layerDelta"), 0, 4)}
+		{}
+
+			Uniform<int> xDelta;
+			Uniform<int> yDelta;
+			Uniform<int> wDelta;
+			Uniform<int> hDelta;
+			Uniform<int> layerDelta;
+	};
+
 struct cluster_tile_compute {
 	struct locations{
 		};
@@ -329,7 +349,9 @@ struct geometry_frag {
 	struct locations{
 		};
 		struct uniforms{
+			 inline static ModelUnitData unitTable[6]{ModelUnitData(String("unitTable[0]")), ModelUnitData(String("unitTable[1]")), ModelUnitData(String("unitTable[2]")), ModelUnitData(String("unitTable[3]")), ModelUnitData(String("unitTable[4]")), ModelUnitData(String("unitTable[5]"))};
 			 inline static Uniform<> textureLib{Uniform<>("sampler2DArray", String("textureLib"), 0, 0)};
+			 inline static Uniform<int> modelNumber{Uniform<int>("int", String("modelNumber"), 0, 4)};
 		};
 	};
 
@@ -338,8 +360,11 @@ struct geometry_vertex {
 			inline static Location<glm::vec3> aPos{Location <glm::vec3>(0, "vec3", "aPos", 0, 12)};
 			inline static Location<glm::vec3> aNormal{Location <glm::vec3>(1, "vec3", "aNormal", 0, 12)};
 			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
+			inline static Location<glm::vec3> aTangent{Location <glm::vec3>(3, "vec3", "aTangent", 0, 12)};
+			inline static Location<glm::vec3> aBitangent{Location <glm::vec3>(4, "vec3", "aBitangent", 0, 12)};
 		};
 		struct uniforms{
+			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
 			 inline static Uniform<glm::mat4> modelView{Uniform<glm::mat4>("mat4", String("modelView"), 0, 64)};
 			 inline static Uniform<glm::mat4> projection{Uniform<glm::mat4>("mat4", String("projection"), 0, 64)};
 			 inline static Uniform<glm::mat4> normal{Uniform<glm::mat4>("mat4", String("normal"), 0, 64)};

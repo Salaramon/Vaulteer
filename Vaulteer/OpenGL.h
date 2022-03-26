@@ -35,6 +35,8 @@ public:
 	static void disableCullFace();
 	static void enableDirectDebugMessageing();
 	static void disableDirectDebugMessageing();
+	static void enableSRGB();
+	static void disableSRGB();
 
 	inline static DebugLogger<OpenGL> log;
 	inline static bool directMessaging = false;

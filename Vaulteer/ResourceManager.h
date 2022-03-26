@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Resource.h"
 #include "ResourcePack.h"
 #include "ResourceLoader.h"
 

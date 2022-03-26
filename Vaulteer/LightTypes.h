@@ -45,7 +45,7 @@ struct SpotLight : public PointLight {
 	glm::vec3 direction;
 	float cutoffAngle; // radians
 
-	int calculateSizeAcross() const {
+	float calculateSizeAcross() const {
 		float attLength = attenuation.calculateRadius(getLightMax());
 
 		float size = tanf(cutoffAngle) * attLength * 2;

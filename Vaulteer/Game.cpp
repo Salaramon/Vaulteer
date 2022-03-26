@@ -26,7 +26,6 @@ void Game::loadResources() {
 		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
 		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 	)));
-	*/
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
 		1, 1,
 		std::vector<glm::vec4>({
@@ -65,7 +64,8 @@ void Game::loadResources() {
 	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("sphere", std::make_unique<LineData>(
 		spherePoints
 	)));
-
+	*/
+	
 }
 
 size_t Game::run()
@@ -97,13 +97,19 @@ size_t Game::run()
 	Model<ModelData> crate = Model<ModelData>(resourceManager.getPack(0).getModelByName("crate"));
 	Model<ModelData> backpack = Model<ModelData>(resourceManager.getPack(0).getModelByName("backpack"));
 
+
+
+	backpack.setRotation(45.0, glm::vec3(1.0, 0.0, 0.0));
 	
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
+	objects.push_back(scene.addObject(std::move(backpack)));
+	objects.back()->setPosition(0, 5, 0);
+
 	//Generate floor
-	intmax_t width = 8;
-	intmax_t height = 8;
+	intmax_t width = 1;
+	intmax_t height = 1;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
 			objects.push_back(scene.addObject(std::move(crate)));
@@ -111,8 +117,6 @@ size_t Game::run()
 		}
 	}
 
-	objects.push_back(scene.addObject(std::move(backpack)));
-	objects.back()->setPosition(0, 5, 0);
 
 	objects.push_back(scene.addObject(std::move(crate)));
 	objects.back()->setPosition(1, 10, 1);
@@ -148,7 +152,7 @@ size_t Game::run()
 		if (Event::KEY::SPACE >> Event::STATE::DOWN) {
 			camera->move(worldUp * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::LEFT_SHIFT >> Event::STATE::DOWN) {
+		if (Event::KEY::LEFT_CONTROL >> Event::STATE::DOWN) {
 			camera->move(-worldUp * (float)Event::delta() * speed);
 		}
 		if (Event::KEY::W >> Event::STATE::DOWN) {
@@ -171,20 +175,20 @@ size_t Game::run()
 		}
 
 		if (Event::KEY::T >> Event::ACTION::PRESS) {
-			if (true) {
-				std::cout << "lol you pressed t" << std::endl;
-			}
-			else {
-				
-			}
-			
+			DebugLogger<>::enableLogging();
+			std::cout << "reloading shader" << std::endl;
+			renderer.reload();
+
+			// TODO for dan: make function for printing and breaking at the same time (by message key)
+			DebugLogger<>::setClassAccessLimit("Shader", 10);
+			DebugLogger<>::printClass("Shader");
+			DebugLogger<>::disableLogging();
 		}
 
 		camera->apply();
 
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		
 		
 		renderer.render(scene);

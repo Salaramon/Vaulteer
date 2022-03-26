@@ -269,7 +269,7 @@ vec4 calcSpotLight(SpotLight spotLight, vec3 fragPosition, vec3 fragNormal, floa
 
 
 void main() {
-    const float gamma = 2.0;
+    const float gamma = 1.0;
 
     vec3 fragPosition = vec4(inverse(cameraViewMat) * vec4(texture(gPosition, TexCoords).xyz, 1.0)).xyz;
 
@@ -281,7 +281,7 @@ void main() {
     float specIntensity = texture(gColor, TexCoords).a;
 
     //FragColor = vec4(texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, 1.0); //spec demo
-    //FragColor = vec4(diffuse, 1.0); // diffuse demo
+    FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
     //return;
 
     //float material = texture(gMaterial, TexCoords).x;
@@ -304,13 +304,12 @@ void main() {
             0.0; 
 
     float dirLightShadowFactor = (1.0 - dirLightShadow / 1.5);*/
+
     float dirLightShadow = 0.0;
     float dirLightShadowFactor = 1.0;
 
     // light calc
-
     vec4 totalLight = calcDirectionalLight(directionalLight, fragPosition, fragNormal, specIntensity, dirLightShadow) * dirLightShadowFactor;
-
     
     for (int i = 0; i < MAX_SPOT_LIGHTS; i++) {
         totalLight += calcSpotLight(spotLights[i], fragPosition, fragNormal, specIntensity, i);
@@ -328,7 +327,9 @@ void main() {
     //vec4 fog = vec4((vec3(1.0) - vec3(1.0-fogColor.r, 1.0-fogColor.g, 1.0-fogColor.b) * fogFactor), 1.0);
     //vec4 fragColor = mix(totalLight, fog, fogFactor);
 
-    totalLight = totalLight + vec4(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0), totalLight.r);
+    // kinda hdr impl
+    totalLight = vec4(min(totalLight.x, 1.0), min(totalLight.y, 1.0), min(totalLight.z, 1.0), totalLight.w) + 
+                 vec4(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0), totalLight.w);
 
     vec4 fragColor = vec4(diffuse.x * totalLight.x, diffuse.y * totalLight.y, diffuse.z * totalLight.z, 1.0);
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);

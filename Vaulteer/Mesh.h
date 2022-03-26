@@ -65,7 +65,9 @@ public:
 	inline static LocationVector locInfo = {
 		Binder::geometry_vertex::locations::aPos,
 		Binder::geometry_vertex::locations::aNormal,
-		Binder::geometry_vertex::locations::aTexCoords
+		Binder::geometry_vertex::locations::aTexCoords,
+		Binder::geometry_vertex::locations::aTangent,
+		Binder::geometry_vertex::locations::aBitangent
 	};
 
 	inline static LocationVector locDivisors = {
