@@ -281,7 +281,7 @@ void main() {
     float specIntensity = texture(gColor, TexCoords).a;
 
     //FragColor = vec4(texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, texture(gColor, TexCoords).a, 1.0); //spec demo
-    FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
+    //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
     //return;
 
     //float material = texture(gMaterial, TexCoords).x;

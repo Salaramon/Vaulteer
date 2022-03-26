@@ -99,8 +99,6 @@ size_t Game::run()
 
 
 
-	backpack.setRotation(45.0, glm::vec3(1.0, 0.0, 0.0));
-	
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
