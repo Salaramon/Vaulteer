@@ -173,7 +173,7 @@ private:
 	public:
 		UniformFunctor(const Shader* shader) : shader(shader) {}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1) const { DebugLogger<Shader> log;							
-		log.debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1f");																										
+		log.debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ")\n", "glUniform1f");
 		GLint loc = glGetUniformLocation(shader->shaderProgramID, uniform.name);
 		glUniform1f(loc, value1); }
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2) const { DebugLogger<Shader> log;							log.debug("Uniform " + std::string(uniform.name) + " for shader: " + std::to_string(shader->getObjectKey()) + ". Set to (" + std::to_string(value1) + ", " + std::to_string(value2) + ")\n", "glUniform2f");																		glUniform2f(glGetUniformLocation(shader->shaderProgramID, uniform.name), value1, value2); }

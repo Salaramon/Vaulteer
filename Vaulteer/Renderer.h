@@ -20,5 +20,5 @@ inline void Renderer<DedicatedRenderer>::render(DedicatedRenderer::Scene& scene)
 template<class DedicatedRenderer>
 //template<class... Args>
 inline void Renderer<DedicatedRenderer>::reload() {
-	DedicatedRenderer::reload();
+	DedicatedRenderer::reloadShaders();
 }

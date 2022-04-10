@@ -28,13 +28,13 @@ void DeferredGeometryTechnique::setModelNumber(const GLint& modelNumber) {
     shader->setUniform(Binder::geometry_frag::uniforms::modelNumber, modelNumber);
 }
 
-void DeferredGeometryTechnique::setModelUnitTable(const ModelData::ModelUnitTable& table) {
-    using uni = Binder::geometry_frag::uniforms;
-    for (size_t i = 0; i < 3; i++) {
-        shader->setUniform(uni::unitTable[i].xDelta, table[i].xDelta);
-        shader->setUniform(uni::unitTable[i].yDelta, table[i].yDelta);
-        shader->setUniform(uni::unitTable[i].wDelta, table[i].wDelta);
-        shader->setUniform(uni::unitTable[i].hDelta, table[i].hDelta);
-        shader->setUniform(uni::unitTable[i].layerDelta, table[i].layerDelta);
+void DeferredGeometryTechnique::setModelUnitTables(const std::vector<ModelData*>& dataVector) {
+    std::vector<ModelData::ModelUnitData> unitData;
+    for (auto& data : dataVector) {
+        unitData.push_back(data->getModelUnitTable().diffuseUnit);
+        unitData.push_back(data->getModelUnitTable().specularUnit);
+        unitData.push_back(data->getModelUnitTable().normalMapUnit);
     }
+
+    modelUnitTables.setData(unitData);
 }

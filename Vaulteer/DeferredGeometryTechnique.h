@@ -1,6 +1,9 @@
 #pragma once
+
 #include "ShaderProgram.h"
-#include "ModelData.h"
+#include "Model.h"
+#include "Scene.h"
+#include "UniformBuffer.h"
 
 class DeferredGeometryTechnique : public ShaderProgram<GeometryShader>
 {
@@ -14,8 +17,9 @@ public:
 
 	void setTextureUnit(const GLint& texture);
 	void setModelNumber(const GLint& modelNumber);
-	void setModelUnitTable(const ModelData::ModelUnitTable& table);
+	void setModelUnitTables(const std::vector<ModelData*>& modelVector);
 
-
+	
+	UniformBuffer modelUnitTables = UniformBuffer(Binder::geometry_frag::buffers::ModelUnitTables);
 };
 

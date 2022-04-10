@@ -26,8 +26,7 @@ Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, std::vector<glm::v
     debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
 }
 
-Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept 
-        : Texture(other) {
+Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept {
     textureID = other.textureID;
     other.textureID = 0;
     numLayers = other.numLayers;

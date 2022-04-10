@@ -22,7 +22,7 @@ struct ModelUnitData {
 };
 
 
-layout (shared, binding = 1) uniform ModelUnitTables {
+layout(shared, binding = 1) uniform ModelUnitTables {
     uniform ModelUnitData unitTable[6];
 };
 
@@ -54,25 +54,4 @@ void main() {
         gNormal = fs_in.tbnMat[2];
 
     gColor = vec4(texture(textureLib, diffuseCoords).rgb, texture(textureLib, specularCoords).r);
-    //gColor = vec4(gNormal, texture(textureLib, specularCoords).r);
-
-    /*
-    x y w h l
-    0 0 h h 0 h 0 0
-    0 0 0 h 0 0 0 h
-    h l l 0 0 0 0 0
-    1 0 0 0 0 1 
-
-    x y w h l
-    0 0 h h 0
-    h 0 0 0 0
-    0 h 0 0 0
-    h h l l 0
-    0 0 0 0 1
-    0 0 0 0 1
-    */
-
-
-
-    //gColor = vec4(texture(textureLib, normalCoords).rgb, float(unitTable[0].xDelta) / (8192.0));
 }

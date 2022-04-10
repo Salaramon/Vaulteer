@@ -25,7 +25,7 @@ public:
 	GLint getTextureLibraryId();
 
 	ModelData* getModelByName(std::string modelName);
-	std::vector<ModelData*> getAllItems();
+	const std::vector<ModelData*> getAllItems();
 
 private:
 	ResourceLoader& loader;

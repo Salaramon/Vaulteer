@@ -46,9 +46,6 @@
     <Filter Include="Source Files\Optimized Structures">
       <UniqueIdentifier>{20a694e0-3a6a-43b0-a014-e94512bae313}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Effects">
-      <UniqueIdentifier>{38f1da55-bfa0-479e-8b0d-9cf06365b533}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Model">
       <UniqueIdentifier>{01c833f2-81d3-45b2-8922-a31da27f4dd3}</UniqueIdentifier>
     </Filter>
@@ -70,9 +67,6 @@
     <Filter Include="Header Files\Rendering\Shader">
       <UniqueIdentifier>{8a592b0e-601f-43d3-9165-8ee2d1b75122}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Effects">
-      <UniqueIdentifier>{c70ddacf-b358-4bca-b60b-4feb65250a3e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{bc1fd3bb-a183-4e3b-92c7-c253a72058f9}</UniqueIdentifier>
     </Filter>
@@ -88,26 +82,8 @@
     <Filter Include="Header Files\Rendering\Techniques">
       <UniqueIdentifier>{2eb352ba-fbca-4430-80a1-8ba952ac7a40}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Effects\Shadow">
-      <UniqueIdentifier>{21e9a84c-4d13-4878-bba0-00a86249be8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Effects\Shadow\Techniques">
-      <UniqueIdentifier>{a7b9c5ee-b941-476a-8b70-a4aa8c1f1d26}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Effects\Shadow\Buffers">
-      <UniqueIdentifier>{3598f1f8-9d64-4b05-80da-b35f4b880196}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Optimized Structures">
       <UniqueIdentifier>{fc6aa6e0-caec-46e5-b344-8a105fc4a8f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Effects\Shadow">
-      <UniqueIdentifier>{8102ad36-1fef-42a0-9ad4-9205ea11eb95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Effects\Shadow\Buffers">
-      <UniqueIdentifier>{4dec67b3-eb04-42db-a237-2a04f3399e4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Effects\Shadow\Techniques">
-      <UniqueIdentifier>{495ac5fe-a7e2-457e-9581-c03bb9e9fc85}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Rendering\Renderer">
       <UniqueIdentifier>{47c6bd3e-2310-49f8-8ea3-9b890c6ba2d3}</UniqueIdentifier>
@@ -132,6 +108,36 @@
     </Filter>
     <Filter Include="Header Files\Model\Data\Texture">
       <UniqueIdentifier>{f12fe3e2-4c5c-4ce4-986f-edd00a681dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Resource">
+      <UniqueIdentifier>{e3e09293-7def-4f96-8bc5-0e9c6bcb0cab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VFX">
+      <UniqueIdentifier>{38f1da55-bfa0-479e-8b0d-9cf06365b533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VFX\Shadow">
+      <UniqueIdentifier>{21e9a84c-4d13-4878-bba0-00a86249be8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VFX\Shadow\Techniques">
+      <UniqueIdentifier>{a7b9c5ee-b941-476a-8b70-a4aa8c1f1d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VFX\Shadow\Buffers">
+      <UniqueIdentifier>{3598f1f8-9d64-4b05-80da-b35f4b880196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VFX">
+      <UniqueIdentifier>{c70ddacf-b358-4bca-b60b-4feb65250a3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VFX\Shadow">
+      <UniqueIdentifier>{8102ad36-1fef-42a0-9ad4-9205ea11eb95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VFX\Shadow\Buffers">
+      <UniqueIdentifier>{4dec67b3-eb04-42db-a237-2a04f3399e4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VFX\Shadow\Techniques">
+      <UniqueIdentifier>{495ac5fe-a7e2-457e-9581-c03bb9e9fc85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Resource">
+      <UniqueIdentifier>{e7f2e37d-03df-4d18-8a18-a64800fbf296}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -172,22 +178,22 @@
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="ShadowCascade.cpp">
-      <Filter>Source Files\Effects\Shadow</Filter>
+      <Filter>Source Files\VFX\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="ShadowBuffer.cpp">
-      <Filter>Source Files\Effects\Shadow\Buffers</Filter>
+      <Filter>Source Files\VFX\Shadow\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="ShadowCubeBuffer.cpp">
-      <Filter>Source Files\Effects\Shadow\Buffers</Filter>
+      <Filter>Source Files\VFX\Shadow\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="ShadowCubeTechnique.cpp">
-      <Filter>Source Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Source Files\VFX\Shadow\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="ShadowTechnique.cpp">
-      <Filter>Source Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Source Files\VFX\Shadow\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="DepthMapTechnique.cpp">
-      <Filter>Source Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Source Files\VFX\Shadow\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="DeferredLightingTechnique.cpp">
       <Filter>Source Files\Rendering\Techniques</Filter>
@@ -267,19 +273,22 @@
     <ClCompile Include="PolyTree.cpp">
       <Filter>Source Files\Optimized Structures</Filter>
     </ClCompile>
-    <ClCompile Include="ResourcePack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceLoader.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Model\Data</Filter>
     </ClCompile>
     <ClCompile Include="PackedTexture2DArray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Model\Data\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourcePack.cpp">
+      <Filter>Source Files\Model\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLoader.cpp">
+      <Filter>Source Files\Model\Resource</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Model\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
+    <ClCompile Include="UniformBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -336,7 +345,7 @@
       <Filter>Header Files\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="LightTypes.h">
-      <Filter>Header Files\Effects</Filter>
+      <Filter>Header Files\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
       <Filter>Header Files\Model\Buffers</Filter>
@@ -402,22 +411,22 @@
       <Filter>Header Files\Rendering\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="ShadowCascade.h">
-      <Filter>Header Files\Effects\Shadow</Filter>
+      <Filter>Header Files\VFX\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="ShadowCubeTechnique.h">
-      <Filter>Header Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Header Files\VFX\Shadow\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="DepthMapTechnique.h">
-      <Filter>Header Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Header Files\VFX\Shadow\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="ShadowTechnique.h">
-      <Filter>Header Files\Effects\Shadow\Techniques</Filter>
+      <Filter>Header Files\VFX\Shadow\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="ShadowBuffer.h">
-      <Filter>Header Files\Effects\Shadow\Buffers</Filter>
+      <Filter>Header Files\VFX\Shadow\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="ShadowCubeBuffer.h">
-      <Filter>Header Files\Effects\Shadow\Buffers</Filter>
+      <Filter>Header Files\VFX\Shadow\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="LineTechnique.h">
       <Filter>Header Files\Rendering\Techniques</Filter>
@@ -431,9 +440,6 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files\Rendering\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="ResourcePack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CubemapTexture.h">
       <Filter>Header Files\Model\Data\Texture</Filter>
     </ClInclude>
@@ -443,20 +449,26 @@
     <ClInclude Include="Texture2DArray.h">
       <Filter>Header Files\Model\Data\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PackedTexture2DArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ModelResourceLocator.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files\Model\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="PackedTexture2DArray.h">
+      <Filter>Header Files\Model\Data\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
+      <Filter>Header Files\Model\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files\Model\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePack.h">
+      <Filter>Header Files\Model\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="UniformBuffer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

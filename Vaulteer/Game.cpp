@@ -6,9 +6,6 @@ Game::Game(Window& window) :
 }
 
 void Game::loadResources() {
-	//models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("crate", std::make_unique<ModelData>("Crate/Crate1.obj", "Crate" )));
-	//models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("backpack", std::make_unique<ModelData>("backpack/backpack.obj", "backpack" )));
-
 	std::vector<ModelResourceLocator> locators = { 
 		{ "backpack", "backpack/backpack.obj" },
 		{ "crate", "crate/crate1.obj" },
@@ -87,17 +84,18 @@ size_t Game::run()
 	Renderer<DeferredRenderer>::Scene scene;
 
 	//Setting up cameras in the scene.
-	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	Camera* camera = scene.addObject(Camera(glm::vec3(0, -10, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	//Select the active camera.
 	//scene.setActiveCamera(camera);
 
 	//Set up render passe(s) for each render strata.
 	// none
 	
-	Model<ModelData> crate = Model<ModelData>(resourceManager.getPack(0).getModelByName("crate"));
-	Model<ModelData> backpack = Model<ModelData>(resourceManager.getPack(0).getModelByName("backpack"));
+	ResourcePack& pack = resourceManager.getPack(0);
+	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
+	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("backpack"));
 
-
+	renderer.preload(pack);
 
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
@@ -106,8 +104,8 @@ size_t Game::run()
 	objects.back()->setPosition(0, 5, 0);
 
 	//Generate floor
-	intmax_t width = 1;
-	intmax_t height = 1;
+	intmax_t width = 8;
+	intmax_t height = width;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
 			objects.push_back(scene.addObject(std::move(crate)));

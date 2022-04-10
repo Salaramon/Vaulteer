@@ -5,8 +5,10 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 
 	ResourceLoader loader;
 	quad = std::make_unique<ModelData>(std::move(loader.importModel("quad.obj")));
+}
 
-	glCreateBuffers(1, &UBO);
+void DeferredRenderer::preload(ResourcePack& pack) {
+	DeferredGeometryTechnique::setModelUnitTables(pack.getAllItems());
 }
 
 void DeferredRenderer::render(Scene& scene) {
@@ -30,18 +32,6 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 	gbuffer.get()->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
-	// TEST
-	ModelData::ModelUnitData tables[] = { 
-		modelVector.at(0)->getData()->getModelUnitTable().diffuseUnit, 
-		modelVector.at(0)->getData()->getModelUnitTable().specularUnit, 
-		modelVector.at(0)->getData()->getModelUnitTable().normalMapUnit,
-		modelVector.at(1)->getData()->getModelUnitTable().diffuseUnit,
-		modelVector.at(1)->getData()->getModelUnitTable().specularUnit,
-		modelVector.at(1)->getData()->getModelUnitTable().normalMapUnit
-	};
-	// TEST
-	glNamedBufferData(UBO, sizeof(tables), tables, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, UBO);
 
 	for (auto& model : modelVector) {
 		DeferredGeometryTechnique::setModelView(model->getModelMatrix(), viewMatrix);
@@ -71,7 +61,8 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 	DeferredLightingTechnique::shader->use();
 	Camera* camera = cameraVector.front().get();
 
-	glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f, -1.0f, -0.2f));
+	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
+	
 	DirectionalLight dirLight = { glm::vec3(1.0f), 0.03f, 1.0f, lightDir }; // TODO get from scene :3
 
 
@@ -101,4 +92,9 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 	quadMesh.vertexArray.unbind();
 
 	gbuffer.get()->unbind();
+}
+
+void DeferredRenderer::reloadShaders() {
+	DeferredGeometryTechnique::reloadShader();
+	DeferredLightingTechnique::reloadShader();
 }

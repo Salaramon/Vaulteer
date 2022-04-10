@@ -4,8 +4,8 @@ PackedTexture2DArray::PackedTexture2DArray(std::vector<TextureResourceLocator> l
     : Texture2DArray(locators, mipmapEnabled, repeatX, repeatY) {
     createPacked();
 
-    glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // hack OMG!!!!!
-    glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // hack OMG!!!!!
+    //glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 PackedTexture2DArray::PackedTexture2DArray(TextureResourceLocator locator, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
@@ -35,7 +35,7 @@ void PackedTexture2DArray::createPacked() {
             loadCount++;
             maxComp = std::max(comp, maxComp);
         }
-        else debug("Failed to load texture: \n\t" + locators[i].path + "\n");
+        else std::cout << "Failed to load texture: \n\t" << locators[i].path << "\n" << std::endl;
     }
 
     // attempt packing
@@ -47,12 +47,41 @@ void PackedTexture2DArray::createPacked() {
         rectangles.push_back(img.unit);
     }
 
-    auto report_successful = [](rect_type&) {
+    attemptPacking(rectangles);
+    width = ceilPowerOfTwo(width);
+    height = ceilPowerOfTwo(height);
+
+    // overwrite full sized units with packed data
+    for (int i = 0; i < rectangles.size(); i++) {
+        images[i].unit = TextureUnit(images[i].unit, rectangles[i]);
+    }
+
+    // finish texture data aggregation
+    nrComponents = maxComp;
+
+    if (loadCount == locators.size() && !packingErrorReported) {
+        auto [inFormat, exFormat] = getFormatsFromComponents(nrComponents);
+        createTextureArrayFromData(inFormat, exFormat, images);
+    }
+    else std::cout << "Texture data not stored: \t" << std::to_string(textureID) << "\n"
+        << (packingErrorReported ? "Packing error reported" : "false") << std::endl;
+
+    for (Image2D img : images) {
+        if (img.loaded())
+            stbi_image_free(img.data);
+
+        units[img.path] = img.unit;
+    }
+}
+
+bool PackedTexture2DArray::attemptPacking(std::vector<rect_type>& rectangles) {
+    auto report_successful = [this](rect_type&) {
         return rectpack2D::callback_result::CONTINUE_PACKING;
     };
 
-    auto report_unsuccessful = [](rect_type&) {
-        std::cout << "Packing unsuccessful, use debugger..." << std::endl;
+    auto report_unsuccessful = [this](rect_type&) {
+        std::cout << "Packing unsuccessful for texture " << getTextureID() << std::endl;
+        packingErrorReported = true;
         return rectpack2D::callback_result::ABORT_PACKING;
     };
 
@@ -65,29 +94,17 @@ void PackedTexture2DArray::createPacked() {
             report_successful,
             report_unsuccessful,
             runtime_flipping_mode
-        )
-    );
+        ));
 
-    // overwrite full sized units with packed data
-    for (int i = 0; i < rectangles.size(); i++) {
-        images[i].unit = TextureUnit(images[i].unit, rectangles[i]);
-    }
-
-    // finish texture data aggregation
     width = result_size.w;
     height = result_size.h;
-    nrComponents = maxComp;
 
-    if (loadCount == locators.size()) {
-        auto [inFormat, exFormat] = getFormatsFromComponents(nrComponents);
-        createTextureArrayFromData(inFormat, exFormat, images);
-    }
-    else debug("Texture data not stored: \t" + std::to_string(textureID) + "\n");
+    return packingErrorReported;
+}
 
-    for (Image2D img : images) {
-        if (img.loaded())
-            stbi_image_free(img.data);
-
-        units[img.path] = img.unit;
-    }
+uint PackedTexture2DArray::ceilPowerOfTwo(uint v) {
+    v--;
+    for (int i = 1; i <= 16; i *= 2)
+        v |= v >> i;
+    return ++v;
 }

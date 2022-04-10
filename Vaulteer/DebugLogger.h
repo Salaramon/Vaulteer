@@ -478,7 +478,7 @@ public:
 	inline void setThisMessageLimit(size_t& limit) {}
 	inline void setThisLimit(size_t&& limit) {}
 	inline void setThisMessageLimit(size_t&& limit) {}
-	inline size_t getObjectKey() { return 0; }
+	inline size_t getObjectKey() const { return 0; }
 };
 
 template<class Class>

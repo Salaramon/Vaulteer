@@ -49,7 +49,7 @@ ModelData* ResourcePack::getModelByName(std::string modelName) {
 	return search->second.get();
 }
 
-std::vector<ModelData*> ResourcePack::getAllItems() {
+const std::vector<ModelData*> ResourcePack::getAllItems() {
 	std::vector<ModelData*> items;
 	items.reserve(resourcesByName.size());
 

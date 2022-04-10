@@ -8,6 +8,8 @@ class PackedTexture2DArray : public Texture2DArray {
 
     const bool allow_flip = true;
 
+    bool packingErrorReported = false;
+
 public:
     PackedTexture2DArray(std::vector<TextureResourceLocator> paths, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
     PackedTexture2DArray(TextureResourceLocator path, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
@@ -17,5 +19,8 @@ public:
 
 protected:
     void createPacked();
+    bool attemptPacking(std::vector<rect_type>& rectangles);
+    uint ceilPowerOfTwo(uint v);
+
 };
 
