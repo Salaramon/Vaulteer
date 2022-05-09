@@ -36,5 +36,5 @@ void DeferredGeometryTechnique::setModelUnitTables(const std::vector<ModelData*>
         unitData.push_back(data->getModelUnitTable().normalMapUnit);
     }
 
-    modelUnitTables.setData(unitData);
+    modelUnitTables.insert(unitData);
 }

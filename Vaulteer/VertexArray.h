@@ -11,13 +11,11 @@
 typedef std::vector<Vertex> Vertices;
 typedef std::vector<GLuint> Indices;
 
-class VertexArray : public DebugLogger<VertexArray>
-{
+class VertexArray : public DebugLogger<VertexArray> {
 public:
 	VertexArray();
-	VertexArray(VertexArray&& other) : 
-		VAO(other.VAO)
-	{
+	VertexArray(VertexArray&& other) :
+		VAO(other.VAO) {
 		other.VAO = 0;
 		debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
 	}
@@ -26,6 +24,9 @@ public:
 
 	void bind() const;
 	void unbind() const;
+
+	/* Binding index for VBO -> binding -> VAO API. Implemented as just the VAO buffer ID */
+	GLuint bindIndex() const;
 
 private:
 	void cleanup();

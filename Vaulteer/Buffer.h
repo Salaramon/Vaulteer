@@ -1,21 +1,42 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <type_traits>
 
-class Buffer
-{
+
+struct BufferType {
+	inline static constexpr GLenum ArrayBuffer = GL_ARRAY_BUFFER;
+	inline static constexpr GLenum ElementBuffer = GL_ELEMENT_ARRAY_BUFFER;
+	inline static constexpr GLenum ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER;
+	inline static constexpr GLenum QueryBuffer = GL_QUERY_BUFFER;
+	inline static constexpr GLenum TextureBuffer = GL_TEXTURE_BUFFER;
+	inline static constexpr GLenum UniformBuffer = GL_UNIFORM_BUFFER;
+};
+
+template<GLenum bufferType>
+class Buffer {
 public:
-	Buffer() {}
+	Buffer() {
+		initialize(bufferType);
+	}
+
 	Buffer(Buffer&& other) noexcept : buffer(other.buffer) {
 		other.buffer = 0;
 	}
+
 	~Buffer() {
 		cleanup();
 	}
+
+	void cleanup() {
+		glDeleteBuffers(1, &buffer);
+	}
+
+	void initialize(GLuint target) {
+		glCreateBuffers(1, &buffer);
+		glBindBuffer(target, buffer);
+	}
+
 protected:
-	void initialize();
-	void cleanup();
-
-	GLuint buffer;
+	GLuint buffer = 0;
 };
-
