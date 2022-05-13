@@ -24,9 +24,9 @@ void DeferredGeometryTechnique::setTextureUnit(const GLint& texture) {
     shader->setUniform(Binder::geometry_frag::uniforms::textureLib, texture);
 }
 
-void DeferredGeometryTechnique::setModelNumber(const GLint& modelNumber) {
+/*void DeferredGeometryTechnique::setModelNumber(const GLint& modelNumber) {
     shader->setUniform(Binder::geometry_frag::uniforms::modelNumber, modelNumber);
-}
+}*/
 
 void DeferredGeometryTechnique::setModelUnitTables(const std::vector<ModelData*>& dataVector) {
     std::vector<ModelData::ModelUnitData> unitData;

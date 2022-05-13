@@ -7,14 +7,14 @@ class Renderer : public DedicatedRenderer
 {
 public:
 	//template<class... Args>
-	void render(DedicatedRenderer::Scene& scene);
+	void render(DedicatedRenderer::Scene& staticScene, DedicatedRenderer::Scene& dynamicScene);
 	void reload();
 };
 
 template<class DedicatedRenderer>
 //template<class... Args>
-inline void Renderer<DedicatedRenderer>::render(DedicatedRenderer::Scene& scene) {
-	DedicatedRenderer::render(scene);
+inline void Renderer<DedicatedRenderer>::render(DedicatedRenderer::Scene& staticScene, DedicatedRenderer::Scene& dynamicScene) {
+	DedicatedRenderer::render(staticScene, dynamicScene);
 }
 
 template<class DedicatedRenderer>

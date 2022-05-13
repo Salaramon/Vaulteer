@@ -7,19 +7,23 @@ ModelData::ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> color
 	meshes.emplace_back(vert, indi);
 }
 
-ModelData::ModelData(std::string modelPath, std::vector<Mesh> meshes) : modelPath(modelPath), meshes(meshes) {
-	debug("Loading model: " + modelPath + "\n");
+ModelData::ModelData(std::string modelPath, std::vector<Mesh>& meshVec) : modelPath(modelPath), meshes(std::move(meshVec)) {
+	std::cout << "Loading model: " + modelPath + "\n" << std::endl;
+	/*meshes->insert(meshes->end(),
+		std::make_move_iterator(meshVec->begin()),
+		std::make_move_iterator(meshVec->end())
+	);*/
 }
 
 ModelData::ModelData(ModelData&& other) noexcept :
 	modelPath(other.modelPath),
-	meshes(other.meshes),
-	unitByTexturePath(other.unitByTexturePath) {
+	meshes(std::move(other.meshes)),
+	unitByTexturePath(std::move(other.unitByTexturePath)) {
 	std::cout << "Model moved: " << modelPath << std::endl;
 };
 
 
-const std::vector<Mesh>& ModelData::getMeshes() const {
+std::vector<Mesh>& ModelData::getMeshes() {
 	return meshes;
 }
 

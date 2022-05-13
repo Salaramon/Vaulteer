@@ -17,7 +17,7 @@ public:
 		vertices(vertices),
 		indices(indices),
 		material({}),
-		vertexBuffer(vertices, vertexArray, locInfo),
+		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
 		indexBuffer(indices, vertexArray) {
 		debug("Mesh created.\n");
 	}
@@ -25,7 +25,7 @@ public:
 		vertices(vertices),
 		indices(indices),
 		material(material),
-		vertexBuffer(vertices, vertexArray, locInfo),
+		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
 		indexBuffer(indices, vertexArray) {
 		debug("Mesh created.\n");
 	}
@@ -33,7 +33,7 @@ public:
 		vertices(other.vertices),
 		indices(other.indices),
 		material(other.material),
-		vertexBuffer(vertices, vertexArray, locInfo),
+		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
 		indexBuffer(indices, vertexArray) {
 		debug("Mesh copied.\n");
 	}
@@ -60,19 +60,6 @@ public:
 	void updateBuffer() {
 		vertexBuffer.insert(vertices);
 	}
-
-	
-	inline static LocationVector locInfo = {
-		Binder::geometry_vertex::locations::aPos,
-		Binder::geometry_vertex::locations::aNormal,
-		Binder::geometry_vertex::locations::aTexCoords,
-		Binder::geometry_vertex::locations::aTangent,
-		Binder::geometry_vertex::locations::aBitangent
-	};
-
-	inline static LocationVector locDivisors = {
-		//Binder::geometry_vertex::locations::instanceMatrix
-	};
 
 	Vertices vertices;
 	Indices indices;

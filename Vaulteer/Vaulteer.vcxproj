@@ -78,13 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(SolutionDir)DebugYourself\lib\debug;$(SolutionDir)sqlite\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)DebugYourself\lib\release;$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
@@ -165,10 +165,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
+    <ClCompile Include="Batch.cpp" />
+    <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PackedTexture2DArray.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
-    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClusteredForwardRenderer.cpp" />
     <ClCompile Include="ClusterTileTechnique.cpp" />
@@ -231,6 +232,8 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Batch.h" />
+    <ClInclude Include="BatchManager.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModelResourceLocator.h" />
     <ClInclude Include="PackedTexture2DArray.h" />

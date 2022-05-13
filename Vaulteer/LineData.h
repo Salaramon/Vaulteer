@@ -10,7 +10,6 @@
 #include "Shader.h"
 #include "Point.h"
 #include "VertexBuffer.h"
-#include "VertexArray.h"
 #include "ElementBuffer.h"
 #include "VertexHash.h"
 
@@ -70,9 +69,9 @@ public:
 template<class... Args>
 requires (std::conjunction_v<std::is_same<glm::vec3, Args>...> && sizeof...(Args) % 2 == 0)
 inline LineData::LineData(glm::vec3 first, Args... args) :
-	vertexArray(),
-	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... }), vertexArray, locInfo),
+	//vertexArray(),
+	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... }), locInfo),
 	color(1, 1, 1, 1),
 	pointCount(sizeof...(Args) + 1),
-	elementBuffer(indices, vertexArray) 
+	elementBuffer(indices, vertexBuffer) 
 {};

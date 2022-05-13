@@ -7,7 +7,7 @@ Game::Game(Window& window) :
 
 void Game::loadResources() {
 	std::vector<ModelResourceLocator> locators = { 
-		{ "backpack", "backpack/backpack.obj" },
+		//{ "backpack", "backpack/backpack.obj" },
 		{ "crate", "crate/crate1.obj" },
 		//{ "quad", "quad.obj" },
 	};
@@ -82,6 +82,7 @@ size_t Game::run()
 	
 	//Scenes
 	Renderer<DeferredRenderer>::Scene scene;
+	Renderer<DeferredRenderer>::Scene dynamicScene;
 
 	//Setting up cameras in the scene.
 	Camera* camera = scene.addObject(Camera(glm::vec3(0, -10, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
@@ -93,15 +94,15 @@ size_t Game::run()
 	
 	ResourcePack& pack = resourceManager.getPack(0);
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
-	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("backpack"));
+	//Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("backpack"));
 
 	renderer.preload(pack);
 
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
-	objects.push_back(scene.addObject(std::move(backpack)));
-	objects.back()->setPosition(0, 5, 0);
+	//objects.push_back(scene.addObject(std::move(backpack)));
+	//objects.back()->setPosition(0, 5, 0);
 
 	//Generate floor
 	intmax_t width = 8;
@@ -187,7 +188,7 @@ size_t Game::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		
-		renderer.render(scene);
+		renderer.render(scene, dynamicScene);
 
 		glfwSwapBuffers(window->getRawWindow());
 

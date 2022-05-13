@@ -31,4 +31,6 @@ private:
 
 	std::vector<Material> materialLibrary;
 	int numMaterials = 0;
+
+	int numModels = 1;
 };

@@ -16,7 +16,7 @@ public:
 	void setNormal(const glm::mat4& model);
 
 	void setTextureUnit(const GLint& texture);
-	void setModelNumber(const GLint& modelNumber);
+	//void setModelNumber(const GLint& modelNumber);
 	void setModelUnitTables(const std::vector<ModelData*>& modelVector);
 
 	

@@ -13,7 +13,7 @@ class ElementBuffer : public Buffer<BufferType::ElementBuffer>, public DebugLogg
 public:
 	ElementBuffer();
 
-	ElementBuffer(size_t bufferSize) {} // TODO not impl
+	ElementBuffer(size_t bufferSize, VertexArray& vertexArray);
 
 	ElementBuffer(std::vector<Index>& indices);
 
@@ -24,6 +24,8 @@ public:
 	void insert(const std::vector<Index>& indices);
 
 	void insertPartial(size_t position, const std::vector<Index>& indices);
+
+	void reserve(size_t bufferSize);
 
 	void bindVertexArray(VertexArray& vertexArray);
 };

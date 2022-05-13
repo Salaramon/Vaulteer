@@ -3,12 +3,15 @@
 
 #include <iostream>
 
+#include <DebugYourself.h>
+
 #include "OpenGL.h"
 #include "Event.h"
 #include "Game.h"
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
+
 
 
 void initializeSTBI() {
@@ -28,7 +31,7 @@ void initializeOpenGL() {
 	OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	//OpenGL::enableSRGB();
-	//OpenGL::enableDirectDebugMessageing();
+	OpenGL::enableDirectDebugMessageing();
 }
 
 void cleanup() {

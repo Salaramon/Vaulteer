@@ -9,6 +9,7 @@ in VS_OUT {
     vec3 fragPosition;
     vec3 fragNormal;
     vec2 TexCoords;
+    flat int modelNumber;
 
     mat3 tbnMat;
 } fs_in;
@@ -28,7 +29,6 @@ layout(shared, binding = 1) uniform ModelUnitTables {
 
 
 uniform sampler2DArray textureLib;
-uniform int modelNumber;
 
 const int diffuse_unit_index = 0;
 const int specular_unit_index = 1;
@@ -42,12 +42,12 @@ vec3 getTexUnitCoords(vec3 texCoords, int modelNumber, int unitIndex) {
 
 void main() {
     vec3 diffuseCoords = vec3(fs_in.TexCoords, 0);
-    vec3 specularCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), modelNumber, specular_unit_index);
-    vec3 normalCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), modelNumber, normals_unit_index);
+    vec3 specularCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, specular_unit_index);
+    vec3 normalCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, normals_unit_index);
     
     gPosition = fs_in.fragPosition;
 
-    vec2 normalsDelta = vec2(unitTable[modelNumber * 3 + normals_unit_index].xDelta, unitTable[modelNumber * 3 + normals_unit_index].yDelta);
+    vec2 normalsDelta = vec2(unitTable[fs_in.modelNumber * 3 + normals_unit_index].xDelta, unitTable[fs_in.modelNumber * 3 + normals_unit_index].yDelta);
     if (normalsDelta != vec2(0.0)) // normal map exists ?
         gNormal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
     else

@@ -165,9 +165,6 @@
     <ClCompile Include="CubemapTexture.cpp">
       <Filter>Source Files\Model\Data\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Source Files\Model\Buffers</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
@@ -289,6 +286,12 @@
       <Filter>Source Files\Model\Resource</Filter>
     </ClCompile>
     <ClCompile Include="UniformBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Batch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -468,6 +471,12 @@
       <Filter>Header Files\Model\Resource</Filter>
     </ClInclude>
     <ClInclude Include="UniformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Batch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

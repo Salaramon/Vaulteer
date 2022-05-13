@@ -28,12 +28,16 @@ public:
 	/* Binding index for VBO -> binding -> VAO API. Implemented as just the VAO buffer ID */
 	GLuint bindIndex() const;
 
+	void setUpAttributes(LocationVector locInfo, LocationVector divisors, size_t structSize, std::string structName);
+
 private:
 	void cleanup();
 	void initialize();
 
-	GLuint VAO;
+	void setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs);
 
-	inline static VertexArray* currentlyBound = nullptr;
+	void bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName);
+
+	GLuint VAO;
 };
 

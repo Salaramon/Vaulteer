@@ -74,10 +74,10 @@ public:
 	};
 
 	ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices);
-	ModelData(std::string modelPath, std::vector<Mesh> meshes);
+	ModelData(std::string modelPath, std::vector<Mesh>& meshVec);
 	ModelData(ModelData&& other) noexcept;
 
-	const std::vector<Mesh>& getMeshes() const;
+	std::vector<Mesh>& getMeshes();
 	const GLint getTextureID() const;
 	const ModelUnitTable& getModelUnitTable() const;
 

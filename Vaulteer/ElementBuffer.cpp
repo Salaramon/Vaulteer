@@ -4,6 +4,13 @@ ElementBuffer::ElementBuffer() {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
 }
 
+ElementBuffer::ElementBuffer(size_t bufferSize, VertexArray& vertexArray) {
+	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
+
+	reserve(bufferSize);
+	bindVertexArray(vertexArray);
+}
+
 ElementBuffer::ElementBuffer(std::vector<Index>& indices) {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
 	insert(indices);
@@ -29,6 +36,10 @@ void ElementBuffer::insert(const std::vector<Index>& indices) {
 void ElementBuffer::insertPartial(size_t position, const std::vector<Index>& indices) {
 	glNamedBufferSubData(buffer, position * sizeof(Index), indices.size() * sizeof(Index), indices.data());
 	debug("Indices inserted into buffer: " + std::to_string(buffer) + "\n");
+}
+
+void ElementBuffer::reserve(size_t bufferSize) {
+	glNamedBufferData(buffer, bufferSize * sizeof(Index), nullptr, GL_DYNAMIC_DRAW);
 }
 
 void ElementBuffer::bindVertexArray(VertexArray& vertexArray) {

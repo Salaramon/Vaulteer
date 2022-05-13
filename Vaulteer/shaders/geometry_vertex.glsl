@@ -4,12 +4,14 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
+layout(location = 5) in int aModelNumber;
 //layout(location = 3) in int materialIndex;
 
 out VS_OUT {
     vec3 fragPosition;
     vec3 fragNormal;
     vec2 TexCoords;
+    flat int modelNumber;
 
     mat3 tbnMat;
 } vs_out;
@@ -28,6 +30,7 @@ void main() {
     vs_out.fragPosition = (modelView * vec4(aPos, 1.0)).xyz;
     vs_out.fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     vs_out.TexCoords = aTexCoords;
+    vs_out.modelNumber = aModelNumber;
        
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
     vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));

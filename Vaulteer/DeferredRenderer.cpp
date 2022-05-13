@@ -9,11 +9,25 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 
 void DeferredRenderer::preload(ResourcePack& pack) {
 	DeferredGeometryTechnique::setModelUnitTables(pack.getAllItems());
+
 }
 
-void DeferredRenderer::render(Scene& scene) {
-	const SceneObjects<Model<ModelData>>& modelVector = scene.getVector<Model<ModelData>>();
-	const SceneObjects<Camera>& cameraVector = scene.getVector<Camera>();
+void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
+	const SceneObjects<Model<ModelData>>& modelVector = staticScene.getVector<Model<ModelData>>();
+	const SceneObjects<Camera>& cameraVector = staticScene.getVector<Camera>();
+
+	if (buildBatch) {
+		for (auto& model : staticScene.getVector<Model<ModelData>>()){
+			batchManager.setTextureID(model->getData()->getTextureID());
+
+			for (auto& mesh : model->getData()->getMeshes()) {
+				batchManager.setVertexFormat(&mesh.vertexArray);
+				batchManager.addToBatch(mesh, model->getModelMatrix());
+			}
+		}
+
+		buildBatch = false;
+	}
 
 	geometryPass(modelVector, cameraVector);
 	lightingPass(modelVector, cameraVector);
@@ -32,17 +46,10 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 	gbuffer.get()->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
-
+	/*
 	for (auto& model : modelVector) {
-		DeferredGeometryTechnique::setModelView(model->getModelMatrix(), viewMatrix);
-
-		// TEST
-		DeferredGeometryTechnique::setModelNumber(model->getData()->getMeshes().size() > 1 ? 0 : 1);
-
 		ModelData* modelData = model->getData();
 		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-
-		glBindTextureUnit(texUnit, modelData->getTextureID());
 
 		for (const Mesh& mesh : modelDataMeshes) {
 			mesh.vertexArray.bind();
@@ -52,6 +59,21 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 			mesh.vertexArray.unbind();
 		}
 	}
+	*/
+
+	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
+
+	batchManager.bind();
+	for (const Batch& batch : batchManager.getBatches()) {
+		GLint texID = batch.textureID;
+		if (currentlyBoundTexture != texID) {
+			glBindTextureUnit(texUnit, 1);
+			currentlyBoundTexture = texID;
+		}
+
+		glDrawElements(GL_TRIANGLES, batch.numIndices, GL_UNSIGNED_INT, 0);
+	}
+	batchManager.unbind();
 
 	gbuffer.get()->unbind();
 }
@@ -97,4 +119,8 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 void DeferredRenderer::reloadShaders() {
 	DeferredGeometryTechnique::reloadShader();
 	DeferredLightingTechnique::reloadShader();
+}
+
+void DeferredRenderer::rebuildBatch() {
+	buildBatch = true;
 }

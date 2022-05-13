@@ -26,6 +26,8 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	}
 
 	numMaterials = materialLibrary.size();
+	numModels++;
+
 	return ModelData(objPath, meshes);
 }
 
@@ -81,6 +83,8 @@ Mesh ResourceLoader::processMesh(const aiScene* scene, aiMesh* mesh) {
 			vertex.aTangent = glm::vec3(0);
 			vertex.aBitangent = glm::vec3(0);
 		}
+
+		vertex.aModelNumber = numModels;
 
 		// random
 		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);

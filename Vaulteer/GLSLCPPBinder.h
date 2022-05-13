@@ -126,15 +126,17 @@ namespace Binder {
 		glm::vec2 aTexCoords;
 		glm::vec3 aTangent;
 		glm::vec3 aBitangent;
-		inline static const std::array<size_t, 5> offsets = {
-			0,12,24,32,44
+		int aModelNumber;
+		inline static const std::array<size_t, 6> offsets = {
+			0,12,24,32,44,56
 		};
-		inline static const std::array<LocationInfo, 5> locations = {
+		inline static const std::array<LocationInfo, 6> locations = {
 			LocationInfo(0, "vec3", "aPos", 0, 12),
 			LocationInfo(1, "vec3", "aNormal", 0, 12),
 			LocationInfo(2, "vec2", "aTexCoords", 0, 8),
 			LocationInfo(3, "vec3", "aTangent", 0, 12),
-			LocationInfo(4, "vec3", "aBitangent", 0, 12)
+			LocationInfo(4, "vec3", "aBitangent", 0, 12),
+			LocationInfo(5, "int", "aModelNumber", 0, 4)
 		};
 	};
 	struct AttributeStructure_lightsource_vertex{
@@ -413,7 +415,6 @@ namespace Binder {
 		};
 		struct uniforms {
 			 inline static Uniform<> textureLib{Uniform<>("sampler2DArray", String("textureLib"), 0, 0)};
-			 inline static Uniform<int> modelNumber{Uniform<int>("int", String("modelNumber"), 0, 4)};
 		};
 		struct buffers {
 			inline static UniformBufferInfo ModelUnitTables{ 1, 120, "ModelUnitTables" };
@@ -428,6 +429,7 @@ namespace Binder {
 			inline static Location<glm::vec2> aTexCoords{Location <glm::vec2>(2, "vec2", "aTexCoords", 0, 8)};
 			inline static Location<glm::vec3> aTangent{Location <glm::vec3>(3, "vec3", "aTangent", 0, 12)};
 			inline static Location<glm::vec3> aBitangent{Location <glm::vec3>(4, "vec3", "aBitangent", 0, 12)};
+			inline static Location<int> aModelNumber{Location <int>(5, "int", "aModelNumber", 0, 4)};
 		};
 		struct uniforms {
 			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};

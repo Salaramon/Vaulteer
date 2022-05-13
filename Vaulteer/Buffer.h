@@ -28,13 +28,13 @@ public:
 		cleanup();
 	}
 
-	void cleanup() {
-		glDeleteBuffers(1, &buffer);
-	}
-
 	void initialize(GLuint target) {
 		glCreateBuffers(1, &buffer);
 		glBindBuffer(target, buffer);
+	}
+
+	void cleanup() {
+		glDeleteBuffers(1, &buffer);
 	}
 
 protected:

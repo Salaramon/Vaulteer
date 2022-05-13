@@ -23,7 +23,7 @@ void ClusteredForwardRenderer::render(Scene& scene) {
 
 	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
-	unsigned int collection_size = work_size.x * work_size.y;
+	auto collection_size = work_size.x * work_size.y;
 	std::vector<float> compute_data(collection_size);
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, compute_data.data());
 
