@@ -227,7 +227,6 @@
     <ClCompile Include="UniformBuffer.cpp" />
     <ClCompile Include="Vaulteer.cpp" />
     <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexHash.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

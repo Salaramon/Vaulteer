@@ -9,7 +9,6 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 
 void DeferredRenderer::preload(ResourcePack& pack) {
 	DeferredGeometryTechnique::setModelUnitTables(pack.getAllItems());
-
 }
 
 void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
@@ -21,7 +20,6 @@ void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
 			batchManager.setTextureID(model->getData()->getTextureID());
 
 			for (auto& mesh : model->getData()->getMeshes()) {
-				batchManager.setVertexFormat(&mesh.vertexArray);
 				batchManager.addToBatch(mesh, model->getModelMatrix());
 			}
 		}
@@ -63,8 +61,8 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 
 	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
 
-	batchManager.bind();
-	for (const Batch& batch : batchManager.getBatches()) {
+	for (Batch& batch : batchManager.getBatches()) {
+		batch.bind();
 		GLint texID = batch.textureID;
 		if (currentlyBoundTexture != texID) {
 			glBindTextureUnit(texUnit, 1);
@@ -72,8 +70,8 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 		}
 
 		glDrawElements(GL_TRIANGLES, batch.numIndices, GL_UNSIGNED_INT, 0);
+		batch.unbind();
 	}
-	batchManager.unbind();
 
 	gbuffer.get()->unbind();
 }
@@ -108,10 +106,10 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 	glBindTextureUnit(texId, gbuffer->textures[texId]);
 	DeferredLightingTechnique::shader->setUniform(fragUnis::gColor, texId++);
 
-	const Mesh& quadMesh = quad->getMeshes().front();
-	quadMesh.vertexArray.bind();
+	Mesh& quadMesh = quad->getMeshes().front();
+	quadMesh.bind();
 	glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, 0);
-	quadMesh.vertexArray.unbind();
+	quadMesh.unbind();
 
 	gbuffer.get()->unbind();
 }

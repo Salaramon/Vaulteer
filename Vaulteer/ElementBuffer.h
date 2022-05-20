@@ -13,11 +13,13 @@ class ElementBuffer : public Buffer<BufferType::ElementBuffer>, public DebugLogg
 public:
 	ElementBuffer();
 
-	ElementBuffer(size_t bufferSize, VertexArray& vertexArray);
+	ElementBuffer(size_t bufferSize);
+
+	ElementBuffer(size_t bufferSize, GLuint vao);
 
 	ElementBuffer(std::vector<Index>& indices);
 
-	ElementBuffer(std::vector<Index>& indices, VertexArray& vertexArray);
+	ElementBuffer(std::vector<Index>& indices, GLuint vao);
 
 	ElementBuffer(ElementBuffer&& other) noexcept;
 
@@ -27,7 +29,7 @@ public:
 
 	void reserve(size_t bufferSize);
 
-	void bindVertexArray(VertexArray& vertexArray);
+	void bindVertexArray(GLuint vao);
 };
 
 

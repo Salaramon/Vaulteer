@@ -8,20 +8,29 @@
 template<class Store>
 class VertexBuffer : public Buffer<BufferType::ArrayBuffer>, public DebugLogger<VertexBuffer<void>> {
 public:
+	// init single vertexarray for each Store used with VertexBuffer
+	//VertexArray<Store>* vao = new VertexArray<Store>();
+	static VertexArray<Store>& getVAO() {
+		static VertexArray<Store> vao;
+		return vao;
+	}
+
+	operator GLuint() const { return buffer; }
+
 	VertexBuffer();
+
+	//VertexBuffer(std::vector<Store>& vertices);
+
+	VertexBuffer(size_t bufferSize);
 
 	VertexBuffer(std::vector<Store>& vertices);
 
-	VertexBuffer(size_t bufferSize, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
-
-	VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
-
 	//VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
+
+	VertexBuffer(VertexBuffer& other) noexcept = delete;
 
 	VertexBuffer(VertexBuffer&& other) noexcept;
 
-
-	void bindVertexArray(VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
 
 	void insert(const std::vector<Store>& vertices);
 
@@ -29,8 +38,8 @@ public:
 
 	void reserve(const size_t bufferSize);
 
-private:
-
+//private:
+	void bindVertexArray();
 };
 
 
@@ -38,41 +47,40 @@ template<class Store>
 VertexBuffer<Store>::VertexBuffer() {}
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
-	debug("VertexBuffer created. Buffer: " + std::to_string(buffer) + "\n");
-
-	insert(vertices);
-}
-
-template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(size_t bufferSize, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors) {
+inline VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 	debug("VertexBuffer created with size " + std::to_string(bufferSize) + ".Buffer: " + std::to_string(buffer) + "\n");
 
 	reserve(bufferSize);
-	bindVertexArray(vertexArray, locInfo, divisors);
+	bindVertexArray();
+
+	VertexArray<Store>& vao = getVAO();
+	vao.setUpAttributes(Store::locInfo, Store::locDivisors, sizeof(Store), typeid(Store).name());
 }
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors) {
+inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
 	debug("VertexBuffer destroyed. Buffer: " + std::to_string(buffer) + "\n");
 
 	insert(vertices);
-	bindVertexArray(vertexArray, locInfo, divisors);
+	bindVertexArray();
+
+	VertexArray<Store>& vao = getVAO();
+	vao.setUpAttributes(Store::locInfo, Store::locDivisors, sizeof(Store), typeid(Store).name());
 }
 
 
 template<class Store>
 inline VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
 	Buffer(std::move(other)) {
+	//other.vao = nullptr;
 	debug("VertexBuffer moved. Buffer: " + std::to_string(buffer) + "\n");
 }
 
 
 template<class Store>
-void VertexBuffer<Store>::bindVertexArray(VertexArray& vao, LocationVector locInfo, LocationVector divisors) {
-	//Make a class that can be inherited into a vertex class which then can be used to create vertex classes and the code below becomes more type safe.
+void VertexBuffer<Store>::bindVertexArray() {
+	VertexArray<Store>& vao = getVAO();
 	glVertexArrayVertexBuffer(vao, vao.bindIndex(), buffer, 0, sizeof(Store));
-	vao.setUpAttributes(locInfo, divisors, sizeof(Store), typeid(Store).name());
 }
 
 template<class Store>

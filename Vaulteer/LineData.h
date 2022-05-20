@@ -54,24 +54,19 @@ public:
 	std::vector<Point> points;
 	Indices indices;
 
-	VertexArray vertexArray;
 	VertexBuffer<Point> vertexBuffer;
 	ElementBuffer elementBuffer;
 
 	glm::vec4 color;
 	size_t pointCount;
-
-	inline static LocationVector locInfo = {
-		Binder::geometry_vertex::locations::aPos
-	};
 };
 
 template<class... Args>
 requires (std::conjunction_v<std::is_same<glm::vec3, Args>...> && sizeof...(Args) % 2 == 0)
 inline LineData::LineData(glm::vec3 first, Args... args) :
 	//vertexArray(),
-	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... }), locInfo),
+	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... })),
 	color(1, 1, 1, 1),
 	pointCount(sizeof...(Args) + 1),
-	elementBuffer(indices, vertexBuffer) 
+	elementBuffer(indices, vertexBuffer.getVAO())
 {};

@@ -4,11 +4,18 @@ ElementBuffer::ElementBuffer() {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
 }
 
-ElementBuffer::ElementBuffer(size_t bufferSize, VertexArray& vertexArray) {
+ElementBuffer::ElementBuffer(size_t bufferSize) {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
 
 	reserve(bufferSize);
-	bindVertexArray(vertexArray);
+}
+
+
+ElementBuffer::ElementBuffer(size_t bufferSize, GLuint vao) {
+	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
+
+	reserve(bufferSize);
+	bindVertexArray(vao);
 }
 
 ElementBuffer::ElementBuffer(std::vector<Index>& indices) {
@@ -16,10 +23,10 @@ ElementBuffer::ElementBuffer(std::vector<Index>& indices) {
 	insert(indices);
 }
 
-ElementBuffer::ElementBuffer(std::vector<Index>& indices, VertexArray& vertexArray) {
+ElementBuffer::ElementBuffer(std::vector<Index>& indices, GLuint vao) {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");
 	insert(indices);
-	bindVertexArray(vertexArray);
+	bindVertexArray(vao);
 }
 
 ElementBuffer::ElementBuffer(ElementBuffer&& other) noexcept :
@@ -39,10 +46,10 @@ void ElementBuffer::insertPartial(size_t position, const std::vector<Index>& ind
 }
 
 void ElementBuffer::reserve(size_t bufferSize) {
-	glNamedBufferData(buffer, bufferSize * sizeof(Index), nullptr, GL_DYNAMIC_DRAW);
+	glNamedBufferStorage(buffer, bufferSize * sizeof(Index), nullptr, GL_DYNAMIC_STORAGE_BIT);
 }
 
-void ElementBuffer::bindVertexArray(VertexArray& vertexArray) {
-	glVertexArrayElementBuffer(vertexArray, buffer);
-	debug("Bound to VertexArray: " + std::to_string(vertexArray.getObjectKey()) + "\n", "glVertexArrayElementBuffer");
+void ElementBuffer::bindVertexArray(GLuint vao) {
+	glVertexArrayElementBuffer(vao, buffer);
+	debug("Bound to VertexArray: " + std::to_string(vao) + " -- buf " + std::to_string(buffer), "glVertexArrayElementBuffer");
 }

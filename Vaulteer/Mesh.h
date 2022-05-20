@@ -17,37 +17,47 @@ public:
 		vertices(vertices),
 		indices(indices),
 		material({}),
-		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
-		indexBuffer(indices, vertexArray) {
+		vertexBuffer(vertices),
+		indexBuffer(indices, vertexBuffer.getVAO()) {
 		debug("Mesh created.\n");
 	}
 	Mesh(Vertices vertices, Indices indices, Material material) :
 		vertices(vertices),
 		indices(indices),
 		material(material),
-		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
-		indexBuffer(indices, vertexArray) {
+		vertexBuffer(vertices),
+		indexBuffer(indices, vertexBuffer.getVAO()) {
 		debug("Mesh created.\n");
 	}
 	Mesh(const Mesh& other) noexcept :
 		vertices(other.vertices),
 		indices(other.indices),
 		material(other.material),
-		vertexBuffer(vertices, vertexArray, Vertex::locInfo),
-		indexBuffer(indices, vertexArray) {
+		vertexBuffer(vertices),
+		indexBuffer(indices, vertexBuffer.getVAO()) {
 		debug("Mesh copied.\n");
 	}
 	Mesh(Mesh&& other) noexcept : 
 		vertices(std::move(other.vertices)),
 		indices(std::move(other.indices)),
 		material(std::move(other.material)),
-		vertexArray(std::move(other.vertexArray)),
 		vertexBuffer(std::move(other.vertexBuffer)),
 		indexBuffer(std::move(other.indexBuffer)) {
 		debug("Mesh moved.\n");
 	}
 	~Mesh() {
 		debug("Mesh destroyed.\n");
+	}
+
+	void bind() {
+		vertexBuffer.bindVertexArray();
+		indexBuffer.bindVertexArray(VertexBuffer<Vertex>::getVAO());
+
+		vertexBuffer.getVAO().bind();
+	}
+
+	void unbind() {
+		vertexBuffer.getVAO().unbind();
 	}
 
 	void makeInstanced(VertexBuffer<glm::mat4>& instanceBuffer) {
@@ -63,8 +73,6 @@ public:
 
 	Vertices vertices;
 	Indices indices;
-
-	VertexArray vertexArray;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	ElementBuffer indexBuffer;

@@ -7,7 +7,7 @@
 
 class Batch {
 public:
-	Batch(VertexArray& vertexArray, GLint textureID, size_t vertexBufferSize, size_t indexBufferSize);
+	Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize);
 	~Batch();
 
 	bool add(const Mesh& mesh, glm::mat4 modelMat);
@@ -18,9 +18,10 @@ public:
 	size_t numIndices = 0;
 	GLint textureID;
 
-private:
-	VertexArray& vertexArray;
+	void bind();
+	void unbind();
 
+private:
 	VertexBuffer<Vertex> vertexBuffer;
 	ElementBuffer indexBuffer;
 

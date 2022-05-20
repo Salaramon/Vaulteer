@@ -252,9 +252,6 @@
     <ClCompile Include="Point.cpp">
       <Filter>Source Files\Deprecated</Filter>
     </ClCompile>
-    <ClCompile Include="VertexArray.cpp">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClCompile>
     <ClCompile Include="VertexHash.cpp">
       <Filter>Source Files\Model\Structures</Filter>
     </ClCompile>

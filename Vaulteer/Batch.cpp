@@ -1,12 +1,9 @@
 #include "Batch.h"
 
-Batch::Batch(VertexArray& vertexArray, GLint textureID, size_t vertexBufferSize, size_t indexBufferSize) :
+Batch::Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize) :
 	textureID(textureID), vertexBufferSize(vertexBufferSize), indexBufferSize(indexBufferSize),
-	vertexArray(vertexArray),
-	vertexBuffer(vertexBufferSize, vertexArray, Vertex::locInfo), 
-	indexBuffer(indexBufferSize, vertexArray) {
-
-	vertexBuffer.bindVertexArray(vertexArray, Vertex::locInfo, Vertex::locDivisors);
+	vertexBuffer(vertexBufferSize), 
+	indexBuffer(indexBufferSize, vertexBuffer.getVAO()) {
 	std::cout << "Batch created with size " << vertexBufferSize << "/" << indexBufferSize << "." << std::endl;
 }
 
@@ -45,4 +42,15 @@ void Batch::clear() {
 	indexBuffer.reserve(numIndices);
 	numVertices = 0;
 	numIndices = 0;
+}
+
+void Batch::bind() {
+	vertexBuffer.bindVertexArray();
+	indexBuffer.bindVertexArray(VertexBuffer<Vertex>::getVAO());
+
+	vertexBuffer.getVAO().bind();
+}
+
+void Batch::unbind() {
+	vertexBuffer.getVAO().unbind();
 }

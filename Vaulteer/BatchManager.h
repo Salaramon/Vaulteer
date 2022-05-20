@@ -9,19 +9,14 @@ public:
 
 	BatchManager() {};
 
-	void setVertexFormat(VertexArray* vertexArray);
 	void setTextureID(GLint textureID);
 
 	void addToBatch(const Mesh& model, glm::mat4 modelMat);
 
 	std::vector<std::reference_wrapper<Batch>> getBatches();
 
-	void bind();
-	void unbind();
-
 private:
 	std::vector<std::unique_ptr<Batch>> batches;
 
-	VertexArray* vertexArray = nullptr;
 	GLint textureID = 0;
 };
