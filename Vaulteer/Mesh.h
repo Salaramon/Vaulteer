@@ -16,7 +16,6 @@ public:
 	Mesh(Vertices vertices, Indices indices) :
 		vertices(vertices),
 		indices(indices),
-		material({}),
 		vertexBuffer(vertices),
 		indexBuffer(indices, vertexBuffer.getVAO()) {
 		debug("Mesh created.\n");

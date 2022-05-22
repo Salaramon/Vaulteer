@@ -15,7 +15,7 @@ class ResourceLoader {
 public:
 	ModelData importModel(std::string objPath, int importFlags = -1);
 
-	std::vector<Material>& getMaterialLibrary();
+	std::unordered_map<std::string, Material>& getMaterialLibrary();
 
 private:
 	//void processNode(std::vector<Mesh>& meshes, std::vector<Material>& materials, const aiScene* scene, aiNode* node);
@@ -24,12 +24,11 @@ private:
 	//Mesh processMesh(std::vector<Material>& materials, const aiScene* scene, aiMesh* mesh);
 	Mesh processMesh(const aiScene* scene, aiMesh* mesh);
 
-	Material createMaterial(std::string folderPath, aiMaterial* material);
-
 	glm::vec3 ai_glmVec(aiVector3D aiVec);
 
 
-	std::vector<Material> materialLibrary;
+	std::vector<std::string> materialKeysByIndex;
+	std::unordered_map<std::string, Material> materialLibrary;
 	int numMaterials = 0;
 
 	int numModels = 1;

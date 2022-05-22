@@ -7,9 +7,9 @@ Game::Game(Window& window) :
 
 void Game::loadResources() {
 	std::vector<ModelResourceLocator> locators = { 
-		{ "backpack", "backpack/backpack.obj" },
 		{ "crate", "crate/crate1.obj" },
-		//{ "quad", "quad.obj" },
+		//{ "backpack", "backpack/backpack.obj" },
+		{ "teapot", "backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace },
 	};
 	resourceManager.createPack(locators);
 
@@ -94,7 +94,7 @@ size_t Game::run()
 	
 	ResourcePack& pack = resourceManager.getPack(0);
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
-	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("backpack"));
+	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("teapot"));
 
 	renderer.preload(pack);
 
@@ -105,12 +105,13 @@ size_t Game::run()
 	objects.back()->setPosition(0, 5, 0);
 
 	//Generate floor
-	intmax_t width = 128;
+	intmax_t width = 16;
 	intmax_t height = width;
 	for (intmax_t i = -(width/2); i < width; i++) {
 		for (intmax_t j = -(height/2); j < height; j++) {
 			objects.push_back(scene.addObject(std::move(crate)));
 			objects.back()->setPosition(2*i, rand() % 4, 2 * j);
+			//objects.back()->setScale(0.4, 0.4, 0.4);
 		}
 	}
 

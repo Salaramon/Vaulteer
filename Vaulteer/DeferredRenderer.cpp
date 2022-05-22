@@ -27,37 +27,20 @@ void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
 		buildBatch = false;
 	}
 
-	geometryPass(modelVector, cameraVector);
-	lightingPass(modelVector, cameraVector);
+	geometryPass(modelVector, cameraVector.front().get());
+	lightingPass(modelVector, cameraVector.front().get());
 }
 
-void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelVector, const SceneObjects<Camera>& cameraVector) {
+void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
 	DeferredGeometryTechnique::shader->use();
-	Camera* camera = cameraVector.front().get();
-
 	DeferredGeometryTechnique::setProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
-
+	
 	GLint texUnit = 0;
 	DeferredGeometryTechnique::setTextureUnit(texUnit);
 	
 	gbuffer.get()->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
-
-	/*
-	for (auto& model : modelVector) {
-		ModelData* modelData = model->getData();
-		const std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-
-		for (const Mesh& mesh : modelDataMeshes) {
-			mesh.vertexArray.bind();
-			//glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0, instances.size());
-			//debug("Drawing mesh: " + std::to_string(mesh.getObjectKey()) + "\n", "glDrawElements");
-			glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
-			mesh.vertexArray.unbind();
-		}
-	}
-	*/
 
 	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
 
@@ -76,11 +59,9 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 	gbuffer.get()->unbind();
 }
 
-void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelVector, const SceneObjects<Camera>& cameraVector) {
+void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
 
 	DeferredLightingTechnique::shader->use();
-	Camera* camera = cameraVector.front().get();
-
 	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 	
 	DirectionalLight dirLight = { glm::vec3(1.0f), 0.03f, 1.0f, lightDir }; // TODO get from scene :3

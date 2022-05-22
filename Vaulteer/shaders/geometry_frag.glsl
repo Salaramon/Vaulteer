@@ -53,6 +53,6 @@ void main() {
     else
         gNormal = fs_in.tbnMat[2];
 
-    //gColor = vec4(1.0);
+    //gColor = vec4(gNormal, 1.0);
     gColor = vec4(texture(textureLib, diffuseCoords).rgb, texture(textureLib, specularCoords).r);
 }

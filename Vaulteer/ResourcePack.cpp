@@ -17,16 +17,18 @@ void ResourcePack::finalize() {
 
 	// import all models
 	for (const auto& resource : modelLocatorsByName) {
-		resourcesByName[resource.first] = std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
+		resourcesByName[resource.first] = 
+			std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
 	}
 
 	// find all locators
 	std::vector<Texture2DArray::TextureResourceLocator> allLocators;
-	for (const auto& materials : loader.getMaterialLibrary())
-		for (const auto& materialEntries : materials)
-			allLocators.push_back(materialEntries.second);
+	for (const auto& materialEntries : loader.getMaterialLibrary())
+		for (const auto& locatorsForMaterials : materialEntries.second.textureTypeLocators)
+			allLocators.push_back(locatorsForMaterials.second);
 
 	// create packed texture
+	// TODO: eats memory when loading backpack/models with large textures because it loads everything at once
 	textureLibrary = std::make_unique<PackedTexture2DArray>(allLocators);
 	
 	// update all models' units

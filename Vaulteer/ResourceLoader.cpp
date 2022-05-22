@@ -15,9 +15,13 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	size_t index = objPath.find_last_of("/");
 	std::string folderPath = index != std::string::npos ? objPath.substr(0, index) + "/" : ".";
 
+	std::vector<Material> meshMaterials;
 	for (int i = 0; i < scene->mNumMaterials; i++) {
-		aiMaterial* material = scene->mMaterials[i];
-		materialLibrary.push_back(createMaterial(folderPath, material));
+		aiMaterial* aiMaterial = scene->mMaterials[i];
+		Material mat(aiMaterial, folderPath);
+
+		materialKeysByIndex.push_back(mat.name);
+		materialLibrary[mat.name] = std::move(mat);
 	}
 
 	std::vector<Mesh> meshes;
@@ -31,7 +35,7 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	return ModelData(objPath, meshes);
 }
 
-std::vector<Material>& ResourceLoader::getMaterialLibrary() {
+std::unordered_map<std::string, Material>& ResourceLoader::getMaterialLibrary() {
 	return materialLibrary;
 }
 
@@ -101,22 +105,7 @@ Mesh ResourceLoader::processMesh(const aiScene* scene, aiMesh* mesh) {
 		}
 	}
 
-	return Mesh(vertices, indices, materialLibrary.at(numMaterials + mesh->mMaterialIndex));
-}
-
-Material ResourceLoader::createMaterial(std::string folderPath, aiMaterial* material) {
-	Material created;
-	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
-		aiTextureType type = static_cast<aiTextureType>(i);
-
-		for (size_t j = 0; j < material->GetTextureCount(type); j++) {
-			aiString string;
-			material->GetTexture(type, j, &string);
-			Texture2DArray::TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
-			created[type] = loc;
-		}
-	}
-	return std::move(created);
+	return Mesh(vertices, indices, materialLibrary[materialKeysByIndex.at(numMaterials + mesh->mMaterialIndex)]);
 }
 
 glm::vec3 ResourceLoader::ai_glmVec(aiVector3D aiVec) {

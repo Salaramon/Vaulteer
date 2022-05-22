@@ -39,7 +39,11 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 	this->textureID = texture.getTextureID();
 
 	for (auto& mesh : meshes) {
-		auto locator = mesh.material.at(aiTextureType_DIFFUSE);
+		auto& locators = mesh.material.textureTypeLocators;
+		if (locators.size() == 0)
+			continue;
+
+		auto& locator = locators.at(aiTextureType_DIFFUSE);
 		Texture2DArray::TextureUnit diffuseUnit = texture.getUnit(locator.path);
 
 		// map vertices' texture coordinates to diffuse texture unit in packed library
@@ -50,7 +54,7 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 		mesh.updateBuffer();
 
 		// set material units to relative units for every material but diffuse
-		for (const auto& entry : mesh.material) {
+		for (const auto& entry : locators) {
 			if (entry.first == aiTextureType_DIFFUSE) { 
 				unitByTexturePath[locator.path] = diffuseUnit;
 				modelUnitTable.setUnit(aiTextureType_DIFFUSE, diffuseUnit);

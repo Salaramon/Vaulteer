@@ -21,8 +21,8 @@ public:
 	//void render(Scene& scene); we'll fix this later
 	void render(Scene& staticScene, Scene& dynamicScene);
 
-	void geometryPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector);
-	void lightingPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, const SceneObjects<typename Camera>& cameraDataVector);
+	void geometryPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, Camera* camera);
+	void lightingPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, Camera* camera);
 
 	void reloadShaders();
 	void rebuildBatch();
