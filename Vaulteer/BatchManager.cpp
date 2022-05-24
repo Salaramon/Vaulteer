@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "BatchManager.h"
 
 void BatchManager::setTextureID(GLint textureID) {

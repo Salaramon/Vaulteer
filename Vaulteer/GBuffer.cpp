@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "GBuffer.h"
 
 
@@ -21,10 +22,10 @@ bool GBuffer::init()
     glGenTextures(NumTextures, textures);
     glGenTextures(1, &depthTexture);
 
-    initTexture(textures[Position], GL_RGBA16F, GL_RGBA, GL_FLOAT);
-    initTexture(textures[Normal], GL_RGBA16F, GL_RGBA, GL_FLOAT);
-    initTexture(textures[Color], GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE); // TODO intention is to combine color and specular data into single texture here - specular(last byte) currently not implemented
-    initTexture(depthTexture, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
+    initTexture(textures[Position],        GL_RGBA16F, GL_RGBA, GL_FLOAT);
+    initTexture(textures[Normal_Material], GL_RGBA16F, GL_RGBA, GL_FLOAT);
+    initTexture(textures[Color_Specular],  GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+    initTexture(depthTexture,              GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 
     GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(NumTextures, DrawBuffers);
@@ -42,8 +43,7 @@ bool GBuffer::init()
     return true;
 }
 
-void GBuffer::initTexture(GLuint texture, GLenum internalFormat, GLenum format, GLenum type)
-{
+void GBuffer::initTexture(GLuint texture, GLenum internalFormat, GLenum format, GLenum type) {
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, windowWidth, windowHeight, 0, format, type, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

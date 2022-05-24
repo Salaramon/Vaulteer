@@ -31,5 +31,5 @@ private:
 	std::unordered_map<std::string, Material> materialLibrary;
 	int numMaterials = 0;
 
-	int numModels = 1;
+	int numModels = 0;
 };

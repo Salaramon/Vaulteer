@@ -113,6 +113,7 @@ public:
 
 	static void reloadShader() {
 		shader = std::make_unique<Shader>(initializeShader());
+		//shader->populateUniformCache();
 	}
 };
 

@@ -58,7 +58,7 @@ public:
 		Parameter_Reader<Infos...> reader(this, infos...);
 
 		if (!shaderProgram_link())
-			populateUniformCache(shaderProgramID);
+			populateUniformCache();
 	};
 
 	Shader(const Shader& other) = delete;
@@ -85,7 +85,7 @@ public:
 
 	void loadShader(std::string path, GLenum type);
 
-	void populateUniformCache(GLint shaderID);
+	void populateUniformCache();
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
@@ -165,7 +165,13 @@ private:
 			|			VARIABLES			|
 			|_______________________________|	*/
 
-	std::unordered_map<std::string, GLint> uniformLocationCache;
+	// shader is required for setting default values on lookup where uniforms get optimized away
+	struct ShaderLocation {
+		GLint loc = -1;
+		operator GLint() { return loc; }
+	};
+
+	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;
 
 	struct UniformFunctor : public DebugLogger<Shader> {
 	public:
@@ -214,7 +220,7 @@ private:
 			glUniform2fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec3& value) const {
-			glUniform3fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+			glUniform3fv(shader->uniformLocationCache[uniform.name], count, &value[0]); 
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec4& value) const {
 			glUniform4fv(shader->uniformLocationCache[uniform.name], count, &value[0]);

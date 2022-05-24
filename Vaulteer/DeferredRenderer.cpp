@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "DeferredRenderer.h"
 
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
@@ -8,7 +9,10 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {
-	DeferredGeometryTechnique::setModelUnitTables(pack.getAllItems());
+	auto& modelVector = pack.getAllResources();
+
+	DeferredGeometryTechnique::uploadModelUnitTables(modelVector);
+	DeferredLightingTechnique::uploadMaterialData(modelVector);
 }
 
 void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
@@ -71,10 +75,10 @@ void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelV
 	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
 	DeferredLightingTechnique::setDirectionalLight(dirLight);
 
-	DeferredLightingTechnique::setMaterialSpecularIntensity(1.0f); // TODO - ah the classic deferred shading material lookup circumvented
-	DeferredLightingTechnique::setMaterialShininess(32.0f);         // in the cleanest possible way
+	//DeferredLightingTechnique::setMaterialSpecularIntensity(1.0f); // TODO - ah the classic deferred shading material lookup circumvented
+	//DeferredLightingTechnique::setMaterialShininess(32.0f);         // in the cleanest possible way
 
-	DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
+	//DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
 
 
 	gbuffer.get()->bindForReading();

@@ -1,4 +1,4 @@
-
+#include "vpch.h"
 #include "ResourceManager.h"
 
 ResourcePack& ResourceManager::createPack(std::vector<ModelResourceLocator> resources) {

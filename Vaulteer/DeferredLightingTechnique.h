@@ -1,10 +1,12 @@
 #pragma once
+
 #include "ShaderProgram.h"
+#include "UniformBuffer.h"
+
 #include "LightTypes.h"
+#include "Material.h"
 
- class DeferredLightingTechnique : public ShaderProgram<DeferredShader>
-{
-
+class DeferredLightingTechnique : public ShaderProgram<DeferredShader> {
 public:
 	using fragUnis = Binder::deferred_frag::uniforms;
 	void init();
@@ -22,8 +24,9 @@ public:
 
 	void setFogColor(const glm::vec3& color);
 
+	// uniform buffer upload
+	void uploadMaterialData(const std::vector<ModelData*>& modelVector);
 
-
-private:
+	UniformBuffer materialData = UniformBuffer(Binder::deferred_frag::buffers::MaterialData);
 };
 

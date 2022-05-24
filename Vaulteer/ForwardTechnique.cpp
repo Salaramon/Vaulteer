@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ForwardTechnique.h"
 
 void ForwardTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {

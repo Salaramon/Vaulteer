@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "LineData.h"
 
 LineData::LineData(std::vector<Point> lines) : 

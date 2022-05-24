@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "Texture.h"
 
 Texture::Texture() {}

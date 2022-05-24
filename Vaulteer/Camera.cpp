@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "Camera.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio) :

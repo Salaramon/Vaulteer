@@ -1,4 +1,5 @@
-﻿
+﻿#include "vpch.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <iostream>
@@ -31,10 +32,10 @@ void initializeOpenGL() {
 	OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	//OpenGL::enableSRGB();
-	//OpenGL::enableDirectDebugMessageing();
+	OpenGL::enableDirectDebugMessageing();
 }
 
-void cleanup() {
+void cleanup() { 
 	glfwTerminate();
 }
 

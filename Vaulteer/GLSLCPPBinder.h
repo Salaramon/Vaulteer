@@ -298,6 +298,24 @@ namespace Binder {
 		Uniform<float> angle;
 	};
 
+	struct Material{
+		Material(String name) :
+			colorAmbient{ Uniform<glm::vec4>("vec4", String(name + "." + "colorAmbient"), 0, 16) },
+			colorDiffuse{ Uniform<glm::vec4>("vec4", String(name + "." + "colorDiffuse"), 0, 16) },
+			colorSpecular{ Uniform<glm::vec4>("vec4", String(name + "." + "colorSpecular"), 0, 16) },
+			shininess{ Uniform<float>("float", String(name + "." + "shininess"), 0, 4) },
+			opacity{ Uniform<float>("float", String(name + "." + "opacity"), 0, 4) }
+		{}
+
+		inline static const size_t size = 56;
+
+		Uniform<glm::vec4> colorAmbient;
+		Uniform<glm::vec4> colorDiffuse;
+		Uniform<glm::vec4> colorSpecular;
+		Uniform<float> shininess;
+		Uniform<float> opacity;
+	};
+
 	struct ModelUnitData{
 		ModelUnitData(String name) :
 			xDelta{ Uniform<int>("int", String(name + "." + "xDelta"), 0, 4) },
@@ -358,6 +376,10 @@ namespace Binder {
 			 inline static Uniform<float> materialShininess{Uniform<float>("float", String("materialShininess"), 0, 4)};
 			 inline static Uniform<glm::vec3> fogColor{Uniform<glm::vec3>("vec3", String("fogColor"), 0, 12)};
 		};
+		struct buffers {
+			inline static UniformBufferInfo MaterialData{ 2, 336, "MaterialData" };
+		};
+
 	};
 
 	struct deferred_vertex {

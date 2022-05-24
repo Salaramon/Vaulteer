@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ClusteredForwardRenderer.h"
 
 ClusteredForwardRenderer::ClusteredForwardRenderer() : computedTilingTex(1280, 720) {

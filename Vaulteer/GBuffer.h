@@ -8,9 +8,9 @@ class GBuffer
 public:
 
     enum GBufferTextureType {
-        Position,
-        Normal,
-        Color,
+        Position,               // position, vec3
+        Normal_Material,        // normal, vec3   + material index, int
+        Color_Specular,         // diffuse, vec3  + specular, float
         NumTextures
     };
 

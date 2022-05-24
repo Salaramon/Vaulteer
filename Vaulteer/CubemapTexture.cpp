@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "CubemapTexture.h"
 
 CubemapTexture::CubemapTexture(std::array<std::string, 6> const& paths, bool mipmapEnabled,

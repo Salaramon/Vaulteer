@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "Shader.h"
 
 void Shader::use() {
@@ -18,7 +19,9 @@ void Shader::loadShader(std::string path, GLenum type) {
 	shaderProgram_addShader(shaderIDs.back());
 }
 
-void Shader::populateUniformCache(GLint shaderID) {
+void Shader::populateUniformCache() {
+	uniformLocationCache.clear();
+
 	GLint uniformCount = 0;
 	glGetProgramiv(shaderProgramID, GL_ACTIVE_UNIFORMS, &uniformCount);
 

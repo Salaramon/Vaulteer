@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ShadowCascade.h"
 
 ShadowCascade::ShadowCascade(float zNear, float zFar) :

@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ResourceLoader.h"
 
 ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {

@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "Event.h"
 
 std::future<void> Event::catchEvents;

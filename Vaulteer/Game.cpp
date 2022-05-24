@@ -1,15 +1,14 @@
+#include "vpch.h"
 #include "Game.h"
 
-Game::Game(Window& window) : 
-	window(&window)
-{
-}
+Game::Game(Window& window) :
+	window(&window) {}
 
 void Game::loadResources() {
-	std::vector<ModelResourceLocator> locators = { 
+	std::vector<ModelResourceLocator> locators = {
 		{ "crate", "crate/crate1.obj" },
 		//{ "backpack", "backpack/backpack.obj" },
-		{ "teapot", "backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace },
+		{ "teapot", "backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};
 	resourceManager.createPack(locators);
 
@@ -19,29 +18,29 @@ void Game::loadResources() {
 		glm::vec3(5, 5, 5), glm::vec3(10, 10, 5),
 		glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
 
-		glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), 
+		glm::vec3(5, 5, 5), glm::vec3(5, 5, 10),
 		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
 		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 	)));
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
 		1, 1,
 		std::vector<glm::vec4>({
-			glm::vec4(0,0,1,1) 
+			glm::vec4(0,0,1,1)
 		}),
-		std::vector<Vertex>({ 
+		std::vector<Vertex>({
 			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
-			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10) 
+			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 		}
 	))));
 
 	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos2", std::make_unique<ModelData>(
 		1, 1,
 		std::vector<glm::vec4>({
-			glm::vec4(1, 1, 1, 1) 
-		}), 
+			glm::vec4(1, 1, 1, 1)
+		}),
 		std::vector<Vertex>({
 			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
-			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10) 
+			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
 	}))));
 
 	std::vector<Point> spherePoints;
@@ -62,11 +61,10 @@ void Game::loadResources() {
 		spherePoints
 	)));
 	*/
-	
+
 }
 
-size_t Game::run()
-{
+size_t Game::run() {
 	//glEnable(GL_LINE_SMOOTH);
 
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -79,7 +77,7 @@ size_t Game::run()
 	DebugLogger<>::setClassAccessLimit("Shader", 10);
 	DebugLogger<>::printClass("Shader");
 	DebugLogger<>::disableLogging();
-	
+
 	//Scenes
 	Renderer<DeferredRenderer>::Scene scene;
 	Renderer<DeferredRenderer>::Scene dynamicScene;
@@ -91,7 +89,7 @@ size_t Game::run()
 
 	//Set up render passe(s) for each render strata.
 	// none
-	
+
 	ResourcePack& pack = resourceManager.getPack(0);
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
 	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("teapot"));
@@ -107,10 +105,10 @@ size_t Game::run()
 	//Generate floor
 	intmax_t width = 16;
 	intmax_t height = width;
-	for (intmax_t i = -(width/2); i < width; i++) {
-		for (intmax_t j = -(height/2); j < height; j++) {
+	for (intmax_t i = -(width / 2); i < width; i++) {
+		for (intmax_t j = -(height / 2); j < height; j++) {
 			objects.push_back(scene.addObject(std::move(crate)));
-			objects.back()->setPosition(2*i, rand() % 4, 2 * j);
+			objects.back()->setPosition(2 * i, rand() % 4, 2 * j);
 			//objects.back()->setScale(0.4, 0.4, 0.4);
 		}
 	}
@@ -145,7 +143,7 @@ size_t Game::run()
 		float sens = 0.155f;
 		float speed = 20.0f;
 
-		
+
 		camera->rotate(Event::CURSOR::X.delta() * sens / 1.35, Event::CURSOR::Y.delta() * sens, 0);
 		if (Event::KEY::SPACE >> Event::STATE::DOWN) {
 			camera->move(worldUp * (float)Event::delta() * speed);
@@ -187,8 +185,8 @@ size_t Game::run()
 
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		
+
+
 		renderer.render(scene, dynamicScene);
 
 		glfwSwapBuffers(window->getRawWindow());
@@ -199,7 +197,7 @@ size_t Game::run()
 	//DebugLogger<>::setDefaultClassMessageLimit(0);
 	//DebugLogger<>::setClassMessageLimit("FUNCTION", 99999);
 	//DebugLogger<>::setMessageNameMessageLimit(ObjectAlias::OpenGLMessage, 99999);
-	
+
 
 	//DebugLogger<>::setDefaultClassMessageLimit(0);
 	//DebugLogger<>::setClassMessageLimit("Shader", 99999);
@@ -209,7 +207,6 @@ size_t Game::run()
 	return 0;
 }
 
-void Game::setWindow(Window& window)
-{
+void Game::setWindow(Window& window) {
 	Game::window = &window;
 }

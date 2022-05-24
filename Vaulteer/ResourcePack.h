@@ -25,7 +25,7 @@ public:
 	GLint getTextureLibraryId();
 
 	ModelData* getModelByName(std::string modelName);
-	const std::vector<ModelData*> getAllItems();
+	const std::vector<ModelData*>& getAllResources();
 
 private:
 	ResourceLoader& loader;
@@ -36,4 +36,5 @@ private:
 
 	std::unordered_map<std::string, ModelResourceLocator> modelLocatorsByName;
 	std::unordered_map<std::string, std::unique_ptr<ModelData>> resourcesByName;
+	std::vector<ModelData*> resourceViews;
 };

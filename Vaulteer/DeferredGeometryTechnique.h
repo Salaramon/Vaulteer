@@ -17,9 +17,10 @@ public:
 
 	void setTextureUnit(const GLint& texture);
 	//void setModelNumber(const GLint& modelNumber);
-	void setModelUnitTables(const std::vector<ModelData*>& modelVector);
 
-	
+	// uniform buffer upload
+	void uploadModelUnitTables(const std::vector<ModelData*>& modelVector);
+
 	UniformBuffer modelUnitTables = UniformBuffer(Binder::geometry_frag::buffers::ModelUnitTables);
 };
 

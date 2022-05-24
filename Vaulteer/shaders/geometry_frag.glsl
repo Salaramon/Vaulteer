@@ -2,7 +2,7 @@
 
 // multiple render targets, gbuffer
 layout(location = 0) out vec3 gPosition;
-layout(location = 1) out vec3 gNormal;
+layout(location = 1) out vec4 gNormal;
 layout(location = 2) out vec4 gColor;
 
 in VS_OUT {
@@ -14,6 +14,7 @@ in VS_OUT {
     mat3 tbnMat;
 } fs_in;
 
+
 struct ModelUnitData {
     int xDelta; 
     int yDelta;
@@ -21,7 +22,6 @@ struct ModelUnitData {
     int hDelta;
     int layerDelta;
 };
-
 
 layout(shared, binding = 1) uniform ModelUnitTables {
     uniform ModelUnitData unitTable[6];
@@ -48,11 +48,13 @@ void main() {
     gPosition = fs_in.fragPosition;
 
     vec2 normalsDelta = vec2(unitTable[fs_in.modelNumber * 3 + normals_unit_index].xDelta, unitTable[fs_in.modelNumber * 3 + normals_unit_index].yDelta);
-    if (normalsDelta != vec2(0.0)) // normal map exists ?
-        gNormal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
+    vec3 normal;
+    if (normalsDelta != vec2(0.0)) // normal map exists?
+        normal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
     else
-        gNormal = fs_in.tbnMat[2];
+        normal = fs_in.tbnMat[2];
 
-    //gColor = vec4(gNormal, 1.0);
+    gNormal = vec4(normal, float(fs_in.modelNumber));
+    //gColor = vec4(float(fs_in.modelNumber), 0.0, 0.0, 1.0);
     gColor = vec4(texture(textureLib, diffuseCoords).rgb, texture(textureLib, specularCoords).r);
 }

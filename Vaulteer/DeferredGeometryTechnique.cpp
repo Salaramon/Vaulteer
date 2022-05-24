@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "DeferredGeometryTechnique.h"
 
 void DeferredGeometryTechnique::setModel(const glm::dmat4& model) {
@@ -28,7 +29,7 @@ void DeferredGeometryTechnique::setTextureUnit(const GLint& texture) {
     shader->setUniform(Binder::geometry_frag::uniforms::modelNumber, modelNumber);
 }*/
 
-void DeferredGeometryTechnique::setModelUnitTables(const std::vector<ModelData*>& dataVector) {
+void DeferredGeometryTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
     std::vector<ModelData::ModelUnitData> unitData;
     for (auto& data : dataVector) {
         unitData.push_back(data->getModelUnitTable().diffuseUnit);

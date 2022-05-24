@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ShadowBuffer.h"
 
 ShadowBuffer::ShadowBuffer(const uint w, const uint h) : FrameBuffer(initTexture(w, h)), 

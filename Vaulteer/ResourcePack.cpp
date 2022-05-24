@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ResourcePack.h"
 
 void ResourcePack::add(ModelResourceLocator modelLocator) {
@@ -17,8 +18,9 @@ void ResourcePack::finalize() {
 
 	// import all models
 	for (const auto& resource : modelLocatorsByName) {
-		resourcesByName[resource.first] = 
-			std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
+		auto ptr = std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
+		resourceViews.push_back(ptr.get());
+		resourcesByName[resource.first] = std::move(ptr);
 	}
 
 	// find all locators
@@ -51,13 +53,7 @@ ModelData* ResourcePack::getModelByName(std::string modelName) {
 	return search->second.get();
 }
 
-const std::vector<ModelData*> ResourcePack::getAllItems() {
-	std::vector<ModelData*> items;
-	items.reserve(resourcesByName.size());
-
-	for (auto& it : resourcesByName) {
-		items.push_back(it.second.get());
-	}
-	return items;
+const std::vector<ModelData*>& ResourcePack::getAllResources() {
+	return resourceViews;
 }
 

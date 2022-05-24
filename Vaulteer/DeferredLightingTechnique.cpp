@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "DeferredLightingTechnique.h"
 
 /*
@@ -76,6 +77,16 @@ void DeferredLightingTechnique::setMaterialSpecularIntensity(const float intensi
 
 void DeferredLightingTechnique::setMaterialShininess(const float shininess) {
     shader->setUniform(fragUnis::materialShininess, shininess);
+}
+
+void DeferredLightingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
+    std::vector<Material::MaterialData> materials;
+    for (const auto& model : modelVector) {
+        for (const auto& mesh : model->getMeshes()) {
+            materials.push_back(mesh.material.data);
+        }
+    }
+    materialData.insert(materials);
 }
 
 /*void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {

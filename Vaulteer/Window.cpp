@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "Window.h"
 
 Window::Window(const std::string title, unsigned const int width, unsigned const int height) : DebugLogger<Window>("WindowStuff")

@@ -1,3 +1,4 @@
+#include "vpch.h"
 #include "ShadowCubeTechnique.h"
 
 void ShadowCubeTechnique::setModel(const glm::mat4& model) {
