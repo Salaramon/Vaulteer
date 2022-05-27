@@ -7,7 +7,8 @@
 #include "Camera.h"
 #include "Event.h"
 #include "Model.h"
-#include "Scene.h"
+#include "DynamicScene.h"
+#include "StaticScene.h"
 
 
 #include "GraphicsData.h"
@@ -19,6 +20,8 @@
 #include "ForwardRenderer.h"
 #include "ShaderProgram.h"
 #include "ForwardTechnique.h"
+
+#include "BoundingSphereHierarchy.h"
 
 class Game : public DebugLogger<Game>
 {

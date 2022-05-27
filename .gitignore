@@ -12,8 +12,11 @@ GLAD/
 GLM/
 GLFW/
 Eigen/
+miniball/
 Vaulteer/backpack/
 Vaulteer/Crate/
+
+GLSLCPPBinder.exe
 
 # User-specific files
 *.rsuser

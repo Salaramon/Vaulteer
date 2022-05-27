@@ -81,7 +81,7 @@ template<class... Args>
 class _ShaderProgram<0, Args...>
 {
 public:
-	_ShaderProgram() {
+	static void load() {
 		shader = std::make_unique<Shader>(initializeShader());
 	}
 
@@ -106,6 +106,10 @@ template<class... Args>
 class ShaderProgram<const ShaderUniformPair<Args...>> : protected _ShaderProgram<sizeof...(Args), Args...> {
 protected:
 	using Program = const ShaderUniformPair<Args...>;
+public:
+	static void load() {
+		_ShaderProgram<sizeof...(Args), Args...>::load();
+	}
 };
 
 

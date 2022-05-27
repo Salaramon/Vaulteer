@@ -1,53 +1,87 @@
 #pragma once
 
-#include <vector>
 #include <memory>
 #include <tuple>
 #include <type_traits>
 
-#include "Camera.h"
-//#include "SceneLayer.h"
+#include <vector>
 
-
-template<class... SceneObjects>
-using SceneContainer = std::tuple<typename std::vector<std::unique_ptr<SceneObjects>>...>;
-
-template<class SceneObject>
-using SceneObjects = std::vector<std::unique_ptr<SceneObject>>;
-
-template<class... SceneObjects>
-class _Scene {};
-
-template<class Container, class T>
-class _Scene<Container, T> {
+template<template<class> class Container, class... Stores>
+class Scene {
 public:
-	_Scene(Container& containerDispatch) : objectVectors(containerDispatch) {}
+	template<class StoreType>
+	using Object = std::unique_ptr<StoreType>;
+	template<class StoreType>
+	using ObjectContainer = Container<Object<StoreType>>;
 
-	T* addObject(T&& object) {
-		std::get<std::vector<std::unique_ptr<T>>>(objectVectors).emplace_back(std::make_unique<T>(std::move(object)));
-		return std::get<std::vector<std::unique_ptr<T>>>(objectVectors).back().get();
+	using ObjectContainerTuple = std::tuple<ObjectContainer<Stores>...>;
+
+	Scene() {}
+
+	template<class StoreType>
+	Container<StoreType>::iterator begin() {
+		return std::get<ObjectContainer<StoreType>>(objectContainers.begin());
 	}
 
-private:
-	Container& objectVectors;
-};
-
-template<class... SceneObjects>
-class Scene : public _Scene<SceneContainer<SceneObjects...>, SceneObjects>...
-{
-public:
-	SceneContainer<SceneObjects...> objectVectors;
-	
-	Scene() : _Scene<SceneContainer<SceneObjects...>, SceneObjects>::_Scene(objectVectors)... {}
-
-	using _Scene<SceneContainer<SceneObjects...>, SceneObjects>::addObject...;
-	
-	template<class O>
-	const std::vector<std::unique_ptr<O>>& getVector() {
-		return std::get<std::vector<std::unique_ptr<O>>>(objectVectors);
+	template<class StoreType>
+	Container<StoreType>::iterator end() {
+		return std::get<ObjectContainer<StoreType>>(objectContainers.end());
 	}
 
-private:
-	
-};
+	template<class Store>
+	struct iterator {
+		using IteratorType = ObjectContainer<Store>::iterator;
+	public:
+		using difference_type = ObjectContainer<Store>::iterator::difference_type;
+		using value_type = ObjectContainer<Store>::iterator::value_type;
+		using pointer = ObjectContainer<Store>::iterator::pointer;
+		using reference = ObjectContainer<Store>::iterator::reference;
 
+		iterator(IteratorType it) : it(it) {}
+		iterator(const iterator<Store>& other) : it(other.it) {}
+
+		iterator<Store> operator++(int) {
+			it++;
+			return *this;
+		}
+
+		iterator<Store>& operator++() {
+			++it;
+			return *this;
+		}
+
+		iterator<Store> operator--(int) {
+			it--;
+			return *this;
+		}
+
+		iterator<Store>& operator--() {
+			--it;
+			return *this;
+		}
+
+		pointer operator->() {
+			return *it;
+		}
+
+		reference operator*() const {
+			return *it;
+		}
+
+		const bool operator==(const iterator<Store>& other) const {
+			return it == other.it;
+		}
+
+		const bool operator!=(const iterator<Store>& other) const {
+			return it != other.it;
+		}
+
+	private:
+		IteratorType it;
+	};
+	
+
+protected:
+	//std::tupleContainer::iterator 
+	ObjectContainerTuple objectContainers;
+};

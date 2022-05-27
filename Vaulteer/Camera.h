@@ -9,6 +9,8 @@
 
 #include <vector>
 #include <string>
+#include <array>
+#include <functional>
 
 #include "Event.h"
 #include "Shader.h"
@@ -19,6 +21,25 @@ class Camera : public DebugLogger<Camera>
 {
 public:
 
+	struct Frustum {
+	public:
+		Frustum(std::array<glm::vec4, 6> arr) : 
+			left(arr[0]),
+			right(arr[1]),
+			bottom(arr[2]),
+			top(arr[3]),
+			near(arr[4]),
+			far(arr[5])
+		{}
+		glm::vec4 left;
+		glm::vec4 right;
+		glm::vec4 bottom;
+		glm::vec4 top;
+		glm::vec4 near;
+		glm::vec4 far;
+	};
+
+	Camera(){}
 	Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio);
 	Camera(float renderDistance, float fov, float aspectRatio);
 
@@ -33,7 +54,7 @@ public:
 
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjectionMatrix();
-	glm::mat4 getFrustumMatrix();
+	Frustum getFrustum();
 	glm::vec3 getPosition();
 
 	std::string getOrientation();

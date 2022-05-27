@@ -31,9 +31,19 @@ void Object3D::move(float x, float y, float z)
 	modelTranslation = glm::translate(modelTranslation, glm::vec3(x, y, z));
 }
 
+void Object3D::move(glm::vec3 position)
+{
+	modelTranslation = glm::translate(modelTranslation, position);
+}
+
 void Object3D::setPosition(float x, float y, float z)
 {
 	modelTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+}
+
+void Object3D::setPosition(glm::vec3 position)
+{
+	modelTranslation = glm::translate(glm::mat4(1.0f), position);
 }
 
 void Object3D::scale(float x, float y, float z)
@@ -41,7 +51,26 @@ void Object3D::scale(float x, float y, float z)
 	modelScale = glm::scale(modelScale, glm::vec3(x, y, z));
 }
 
+void Object3D::scale(glm::vec3 scale)
+{
+	modelScale = glm::scale(modelScale, scale);
+}
+
 void Object3D::setScale(float x, float y, float z)
 {
 	modelScale = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z));
+}
+
+void Object3D::setScale(glm::vec3 scale)
+{
+	modelScale = glm::scale(glm::mat4(1.0f), scale);
+}
+
+glm::vec3 Object3D::getPosition()
+{
+	return glm::vec3(
+		modelTranslation[3][0],
+		modelTranslation[3][1],
+		modelTranslation[3][2]
+	);
 }

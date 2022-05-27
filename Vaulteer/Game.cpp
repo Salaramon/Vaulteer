@@ -42,8 +42,8 @@ void Game::loadResources()
 	}))));
 
 	std::vector<Point> spherePoints;
-	const size_t resolution = 256;
-	const size_t curves = 256;
+	const size_t resolution = 128;
+	const size_t curves = 128;
 
 	for (size_t i = 0; i < curves; i++) {
 		for (size_t j = 0; j < resolution; j++) {
@@ -79,43 +79,41 @@ size_t Game::run()
 
 	//Renderer
 	Renderer<ForwardRenderer> renderer;
-	
+
 	//Scenes
-	Renderer<ForwardRenderer>::Scene scene;
+	DynamicScene<Camera> dynamicScene;
+	StaticScene<Model<ModelData>, Model<LineData>> staticScene;
+	//scene.finalize();
 
 	//Setting up cameras in the scene.
-	Camera* camera = scene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	//Select the active camera.
 	//scene.setActiveCamera(camera);
 
-	//Set up render passe(s) for each render strata.
 
-
-	
-	
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
+	std::vector<Model<ModelData>*> modelsObjects;
+
+
 	//Generate floor
-	intmax_t width = 16;
-	intmax_t height = 16;
-	for (intmax_t i = -(width/2); i < width; i++) {
-		for (intmax_t j = -(height/2); j < height; j++) {
-			objects.push_back(scene.addObject(modelByName(models, "crate")));
-			objects.back()->setPosition(2*i, 0, 2*j);
+	intmax_t width = 32;
+	intmax_t height = 32;
+	for (intmax_t i = -(width / 2); i < (width / 2); i++) {
+		for (intmax_t j = -(height / 2); j < (height / 2); j++) {
+			Model<ModelData> newModel = modelByName(models, "crate");
+			newModel.setPosition(4 * i, 0, 4 * j);
+			staticScene.addObject(std::move(newModel), newModel.getBoundingSphere());
 		}
 	}
 
-	objects.push_back(scene.addObject(modelByName(lines, "sphere")));
-	objects.back()->setPosition(0, 5, 0);
-	objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	//objects.back()->setScale(1000, 1000, 1000);
+	Model<ModelData> newModel = modelByName(models, "backpack");
+	newModel.setPosition(0, 10, -10);
+	staticScene.addObject(std::move(newModel), newModel.getBoundingSphere());
+
+	staticScene.finalize();
 	
-	objects.push_back(scene.addObject(modelByName(lines, "cross")));
-	objects.back()->setPosition(5, 5, 0);
-	objects.back()->setScale(0.05, 0.05, 0.05);
-	//models.push_back(lineLayer->addModel(modelByName("line")));
-	//models.back()->setPolygonLineWidth(5);
 
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
@@ -175,8 +173,11 @@ size_t Game::run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
+		//renderer.add<Renderers, renderer2>(scene);
+		//...
+
 		
-		renderer.render(scene);
+		renderer.render(dynamicScene, staticScene);
 
 		glfwSwapBuffers(window->getRawWindow());
 

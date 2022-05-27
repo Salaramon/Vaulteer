@@ -341,6 +341,12 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Rendering\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="RendererPrerequisites.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateUtility.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="geometry_vertex.glsl">

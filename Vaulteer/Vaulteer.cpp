@@ -6,6 +6,7 @@
 #include "OpenGL.h"
 #include "Event.h"
 #include "Game.h"
+#include "ShaderProgram.h"
 
 #include "DebugLogger.h"
 #include "DebugAliases.h"
@@ -30,6 +31,12 @@ void initializeOpenGL() {
 	OpenGL::enableDirectDebugMessageing();
 }
 
+void initializeShaders() {
+	ShaderProgram<ForwardShader>::load();
+	ShaderProgram<LineShader>::load();
+	ShaderProgram<DeferredShader>::load();
+}
+
 void cleanup() {
 	glfwTerminate();
 }
@@ -48,6 +55,7 @@ int main() {
 	initializeOpenGL();
 	initializeSTBI();
 
+	initializeShaders();
 
 	Event::AddEventHandlingForWindow(&window);
 	Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);

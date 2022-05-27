@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -78,12 +78,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)miniball;C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\miniball;C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -128,7 +128,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/MP64 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,8 +137,7 @@
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(ProjectDir)GLSLCPPBinder.exe"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\GLAD\src\glad.c" />
+    <ClCompile Include="BoundingSphereHierarchy.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugLogger.cpp" />
@@ -180,7 +181,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GraphicsData.cpp" />
     <ClCompile Include="LineData.cpp" />
     <ClCompile Include="LineTechnique.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -192,7 +192,6 @@
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="PolyTree.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShadowMapFBO.cpp">
@@ -221,9 +220,11 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingSphereHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
+    <ClInclude Include="DynamicScene.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="ForwardTechnique.h" />
     <ClInclude Include="Game.h" />
@@ -237,13 +238,15 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="PolyTree.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererPrerequisites.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="StaticScene.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="TemplateUtility.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="FunctionExpressionGeneration.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GLSLCPPBinder.h" />
     <ClInclude Include="GeometryTechnique.h">
@@ -256,7 +259,6 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MyCamera.h" />
-    <ClInclude Include="SetUniformFunctor.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShadowMapFBO.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

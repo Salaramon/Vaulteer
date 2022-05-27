@@ -17,6 +17,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Seb.h>
+
 #include "GraphicsData.h"
 
 #include "Mesh.h"
@@ -60,6 +62,8 @@ public:
 	const std::vector<Mesh>& getMeshes();
 	const std::vector<Texture>& getTextures();
 
+	glm::vec4 getBoundingSphere();
+
 private:
 
 	void processNode(const aiScene* scene, aiNode* node);
@@ -77,6 +81,10 @@ private:
 	void setTexturesFolder(std::string path);
 
 	std::unordered_set<std::string>  textureFiles;
+
+
+
+	/*
 
 	//Outer array is for each axis (xyz => [0][1][2]). Inner array is for min[0] and max[1] extrimity
 	std::array<std::array<std::vector<glm::vec3>, 2>, 3> extremities;
@@ -110,60 +118,144 @@ private:
 	{
 		darray<m, std::array<float, m>> cubeTree;
 		//std::unordered_set<size_t> emptySet = std::unordered_set<size_t>();
-		_processConvexShape<n, m> func; 
-		func(inVertices, cubeTree);
+		ProcessConvexShape<n, m>::getPointExtremities(inVertices, cubeTree);
+		
+		ProcessConvexShape<n, m>::getConvexCubeTreePointsAndIndices(cubeTree, outVertices, outIndices);
 	}
 
-
-
-	//n is the dimensions which will be considered, m is the dimensions of the points
-	//m must be greater or equal to n
-	template<size_t n, size_t m>
-	struct _processConvexShape {
+	struct shared_ProcessConvexShape {
 	public:
-		void operator()(
-			const std::vector<std::array<float, m>>& inVertices,
-			darray<n, std::array<float, m>>& cubeTree,
-			std::unordered_set<size_t> ignoredAxis = std::unordered_set<size_t>()
-			) {
-			typedef std::function<bool(float, float)> CompOpFunction;
-			std::array<CompOpFunction, 2> comparator = { std::less<float>(), std::greater<float>() };
 
-			std::array<std::array<std::vector<std::array<float, m>>, 2>, n> extremities;
+	protected:
+		typedef std::function<bool(float, float)> CompOpFunction;
+		inline static const std::array<CompOpFunction, 2> comparator = { std::less<float>(), std::greater<float>() };
 
-			for (auto& v : inVertices) {
-				for (size_t i = 0; i < extremities.size(); i++) {
+		template<size_t n, size_t m>
+		static void findExtremities(
+			const std::vector<std::array<float, m>>& inPoints,
+			std::array<std::array<std::vector<std::array<float, m>>, 2>, m>& outExtremities,
+			std::unordered_set<size_t> ignoredAxis
+		) {
+			for (const std::array<float, m>& v : inPoints) {
+				for (size_t i = 0; i < outExtremities.size(); i++) {
 					//Checks if the previous iteration already did that axis or not.
 					if (ignoredAxis.find(i) == ignoredAxis.end()) {
-						for (size_t j = 0; j < extremities[i].size(); j++) {
-							if (!extremities[i][j].empty() || comparator[j](extremities[i][j].back()[i], v[i])) {
-								extremities[i][j].clear();
+						for (size_t j = 0; j < outExtremities[i].size(); j++) {
+							if (!outExtremities[i][j].empty()) {
+								bool comp = comparator[j](v[i], outExtremities[i][j].back()[i]);
+								if (comp) {
+									outExtremities[i][j].clear();
+									outExtremities[i][j].push_back(v);
+								}
+								else if (outExtremities[i][j].back()[i] == v[i]) {
+									outExtremities[i][j].push_back(v);
+								}
 							}
-							extremities[i][j].push_back(v);
+							else {
+								outExtremities[i][j].push_back(v);
+							}
 						}
-					}
-				}
-			}
-
-			for (size_t i = 0; i < extremities.size(); i++) {
-				for (size_t j = 0; j < extremities[i].size(); j++) {
-					if (n != 1) {
-						ignoredAxis.insert(i);
-						darray<n - 1, std::array<float, m>>& cubePart = cubeTree[i * 2 + j];
-						_processConvexShape<n-1, m> func;
-						func(extremities[i][j], cubePart, ignoredAxis);
-					}
-					else if (!extremities[i][j].empty()) {
-						auto& ct = *(std::array<float, m>*)(&cubeTree[j]);
-						ct = extremities[i][j].back();
 					}
 				}
 			}
 		}
 
+		template<size_t n, size_t m>
+		static void processExtremitySubsets(
+			std::array<std::array<std::vector<std::array<float, m>>, 2>, m>& outExtremities,
+			darray<n, std::array<float, m>>& cubeTree,
+			std::unordered_set<size_t> ignoredAxis
+		) {
+			size_t abc = cubeTree.size();
+			size_t cubeTreeCount = 0;
+			for (size_t i = 0; i < outExtremities.size(); i++) {
+				std::unordered_set<size_t> ignoredAxisPass = ignoredAxis;
+				for (size_t j = 0; j < outExtremities[i].size(); j++) {
+					if (ignoredAxis.find(i) == ignoredAxis.end()) {
+						ignoredAxisPass.insert(i);
+						//darray<n - 1, std::array<float, m>>& cubePart = cubeTree[cubeTreeCount * 2 + j];
+						
+						ProcessConvexShape<n - 1, m>::getPointExtremities(outExtremities[i][j], cubeTree[cubeTreeCount * 2 + j], ignoredAxisPass);
+					}
+				}
+				if (ignoredAxis.find(i) == ignoredAxis.end()) {
+					cubeTreeCount++;
+				}
+			}
+		}
+
+		template<size_t n, size_t m>
+		static void processExtremityEnds(
+			std::array<std::array<std::vector<std::array<float, m>>, 2>, m>& outExtremities,
+			darray<n, std::array<float, m>>& cubeTree,
+			std::unordered_set<size_t> ignoredAxis
+		) {
+			for (size_t i = 0; i < outExtremities.size(); i++) {
+				for (size_t j = 0; j < outExtremities[i].size(); j++) {
+					if (!outExtremities[i][j].empty()) {
+						cubeTree[j] = outExtremities[i][j].back();
+					}
+				}
+			}
+		}
+	};
+
+	//n is the dimensions which will be considered, m is the dimensions of the points
+	//m must be greater or equal to n
+	template<size_t n, size_t m>
+	struct ProcessConvexShape : public shared_ProcessConvexShape {
+	public:
+		static void getPointExtremities(
+			const std::vector<std::array<float, m>>& inPoints,
+			darray<n, std::array<float, m>>& cubeTree,
+			std::unordered_set<size_t> ignoredAxis = std::unordered_set<size_t>()
+		) {
+			std::array<std::array<std::vector<std::array<float, m>>, 2>, m> extremities;
+
+			findExtremities<n, m>(inPoints, extremities, ignoredAxis);
+			processExtremitySubsets<n, m>(extremities, cubeTree, ignoredAxis);
+			
+		}
+
+		static void getConvexCubeTreePointsAndIndices(
+			const darray<n, std::array<float, m>>& cubeTree, 
+			std::vector<std::array<float, m>>& outPoints, 
+			std::vector<size_t>& outIndices
+		) {
+			for (size_t i = 0; i < cubeTree.size(); i++) {
+				ProcessConvexShape<n - 1, m>::getConvexCubeTreePointsAndIndices(cubeTree[i], outPoints, outIndices);
+
+			}
+		}
+
+	private:
+
 		//Points may be counted twice, ex in the case where one face only have two points
 	};
 
 	template<size_t m>
-	struct _processConvexShape<0, m> {};
+	struct ProcessConvexShape<1, m> : public shared_ProcessConvexShape {
+		static void getPointExtremities(
+			const std::vector<std::array<float, m>>& inPoints,
+			darray<1, std::array<float, m>>& cubeTree,
+			std::unordered_set<size_t> ignoredAxis = std::unordered_set<size_t>()
+		) {
+			std::array<std::array<std::vector<std::array<float, m>>, 2>, m> extremities;
+
+			findExtremities<1,m>(inPoints, extremities, ignoredAxis);
+			processExtremityEnds<1, m>(extremities, cubeTree, ignoredAxis);
+		}
+
+		static void getConvexCubeTreePointsAndIndices(
+			const darray<1, std::array<float, m>>& cubeTree, 
+			std::vector<std::array<float, m>>& outVertices, 
+			std::vector<size_t>& outIndices
+		) {
+			for (size_t i = 0; i < cubeTree.size(); i++) {
+				outVertices.push_back(cubeTree[i]);
+			}
+		}
+			
+	};
+	*/
 };

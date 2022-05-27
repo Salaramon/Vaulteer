@@ -96,7 +96,7 @@ Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
 		getTextureUniforms(material);
 	}
 
-
+	/*
 	std::vector<std::array<float, 3>> inVert;
 	for (size_t i = 0; i < vertices.size(); i++) {
 		inVert.push_back(*((std::array<float,3>*)(&vertices[i].aPos)));
@@ -104,6 +104,7 @@ Mesh ModelData::processMesh(const aiScene* scene, aiMesh* mesh)
 	std::vector<std::array<float, 3>> outVert;
 	std::vector<size_t> outInd;
 	processConvexShape<3,3>(inVert, outVert, outInd);
+	*/
 
 	return Mesh(vertices, indices);
 }
@@ -137,6 +138,23 @@ glm::vec3 ModelData::ai_glmVec(aiVector3D aiVec)
 void ModelData::setTexturesFolder(std::string path)
 {
 	texturesFolder = path;
+}
+
+glm::vec4 ModelData::getBoundingSphere()
+{
+	std::vector<Seb::Point<double>> points;
+	for (const Mesh& m : meshes) {
+		for (const Vertex& v : m.vertices) {
+			std::vector<double> converter({ v.aPos.x, v.aPos.y, v.aPos.z });
+			points.push_back(Seb::Point<double>(3, converter.begin()));
+		}
+	}
+	Seb::Smallest_enclosing_ball<double> ball(3, points);
+	Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
+	
+	glm::vec4 data(it[0], it[1], it[2], ball.radius());
+
+	return data;
 }
 
 

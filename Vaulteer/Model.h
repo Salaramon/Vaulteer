@@ -47,6 +47,8 @@ public:
 	void setPolygonMode(GLenum mode);
 	void setPolygonLineWidth(GLfloat width);
 
+	glm::vec4 getBoundingSphere();
+
 	GLenum getPolygonFaces();
 	GLenum getPolygonMode();
 	GLfloat getPolygonLineWidth();
@@ -69,7 +71,8 @@ inline Model<Data>::Model(Model&& model) :
 	model(std::move(model.model)),
 	polygonFaces(std::move(model.polygonFaces)),
 	polygonMode(std::move(model.polygonMode)),
-	polygonLineWidth(std::move(model.polygonLineWidth))
+	polygonLineWidth(std::move(model.polygonLineWidth)),
+	Object3D(std::forward<Model>(model))
 {}
 
 template<class Data>
@@ -120,3 +123,13 @@ inline Data* Model<Data>::getData()
 	return model;
 }
 
+template<class Data>
+glm::vec4 Model<Data>::getBoundingSphere()
+{
+	glm::vec4 sphere(model->getBoundingSphere());
+	glm::vec3 pos = getPosition();
+	sphere.x += pos.x;
+	sphere.y += pos.y;
+	sphere.z += pos.z;
+	return sphere;
+}
