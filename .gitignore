@@ -11,9 +11,15 @@ ASSIMP/
 GLAD/
 GLM/
 GLFW/
+miniball/
 rectpack2D/
+sqlite/
+DebugYourself/
+
 Vaulteer/backpack/
 Vaulteer/Crate/
+
+GLSLCPPBinder.exe
 
 # User-specific files
 *.rsuser
