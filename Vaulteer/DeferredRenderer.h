@@ -3,6 +3,7 @@
 #include "DeferredGeometryTechnique.h"
 #include "DeferredLightingTechnique.h"
 #include "Scene.h"
+#include "OpenGL.h"
 
 #include "BatchManager.h"
 #include "Model.h"

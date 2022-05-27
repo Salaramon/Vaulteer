@@ -36,8 +36,9 @@ void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
 }
 
 void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
+	OpenGL::enableDepthTest();
 	DeferredGeometryTechnique::shader->use();
-	DeferredGeometryTechnique::setProjection(camera->getProjectionMatrix());
+	DeferredGeometryTechnique::uploadProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
 	
 	GLint texUnit = 0;
@@ -64,7 +65,7 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 }
 
 void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
-
+	OpenGL::disableDepthTest();
 	DeferredLightingTechnique::shader->use();
 	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 	

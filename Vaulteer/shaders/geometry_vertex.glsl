@@ -19,8 +19,11 @@ out VS_OUT {
 
 uniform mat4 model;
 uniform mat4 modelView;
-uniform mat4 projection;
 uniform mat4 normal;
+
+layout (std140, binding = 0) uniform Camera {
+    uniform mat4 projection;
+};
 
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);

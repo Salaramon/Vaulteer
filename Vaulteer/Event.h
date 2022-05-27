@@ -20,9 +20,10 @@ public:
 
 	static bool Poll();
 
-	enum class enumKEY {
+
+	enum class KeyCode {
 		UNKNOWN = -1,
-		START_OF_KEYBOARDKEYS = enumKEY::UNKNOWN,
+		START_OF_KEYBOARDKEYS = KeyCode::UNKNOWN,
 		SPACE = 32,
 		APOSTROPHE = 39,
 		COMMA = 44,
@@ -144,34 +145,34 @@ public:
 		RIGHT_SUPER = 347,
 		MENU = 348,
 
-		START_OF_MOUSEKEYS = enumKEY::MENU,
+		START_OF_MOUSEKEYS = KeyCode::MENU,
 		MOUSE_LEFT = 349,
 		MOUSE_RIGHT = 350,
 		MOUSE_MIDDLE = 351
 	};
 
-	enum class enumACTION {
+	enum class ActionCode {
 		RELEASE = 0,
 		PRESS = 1,
 		REPEAT = 2,
 	};
 
-	enum class enumSTATE {
+	enum class StateCode {
 		UP = 0,
 		DOWN = 1
 	};
 
 	struct Button {
-		enumKEY key;
-		enumACTION action;
+		KeyCode key;
+		ActionCode action;
 	};
 	struct Cursor {
-		double_t x;
-		double_t y;
+		double x;
+		double y;
 	};
 	struct Wheel {
-		double_t ScrollX;
-		double_t ScrollY;
+		double ScrollX;
+		double ScrollY;
 	};
 
 
@@ -193,23 +194,23 @@ public:
 
 	struct KeyAction {
 	public:
-		KeyAction(enumACTION actionID) : actionID(actionID) {}
+		KeyAction(ActionCode actionID) : actionID(actionID) {}
 		
-		enumACTION actionID;
+		ActionCode actionID;
 
 		std::vector<Button> possibleEvents;
 	};
 
 	struct KeyState {
 	public:
-		KeyState(enumSTATE stateID) : stateID(stateID) {}
+		KeyState(StateCode stateID) : stateID(stateID) {}
 
-		enumSTATE stateID;
+		StateCode stateID;
 	};
 
 	struct KeyName {
 	public:
-		KeyName(enumKEY keyID) : keyID(keyID){}
+		KeyName(KeyCode keyID) : keyID(keyID){}
 
 		BooleanCheck operator>>(KeyAction& data) {
 			for (auto& button : buttonEvents) {
@@ -227,157 +228,7 @@ public:
 			return false;
 		}
 
-		enumKEY keyID;
-	};
-
-	struct KEY {
-		inline static KeyName UNKNOWN{ enumKEY::UNKNOWN };
-		inline static KeyName SPACE{ enumKEY::SPACE };
-		inline static KeyName APOSTROPHE{ enumKEY::APOSTROPHE };
-		inline static KeyName COMMA{ enumKEY::COMMA };
-		inline static KeyName MINUS{ enumKEY::MINUS };
-		inline static KeyName PERIOD{ enumKEY::PERIOD };
-		inline static KeyName SLASH{ enumKEY::SLASH };
-		inline static KeyName _0{ enumKEY::_0 };
-		inline static KeyName _1{ enumKEY::_1 };
-		inline static KeyName _2{ enumKEY::_2 };
-		inline static KeyName _3{ enumKEY::_3 };
-		inline static KeyName _4{ enumKEY::_4 };
-		inline static KeyName _5{ enumKEY::_5 };
-		inline static KeyName _6{ enumKEY::_6 };
-		inline static KeyName _7{ enumKEY::_7 };
-		inline static KeyName _8{ enumKEY::_8 };
-		inline static KeyName _9{ enumKEY::_9 };
-		inline static KeyName SEMICOLON{ enumKEY::SEMICOLON };
-		inline static KeyName EQUAL{ enumKEY::EQUAL };
-		inline static KeyName A{ enumKEY::A };
-		inline static KeyName B{ enumKEY::B };
-		inline static KeyName C{ enumKEY::C };
-		inline static KeyName D{ enumKEY::D };
-		inline static KeyName E{ enumKEY::E };
-		inline static KeyName F{ enumKEY::F };
-		inline static KeyName G{ enumKEY::G };
-		inline static KeyName H{ enumKEY::H };
-		inline static KeyName I{ enumKEY::I };
-		inline static KeyName J{ enumKEY::J };
-		inline static KeyName K{ enumKEY::K };
-		inline static KeyName L{ enumKEY::L };
-		inline static KeyName M{ enumKEY::M };
-		inline static KeyName N{ enumKEY::N };
-		inline static KeyName O{ enumKEY::O };
-		inline static KeyName P{ enumKEY::P };
-		inline static KeyName Q{ enumKEY::Q };
-		inline static KeyName R{ enumKEY::R };
-		inline static KeyName S{ enumKEY::S };
-		inline static KeyName T{ enumKEY::T };
-		inline static KeyName U{ enumKEY::U };
-		inline static KeyName V{ enumKEY::V };
-		inline static KeyName W{ enumKEY::W };
-		inline static KeyName X{ enumKEY::X };
-		inline static KeyName Y{ enumKEY::Y };
-		inline static KeyName Z{ enumKEY::Z };
-		inline static KeyName LEFT_BRACKET{ enumKEY::LEFT_BRACKET };
-		inline static KeyName BACKSLASH{ enumKEY::BACKSLASH };
-		inline static KeyName RIGHT_BRACKET{ enumKEY::RIGHT_BRACKET };
-		inline static KeyName GRAVE_ACCENT{ enumKEY::GRAVE_ACCENT };
-		inline static KeyName WORLD_1{ enumKEY::WORLD_1 };
-		inline static KeyName WORLD_2{ enumKEY::WORLD_2 };
-		inline static KeyName ESCAPE{ enumKEY::ESCAPE };
-		inline static KeyName ENTER{ enumKEY::ENTER };
-		inline static KeyName TAB{ enumKEY::TAB };
-		inline static KeyName BACKSPACE{ enumKEY::BACKSPACE };
-		inline static KeyName INSERT{ enumKEY::INSERT };
-		inline static KeyName DELETE{ enumKEY::DELETE };
-		inline static KeyName RIGHT{ enumKEY::RIGHT };
-		inline static KeyName LEFT{ enumKEY::LEFT };
-		inline static KeyName DOWN{ enumKEY::DOWN };
-		inline static KeyName UP{ enumKEY::UP };
-		inline static KeyName PAGE_UP{ enumKEY::PAGE_UP };
-		inline static KeyName PAGE_DOWN{ enumKEY::PAGE_DOWN };
-		inline static KeyName HOME{ enumKEY::HOME };
-		inline static KeyName END{ enumKEY::END };
-		inline static KeyName CAPS_LOCK{ enumKEY::CAPS_LOCK };
-		inline static KeyName SCROLL_LOCK{ enumKEY::SCROLL_LOCK };
-		inline static KeyName NUM_LOCK{ enumKEY::NUM_LOCK };
-		inline static KeyName PRINT_SCREEN{ enumKEY::PRINT_SCREEN };
-		inline static KeyName PAUSE{ enumKEY::PAUSE };
-		inline static KeyName F1{ enumKEY::F1 };
-		inline static KeyName F2{ enumKEY::F2 };
-		inline static KeyName F3{ enumKEY::F3 };
-		inline static KeyName F4{ enumKEY::F4 };
-		inline static KeyName F5{ enumKEY::F5 };
-		inline static KeyName F6{ enumKEY::F6 };
-		inline static KeyName F7{ enumKEY::F7 };
-		inline static KeyName F8{ enumKEY::F8 };
-		inline static KeyName F9{ enumKEY::F9 };
-		inline static KeyName F10{ enumKEY::F10 };
-		inline static KeyName F11{ enumKEY::F11 };
-		inline static KeyName F12{ enumKEY::F12 };
-		inline static KeyName F13{ enumKEY::F13 };
-		inline static KeyName F14{ enumKEY::F14 };
-		inline static KeyName F15{ enumKEY::F15 };
-		inline static KeyName F16{ enumKEY::F16 };
-		inline static KeyName F17{ enumKEY::F17 };
-		inline static KeyName F18{ enumKEY::F18 };
-		inline static KeyName F19{ enumKEY::F19 };
-		inline static KeyName F20{ enumKEY::F20 };
-		inline static KeyName F21{ enumKEY::F21 };
-		inline static KeyName F22{ enumKEY::F22 };
-		inline static KeyName F23{ enumKEY::F23 };
-		inline static KeyName F24{ enumKEY::F24 };
-		inline static KeyName F25{ enumKEY::F25 };
-		inline static KeyName KP_0{ enumKEY::KP_0 };
-		inline static KeyName KP_1{ enumKEY::KP_1 };
-		inline static KeyName KP_2{ enumKEY::KP_2 };
-		inline static KeyName KP_3{ enumKEY::KP_3 };
-		inline static KeyName KP_4{ enumKEY::KP_4 };
-		inline static KeyName KP_5{ enumKEY::KP_5 };
-		inline static KeyName KP_6{ enumKEY::KP_6 };
-		inline static KeyName KP_7{ enumKEY::KP_7 };
-		inline static KeyName KP_8{ enumKEY::KP_8 };
-		inline static KeyName KP_9{ enumKEY::KP_9 };
-		inline static KeyName KP_DECIMAL{ enumKEY::KP_DECIMAL };
-		inline static KeyName KP_DIVIDE{ enumKEY::KP_DIVIDE };
-		inline static KeyName KP_MULTIPLY{ enumKEY::KP_MULTIPLY };
-		inline static KeyName KP_SUBTRACT{ enumKEY::KP_SUBTRACT };
-		inline static KeyName KP_ADD{ enumKEY::KP_ADD };
-		inline static KeyName KP_ENTER{ enumKEY::KP_ENTER };
-		inline static KeyName KP_EQUAL{ enumKEY::KP_EQUAL };
-		inline static KeyName LEFT_SHIFT{ enumKEY::LEFT_SHIFT };
-		inline static KeyName LEFT_CONTROL{ enumKEY::LEFT_CONTROL };
-		inline static KeyName LEFT_ALT{ enumKEY::LEFT_ALT };
-		inline static KeyName LEFT_SUPER{ enumKEY::LEFT_SUPER };
-		inline static KeyName RIGHT_SHIFT{ enumKEY::RIGHT_SHIFT };
-		inline static KeyName RIGHT_CONTROL{ enumKEY::RIGHT_CONTROL };
-		inline static KeyName RIGHT_ALT{ enumKEY::RIGHT_ALT };
-		inline static KeyName RIGHT_SUPER{ enumKEY::RIGHT_SUPER };
-		inline static KeyName MENU{ enumKEY::MENU };
-		inline static KeyName MOUSE_LEFT{ enumKEY::MOUSE_LEFT };
-		inline static KeyName MOUSE_RIGHT{ enumKEY::MOUSE_RIGHT };
-		inline static KeyName MOUSE_MIDDLE{ enumKEY::MOUSE_MIDDLE };
-
-	};
-
-	struct STATE {
-		inline static KeyState UP{ enumSTATE::UP };
-		inline static KeyState DOWN{ enumSTATE::DOWN };
-	};
-
-	struct ACTION {
-		inline static KeyAction RELEASE{ enumACTION::RELEASE };
-		inline static KeyAction PRESS{ enumACTION::PRESS };
-		inline static KeyAction REPEAT{ enumACTION::REPEAT };
-	};
-
-	
-
-	static void keyHandler(GLFWwindow* window, enumKEY key, enumACTION action);
-
-	struct doubleConverter {
-	public:
-		doubleConverter(int value) : value(static_cast<double_t>(value)) {}
-		operator double_t() { return value; }
-		double_t value;
+		KeyCode keyID;
 	};
 
 	struct CursorPosition {
@@ -388,19 +239,19 @@ public:
 		//bool operator<=(doubleConverter axis) { return check(axis, std::less_equal<bool>()); }
 		//bool operator>=(doubleConverter axis) { return check(axis, std::greater_equal<bool>()); }
 
-		friend BooleanCheck operator<(const double_t lhs, const CursorPosition& rhs);
-		friend BooleanCheck operator>(const double_t lhs, const CursorPosition& rhs);
-		friend BooleanCheck operator<=(const double_t lhs, const CursorPosition& rhs);
-		friend BooleanCheck operator>=(const double_t lhs, const CursorPosition& rhs);
-		friend BooleanCheck operator<(const CursorPosition& lhs, const double_t rhs);
-		friend BooleanCheck operator>(const CursorPosition& lhs, const double_t rhs);
-		friend BooleanCheck operator<=(const CursorPosition& lhs, const double_t rhs);
-		friend BooleanCheck operator>=(const CursorPosition& lhs, const double_t rhs);
+		friend BooleanCheck operator<(const double lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator>(const double lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator<=(const double lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator>=(const double lhs, const CursorPosition& rhs);
+		friend BooleanCheck operator<(const CursorPosition& lhs, const double rhs);
+		friend BooleanCheck operator>(const CursorPosition& lhs, const double rhs);
+		friend BooleanCheck operator<=(const CursorPosition& lhs, const double rhs);
+		friend BooleanCheck operator>=(const CursorPosition& lhs, const double rhs);
 
 		template<class Func>
-		bool check(double_t axis, Func func) const  {
+		bool check(double axis, Func func) const {
 			for (auto& pos : cursorEvents) {
-				double_t cur = *(reinterpret_cast<double_t*>((&pos)) + (offset / sizeof(double_t)));
+				double cur = *(reinterpret_cast<double*>((&pos)) + (offset / sizeof(double)));
 				if (func(cur, axis)) {
 					return true;
 				}
@@ -408,9 +259,9 @@ public:
 			return false;
 		}
 
-		double_t get() const{
+		double get() const {
 			if (!cursorEvents.empty()) {
-				double_t cur = *(reinterpret_cast<double_t*>((&cursorEvents.back())) + (offset / sizeof(double_t)));
+				double cur = *(reinterpret_cast<double*>((&cursorEvents.back())) + (offset / sizeof(double)));
 				return cur;
 			}
 			else {
@@ -418,10 +269,10 @@ public:
 			}
 		}
 
-		double_t delta() const {
+		double delta() const {
 			if (!cursorEvents.empty()) {
-				double_t front = *(reinterpret_cast<double_t*>((&cursorEvents.front())) + (offset / sizeof(double_t)));
-				double_t back = *(reinterpret_cast<double_t*>((&cursorEvents.back())) + (offset / sizeof(double_t)));
+				double front = *(reinterpret_cast<double*>((&cursorEvents.front())) + (offset / sizeof(double)));
+				double back = *(reinterpret_cast<double*>((&cursorEvents.back())) + (offset / sizeof(double)));
 				return back - front;
 			}
 			else {
@@ -432,15 +283,163 @@ public:
 		const size_t offset;
 	};
 
+	struct KEY {
+		inline static KeyName UNKNOWN{ KeyCode::UNKNOWN };
+		inline static KeyName SPACE{ KeyCode::SPACE };
+		inline static KeyName APOSTROPHE{ KeyCode::APOSTROPHE };
+		inline static KeyName COMMA{ KeyCode::COMMA };
+		inline static KeyName MINUS{ KeyCode::MINUS };
+		inline static KeyName PERIOD{ KeyCode::PERIOD };
+		inline static KeyName SLASH{ KeyCode::SLASH };
+		inline static KeyName _0{ KeyCode::_0 };
+		inline static KeyName _1{ KeyCode::_1 };
+		inline static KeyName _2{ KeyCode::_2 };
+		inline static KeyName _3{ KeyCode::_3 };
+		inline static KeyName _4{ KeyCode::_4 };
+		inline static KeyName _5{ KeyCode::_5 };
+		inline static KeyName _6{ KeyCode::_6 };
+		inline static KeyName _7{ KeyCode::_7 };
+		inline static KeyName _8{ KeyCode::_8 };
+		inline static KeyName _9{ KeyCode::_9 };
+		inline static KeyName SEMICOLON{ KeyCode::SEMICOLON };
+		inline static KeyName EQUAL{ KeyCode::EQUAL };
+		inline static KeyName A{ KeyCode::A };
+		inline static KeyName B{ KeyCode::B };
+		inline static KeyName C{ KeyCode::C };
+		inline static KeyName D{ KeyCode::D };
+		inline static KeyName E{ KeyCode::E };
+		inline static KeyName F{ KeyCode::F };
+		inline static KeyName G{ KeyCode::G };
+		inline static KeyName H{ KeyCode::H };
+		inline static KeyName I{ KeyCode::I };
+		inline static KeyName J{ KeyCode::J };
+		inline static KeyName K{ KeyCode::K };
+		inline static KeyName L{ KeyCode::L };
+		inline static KeyName M{ KeyCode::M };
+		inline static KeyName N{ KeyCode::N };
+		inline static KeyName O{ KeyCode::O };
+		inline static KeyName P{ KeyCode::P };
+		inline static KeyName Q{ KeyCode::Q };
+		inline static KeyName R{ KeyCode::R };
+		inline static KeyName S{ KeyCode::S };
+		inline static KeyName T{ KeyCode::T };
+		inline static KeyName U{ KeyCode::U };
+		inline static KeyName V{ KeyCode::V };
+		inline static KeyName W{ KeyCode::W };
+		inline static KeyName X{ KeyCode::X };
+		inline static KeyName Y{ KeyCode::Y };
+		inline static KeyName Z{ KeyCode::Z };
+		inline static KeyName LEFT_BRACKET{ KeyCode::LEFT_BRACKET };
+		inline static KeyName BACKSLASH{ KeyCode::BACKSLASH };
+		inline static KeyName RIGHT_BRACKET{ KeyCode::RIGHT_BRACKET };
+		inline static KeyName GRAVE_ACCENT{ KeyCode::GRAVE_ACCENT };
+		inline static KeyName WORLD_1{ KeyCode::WORLD_1 };
+		inline static KeyName WORLD_2{ KeyCode::WORLD_2 };
+		inline static KeyName ESCAPE{ KeyCode::ESCAPE };
+		inline static KeyName ENTER{ KeyCode::ENTER };
+		inline static KeyName TAB{ KeyCode::TAB };
+		inline static KeyName BACKSPACE{ KeyCode::BACKSPACE };
+		inline static KeyName INSERT{ KeyCode::INSERT };
+		inline static KeyName DELETE{ KeyCode::DELETE };
+		inline static KeyName RIGHT{ KeyCode::RIGHT };
+		inline static KeyName LEFT{ KeyCode::LEFT };
+		inline static KeyName DOWN{ KeyCode::DOWN };
+		inline static KeyName UP{ KeyCode::UP };
+		inline static KeyName PAGE_UP{ KeyCode::PAGE_UP };
+		inline static KeyName PAGE_DOWN{ KeyCode::PAGE_DOWN };
+		inline static KeyName HOME{ KeyCode::HOME };
+		inline static KeyName END{ KeyCode::END };
+		inline static KeyName CAPS_LOCK{ KeyCode::CAPS_LOCK };
+		inline static KeyName SCROLL_LOCK{ KeyCode::SCROLL_LOCK };
+		inline static KeyName NUM_LOCK{ KeyCode::NUM_LOCK };
+		inline static KeyName PRINT_SCREEN{ KeyCode::PRINT_SCREEN };
+		inline static KeyName PAUSE{ KeyCode::PAUSE };
+		inline static KeyName F1{ KeyCode::F1 };
+		inline static KeyName F2{ KeyCode::F2 };
+		inline static KeyName F3{ KeyCode::F3 };
+		inline static KeyName F4{ KeyCode::F4 };
+		inline static KeyName F5{ KeyCode::F5 };
+		inline static KeyName F6{ KeyCode::F6 };
+		inline static KeyName F7{ KeyCode::F7 };
+		inline static KeyName F8{ KeyCode::F8 };
+		inline static KeyName F9{ KeyCode::F9 };
+		inline static KeyName F10{ KeyCode::F10 };
+		inline static KeyName F11{ KeyCode::F11 };
+		inline static KeyName F12{ KeyCode::F12 };
+		inline static KeyName F13{ KeyCode::F13 };
+		inline static KeyName F14{ KeyCode::F14 };
+		inline static KeyName F15{ KeyCode::F15 };
+		inline static KeyName F16{ KeyCode::F16 };
+		inline static KeyName F17{ KeyCode::F17 };
+		inline static KeyName F18{ KeyCode::F18 };
+		inline static KeyName F19{ KeyCode::F19 };
+		inline static KeyName F20{ KeyCode::F20 };
+		inline static KeyName F21{ KeyCode::F21 };
+		inline static KeyName F22{ KeyCode::F22 };
+		inline static KeyName F23{ KeyCode::F23 };
+		inline static KeyName F24{ KeyCode::F24 };
+		inline static KeyName F25{ KeyCode::F25 };
+		inline static KeyName KP_0{ KeyCode::KP_0 };
+		inline static KeyName KP_1{ KeyCode::KP_1 };
+		inline static KeyName KP_2{ KeyCode::KP_2 };
+		inline static KeyName KP_3{ KeyCode::KP_3 };
+		inline static KeyName KP_4{ KeyCode::KP_4 };
+		inline static KeyName KP_5{ KeyCode::KP_5 };
+		inline static KeyName KP_6{ KeyCode::KP_6 };
+		inline static KeyName KP_7{ KeyCode::KP_7 };
+		inline static KeyName KP_8{ KeyCode::KP_8 };
+		inline static KeyName KP_9{ KeyCode::KP_9 };
+		inline static KeyName KP_DECIMAL{ KeyCode::KP_DECIMAL };
+		inline static KeyName KP_DIVIDE{ KeyCode::KP_DIVIDE };
+		inline static KeyName KP_MULTIPLY{ KeyCode::KP_MULTIPLY };
+		inline static KeyName KP_SUBTRACT{ KeyCode::KP_SUBTRACT };
+		inline static KeyName KP_ADD{ KeyCode::KP_ADD };
+		inline static KeyName KP_ENTER{ KeyCode::KP_ENTER };
+		inline static KeyName KP_EQUAL{ KeyCode::KP_EQUAL };
+		inline static KeyName LEFT_SHIFT{ KeyCode::LEFT_SHIFT };
+		inline static KeyName LEFT_CONTROL{ KeyCode::LEFT_CONTROL };
+		inline static KeyName LEFT_ALT{ KeyCode::LEFT_ALT };
+		inline static KeyName LEFT_SUPER{ KeyCode::LEFT_SUPER };
+		inline static KeyName RIGHT_SHIFT{ KeyCode::RIGHT_SHIFT };
+		inline static KeyName RIGHT_CONTROL{ KeyCode::RIGHT_CONTROL };
+		inline static KeyName RIGHT_ALT{ KeyCode::RIGHT_ALT };
+		inline static KeyName RIGHT_SUPER{ KeyCode::RIGHT_SUPER };
+		inline static KeyName MENU{ KeyCode::MENU };
+		inline static KeyName MOUSE_LEFT{ KeyCode::MOUSE_LEFT };
+		inline static KeyName MOUSE_RIGHT{ KeyCode::MOUSE_RIGHT };
+		inline static KeyName MOUSE_MIDDLE{ KeyCode::MOUSE_MIDDLE };
+
+	};
+
+	struct STATE {
+		inline static KeyState UP{ StateCode::UP };
+		inline static KeyState DOWN{ StateCode::DOWN };
+	};
+
+	struct ACTION {
+		inline static KeyAction RELEASE{ ActionCode::RELEASE };
+		inline static KeyAction PRESS{ ActionCode::PRESS };
+		inline static KeyAction REPEAT{ ActionCode::REPEAT };
+	};
+
 	struct CURSOR {
 		inline static const CursorPosition X{ offsetof(Cursor,x) };
 		inline static const CursorPosition Y{ offsetof(Cursor,y) };
 	};
 
-	static double_t now();
-	static double_t delta();
+
+
+	static double now();
+	static double delta();
+
+	static bool isKeyDown(KeyName& key);
+	static bool isKeyUp(KeyName& key);
+
+	static bool isKeyPressed(KeyName& key);
+	static bool isKeyReleased(KeyName& key);
 
 private:
+	static void keyHandler(GLFWwindow* window, KeyCode key, ActionCode action);
 
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void cursor_position_callback(GLFWwindow* window, double x, double y);
@@ -450,7 +449,7 @@ private:
 	//static void window_focus_callback(GLFWwindow* window, int focused);
 
 	inline static std::vector<Button> buttonEvents;
-	inline static std::unordered_map<enumKEY, enumSTATE> buttonStates;
+	inline static std::unordered_map<KeyCode, StateCode> buttonStates;
 	inline static std::vector<Cursor> cursorEvents;
 	inline static std::vector<Wheel> wheelEvents;
 	
@@ -460,8 +459,8 @@ private:
 
 	static bool startup;
 
-	static double_t lastPollTime;
-	static double_t currentPollTime;
+	static double lastPollTime;
+	static double currentPollTime;
 
 	inline static bool firstPoll = true;
 };

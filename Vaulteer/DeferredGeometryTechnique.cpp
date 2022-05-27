@@ -13,10 +13,6 @@ void DeferredGeometryTechnique::setModelView(const glm::dmat4& model, const glm:
     setNormal(model);
 }
 
-void DeferredGeometryTechnique::setProjection(const glm::mat4& projection) {
-    shader->setUniform(Binder::geometry_vertex::uniforms::projection, 1, GL_FALSE, projection);
-}
-
 void DeferredGeometryTechnique::setNormal(const glm::mat4& normal) {
     shader->setUniform(Binder::geometry_vertex::uniforms::normal, 1, GL_FALSE, glm::transpose(glm::inverse(normal)));
 }
@@ -28,6 +24,10 @@ void DeferredGeometryTechnique::setTextureUnit(const GLint& texture) {
 /*void DeferredGeometryTechnique::setModelNumber(const GLint& modelNumber) {
     shader->setUniform(Binder::geometry_frag::uniforms::modelNumber, modelNumber);
 }*/
+
+void DeferredGeometryTechnique::uploadProjection(const glm::mat4& projection) {
+    camera.insert(projection);
+}
 
 void DeferredGeometryTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
     std::vector<ModelData::ModelUnitData> unitData;

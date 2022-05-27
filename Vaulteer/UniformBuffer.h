@@ -28,13 +28,13 @@ public:
 	}
 
 	template<class T>
-	void insert(T& data) {
+	void insert(const T& data) {
 		size_t dataSize = sizeof(data);
 		if (dataSize > size)
 			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << buffer << ": " << size << " <- " << dataSize << std::endl;
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
-		glNamedBufferData(buffer, std::min(size, dataSize), data, drawHint);
+		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
 	}
 
 private:

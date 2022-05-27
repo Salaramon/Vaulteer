@@ -6,7 +6,6 @@
 
 #include <DebugYourself.h>
 
-#include "OpenGL.h"
 #include "Event.h"
 #include "Game.h"
 

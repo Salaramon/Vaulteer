@@ -134,7 +134,7 @@ size_t Game::run() {
 	camera->lockUp(worldUp);
 	camera->setPosition(0, 10, 0);
 
-	double_t vel = 0;
+	double vel = 0;
 
 	while (window->is_running()) {
 
@@ -145,32 +145,32 @@ size_t Game::run() {
 
 
 		camera->rotate(Event::CURSOR::X.delta() * sens / 1.35, Event::CURSOR::Y.delta() * sens, 0);
-		if (Event::KEY::SPACE >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::SPACE)) {
 			camera->move(worldUp * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::LEFT_CONTROL >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::LEFT_CONTROL)) {
 			camera->move(-worldUp * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::W >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::W)) {
 			camera->move(camera->getFront() * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::S >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::S)) {
 			camera->move(-camera->getFront() * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::A >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::A)) {
 			camera->move(camera->getRight() * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::D >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::D)) {
 			camera->move(-camera->getRight() * (float)Event::delta() * speed);
 		}
-		if (Event::KEY::E >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::E)) {
 			camera->rotate(0, 0, (float)Event::delta() * (speed / sens));
 		}
-		if (Event::KEY::Q >> Event::STATE::DOWN) {
+		if (Event::isKeyDown(Event::KEY::Q)) {
 			camera->rotate(0, 0, -(float)Event::delta() * (speed / sens));
 		}
 
-		if (Event::KEY::T >> Event::ACTION::PRESS) {
+		if (Event::isKeyPressed(Event::KEY::T)) {
 			DebugLogger<>::enableLogging();
 			std::cout << "reloading shader" << std::endl;
 			renderer.reload();

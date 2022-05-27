@@ -456,9 +456,12 @@ namespace Binder {
 		struct uniforms {
 			 inline static Uniform<glm::mat4> model{Uniform<glm::mat4>("mat4", String("model"), 0, 64)};
 			 inline static Uniform<glm::mat4> modelView{Uniform<glm::mat4>("mat4", String("modelView"), 0, 64)};
-			 inline static Uniform<glm::mat4> projection{Uniform<glm::mat4>("mat4", String("projection"), 0, 64)};
 			 inline static Uniform<glm::mat4> normal{Uniform<glm::mat4>("mat4", String("normal"), 0, 64)};
 		};
+		struct buffers {
+			inline static UniformBufferInfo Camera{ 0, 64, "Camera" };
+		};
+
 	};
 
 	struct lightsource_frag {
