@@ -15,7 +15,7 @@
 
 
 using DeferredDynamicScene = DynamicScene<Camera>;
-using DeferredStaticScene = StaticScene<Model<ModelData>, Model<LineData>>;
+using DeferredStaticScene = StaticScene<Model<ModelData>>;
 
 class DeferredRenderer : public RendererPrerequisites<DeferredDynamicScene, DeferredStaticScene>, public DeferredGeometryTechnique, public DeferredLightingTechnique {
 private:

@@ -32,10 +32,8 @@ size_t Game::run() {
 
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
-	StaticScene<Model<ModelData>> staticScene;
-	// TODO: this doesn't work
-	//StaticScene<Model<ModelData>, Model<LineData>> staticScene;
-	//scene.finalize();
+	//StaticScene<Model<ModelData>> staticScene;
+	StaticScene<Model<ModelData>, Model<LineData>> staticScene;
 
 	//Setting up cameras in the scene.
 	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
