@@ -8,32 +8,14 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	quad = std::make_unique<ModelData>(std::move(loader.importModel("quad.obj")));
 }
 
+
+
 void DeferredRenderer::preload(ResourcePack& pack) {
 	auto& modelVector = pack.getAllResources();
 
 	DeferredGeometryTechnique::uploadModelUnitTables(modelVector);
 	DeferredLightingTechnique::uploadMaterialData(modelVector);
 }
-
-/*void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
-	const SceneObjects<Model<ModelData>>& modelVector = staticScene.getVector<Model<ModelData>>();
-	const SceneObjects<Camera>& cameraVector = staticScene.getVector<Camera>();
-
-	if (buildBatch) {
-		for (auto& model : staticScene.getVector<Model<ModelData>>()){
-			batchManager.setTextureID(model->getData()->getTextureID());
-
-			for (auto& mesh : model->getData()->getMeshes()) {
-				batchManager.addToBatch(mesh, model->getModelMatrix());
-			}
-		}
-
-		buildBatch = false;
-	}
-
-	geometryPass(modelVector, cameraVector.front().get());
-	lightingPass(modelVector, cameraVector.front().get());
-}*/
 
 void DeferredRenderer::geometryPass(Camera* camera) {
 	OpenGL::enableDepthTest();

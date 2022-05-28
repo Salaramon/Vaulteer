@@ -80,7 +80,7 @@ size_t Game::run() {
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer<DeferredRenderer> renderer;
+	Renderer<DeferredRenderer, ForwardRenderer> renderer;
 	DeferredRenderer::initialize(window->getWidth(), window->getHeight());
 
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
@@ -91,6 +91,8 @@ size_t Game::run() {
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
 	StaticScene<Model<ModelData>> staticScene;
+	//StaticScene<UIObject> uiScene;
+
 	// TODO: this doesn't work
 	//StaticScene<Model<ModelData>, Model<LineData>> staticScene;
 	//scene.finalize();

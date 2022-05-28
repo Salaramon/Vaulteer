@@ -36,7 +36,7 @@ int Window::getWidth()
 
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	//glViewport(0, 0, width, height);
 	DebugLogger<Window> log;
 	log.debug("Viewport: width=" + std::to_string(width) + "height=" + std::to_string(height) + "\n", "glViewport");
 }
