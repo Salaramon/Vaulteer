@@ -38,7 +38,7 @@ size_t Game::run() {
 	//scene.finalize();
 
 	//Setting up cameras in the scene.
-	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 140, (float)window->getWidth() / (float)window->getHeight()));
+	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	auto setAspectRatio = [&](int w, int h) { camera->setAspectRatio(w, h); };
 	window->addResizeCallback(setAspectRatio);
 
@@ -57,8 +57,8 @@ size_t Game::run() {
 	std::vector<Model<ModelData>*> modelsObjects;
 
 	//Generate floor
-	intmax_t width = 128;
-	intmax_t height = 128;
+	intmax_t width = 32;
+	intmax_t height = 32;
 	for (intmax_t i = -(width / 2); i < (width / 2); i++) {
 		for (intmax_t j = -(height / 2); j < (height / 2); j++) {
 			crate.setPosition(4 * i, ((float)(rand() % 8)/2)-4, 4 * j);

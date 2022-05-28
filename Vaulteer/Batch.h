@@ -21,10 +21,10 @@ public:
 	void bind();
 	void unbind();
 
-private:
 	VertexBuffer<Vertex> vertexBuffer;
 	ElementBuffer indexBuffer;
 
+private:
 	size_t vertexBufferSize;
 	size_t indexBufferSize;
 };

@@ -12,6 +12,7 @@ void BatchManager::addToBatch(BatchManager& manager, const Mesh& mesh, glm::mat4
 	}
 
 	Batch* batch = batches.back().get();
+
 	if (!batch->add(mesh, modelMat)) {
 		batches.push_back(std::make_unique<Batch>(manager.textureID, default_vertex_buffer_size, default_index_buffer_size));
 		batches.back()->add(mesh, modelMat);

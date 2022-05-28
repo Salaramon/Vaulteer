@@ -86,7 +86,8 @@ void DeferredLightingTechnique::uploadMaterialData(const std::vector<ModelData*>
             materials.push_back(mesh.material.data);
         }
     }
-    getUBMaterialData().insert(materials);
+    auto& materialData = getUBMaterialData();
+    UniformBuffer::insert(materialData, materials);
 }
 
 /*void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {

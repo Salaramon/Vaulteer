@@ -59,23 +59,23 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 
 void Window::focus_callback(GLFWwindow* window, int focused)
 {
-	if (focused == GLFW_TRUE) {
+	//if (focused == GLFW_TRUE) {
 		glfwMakeContextCurrent(window);
-	}
-	else {
-		glfwMakeContextCurrent(nullptr);
-	}
+	//}
+	//else {
+	//	glfwMakeContextCurrent(nullptr);
+	//}
 
 }
 
 void Window::iconify_callback(GLFWwindow* window, int iconified)
 {
-	if (iconified == GLFW_FALSE) {
+	//if (iconified == GLFW_FALSE) {
 		glfwMakeContextCurrent(window);
-	}
-	else {
-		glfwMakeContextCurrent(nullptr);
-	}
+	//}
+	//else {
+	//	glfwMakeContextCurrent(nullptr);
+	//}
 }
 
 void Window::setup(const std::string title, unsigned const int width, unsigned const int height)

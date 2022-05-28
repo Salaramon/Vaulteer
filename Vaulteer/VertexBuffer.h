@@ -40,6 +40,8 @@ public:
 
 //private:
 	void bindVertexArray();
+
+	GLuint getBuffer() { return buffer; }
 };
 
 
@@ -47,7 +49,7 @@ template<class Store>
 VertexBuffer<Store>::VertexBuffer() {}
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
+VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 	debug("VertexBuffer created with size " + std::to_string(bufferSize) + ".Buffer: " + std::to_string(buffer) + "\n");
 
 	reserve(bufferSize);
@@ -58,7 +60,7 @@ inline VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 }
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
+VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
 	debug("VertexBuffer destroyed. Buffer: " + std::to_string(buffer) + "\n");
 
 	insert(vertices);
@@ -70,7 +72,7 @@ inline VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
 
 
 template<class Store>
-inline VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
+VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
 	Buffer(std::move(other)) {
 	//other.vao = nullptr;
 	debug("VertexBuffer moved. Buffer: " + std::to_string(buffer) + "\n");

@@ -227,6 +227,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
         specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess);
+
         float shadowFactor = 1.0 - shadow;
         specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
     }
@@ -312,7 +313,6 @@ void main() {
 
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-
 
     //float material = texture(gMaterial, TexCoords).x;
  
