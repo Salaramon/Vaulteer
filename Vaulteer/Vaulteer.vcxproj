@@ -89,6 +89,13 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(SolutionDir)DebugYourself\lib\release;$(SolutionDir)sqlite\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -352,4 +359,3 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>

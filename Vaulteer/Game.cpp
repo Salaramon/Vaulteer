@@ -58,9 +58,19 @@ void Game::loadResources() {
 	}
 
 	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("sphere", std::make_unique<LineData>(
+		glm::vec4(1, 1, 1, 1),
 		spherePoints
 	)));
 	*/
+
+	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("cross", std::make_unique<LineData>(
+		glm::vec4(0,1,0,1),
+		std::vector<Point>({
+			glm::vec3(1,1,1), glm::vec3(-1,-1,-1),
+			glm::vec3(-1,1,1), glm::vec3(1,-1,-1),
+			glm::vec3(-1,1,-1), glm::vec3(1,-1,1),
+			glm::vec3(1,1,-1), glm::vec3(-1,-1,1)
+		}))));
 
 }
 
@@ -120,11 +130,10 @@ size_t Game::run() {
 
 	//objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
 	//objects.back()->setScale(1000, 1000, 1000);
-	//models.push_back(meshLayer->addModel(modelByName("chaos1")));
-	//models.push_back(meshLayer->addModel(modelByName("chaos2")));
-	//models.back()->setPolygonMode(Model::Polygon::Line);
-	//models.back()->setPolygonLineWidth(5);
-
+	
+	objects.push_back(scene.addObject(modelByName(lines, "cross")));
+	objects.back()->setPosition(5, 5, 0);
+	objects.back()->setScale(0.05, 0.05, 0.05);
 	//models.push_back(lineLayer->addModel(modelByName("line")));
 	//models.back()->setPolygonLineWidth(5);
 

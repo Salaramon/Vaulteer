@@ -44,8 +44,8 @@ public:
 
 	template<class... Args>
 	requires (std::conjunction_v<std::is_same<glm::vec3, Args>...> && sizeof...(Args) % 2 == 0)
-	LineData(glm::vec3 first, Args... args);
-	LineData(std::vector<Point> lines);
+	LineData(glm::vec4 color, glm::vec3 first, Args... args);
+	LineData(glm::vec4 color, std::vector<Point> lines);
 	
 	void draw(const Shader& shader);
 	void setColor(glm::vec4 color);
