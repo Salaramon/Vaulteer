@@ -94,7 +94,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\miniball;C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -152,8 +152,7 @@
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>"$(ProjectDir)GLSLCPPBinder.exe"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -256,11 +255,13 @@
     <ClInclude Include="ModelResourceLocator.h" />
     <ClInclude Include="PackedTexture2DArray.h" />
     <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="BoundingSphereHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClusteredForwardRenderer.h" />
     <ClInclude Include="ClusterTileTechnique.h" />
     <ClInclude Include="DebugAliases.h" />
     <ClInclude Include="DebugLogger.h" />
+    <ClInclude Include="DynamicScene.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="ForwardTechnique.h" />
     <ClInclude Include="FrameBuffer.h" />
@@ -279,7 +280,9 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ResourcePack.h" />
+    <ClInclude Include="RendererPrerequisites.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="StaticScene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ShadowCascade.h" />
     <ClInclude Include="ShadowCubeBuffer.h" />
@@ -289,6 +292,7 @@
     <ClInclude Include="CubemapTexture.h" />
     <ClInclude Include="TypeDefUtils.h" />
     <ClInclude Include="UniformBuffer.h" />
+    <ClInclude Include="TemplateUtility.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ElementBuffer.h" />

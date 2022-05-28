@@ -44,8 +44,8 @@ void Game::loadResources() {
 	}))));
 
 	std::vector<Point> spherePoints;
-	const size_t resolution = 256;
-	const size_t curves = 256;
+	const size_t resolution = 128;
+	const size_t curves = 128;
 
 	for (size_t i = 0; i < curves; i++) {
 		for (size_t j = 0; j < resolution; j++) {
@@ -80,25 +80,22 @@ size_t Game::run() {
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer<DeferredRenderer> renderer;
-	renderer.initialize(window->getWidth(), window->getHeight());
-
+	Renderer<ForwardRenderer> renderer;
+	
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
 	DebugLogger<>::setClassAccessLimit("Shader", 10);
 	DebugLogger<>::printClass("Shader");
 	DebugLogger<>::disableLogging();
 
 	//Scenes
-	Renderer<DeferredRenderer>::Scene scene;
-	Renderer<DeferredRenderer>::Scene dynamicScene;
+	DynamicScene<Camera> dynamicScene;
+	StaticScene<Model<ModelData>, Model<LineData>> staticScene;
+	//scene.finalize();
 
 	//Setting up cameras in the scene.
-	Camera* camera = scene.addObject(Camera(glm::vec3(0, -10, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
+	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
 	//Select the active camera.
 	//scene.setActiveCamera(camera);
-
-	//Set up render passe(s) for each render strata.
-	// none
 
 	ResourcePack& pack = resourceManager.getPack(0);
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
@@ -109,33 +106,23 @@ size_t Game::run() {
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
-	objects.push_back(scene.addObject(std::move(backpack)));
-	objects.back()->setPosition(0, 5, 0);
+	std::vector<Model<ModelData>*> modelsObjects;
 
 	//Generate floor
-	intmax_t width = 16;
-	intmax_t height = width;
-	for (intmax_t i = -(width / 2); i < width; i++) {
-		for (intmax_t j = -(height / 2); j < height; j++) {
-			objects.push_back(scene.addObject(std::move(crate)));
-			objects.back()->setPosition(2 * i, rand() % 4, 2 * j);
-			//objects.back()->setScale(0.4, 0.4, 0.4);
+	intmax_t width = 32;
+	intmax_t height = 32;
+	for (intmax_t i = -(width / 2); i < (width / 2); i++) {
+		for (intmax_t j = -(height / 2); j < (height / 2); j++) {
+			crate.setPosition(4 * i, 0, 4 * j);
+			staticScene.addObject(std::move(crate), crate.getBoundingSphere());
 		}
 	}
 
+	backpack.setPosition(0, 10, -10);
+	staticScene.addObject(std::move(backpack), backpack.getBoundingSphere());
 
-	objects.push_back(scene.addObject(std::move(crate)));
-	objects.back()->setPosition(1, 10, 1);
-	objects.back()->setScale(0.6, 0.6, 0.6);
-
-	//objects.back()->setRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	//objects.back()->setScale(1000, 1000, 1000);
+	staticScene.finalize();
 	
-	objects.push_back(scene.addObject(modelByName(lines, "cross")));
-	objects.back()->setPosition(5, 5, 0);
-	objects.back()->setScale(0.05, 0.05, 0.05);
-	//models.push_back(lineLayer->addModel(modelByName("line")));
-	//models.back()->setPolygonLineWidth(5);
 
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
@@ -195,8 +182,12 @@ size_t Game::run() {
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
+		//renderer.add<Renderers, renderer2>(scene);
+		//...
 
-		renderer.render(scene, dynamicScene);
+		
+		renderer.render(dynamicScene, staticScene);
 
 		glfwSwapBuffers(window->getRawWindow());
 

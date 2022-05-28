@@ -479,6 +479,12 @@
     <ClInclude Include="BatchManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RendererPrerequisites.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateUtility.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GLSLSourceFiles.toml">

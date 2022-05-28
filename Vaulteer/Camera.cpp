@@ -100,9 +100,21 @@ glm::mat4 Camera::getProjectionMatrix()
 	return glm::perspective(glm::radians(fov), aspectRatio, 0.1f, renderDistance);
 }
 
-glm::mat4 Camera::getFrustumMatrix()
+Camera::Frustum Camera::getFrustum()
 {
-    return glm::mat4();
+	std::array<glm::vec4, 6> frustumArray;
+	glm::mat4 projectionMatrix = getProjectionMatrix();
+
+	std::array<std::function<size_t(const size_t&, const size_t&)>, 2> op = { std::plus<size_t>(), std::minus<size_t>() };
+	for (size_t i = 0; i < frustumArray.size(); i++) {
+		for (size_t j = 0; j < 4; j++) {
+			frustumArray[i][j] = op[i%2](projectionMatrix[j][3], projectionMatrix[j][i%3]);
+		}
+	}
+
+	Frustum frustum = Frustum(frustumArray);
+	
+    return frustum;
 }
 
 glm::vec3 Camera::getPosition()
