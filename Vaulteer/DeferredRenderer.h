@@ -13,12 +13,14 @@
 #include "ResourcePack.h"
 #include "RendererPrerequisites.h"
 
+
 using DeferredDynamicScene = DynamicScene<Camera>;
-using DeferredStaticScene = StaticScene<Model<ModelData>>;
+using DeferredStaticScene = StaticScene<Model<ModelData>, Model<LineData>>;
 
 class DeferredRenderer : public RendererPrerequisites<DeferredDynamicScene, DeferredStaticScene>, public DeferredGeometryTechnique, public DeferredLightingTechnique {
 private:
-	using DeferredStaticSceneIteratorPair = typename DeferredStaticScene::template StaticSceneIterator<Model<ModelData>>;
+	template<class... Args>
+	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Model<ModelData>>;
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
 	inline static std::unique_ptr<ModelData> quad;
@@ -41,11 +43,12 @@ public:
 
 	template<class... DynamicSceneObjects, class... StaticSceneObjects>
 	static void render(DynamicScene<DynamicSceneObjects...>& dynamicScene, StaticScene<StaticSceneObjects...>& staticScene) {
-
+		
 		auto cameraIteratorFirst = dynamicScene.get<Camera>().first;
 		auto* camera = (*cameraIteratorFirst).get();
 
-		const DeferredStaticSceneIteratorPair& staticSceneIt = staticScene.get<Model<ModelData>>([&](glm::vec4 ignored) -> bool { return true; });
+		using SModelIterator = DeferredStaticModelIteratorPair<StaticSceneObjects...>;
+		const SModelIterator& staticSceneIt = staticScene.get<Model<ModelData>>([&](glm::vec4 ignored) -> bool { return true; });
 
 		if (buildBatch) {
 			for (auto it = staticSceneIt.first; it != staticSceneIt.second; it++) {

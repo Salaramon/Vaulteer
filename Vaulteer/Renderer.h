@@ -4,8 +4,6 @@
 #include <tuple>
 #include <utility>
 
-#include "RendererPrerequisites.h"
-#include "Scene.h"
 #include "TemplateUtility.h"
 
 #include "StaticScene.h"
@@ -18,7 +16,6 @@
 #include "Camera.h"
 #include "Model.h"
 #include "ModelData.h"
-#include "ForwardRenderer.h"
 
 
 template<class SceneInput, class SceneData>
@@ -28,7 +25,7 @@ public:
 	template<class T1, class T2>
 	using CheckIfTemplateContainersAreNotSame = stl::Not<std::is_same<stl::ExtractTemplateType_t<T1>, stl::ExtractTemplateType_t<T2>>>;
 	template<class T1, class T2>
-	using CheckIfTemplateArgumentsAreNotSame = stl::Not<stl::SetIsSupersetOfSubset<stl::ExtractTemplateArguments_t<T1>, stl::ExtractTemplateArguments_t<T2>>>;
+	using CheckIfTemplateArgumentsAreNotSame = stl::Not<stl::SetIsSupersetOfSubset<stl::ExtractTemplateArguments_t<T2>, stl::ExtractTemplateArguments_t<T1>>>;
 	template<class T1, class T2>
 	using CombinedChecks = std::disjunction<CheckIfTemplateContainersAreNotSame<T1, T2>, CheckIfTemplateArgumentsAreNotSame<T1, T2>>;
 
