@@ -42,26 +42,19 @@ vec3 getTexUnitCoords(vec3 texCoords, int modelNumber, int unitIndex) {
 
 void main() {
     vec3 diffuseCoords = vec3(fs_in.TexCoords, 0);
+    vec3 specularCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, specular_unit_index);
+    vec3 normalCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, normals_unit_index);
+    
+    gPosition = fs_in.fragPosition;
 
     vec2 normalsDelta = vec2(unitTable[fs_in.modelNumber * 3 + normals_unit_index].xDelta, unitTable[fs_in.modelNumber * 3 + normals_unit_index].yDelta);
     vec3 normal;
-    if (normalsDelta != vec2(0.0)) { // normal map exists?
-        vec3 normalCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, normals_unit_index);
+    if (normalsDelta != vec2(0.0)) // normal map exists?
         normal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
-    }
     else
         normal = fs_in.tbnMat[2];
 
-    vec2 specularDelta = vec2(unitTable[fs_in.modelNumber * 3 + specular_unit_index].xDelta, unitTable[fs_in.modelNumber * 3 + specular_unit_index].yDelta);
-    float specular;
-    if (specularDelta != vec2(0.0)){ // specular map exists?
-        vec3 specularCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.modelNumber, specular_unit_index);
-        specular = texture(textureLib, specularCoords).r;
-    }
-    else 
-        specular = 0.8;
-        
-    gPosition = fs_in.fragPosition;
     gNormal = vec4(normal, float(fs_in.modelNumber));
-    gColor = vec4(texture(textureLib, diffuseCoords).rgb, specular);
+    //gColor = vec4(float(fs_in.modelNumber), 0.0, 0.0, 1.0);
+    gColor = vec4(texture(textureLib, diffuseCoords).rgb, texture(textureLib, specularCoords).r);
 }

@@ -34,11 +34,48 @@ int Window::getWidth()
 	return width;
 }
 
+void Window::addResizeCallback(std::function<void(int, int)> callback)
+{
+	resizeCallbacks.at(window).push_back(callback);
+}
+
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	//glViewport(0, 0, width, height);
-	DebugLogger<Window> log;
-	log.debug("Viewport: width=" + std::to_string(width) + "height=" + std::to_string(height) + "\n", "glViewport");
+	glViewport(0, 0, width, height);
+
+	GLFWwindow* currentWindow = glfwGetCurrentContext();
+
+	auto it = resizeCallbacks.find(currentWindow);
+
+	if (it != resizeCallbacks.end()) {
+		std::vector<std::function<void(int, int)>>& callbackVector = it->second;
+
+		for (auto& fn : callbackVector) {
+			fn(width, height);
+		}
+	}
+
+}
+
+void Window::focus_callback(GLFWwindow* window, int focused)
+{
+	if (focused == GLFW_TRUE) {
+		glfwMakeContextCurrent(window);
+	}
+	else {
+		glfwMakeContextCurrent(nullptr);
+	}
+
+}
+
+void Window::iconify_callback(GLFWwindow* window, int iconified)
+{
+	if (iconified == GLFW_FALSE) {
+		glfwMakeContextCurrent(window);
+	}
+	else {
+		glfwMakeContextCurrent(nullptr);
+	}
 }
 
 void Window::setup(const std::string title, unsigned const int width, unsigned const int height)
@@ -51,8 +88,11 @@ void Window::setup(const std::string title, unsigned const int width, unsigned c
 	//glfwTerminate(); <<<<<<<<<
 
 	glfwMakeContextCurrent(window);
-	debug("GLFW window context set.\n");
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	debug("GLFW window resize framebuffer callback set.\n");
+	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
+
+	glfwSetWindowFocusCallback(window, focus_callback);
+
+	glfwSetWindowIconifyCallback(window, iconify_callback);
 }

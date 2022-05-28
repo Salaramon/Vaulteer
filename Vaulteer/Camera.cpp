@@ -146,6 +146,11 @@ float Camera::getAspectRatio() {
 	return aspectRatio;
 }
 
+void Camera::setAspectRatio(int width, int height)
+{
+	aspectRatio = (float)width / (float)height;
+}
+
 glm::vec3 Camera::getFront()
 {
 	glm::quat qF = orientation * glm::quat(0, 0, 0, -1) * glm::conjugate(orientation);

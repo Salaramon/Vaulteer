@@ -12,66 +12,6 @@ void Game::loadResources() {
 	};
 	resourceManager.createPack(locators);
 
-	/*
-	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("line", std::make_unique<LineData>(
-		glm::vec3(5, 5, 5), glm::vec3(10, 5, 5),
-		glm::vec3(5, 5, 5), glm::vec3(10, 10, 5),
-		glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
-
-		glm::vec3(5, 5, 5), glm::vec3(5, 5, 10),
-		glm::vec3(5, 5, 5),  glm::vec3(5, 10, 10),
-		glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
-	)));
-	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos1", std::make_unique<ModelData>(
-		1, 1,
-		std::vector<glm::vec4>({
-			glm::vec4(0,0,1,1)
-		}),
-		std::vector<Vertex>({
-			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
-			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
-		}
-	))));
-
-	models.emplace(std::make_pair<std::string, std::unique_ptr<ModelData>>("chaos2", std::make_unique<ModelData>(
-		1, 1,
-		std::vector<glm::vec4>({
-			glm::vec4(1, 1, 1, 1)
-		}),
-		std::vector<Vertex>({
-			glm::vec3(5, 5, 5), glm::vec3(10, 5, 5), glm::vec3(10, 10, 5),
-			glm::vec3(5, 5, 5), glm::vec3(5, 5, 10), glm::vec3(5, 10, 10)
-	}))));
-
-	std::vector<Point> spherePoints;
-	const size_t resolution = 128;
-	const size_t curves = 128;
-
-	for (size_t i = 0; i < curves; i++) {
-		for (size_t j = 0; j < resolution; j++) {
-			spherePoints.push_back(Point(
-				std::cos(glm::radians((360.0 * static_cast<double>(j)) / resolution))*std::sin(glm::radians((360.0 * static_cast<double>(i)) / curves)),
-				std::cos(glm::radians((360.0 * static_cast<double>(j)) / resolution))* std::cos(glm::radians((360.0 * static_cast<double>(i)) / curves)),
-				std::sin(glm::radians((360.0 * static_cast<double>(j)) / resolution))
-			));
-		}
-	}
-
-	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("sphere", std::make_unique<LineData>(
-		glm::vec4(1, 1, 1, 1),
-		spherePoints
-	)));
-	*/
-
-	/*lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("cross", std::make_unique<LineData>(
-		glm::vec4(0,1,0,1),
-		std::vector<Point>({
-			glm::vec3(1,1,1), glm::vec3(-1,-1,-1),
-			glm::vec3(-1,1,1), glm::vec3(1,-1,-1),
-			glm::vec3(-1,1,-1), glm::vec3(1,-1,1),
-			glm::vec3(1,1,-1), glm::vec3(-1,-1,1)
-		}))));
-		*/
 }
 
 size_t Game::run() {
@@ -80,7 +20,9 @@ size_t Game::run() {
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer<DeferredRenderer, ForwardRenderer> renderer;
+	auto rebuildGBuffer = [&](int w, int h) { DeferredRenderer::rebuildGBuffer(w, h); };
+	window->addResizeCallback(rebuildGBuffer);
+	Renderer<DeferredRenderer> renderer;
 	DeferredRenderer::initialize(window->getWidth(), window->getHeight());
 
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
@@ -91,16 +33,17 @@ size_t Game::run() {
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
 	StaticScene<Model<ModelData>> staticScene;
-	//StaticScene<UIObject> uiScene;
-
 	// TODO: this doesn't work
 	//StaticScene<Model<ModelData>, Model<LineData>> staticScene;
 	//scene.finalize();
 
 	//Setting up cameras in the scene.
-	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
-	//Select the active camera.
-	//scene.setActiveCamera(camera);
+	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 140, (float)window->getWidth() / (float)window->getHeight()));
+	auto setAspectRatio = [&](int w, int h) { camera->setAspectRatio(w, h); };
+	window->addResizeCallback(setAspectRatio);
+
+
+	//window->addReziseCallback(camera->onResize);
 
 	ResourcePack& pack = resourceManager.getPack(0);
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
@@ -114,11 +57,11 @@ size_t Game::run() {
 	std::vector<Model<ModelData>*> modelsObjects;
 
 	//Generate floor
-	intmax_t width = 32;
-	intmax_t height = 32;
+	intmax_t width = 128;
+	intmax_t height = 128;
 	for (intmax_t i = -(width / 2); i < (width / 2); i++) {
 		for (intmax_t j = -(height / 2); j < (height / 2); j++) {
-			crate.setPosition(4 * i, 0, 4 * j);
+			crate.setPosition(4 * i, ((float)(rand() % 8)/2)-4, 4 * j);
 			staticScene.addObject(std::move(crate), crate.getBoundingSphere());
 		}
 	}

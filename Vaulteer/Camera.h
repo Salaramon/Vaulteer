@@ -64,6 +64,7 @@ public:
 
 	float getFov();
 	float getAspectRatio();
+	void setAspectRatio(int width, int height);
 
 private:
 	glm::vec3 lockedUp = glm::vec3(0.0f);

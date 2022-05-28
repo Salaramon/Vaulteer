@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 #include "DebugLogger.h"
 
@@ -46,6 +47,7 @@ public:
 	//Returns window width.
 	int getWidth();
 
+	void addResizeCallback(std::function<void(int, int)> callback);
 
 private:
 
@@ -58,6 +60,9 @@ private:
 	//Is called when any windows' size is changed to update window parameters.
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+	static void focus_callback(GLFWwindow* window, int focused);
+
+	static void iconify_callback(GLFWwindow* window, int iconified);
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		 CLASS FUNCTIONS 		|
@@ -71,6 +76,8 @@ private:
 		|		UTILITY FUNCTIONS 		|
 		|_______________________________|	*/
 
+
+	inline static std::unordered_map<GLFWwindow*, std::vector<std::function<void(int, int)>>> resizeCallbacks;
 protected:
 
 //=============================================================================================================================================//

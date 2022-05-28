@@ -34,6 +34,7 @@ public:
 	static void reloadShaders();
 
 	static void rebuildBatch();
+	static void rebuildGBuffer(int width, int height);
 
 	static void geometryPass(Camera* camera);
 	static void lightingPass(Camera* camera);

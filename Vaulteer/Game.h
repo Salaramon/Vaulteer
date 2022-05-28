@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <functional>
 
 #include "Window.h"
 #include "Camera.h"

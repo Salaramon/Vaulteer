@@ -18,25 +18,23 @@ public:
 	UniformBuffer(UniformBuffer&& other) noexcept;
 
 	template<class T>
-	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
+	static void insert(UniformBuffer& ubo, std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
-		/*if (dataSize > ubo.size)
-			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << " from vector: " << ubo.size << " <- " << dataSize << std::endl; */
-		assert(dataSize <= ubo.size);
+		if (dataSize > ubo.size)
+			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << " from vector: " << ubo.size << " <- " << dataSize << std::endl;
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
 		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), data.data(), ubo.drawHint);
 	}
 
 	template<class T>
-	static void insert(UniformBuffer& ubo, const T& data) {
+	void insert(const T& data) {
 		size_t dataSize = sizeof(data);
-		/*if (dataSize > ubo.size)
-			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << ": " << ubo.size << " <- " << ubo.dataSize << std::endl;*/
-		assert(dataSize <= ubo.size);
+		if (dataSize > size)
+			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << buffer << ": " << size << " <- " << dataSize << std::endl;
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
-		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), &data, ubo.drawHint);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
+		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
 	}
 
 private:
