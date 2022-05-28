@@ -39,6 +39,7 @@ void initializeShaders() {
 	ShaderProgram<ForwardShader>::load();
 	ShaderProgram<LineShader>::load();
 	ShaderProgram<DeferredShader>::load();
+	ShaderProgram<GeometryShader>::load();
 }
 
 void cleanup() {
@@ -78,7 +79,8 @@ int main() {
 		gameFlags = game.run();
 	}
 
-	
+
 
 	cleanup();
 	return 0;
+}

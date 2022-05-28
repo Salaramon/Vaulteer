@@ -15,7 +15,7 @@ void DeferredRenderer::preload(ResourcePack& pack) {
 	DeferredLightingTechnique::uploadMaterialData(modelVector);
 }
 
-void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
+/*void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
 	const SceneObjects<Model<ModelData>>& modelVector = staticScene.getVector<Model<ModelData>>();
 	const SceneObjects<Camera>& cameraVector = staticScene.getVector<Camera>();
 
@@ -33,9 +33,9 @@ void DeferredRenderer::render(Scene& staticScene, Scene& dynamicScene) {
 
 	geometryPass(modelVector, cameraVector.front().get());
 	lightingPass(modelVector, cameraVector.front().get());
-}
+}*/
 
-void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
+void DeferredRenderer::geometryPass(Camera* camera) {
 	OpenGL::enableDepthTest();
 	DeferredGeometryTechnique::shader->use();
 	DeferredGeometryTechnique::uploadProjection(camera->getProjectionMatrix());
@@ -49,7 +49,7 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 
 	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
 
-	for (Batch& batch : batchManager.getBatches()) {
+	for (Batch& batch : BatchManager::getBatches(batchManager)) {
 		batch.bind();
 		GLint texID = batch.textureID;
 		if (currentlyBoundTexture != texID) {
@@ -64,7 +64,7 @@ void DeferredRenderer::geometryPass(const SceneObjects<Model<ModelData>>& modelV
 	gbuffer.get()->unbind();
 }
 
-void DeferredRenderer::lightingPass(const SceneObjects<Model<ModelData>>& modelVector, Camera* camera) {
+void DeferredRenderer::lightingPass(Camera* camera) {
 	OpenGL::disableDepthTest();
 	DeferredLightingTechnique::shader->use();
 	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));

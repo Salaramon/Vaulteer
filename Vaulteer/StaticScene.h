@@ -10,8 +10,11 @@
 template<class... SceneObjects>
 class StaticScene : public Scene<BoundingSphereHierarchy, SceneObjects...>
 {
-	using BaseScope = Scene<BoundingSphereHierarchy, SceneObjects...>;
 public:
+	using BaseScope = Scene<BoundingSphereHierarchy, SceneObjects...>;
+
+	template<class StoreType>
+	using StaticSceneIterator = BaseScope::template StoreRangeIterator<StoreType>;
 
 	template<class StoreType>
 	StoreType* addObject(StoreType&& object, glm::vec4 sphere) {
@@ -24,7 +27,7 @@ public:
 	}
 
 	template<class StoreType>
-	const std::pair<typename BaseScope::template iterator<StoreType>, typename BaseScope::template iterator<StoreType>> get(std::function<bool(glm::vec4)> boundingFunction) {
+	const StaticSceneIterator<StoreType> get(std::function<bool(glm::vec4)> boundingFunction) {
 		auto& container = std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers);
 		return container.equal_range(boundingFunction);
 	}

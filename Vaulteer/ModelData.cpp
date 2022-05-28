@@ -36,6 +36,23 @@ const ModelData::ModelUnitTable& ModelData::getModelUnitTable() const {
 	return modelUnitTable;
 }
 
+glm::vec4 ModelData::getBoundingSphere() {
+	std::vector<Seb::Point<double>> points;
+	for (const Mesh& m : meshes) {
+		for (const Vertex& v : m.vertices) {
+			std::vector<double> converter({ v.aPos.x, v.aPos.y, v.aPos.z });
+			points.push_back(Seb::Point<double>(3, converter.begin()));
+		}
+	}
+	Seb::Smallest_enclosing_ball<double> ball(3, points);
+	Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
+
+	glm::vec4 data(it[0], it[1], it[2], ball.radius());
+
+	return data;
+}
+
+
 void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 	this->textureID = texture.getTextureID();
 
@@ -49,17 +66,17 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 
 		// map vertices' texture coordinates to diffuse texture unit in packed library
 		for (auto& vertex : mesh.vertices) {
-			vertex.aTexCoords.x = vertex.aTexCoords.x * (double)diffuseUnit.w / texture.width  + (double)diffuseUnit.x / texture.width;
+			vertex.aTexCoords.x = vertex.aTexCoords.x * (double)diffuseUnit.w / texture.width + (double)diffuseUnit.x / texture.width;
 			vertex.aTexCoords.y = vertex.aTexCoords.y * (double)diffuseUnit.h / texture.height + (double)diffuseUnit.y / texture.height;
 		}
 		mesh.updateBuffer();
 
 		// set material units to relative units for every material but diffuse
 		for (const auto& entry : locators) {
-			if (entry.first == aiTextureType_DIFFUSE) { 
+			if (entry.first == aiTextureType_DIFFUSE) {
 				unitByTexturePath[locator.path] = diffuseUnit;
 				modelUnitTable.setUnit(aiTextureType_DIFFUSE, diffuseUnit);
-				continue; 
+				continue;
 			}
 			Texture2DArray::TextureResourceLocator locator = entry.second;
 
@@ -69,7 +86,4 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 			modelUnitTable.setUnit(entry.first, unit);
 		}
 	}
-
-	return Mesh(vertices, indices);
 }
-

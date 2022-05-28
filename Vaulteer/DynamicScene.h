@@ -14,6 +14,9 @@ public:
 	using BaseScope = Scene<std::vector, SceneObjects...>;
 
 	template<class StoreType>
+	using DynamicSceneIterator = BaseScope::template StoreRangeIterator<StoreType>;
+
+	template<class StoreType>
 	StoreType* addObject(StoreType&& object) {
 		std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).emplace_back(std::make_unique<StoreType>(std::move(object)));
 		return std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).back().get();
@@ -26,7 +29,7 @@ public:
 	}
 
 	template<class StoreType>
-	const std::pair<typename BaseScope::template iterator<StoreType>, typename BaseScope::template iterator<StoreType>> get() {
+	const DynamicSceneIterator<StoreType> get() {
 		using it = typename BaseScope::template iterator<StoreType>;
 		auto& container = std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers);
 		return std::make_pair(container.begin(), container.end());

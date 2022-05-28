@@ -9,7 +9,7 @@ ClusteredForwardRenderer::ClusteredForwardRenderer() : computedTilingTex(1280, 7
 	glBindImageTexture(0, computedTilingTex.textureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 }
 
-void ClusteredForwardRenderer::render(Scene& scene) {
+/*void ClusteredForwardRenderer::render(Scene& scene) {
 	ClusterTileTechnique::shader->use();
 	glBindTextureUnit(0, computedTilingTex.textureID);
 
@@ -33,4 +33,4 @@ void ClusteredForwardRenderer::render(Scene& scene) {
 	}
 	std::cout << std::endl;
 
-}
+}*/

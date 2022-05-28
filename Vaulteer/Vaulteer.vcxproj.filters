@@ -485,6 +485,18 @@
     <ClInclude Include="TemplateUtility.h">
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="BoundingSphereHierarchy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vpch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="GLSLSourceFiles.toml">
@@ -551,3 +563,4 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
+</Project>

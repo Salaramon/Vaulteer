@@ -18,8 +18,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Seb.h>
-
 #include "GraphicsData.h"
 
 #include "Texture2DArray.h"
@@ -80,8 +78,6 @@ public:
 		}
 	};
 	glm::vec4 getBoundingSphere();
-
-private:
 
 	ModelData(GLsizei width, GLsizei height, std::vector<glm::vec4> colors, std::vector<Vertex> vertices);
 	ModelData(std::string modelPath, std::vector<Mesh>& meshVec);

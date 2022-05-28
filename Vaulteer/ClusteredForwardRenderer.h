@@ -14,11 +14,9 @@
 class ClusteredForwardRenderer : public ClusterTileTechnique
 {
 public:
-	using Scene = Scene<Camera, Model<ModelData>>;
-
 	ClusteredForwardRenderer();
 
-	void render(Scene& scene);
+	//void render(Scene& scene);
 
 private:
 	glm::vec2 work_size = glm::vec2(12, 10);

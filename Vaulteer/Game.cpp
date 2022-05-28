@@ -63,7 +63,7 @@ void Game::loadResources() {
 	)));
 	*/
 
-	lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("cross", std::make_unique<LineData>(
+	/*lines.emplace(std::make_pair<std::string, std::unique_ptr<LineData>>("cross", std::make_unique<LineData>(
 		glm::vec4(0,1,0,1),
 		std::vector<Point>({
 			glm::vec3(1,1,1), glm::vec3(-1,-1,-1),
@@ -71,7 +71,7 @@ void Game::loadResources() {
 			glm::vec3(-1,1,-1), glm::vec3(1,-1,1),
 			glm::vec3(1,1,-1), glm::vec3(-1,-1,1)
 		}))));
-
+		*/
 }
 
 size_t Game::run() {
@@ -80,8 +80,9 @@ size_t Game::run() {
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	Renderer<ForwardRenderer> renderer;
-	
+	Renderer<DeferredRenderer> renderer;
+	DeferredRenderer::initialize(window->getWidth(), window->getHeight());
+
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
 	DebugLogger<>::setClassAccessLimit("Shader", 10);
 	DebugLogger<>::printClass("Shader");
@@ -89,7 +90,9 @@ size_t Game::run() {
 
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
-	StaticScene<Model<ModelData>, Model<LineData>> staticScene;
+	StaticScene<Model<ModelData>> staticScene;
+	// TODO: this doesn't work
+	//StaticScene<Model<ModelData>, Model<LineData>> staticScene;
 	//scene.finalize();
 
 	//Setting up cameras in the scene.
@@ -101,7 +104,7 @@ size_t Game::run() {
 	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
 	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("teapot"));
 
-	renderer.preload(pack);
+	DeferredRenderer::preload(pack);
 
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
@@ -122,7 +125,7 @@ size_t Game::run() {
 	staticScene.addObject(std::move(backpack), backpack.getBoundingSphere());
 
 	staticScene.finalize();
-	
+
 
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
@@ -169,7 +172,7 @@ size_t Game::run() {
 		if (Event::isKeyPressed(Event::KEY::T)) {
 			DebugLogger<>::enableLogging();
 			std::cout << "reloading shader" << std::endl;
-			renderer.reload();
+			DeferredRenderer::reloadShaders();
 
 			// TODO for dan: make function for printing and breaking at the same time (by message key)
 			DebugLogger<>::setClassAccessLimit("Shader", 10);
@@ -182,11 +185,11 @@ size_t Game::run() {
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
+
 		//renderer.add<Renderers, renderer2>(scene);
 		//...
 
-		
+
 		renderer.render(dynamicScene, staticScene);
 
 		glfwSwapBuffers(window->getRawWindow());

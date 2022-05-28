@@ -7,13 +7,13 @@ public:
 	const static inline size_t default_vertex_buffer_size = 4000000 / sizeof(Vertex);
 	const static inline size_t default_index_buffer_size = 1000000 / sizeof(Index);
 
-	BatchManager() {};
+	BatchManager() {}
 
-	void setTextureID(GLint textureID);
+	static void setTextureID(BatchManager& manager, GLint textureID);
 
-	void addToBatch(const Mesh& model, glm::mat4 modelMat);
+	static void addToBatch(BatchManager& manager, const Mesh& model, glm::mat4 modelMat);
 
-	std::vector<std::reference_wrapper<Batch>> getBatches();
+	static std::vector<std::reference_wrapper<Batch>> getBatches(BatchManager& manager);
 
 private:
 	std::vector<std::unique_ptr<Batch>> batches;

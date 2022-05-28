@@ -80,6 +80,9 @@ public:
 		IteratorType it;
 	};
 	
+	template<class StoreType>
+	using StoreRangeIterator = std::pair<iterator<StoreType>, iterator<StoreType>>;
+
 
 protected:
 	//std::tupleContainer::iterator 

@@ -26,7 +26,7 @@ void DeferredGeometryTechnique::setTextureUnit(const GLint& texture) {
 }*/
 
 void DeferredGeometryTechnique::uploadProjection(const glm::mat4& projection) {
-    camera.insert(projection);
+    getUBCamera().insert(projection);
 }
 
 void DeferredGeometryTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
@@ -37,5 +37,5 @@ void DeferredGeometryTechnique::uploadModelUnitTables(const std::vector<ModelDat
         unitData.push_back(data->getModelUnitTable().normalMapUnit);
     }
 
-    modelUnitTables.insert(unitData);
+    getUBModelUnitTables().insert(unitData);
 }

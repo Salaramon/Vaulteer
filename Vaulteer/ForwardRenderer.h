@@ -17,28 +17,24 @@
 
 
 
-class ForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<Model<ModelData>, Model<LineData>>>, public ForwardTechnique, public LineTechnique
-{
+class ForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<Model<ModelData>, Model<LineData>>>, public ForwardTechnique, public LineTechnique {
 public:
 
-
-
 	template<class... Args1, class... Args2>
-	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene)
-	{
+	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
 		ForwardTechnique::shader->use();
-	
-		auto cameraIteratorPair = dynamicScene.get<Camera>();
-		auto cameraBeginIt = cameraIteratorPair.first;
-		auto& cameraBegin = *cameraBeginIt;
 
-		
+		/*auto cameraIteratorPair = dynamicScene.get<Camera>();
+		auto cameraBeginIt = cameraIteratorPair.first;
+		auto& camera = *cameraBeginIt;
+
+
 		//NEEDS TO BE CHANGED TO FRUSTUM SHAPE INSTEAD OF SPHERE SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {
 
-			Camera::Frustum frustum = cameraBegin->getFrustum();
+			Camera::Frustum frustum = camera->getFrustum();
 
-			glm::vec3 cameraPosition = cameraBegin->getPosition();
+			glm::vec3 cameraPosition = camera->getPosition();
 
 			float cameraInfluenceRadius = 50;
 			glm::vec3 spherePoint = glm::vec3(sphere);
@@ -51,8 +47,8 @@ public:
 
 		const auto modelDataIteratorPair = staticScene.get<Model<ModelData>>(staticSceneRestriction);
 
-		ForwardTechnique::setProjection(cameraBegin->getProjectionMatrix());
-		ForwardTechnique::setView(cameraBegin->getViewMatrix());
+		ForwardTechnique::setProjection(camera->getProjectionMatrix());
+		ForwardTechnique::setView(camera->getViewMatrix());
 
 		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
 			auto& itValue = (*it);
@@ -85,8 +81,8 @@ public:
 
 		auto lineDataIteratorPair = staticScene.get<Model<LineData>>(staticSceneRestriction);
 
-		LineTechnique::setProjection(cameraBegin->getProjectionMatrix());
-		LineTechnique::setView(cameraBegin->getViewMatrix());
+		LineTechnique::setProjection(camera->getProjectionMatrix());
+		LineTechnique::setView(camera->getViewMatrix());
 		for (auto it = lineDataIteratorPair.first; it != lineDataIteratorPair.second; it++) {
 			auto& itValue = (*it);
 
@@ -101,6 +97,6 @@ public:
 			//Is setting active texture back to 0 unnecessary?
 			glActiveTexture(GL_TEXTURE0);
 		}
-		
+		*/
 	}
 };

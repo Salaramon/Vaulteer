@@ -9,24 +9,27 @@
 class DeferredLightingTechnique : public ShaderProgram<DeferredShader> {
 public:
 	using fragUnis = Binder::deferred_frag::uniforms;
-	void init();
+	static void init();
 
-	void setDirectionalLight(const DirectionalLight& light);
-	void setPointLight(const PointLight& light, const int index);
-	void setSpotLight(const SpotLight& light, const int index);
+	static void setDirectionalLight(const DirectionalLight& light);
+	static void setPointLight(const PointLight& light, const int index);
+	static void setSpotLight(const SpotLight& light, const int index);
 
-	void setWorldCameraPos(const glm::vec3& cameraPos);
-	void setCameraViewMat(const glm::mat4& viewMat);
-	void setMaterialSpecularIntensity(const float intensity);
-	void setMaterialShininess(const float shininess);
+	static void setWorldCameraPos(const glm::vec3& cameraPos);
+	static void setCameraViewMat(const glm::mat4& viewMat);
+	static void setMaterialSpecularIntensity(const float intensity);
+	static void setMaterialShininess(const float shininess);
 
 	//void setShadowMapData(ShadowRenderer& shadowRenderer);
 
-	void setFogColor(const glm::vec3& color);
+	static void setFogColor(const glm::vec3& color);
 
 	// uniform buffer upload
-	void uploadMaterialData(const std::vector<ModelData*>& modelVector);
+	static void uploadMaterialData(const std::vector<ModelData*>& modelVector);
 
-	UniformBuffer materialData = UniformBuffer(Binder::deferred_frag::buffers::MaterialData);
+	static UniformBuffer& getUBMaterialData() {
+		static UniformBuffer materialData = UniformBuffer(Binder::deferred_frag::buffers::MaterialData);
+		return materialData;
+	}
 };
 

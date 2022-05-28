@@ -2,7 +2,8 @@
 
 #include "DeferredGeometryTechnique.h"
 #include "DeferredLightingTechnique.h"
-#include "Scene.h"
+#include "DynamicScene.h"
+#include "StaticScene.h"
 #include "OpenGL.h"
 
 #include "BatchManager.h"
@@ -10,30 +11,56 @@
 #include "Camera.h"
 #include "GBuffer.h"
 #include "ResourcePack.h"
+#include "RendererPrerequisites.h"
 
-class DeferredRenderer : public DeferredGeometryTechnique, public DeferredLightingTechnique
-{
-public:
-	using Scene = Scene<Camera, Model<ModelData>>;
+using DeferredDynamicScene = DynamicScene<Camera>;
+using DeferredStaticScene = StaticScene<Model<ModelData>>;
 
-	void initialize(uint screenWidth, uint screenHeight);
-	void preload(ResourcePack& pack);
-
-	//void render(Scene& scene); we'll fix this later
-	void render(Scene& staticScene, Scene& dynamicScene);
-
-	void geometryPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, Camera* camera);
-	void lightingPass(const SceneObjects<typename Model<ModelData>>& modelDataVector, Camera* camera);
-
-	void reloadShaders();
-	void rebuildBatch();
-
+class DeferredRenderer : public RendererPrerequisites<DeferredDynamicScene, DeferredStaticScene>, public DeferredGeometryTechnique, public DeferredLightingTechnique {
 private:
-	std::unique_ptr<GBuffer> gbuffer;
-	std::unique_ptr<ModelData> quad;
+	using DeferredStaticSceneIteratorPair = typename DeferredStaticScene::template StaticSceneIterator<Model<ModelData>>;
 
-	GLint currentlyBoundTexture = -1;
+	inline static std::unique_ptr<GBuffer> gbuffer;
+	inline static std::unique_ptr<ModelData> quad;
 
-	BatchManager batchManager;
-	bool buildBatch = true;
+	inline static GLint currentlyBoundTexture = -1;
+	inline static bool buildBatch = true;
+
+	inline static BatchManager batchManager;
+
+public:
+	static void initialize(uint screenWidth, uint screenHeight);
+	static void preload(ResourcePack& pack);
+	static void reloadShaders();
+
+	static void rebuildBatch();
+
+	static void geometryPass(Camera* camera);
+	static void lightingPass(Camera* camera);
+
+	template<class... DynamicSceneObjects, class... StaticSceneObjects>
+	static void render(DynamicScene<DynamicSceneObjects...>& dynamicScene, StaticScene<StaticSceneObjects...>& staticScene) {
+
+		auto cameraIteratorFirst = dynamicScene.get<Camera>().first;
+		auto* camera = (*cameraIteratorFirst).get();
+
+		const DeferredStaticSceneIteratorPair& staticSceneIt = staticScene.get<Model<ModelData>>([&](glm::vec4 ignored) -> bool { return true; });
+
+		if (buildBatch) {
+			for (auto it = staticSceneIt.first; it != staticSceneIt.second; it++) {
+				auto& model = *it;
+
+				BatchManager::setTextureID(batchManager, model->getData()->getTextureID());
+
+				for (auto& mesh : model->getData()->getMeshes()) {
+					BatchManager::addToBatch(batchManager, mesh, model->getModelMatrix());
+				}
+			}
+
+			buildBatch = false;
+		}
+
+		geometryPass(camera);
+		lightingPass(camera);
+	}
 };

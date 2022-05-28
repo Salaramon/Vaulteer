@@ -18,13 +18,13 @@ public:
 	UniformBuffer(UniformBuffer&& other) noexcept;
 
 	template<class T>
-	void insert(std::vector<T>& data) {
+	static void insert(UniformBuffer& ubo, std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
-		if (dataSize > size)
-			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << buffer << " from vector: " << size << " <- " << dataSize << std::endl;
+		if (dataSize > ubo.size)
+			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << " from vector: " << ubo.size << " <- " << dataSize << std::endl;
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
-		glNamedBufferData(buffer, std::min(size, dataSize), data.data(), drawHint);
+		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
+		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), data.data(), ubo.drawHint);
 	}
 
 	template<class T>

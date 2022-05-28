@@ -72,17 +72,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)miniball\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(SolutionDir)DebugYourself\lib\debug;$(SolutionDir)sqlite\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(SolutionDir)DebugYourself\lib\release;$(SolutionDir)sqlite\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)miniball\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)miniball\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\debug;$(SolutionDir)GLFW\lib;$(SolutionDir)DebugYourself\lib\debug;$(SolutionDir)sqlite\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -94,7 +94,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Salaramon\source\repos\Vaulteer\miniball;C:\Users\Salaramon\source\repos\Vaulteer\Eigen;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)rectpack2D\include;$(SolutionDir)ASSIMP\include;$(SolutionDir)GLM\include;$(SolutionDir)GLAD\include;$(SolutionDir)GLFW\include;$(SolutionDir)miniball\include;$(SolutionDir)sqlite\include;$(SolutionDir)DebugYourself\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)ASSIMP\lib\release;$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -336,6 +336,7 @@
     <ClCompile Include="vpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClInclude Include="vpch.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -363,3 +364,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+</Project>
