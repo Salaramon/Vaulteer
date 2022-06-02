@@ -1,7 +1,7 @@
 #pragma once
 #include <rectpack2D/finders_interface.h>
 
-#include "Texture.h"
+#include "Model/Textures/Texture.h"
 
 class Texture2DArray : public Texture {
 protected:

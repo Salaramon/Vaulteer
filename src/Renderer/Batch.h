@@ -1,9 +1,9 @@
 #pragma once
 
-#include "VertexBuffer.h"
-#include "ElementBuffer.h"
+#include "Model/VertexBuffer.h"
+#include "Model/ElementBuffer.h"
 
-#include "Mesh.h"
+#include "Model/Mesh.h"
 
 class Batch {
 public:

@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "VertexArray.h"
-#include "Buffer.h"
+#include "Model/VertexArray.h"
+#include "Model/Buffer.h"
 
 template<class Store>
 class VertexBuffer : public Buffer<BufferType::ArrayBuffer>, public DebugLogger<VertexBuffer<void>> {

@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "ResourcePack.h"
+#include "Model/Resources/ResourcePack.h"
 
 void ResourcePack::add(ModelResourceLocator modelLocator) {
 	modelLocatorsByName[modelLocator.name] = modelLocator;

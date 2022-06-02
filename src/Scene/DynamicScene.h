@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "Scene.h"
+#include "Scene/Scene.h"
 
 template<class... SceneObjects>
 class DynamicScene : public Scene<std::vector, SceneObjects...>

@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "GLSLCPPBinder.h"
-#include "Vertex.h"
+#include "Model/Storage/Vertex.h"
 
 class Point
 {

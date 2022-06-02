@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ShaderProgram.h"
-#include "Model.h"
-#include "Scene.h"
-#include "UniformBuffer.h"
+#include "Renderer/ShaderProgram.h"
+#include "Model/Model.h"
+#include "Scene/Scene.h"
+#include "Renderer/UniformBuffer.h"
 
 class DeferredGeometryTechnique : public ShaderProgram<GeometryShader>
 {

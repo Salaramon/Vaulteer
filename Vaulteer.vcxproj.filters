@@ -49,8 +49,8 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{C6BF7061-B2A3-31B7-1B04-2C0A07071C39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Util">
-      <UniqueIdentifier>{D638B70A-424F-B5A0-8BC6-40C2F71B8628}</UniqueIdentifier>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{09549E61-F537-5FB7-5E98-590A4A9B4939}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\VFX">
       <UniqueIdentifier>{6CD11C27-58CA-3B79-81FC-20FE6D541B85}</UniqueIdentifier>
@@ -64,11 +64,11 @@
     <Filter Include="Vendor Files\GLAD\src">
       <UniqueIdentifier>{C41C54DF-3089-0FDA-F97C-A73765A83142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vendor Files\GLSLCPPBinder">
+      <UniqueIdentifier>{3E7F7E7C-2A8F-2A4D-9348-8F6B7F7719E6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resources\GLSLCPPBinder.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\API\Camera.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
@@ -228,14 +228,14 @@
     <ClInclude Include="src\Scene\StaticScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Util\MathUtils.h">
-      <Filter>Source Files\Util</Filter>
+    <ClInclude Include="src\Utils\MathUtils.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Util\TemplateUtility.h">
-      <Filter>Source Files\Util</Filter>
+    <ClInclude Include="src\Utils\TemplateUtility.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Util\TypeDefUtils.h">
-      <Filter>Source Files\Util</Filter>
+    <ClInclude Include="src\Utils\TypeDefUtils.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\VFX\LightTypes.h">
       <Filter>Source Files\VFX</Filter>
@@ -260,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="src\vpch.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
+      <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -307,12 +310,6 @@
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp">
       <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Storage\Point.cpp">
-      <Filter>Source Files\Model\Storage</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Storage\Vertex.cpp">
-      <Filter>Source Files\Model\Storage</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Storage\VertexHash.cpp">
       <Filter>Source Files\Model\Storage</Filter>

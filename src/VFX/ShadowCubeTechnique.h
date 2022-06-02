@@ -1,5 +1,6 @@
 #pragma once
-#include "Technique.h"
+#include "Renderer/Techniques/Technique.h"
+
 class ShadowCubeTechnique : public Technique {
 public:
 	using Technique::Technique;

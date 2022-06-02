@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "Shader.h"
-#include "GLSLCPPBinder.h"
+#include "Renderer/Shader.h"
+#include <GLSLCPPBinder.h>
 
 
 template<class... ShaderBinders>

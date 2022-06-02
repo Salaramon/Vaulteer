@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "GBuffer.h"
+#include "Renderer/GBuffer.h"
 
 
 GBuffer::GBuffer(unsigned int windowWidth, unsigned int windowHeight)

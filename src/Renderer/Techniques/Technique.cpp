@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Technique.h"
+#include "Renderer/Techniques/Technique.h"
 
 
 void Technique::use() 

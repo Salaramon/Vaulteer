@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ResourcePack.h"
-#include "ResourceLoader.h"
+#include "Model/Resources/ResourcePack.h"
+#include "Model/Resources/ResourceLoader.h"
 
 class ResourceManager {
 private:

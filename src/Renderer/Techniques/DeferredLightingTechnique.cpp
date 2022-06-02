@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "DeferredLightingTechnique.h"
+#include "Renderer/Techniques/DeferredLightingTechnique.h"
 
 /*
     TODO: replace this with some kind of texture handling technique

@@ -3,8 +3,8 @@
 #include <vector>
 #include <iostream>
 
-#include "Camera.h"
-#include "MathUtils.h"
+#include "API/Camera.h"
+#include "Utils/MathUtils.h"
 
 class ShadowCascade
 {

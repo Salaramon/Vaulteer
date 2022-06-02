@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "DeferredGeometryTechnique.h"
+#include "Renderer/Techniques/DeferredGeometryTechnique.h"
 
 void DeferredGeometryTechnique::setModel(const glm::dmat4& model) {
     shader->setUniform(Binder::geometry_vertex::uniforms::model, 1, GL_FALSE, model);

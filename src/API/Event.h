@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <functional>
 
-#include "Window.h"
-#include "DebugLogger.h"
+#include "API/Window.h"
+#include "Debug/DebugLogger.h"
 
 class Event : public DebugLogger<Event>
 {

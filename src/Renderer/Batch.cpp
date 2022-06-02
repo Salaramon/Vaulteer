@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Batch.h"
+#include "Renderer/Batch.h"
 
 Batch::Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize) :
 	textureID(textureID), vertexBufferSize(vertexBufferSize), indexBufferSize(indexBufferSize),

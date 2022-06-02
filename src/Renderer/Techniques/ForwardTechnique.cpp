@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "ForwardTechnique.h"
+#include "Renderer/Techniques/ForwardTechnique.h"
 
 void ForwardTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
     glm::fmat4 modelView = view * model;

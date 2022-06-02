@@ -1,5 +1,5 @@
 #pragma once
-#include "Texture.h"
+#include "Model/Textures/Texture.h"
 
 class CubemapTexture : protected Texture {
 public:

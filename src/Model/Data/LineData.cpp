@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "LineData.h"
+#include "Model/Data/LineData.h"
 
 
 LineData::LineData(glm::vec4 color, std::vector<Point> lines) :

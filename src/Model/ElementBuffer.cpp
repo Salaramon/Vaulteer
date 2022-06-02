@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "ElementBuffer.h"
+#include "Model/ElementBuffer.h"
 
 ElementBuffer::ElementBuffer() {
 	debug("ElementBuffer created. Buffer: " + std::to_string(buffer) + "\n");

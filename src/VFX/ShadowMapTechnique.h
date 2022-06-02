@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Technique.h"
+#include "Renderer/Techniques/Technique.h"
 
 class ShadowMapTechnique : public Technique {
 public:

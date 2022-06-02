@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderProgram.h"
+#include "Renderer/ShaderProgram.h"
 
 class ClusterTileTechnique : public ShaderProgram<ClusterTileComputeShader>
 {

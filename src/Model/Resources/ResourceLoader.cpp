@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "ResourceLoader.h"
+#include "Model/Resources/ResourceLoader.h"
 
 ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	// default flags

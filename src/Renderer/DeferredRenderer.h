@@ -1,17 +1,17 @@
 #include <type_traits>
 
-#include "DeferredGeometryTechnique.h"
-#include "DeferredLightingTechnique.h"
-#include "DynamicScene.h"
-#include "StaticScene.h"
+#include "Renderer/Techniques/DeferredGeometryTechnique.h"
+#include "Renderer/Techniques/DeferredLightingTechnique.h"
+#include "Scene/DynamicScene.h"
+#include "Scene/StaticScene.h"
 #include "OpenGL.h"
 
-#include "BatchManager.h"
-#include "Model.h"
-#include "Camera.h"
-#include "GBuffer.h"
-#include "ResourcePack.h"
-#include "RendererPrerequisites.h"
+#include "Renderer/BatchManager.h"
+#include "Model/Model.h"
+#include "API/Camera.h"
+#include "Renderer/GBuffer.h"
+#include "Model/Resources/ResourcePack.h"
+#include "Renderer/RendererPrerequisites.h"
 
 
 using DeferredDynamicScene = DynamicScene<Camera>;

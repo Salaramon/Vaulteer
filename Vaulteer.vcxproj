@@ -55,10 +55,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 %(AdditionalOptions)</AdditionalOptions>
@@ -73,10 +74,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -94,7 +96,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="resources\GLSLCPPBinder.h" />
     <ClInclude Include="src\API\Camera.h" />
     <ClInclude Include="src\API\Event.h" />
     <ClInclude Include="src\API\Window.h" />
@@ -148,9 +149,9 @@
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\StaticScene.h" />
-    <ClInclude Include="src\Util\MathUtils.h" />
-    <ClInclude Include="src\Util\TemplateUtility.h" />
-    <ClInclude Include="src\Util\TypeDefUtils.h" />
+    <ClInclude Include="src\Utils\MathUtils.h" />
+    <ClInclude Include="src\Utils\TemplateUtility.h" />
+    <ClInclude Include="src\Utils\TypeDefUtils.h" />
     <ClInclude Include="src\VFX\LightTypes.h" />
     <ClInclude Include="src\VFX\ShadowBuffer.h" />
     <ClInclude Include="src\VFX\ShadowCascade.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="src\VFX\ShadowMapTechnique.h" />
     <ClInclude Include="src\VFX\ShadowTechnique.h" />
     <ClInclude Include="src\vpch.h" />
+    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Camera.cpp" />
@@ -176,8 +178,6 @@
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />
-    <ClCompile Include="src\Model\Storage\Point.cpp" />
-    <ClCompile Include="src\Model\Storage\Vertex.cpp" />
     <ClCompile Include="src\Model\Storage\VertexHash.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
@@ -211,7 +211,9 @@
     <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
     <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
     <ClCompile Include="src\Vaulteer.cpp" />
-    <ClCompile Include="src\vpch.cpp" />
+    <ClCompile Include="src\vpch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

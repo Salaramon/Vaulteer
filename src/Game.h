@@ -4,26 +4,24 @@
 #include <unordered_map>
 #include <functional>
 
-#include "Window.h"
-#include "Camera.h"
-#include "Event.h"
-#include "Model.h"
-#include "DynamicScene.h"
-#include "StaticScene.h"
+#include "API/Window.h"
+#include "API/Camera.h"
+#include "API/Event.h"
 
-#include "ResourceManager.h"
+#include "Data Structures/BoundingSphereHierarchy.h"
 
-#include "GraphicsData.h"
+#include "Debug/DebugLogger.h"
+#include "Debug/DebugAliases.h"
 
-#include "DebugLogger.h"
-#include "DebugAliases.h"
+#include "Model/Model.h"
+#include "Model/Resources/ResourceManager.h"
 
-#include "Renderer.h"
-#include "DeferredRenderer.h"
-#include "ShaderProgram.h"
-#include "ForwardTechnique.h"
+#include "Scene/DynamicScene.h"
+#include "Scene/StaticScene.h"
 
-#include "BoundingSphereHierarchy.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/DeferredRenderer.h"
+#include "Renderer/ShaderProgram.h"
 
 class Game : public DebugLogger<Game>
 {

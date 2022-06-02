@@ -2,14 +2,14 @@
 
 #include <glad/glad.h>
 
-#include "VertexBuffer.h"
-#include "ElementBuffer.h"
-#include "VertexArray.h"
+#include "Model/VertexBuffer.h"
+#include "Model/ElementBuffer.h"
+#include "Model/VertexArray.h"
 
-#include "Material.h"
-#include "Shader.h"
+#include "Model/Material.h"
+#include "Renderer/Shader.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 class Mesh : public DebugLogger<Mesh> {
 public:

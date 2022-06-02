@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "GLSLCPPBinder.h"
-#include "ModelData.h"
+#include "Model/Data/ModelData.h"
 
 class UniformBuffer : Buffer<BufferType::UniformBuffer> {
 public:

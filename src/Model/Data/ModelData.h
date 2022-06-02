@@ -18,14 +18,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "GraphicsData.h"
+#include "Model/Data/GraphicsData.h"
 
-#include "Texture2DArray.h"
-#include "VertexHash.h"
-#include "Mesh.h"
-#include "MathUtils.h"
+#include "Model/Textures/Texture2DArray.h"
+#include "Model/Storage/VertexHash.h"
+#include "Model/Mesh.h"
+#include "Utils/MathUtils.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 
 class ModelData : public DebugLogger<ModelData>, public GraphicsData

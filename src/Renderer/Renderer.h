@@ -4,18 +4,18 @@
 #include <tuple>
 #include <utility>
 
-#include "TemplateUtility.h"
+#include "Utils/TemplateUtility.h"
 
-#include "StaticScene.h"
-#include "DynamicScene.h"
+#include "Scene/StaticScene.h"
+#include "Scene/DynamicScene.h"
 
 #include <vector>
 #include <map>
 #include <iostream>
 
-#include "Camera.h"
-#include "Model.h"
-#include "ModelData.h"
+#include "API/Camera.h"
+#include "Model/Model.h"
+#include "Model/Data/ModelData.h"
 
 
 template<class SceneInput, class SceneData>

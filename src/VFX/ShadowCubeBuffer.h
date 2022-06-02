@@ -5,8 +5,8 @@
 #include <iostream>
 #include <vector>
 
-#include "FrameBuffer.h"
-#include "LightTypes.h"
+#include "Renderer/FrameBuffer.h"
+#include "VFX/LightTypes.h"
 
 /*
 	Shadow buffer that uses a cubemap to store depth data

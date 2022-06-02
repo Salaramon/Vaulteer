@@ -2,9 +2,9 @@
 
 #include <glm/glm.hpp>
 
-#include "BoundingSphereHierarchy.h"
+#include "Data Structures/BoundingSphereHierarchy.h"
 
-#include "Scene.h"
+#include "Scene/Scene.h"
 
 
 template<class... SceneObjects>

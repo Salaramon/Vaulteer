@@ -6,12 +6,10 @@
 
 #include <DebugYourself.h>
 
-#include "Event.h"
-#include "Game.h"
-#include "ShaderProgram.h"
+#include "API/Event.h"
+#include "Renderer/ShaderProgram.h"
 
-#include "DebugLogger.h"
-#include "DebugAliases.h"
+#include "Game.h"
 
 
 

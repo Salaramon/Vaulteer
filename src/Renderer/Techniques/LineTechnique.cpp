@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "LineTechnique.h"
+#include "Renderer/Techniques/LineTechnique.h"
 
 void LineTechnique::setModel(glm::mat4 matrix)
 {

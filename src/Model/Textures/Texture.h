@@ -11,11 +11,11 @@
 #include "stb_image.h"
 
 #include "GLSLCPPBinder.h"
-#include "Shader.h"
-#include "TypeDefUtils.h"
+#include "Renderer/Shader.h"
+#include "Utils/TypeDefUtils.h"
 
-#include "DebugLogger.h"
-#include "DebugAliases.h"
+#include "Debug/DebugLogger.h"
+#include "Debug/DebugAliases.h"
 
 class Texture : public DebugLogger<Texture> {
 public:

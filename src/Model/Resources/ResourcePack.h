@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "ModelResourceLocator.h"
-#include "ResourceLoader.h"
-#include "PackedTexture2DArray.h"
+#include "Model/ModelResourceLocator.h"
+#include "Model/Resources/ResourceLoader.h"
+#include "Model/Textures/PackedTexture2DArray.h"
 
 class ResourcePack : DebugLogger<ResourcePack> {
 public:

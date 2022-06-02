@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLSLCPPBinder.h"
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 typedef std::vector<Binder::LocationInfo> LocationVector;
 

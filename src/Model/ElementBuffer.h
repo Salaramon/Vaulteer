@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Buffer.h"
-#include "VertexArray.h"
+#include "Model/Buffer.h"
+#include "Model/VertexArray.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 typedef GLuint Index;
 

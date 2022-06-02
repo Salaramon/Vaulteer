@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 
-#include "Shader.h"
+#include "Renderer/Shader.h"
 
 class Technique : public Shader
 {

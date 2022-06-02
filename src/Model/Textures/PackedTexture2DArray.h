@@ -1,5 +1,5 @@
 #pragma once
-#include "Texture2DArray.h"
+#include "Model/Textures/Texture2DArray.h"
 
 class PackedTexture2DArray : public Texture2DArray {
 

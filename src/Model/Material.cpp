@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Material.h"
+#include "Model/Material.h"
 
 Material::Material() :
 	name("DefaultMaterial"), data(defaultMaterial) {}

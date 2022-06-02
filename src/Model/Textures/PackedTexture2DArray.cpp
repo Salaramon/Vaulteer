@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "PackedTexture2DArray.h"
+#include "Model/Textures/PackedTexture2DArray.h"
 
 PackedTexture2DArray::PackedTexture2DArray(std::vector<TextureResourceLocator> locators, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
     : Texture2DArray(locators, mipmapEnabled, repeatX, repeatY) {

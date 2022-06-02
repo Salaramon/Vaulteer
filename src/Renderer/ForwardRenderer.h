@@ -4,16 +4,16 @@
 
 #include <glm/glm.hpp>
 
-#include "RendererPrerequisites.h"
-#include "ForwardTechnique.h"
-#include "LineTechnique.h"
-#include "StaticScene.h"
-#include "DynamicScene.h"
+#include "Renderer/RendererPrerequisites.h"
+#include "Renderer/Techniques/ForwardTechnique.h"
+#include "Renderer/Techniques/LineTechnique.h"
+#include "Scene/StaticScene.h"
+#include "Scene/DynamicScene.h"
 
-#include "Model.h"
-#include "ModelData.h"
-#include "LineData.h"
-#include "Camera.h"
+#include "Model/Model.h"
+#include "Model/Data/ModelData.h"
+#include "Model/Data/LineData.h"
+#include "API/Camera.h"
 
 
 

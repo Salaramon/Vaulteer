@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <iostream>
 
-#include "TypeDefUtils.h"
+#include "Utils/TypeDefUtils.h"
 
 /*
 	Abstract frame buffer. Subclasses should implement initTexture() with textures that populate the frame buffer when bound

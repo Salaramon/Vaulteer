@@ -14,13 +14,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "LineData.h"
-#include "ModelData.h"
-#include "Texture.h"
-#include "Shader.h"
-#include "Object3D.h"
+#include "Model/Data/LineData.h"
+#include "Model/Data/ModelData.h"
+#include "Model/Textures/Texture.h"
+#include "Renderer/Shader.h"
+#include "Scene/Object3D.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 template<class Data>
 class Model : public DebugLogger<Model<char>>, public Object3D

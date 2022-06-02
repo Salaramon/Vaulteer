@@ -12,10 +12,9 @@
 #include <array>
 #include <functional>
 
-#include "Event.h"
-#include "Shader.h"
+#include "API/Event.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 class Camera : public DebugLogger<Camera>
 {

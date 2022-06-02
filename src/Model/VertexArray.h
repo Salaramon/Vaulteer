@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-#include "Vertex.h"
+#include "Model/Storage/Vertex.h"
 #include "GLSLCPPBinder.h"
 
 typedef std::vector<Vertex> Vertices;

@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "ResourceManager.h"
+#include "Model/Resources/ResourceManager.h"
 
 ResourcePack& ResourceManager::createPack(std::vector<ModelResourceLocator> resources) {
     loadedResourcePacks.push_back(std::make_unique<ResourcePack>(resourceLoader));

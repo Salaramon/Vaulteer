@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ShaderProgram.h"
-#include "UniformBuffer.h"
+#include "Renderer/ShaderProgram.h"
+#include "Renderer/UniformBuffer.h"
 
-#include "LightTypes.h"
-#include "Material.h"
+#include "VFX/LightTypes.h"
+#include "Model/Material.h"
 
 class DeferredLightingTechnique : public ShaderProgram<DeferredShader> {
 public:

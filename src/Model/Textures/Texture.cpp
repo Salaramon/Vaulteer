@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Texture.h"
+#include "Model/Textures/Texture.h"
 
 Texture::Texture() {}
 

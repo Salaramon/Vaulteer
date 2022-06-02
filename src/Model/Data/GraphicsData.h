@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Shader.h"
-#include "VertexHash.h"
+#include "Renderer/Shader.h"
+#include "Model/Storage/VertexHash.h"
 
 class GraphicsData
 {

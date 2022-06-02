@@ -13,8 +13,8 @@
 
 #include "GLSLCPPBinder.h"
 
-#include "DebugLogger.h"
-#include "DebugAliases.h"
+#include "Debug/DebugLogger.h"
+#include "Debug/DebugAliases.h"
 
 class Shader : public DebugLogger<Shader> {
 public:

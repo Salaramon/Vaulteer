@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-#include "Scene.h"
+#include "Scene/Scene.h"
 
 template<class... AllowedData>
 class RendererPrerequisites {

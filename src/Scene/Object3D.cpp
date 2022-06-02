@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Object3D.h"
+#include "Scene/Object3D.h"
 
 Object3D::Object3D() : 
 	modelRotation(glm::mat4(1.0f)),

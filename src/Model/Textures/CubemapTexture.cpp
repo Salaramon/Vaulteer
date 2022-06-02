@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "CubemapTexture.h"
+#include "Model/Textures/CubemapTexture.h"
 
 CubemapTexture::CubemapTexture(std::array<std::string, 6> const& paths, bool mipmapEnabled,
                                GLenum repeatX, GLenum repeatY, GLenum repeatZ) {

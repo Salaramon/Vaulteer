@@ -11,9 +11,7 @@ workspace "Vaulteer"
 		"/MP32"
 	}
 
-	--flags {
-	--	"MultiProcessorCompile"
-	--}
+	--flags { "MultiProcessorCompile" }
 
 
 builddir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -29,14 +27,18 @@ project "Vaulteer"
 	targetdir ("%{wks.location}/bin/" .. builddir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-obj/" .. builddir .. "/%{prj.name}")
 
+	pchheader "vpch.h"
+	pchsource "src/vpch.cpp"
+
 	files {
 		"src/**",
 		"resources/**",
-		--"%{wks.location}/GLSLCPPBinder.h",
+		"%{wks.location}/vendor/GLSLCPPBinder/GLSLCPPBinder.h",
 		"%{wks.location}/vendor/GLAD/src/**.c",
 	}
 
 	includedirs {
+		"%{wks.location}/src",
 		"%{wks.location}/vendor/ASSIMP/include",
 		"%{wks.location}/vendor/DebugYourself/include",
 		"%{wks.location}/vendor/GLAD/include",
@@ -63,7 +65,7 @@ project "Vaulteer"
 	vpaths {
 	   ["Source Files/*"] = { "src/**.h", "src/**.cpp" },
 	   ["Resource Files/*"] = { "resources/**", "**.dll", "**.toml" },
-	   ["Vendor Files/*"] = { "*.h", "vendor/**.c" },
+	   ["Vendor Files/*"] = { "vendor/**.h", "vendor/**.c" },
 	}
 	vpaths {
 	   ["Resource Files/unspecified/*"] = { "resources/**", "**" },

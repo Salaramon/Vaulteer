@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "LightTypes.h"
-#include "FrameBuffer.h"
+#include "VFX/LightTypes.h"
+#include "Renderer/FrameBuffer.h"
 
 /*
 	Shadow buffer that uses a 2D texture to store depth data

@@ -3,7 +3,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
-#include "ModelData.h"
+#include "Model/Data/ModelData.h"
 
 class ResourceLoader {
 	std::vector<aiTextureType> renderable_texture_types = {

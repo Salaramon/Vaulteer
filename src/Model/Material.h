@@ -3,8 +3,8 @@
 #include <assimp/scene.h>
 #include <unordered_map>
 
-#include "Texture2DArray.h"
-#include "TypeDefUtils.h"
+#include "Model/Textures/Texture2DArray.h"
+#include "Utils/TypeDefUtils.h"
 
 //using Material = std::unordered_map<aiTextureType, Texture2DArray::TextureResourceLocator>;
 

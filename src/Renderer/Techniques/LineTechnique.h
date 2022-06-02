@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderProgram.h"
+#include "Renderer/ShaderProgram.h"
 
 class LineTechnique : public ShaderProgram<LineShader>
 {

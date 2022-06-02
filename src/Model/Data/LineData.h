@@ -7,15 +7,15 @@
 
 #include <glm/glm.hpp>
 
-#include "Shader.h"
-#include "Point.h"
-#include "VertexBuffer.h"
-#include "ElementBuffer.h"
-#include "VertexHash.h"
+#include "Renderer/Shader.h"
+#include "Model/Storage/Point.h"
+#include "Model/VertexBuffer.h"
+#include "Model/ElementBuffer.h"
+#include "Model/Storage/VertexHash.h"
 
-#include "GraphicsData.h"
+#include "Model/Data/GraphicsData.h"
 
-#include "DebugLogger.h"
+#include "Debug/DebugLogger.h"
 
 class LineData : public DebugLogger<LineData>, public GraphicsData
 {

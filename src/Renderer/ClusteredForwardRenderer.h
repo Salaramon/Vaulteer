@@ -3,13 +3,13 @@
 #include <memory>
 #include <iostream>
 
-#include "ClusterTileTechnique.h"
-#include "Scene.h"
+#include "Renderer/Techniques/ClusterTileTechnique.h"
+#include "Scene/Scene.h"
 
-#include "Model.h"
-#include "ModelData.h"
-#include "LineData.h"
-#include "Camera.h"
+#include "Model/Model.h"
+#include "Model/Data/ModelData.h"
+#include "Model/Data/LineData.h"
+#include "API/Camera.h"
 
 class ClusteredForwardRenderer : public ClusterTileTechnique
 {
