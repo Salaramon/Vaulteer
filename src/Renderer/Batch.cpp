@@ -22,6 +22,8 @@ bool Batch::add(const Mesh& mesh, glm::mat4 modelMat) {
 	for (int i = 0; i < vertices.size(); i++) {
 		glm::vec4 pos = (modelMat * glm::vec4(vertices[i].aPos, 1.0));
 		vertices[i].aPos = glm::vec3(pos.x, pos.y, pos.z);
+		glm::vec4 norm = (glm::inverse(glm::transpose(modelMat)) * glm::vec4(vertices[i].aNormal, 1.0));
+		vertices[i].aNormal = glm::normalize(glm::vec3(norm.x, norm.y, norm.z));
 	}
 
 	Indices indices = mesh.indices;

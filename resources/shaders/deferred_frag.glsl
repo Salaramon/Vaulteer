@@ -89,21 +89,19 @@ struct Material {
 };  
 
 layout(shared, binding = 2) uniform MaterialData {
-    uniform Material materialTable[6];
+    uniform Material materialTable[9];
 };
 
 // uniforms
 
 uniform vec3 worldCameraPos;
 uniform mat4 cameraViewMat;
+uniform mat4 inverseViewMat;
 
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
-
-uniform float materialSpecularIntensity;
-uniform float materialShininess;
 
 uniform vec3 fogColor;
 
@@ -313,6 +311,8 @@ void main() {
 
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
+    //FragColor = vec4(abs(normalSample.rgb), 1.0); // diffuse demo
+    //return;
 
     //float material = texture(gMaterial, TexCoords).x;
  

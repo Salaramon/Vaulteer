@@ -125,9 +125,11 @@
     <ClInclude Include="src\Model\Textures\Texture2DArray.h" />
     <ClInclude Include="src\Model\VertexArray.h" />
     <ClInclude Include="src\Model\VertexBuffer.h" />
+    <ClInclude Include="src\Opaque.h" />
     <ClInclude Include="src\OpenGL.h" />
     <ClInclude Include="src\Renderer\Batch.h" />
     <ClInclude Include="src\Renderer\BatchManager.h" />
+    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h" />
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h" />
     <ClInclude Include="src\Renderer\DeferredRenderer.h" />
     <ClInclude Include="src\Renderer\ForwardRenderer.h" />
@@ -149,6 +151,7 @@
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\StaticScene.h" />
+    <ClInclude Include="src\Transparent.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />
@@ -188,7 +191,6 @@
     <ClCompile Include="src\Renderer\BatchManager.cpp" />
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp" />
     <ClCompile Include="src\Renderer\DeferredRenderer.cpp" />
-    <ClCompile Include="src\Renderer\ForwardRenderer.cpp" />
     <ClCompile Include="src\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Renderer\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />

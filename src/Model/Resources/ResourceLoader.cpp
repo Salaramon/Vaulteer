@@ -30,7 +30,7 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 		processNode(meshes, scene, scene->mRootNode);
 	}
 
-	numMaterials = materialLibrary.size();
+	numMaterials = materialKeysByIndex.size();
 	numModels++;
 
 	return ModelData(objPath, meshes);

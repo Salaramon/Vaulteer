@@ -87,3 +87,15 @@ void OpenGL::enableSRGB() {
 void OpenGL::disableSRGB() {
 	glDisable(GL_FRAMEBUFFER_SRGB);
 }
+
+void OpenGL::enableBlending() {
+	glEnable(GL_BLEND);
+}
+
+void OpenGL::disableBlending() {
+	glDisable(GL_BLEND);
+}
+
+void OpenGL::setBlendMode(GLenum sourceFactor, GLenum destFactor) {
+	glBlendFunc(sourceFactor, destFactor);
+}

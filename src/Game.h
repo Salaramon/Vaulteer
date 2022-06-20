@@ -21,7 +21,11 @@
 
 #include "Renderer/Renderer.h"
 #include "Renderer/DeferredRenderer.h"
+#include "Renderer/BlendingForwardRenderer.h"
 #include "Renderer/ShaderProgram.h"
+
+#include "Opaque.h"
+#include "Transparent.h"
 
 class Game : public DebugLogger<Game>
 {

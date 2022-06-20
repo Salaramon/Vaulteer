@@ -29,7 +29,7 @@ void PackedTexture2DArray::createPacked() {
 
     for (int i = 0; i < locators.size(); i++) {
         GLsizei w, h, comp;
-        byte* data = stbi_load(locators[i].path.data(), &w, &h, &comp, 0);
+         byte* data = stbi_load(locators[i].path.data(), &w, &h, &comp, 0);
         images.push_back(Image2D(TextureUnit(this, 0, 0, w, h, 0, locators[i].type), locators[i].path, data));
 
         if (images[i].loaded()) {

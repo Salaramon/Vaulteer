@@ -16,9 +16,8 @@ public:
 	static void setSpotLight(const SpotLight& light, const int index);
 
 	static void setWorldCameraPos(const glm::vec3& cameraPos);
-	static void setCameraViewMat(const glm::mat4& viewMat);
-	static void setMaterialSpecularIntensity(const float intensity);
-	static void setMaterialShininess(const float shininess);
+	static void setCameraViewMat(const glm::mat4& view);
+	static void setInverseViewMat(const glm::mat4& inverseView);
 
 	//void setShadowMapData(ShadowRenderer& shadowRenderer);
 

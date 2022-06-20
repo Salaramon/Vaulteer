@@ -12,15 +12,16 @@
 #include "Renderer/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
 #include "Renderer/RendererPrerequisites.h"
+#include "Opaque.h"
 
 
 using DeferredDynamicScene = DynamicScene<Camera>;
-using DeferredStaticScene = StaticScene<Model<ModelData>>;
+using DeferredStaticScene = StaticScene<Opaque<Model<ModelData>>>;
 
 class DeferredRenderer : public RendererPrerequisites<DeferredDynamicScene, DeferredStaticScene>, public DeferredGeometryTechnique, public DeferredLightingTechnique {
 private:
 	template<class... Args>
-	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Model<ModelData>>;
+	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Opaque<Model<ModelData>>>;
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
 	inline static std::unique_ptr<ModelData> quad;
@@ -48,16 +49,15 @@ public:
 		auto* camera = (*cameraIteratorFirst).get();
 
 		using SModelIterator = DeferredStaticModelIteratorPair<StaticSceneObjects...>;
-		const SModelIterator& staticSceneIt = staticScene.get<Model<ModelData>>([&](glm::vec4 ignored) -> bool { return true; });
+		const SModelIterator& staticSceneIt = staticScene.get<Opaque<Model<ModelData>>>([&](glm::vec4 ignored) -> bool { return true; });
 
 		if (buildBatch) {
 			for (auto it = staticSceneIt.first; it != staticSceneIt.second; it++) {
-				auto& model = *it;
+				auto& model = (*it)->model;
+				BatchManager::setTextureID(batchManager, model.getData()->getTextureID());
 
-				BatchManager::setTextureID(batchManager, model->getData()->getTextureID());
-
-				for (auto& mesh : model->getData()->getMeshes()) {
-					BatchManager::addToBatch(batchManager, mesh, model->getModelMatrix());
+				for (auto& mesh : model.getData()->getMeshes()) {
+					BatchManager::addToBatch(batchManager, mesh, model.getModelMatrix());
 				}
 			}
 

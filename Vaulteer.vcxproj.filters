@@ -264,6 +264,15 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
+    <ClInclude Include="src\Transparent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Opaque.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Camera.cpp">
@@ -339,9 +348,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\DeferredRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ForwardRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\FrameBuffer.cpp">

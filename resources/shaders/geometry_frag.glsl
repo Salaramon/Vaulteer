@@ -24,7 +24,7 @@ struct ModelUnitData {
 };
 
 layout(shared, binding = 1) uniform ModelUnitTables {
-    uniform ModelUnitData unitTable[6];
+    uniform ModelUnitData unitTable[9];
 };
 
 
@@ -50,7 +50,7 @@ void main() {
         normal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
     }
     else
-        normal = fs_in.tbnMat[2];
+        normal = fs_in.fragNormal;
 
     vec2 specularDelta = vec2(unitTable[fs_in.modelNumber * 3 + specular_unit_index].xDelta, unitTable[fs_in.modelNumber * 3 + specular_unit_index].yDelta);
     float specular;

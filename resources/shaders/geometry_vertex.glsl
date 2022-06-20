@@ -5,7 +5,6 @@ layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 layout(location = 5) in int aModelNumber;
-//layout(location = 3) in int materialIndex;
 
 out VS_OUT {
     vec3 fragPosition;
@@ -24,10 +23,6 @@ uniform mat4 normal;
 layout (std140, binding = 0) uniform Camera {
     uniform mat4 projection;
 };
-
-float rand(vec2 co) {
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
-}
 
 void main() {
     vs_out.fragPosition = (modelView * vec4(aPos, 1.0)).xyz;

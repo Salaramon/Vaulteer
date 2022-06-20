@@ -67,10 +67,17 @@ void DeferredLightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
     shader->setUniform(fragUnis::worldCameraPos, 1, cameraPos);
 }
 
-void DeferredLightingTechnique::setCameraViewMat(const glm::mat4& viewMat) {
-    shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, viewMat);
+void DeferredLightingTechnique::setCameraViewMat(const glm::mat4& view) {
+    shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, view);
+
+    setInverseViewMat(glm::inverse(view));
 }
 
+void DeferredLightingTechnique::setInverseViewMat(const glm::mat4& inverseViewMat) {
+    shader->setUniform(fragUnis::inverseViewMat, 1, GL_FALSE, inverseViewMat);
+}
+
+/*
 void DeferredLightingTechnique::setMaterialSpecularIntensity(const float intensity) {
     shader->setUniform(fragUnis::materialSpecularIntensity, intensity);
 }
@@ -78,6 +85,7 @@ void DeferredLightingTechnique::setMaterialSpecularIntensity(const float intensi
 void DeferredLightingTechnique::setMaterialShininess(const float shininess) {
     shader->setUniform(fragUnis::materialShininess, shininess);
 }
+*/
 
 void DeferredLightingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
     std::vector<Material::MaterialData> materials;

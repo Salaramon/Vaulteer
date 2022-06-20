@@ -7,22 +7,27 @@ Game::Game(Window& window) :
 void Game::loadResources() {
 	std::vector<ModelResourceLocator> locators = {
 		{ "crate", "resources/crate/crate1.obj" },
+		{ "palm", "resources/palm/palm.obj", aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 		//{ "backpack", "backpack/backpack.obj" },
 		{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};
 	resourceManager.createPack(locators);
+}
 
+float randf(float from, float to) {
+	return from + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (to - from)));
 }
 
 size_t Game::run() {
 	//glEnable(GL_LINE_SMOOTH);
 
-	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+ 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
 	auto rebuildGBuffer = [&](int w, int h) { DeferredRenderer::rebuildGBuffer(w, h); };
 	window->addResizeCallback(rebuildGBuffer);
-	Renderer<DeferredRenderer> renderer;
+	Renderer<DeferredRenderer> opaqueRenderer;
+	Renderer<BlendingForwardRenderer> transparentRenderer;
 	DeferredRenderer::initialize(window->getWidth(), window->getHeight());
 
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
@@ -33,7 +38,8 @@ size_t Game::run() {
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
 	//StaticScene<Model<ModelData>> staticScene;
-	StaticScene<Model<ModelData>, Model<LineData>> staticScene;
+	StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
+	StaticScene<TransparentModel> transparentScene;
 
 	//Setting up cameras in the scene.
 	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window->getWidth() / (float)window->getHeight()));
@@ -41,34 +47,44 @@ size_t Game::run() {
 	window->addResizeCallback(setAspectRatio);
 
 
-	//window->addReziseCallback(camera->onResize);
-
 	ResourcePack& pack = resourceManager.getPack(0);
-	Model<ModelData> crate = Model<ModelData>(pack.getModelByName("crate"));
-	Model<ModelData> backpack = Model<ModelData>(pack.getModelByName("teapot"));
+	Model<ModelData> model1 = Model<ModelData>(pack.getModelByName("palm"));
+	Model<ModelData> model2 = Model<ModelData>(pack.getModelByName("crate"));
 
 	DeferredRenderer::preload(pack);
 
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
-	std::vector<Model<ModelData>*> modelsObjects;
+	std::vector<OpaqueModel> opaqueModels;
 
 	//Generate floor
-	intmax_t width = 32;
-	intmax_t height = 32;
-	for (intmax_t i = -(width / 2); i < (width / 2); i++) {
-		for (intmax_t j = -(height / 2); j < (height / 2); j++) {
-			crate.setPosition(4 * i, ((float)(rand() % 8)/2)-4, 4 * j);
-			staticScene.addObject(std::move(crate), crate.getBoundingSphere());
+	intmax_t width = 24;
+	intmax_t height = 24;
+	for (intmax_t i = -(ceil(width / 2.0f)); i < (ceil(width / 2.0f)); i++) {
+		for (intmax_t j = -(ceil(height / 2.0f)); j < (ceil(height / 2.0f)); j++) {
+			float r = randf(1.0, 25.0);
+			float x = sin(randf(0.f, M_2_PI)) * r;
+			float y = cos(randf(0.f, M_2_PI)) * r;
+
+			model1.setPosition(8 * i + x, ((float)(rand() % 8)/8), 8 * j + y);
+			model1.setRotation(((float) (rand() % 360) / M_PI), glm::vec3(0, 1, 0));
+			model1.setScale(glm::vec3(0.99));
+			opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
 		}
 	}
 
-	backpack.setPosition(0, 10, -10);
-	staticScene.addObject(std::move(backpack), backpack.getBoundingSphere());
+	model2.setPosition(0, 10, -10);
+	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
 
-	staticScene.finalize();
+ 	opaqueScene.finalize();
 
+	model2.setPosition(0, 12, 10);
+	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
+	model2.setPosition(10, 12, 0);
+	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
+
+	transparentScene.finalize();
 
 	//Setup variables and function calls.
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
@@ -132,8 +148,8 @@ size_t Game::run() {
 		//renderer.add<Renderers, renderer2>(scene);
 		//...
 
-
-		renderer.render(dynamicScene, staticScene);
+		opaqueRenderer.render(dynamicScene, opaqueScene);
+		transparentRenderer.render(dynamicScene, transparentScene);
 
 		glfwSwapBuffers(window->getRawWindow());
 
