@@ -33,8 +33,8 @@ project "Vaulteer"
 	files {
 		"src/**",
 		"resources/**",
-		"%{wks.location}/vendor/GLSLCPPBinder/GLSLCPPBinder.h",
-		"%{wks.location}/vendor/GLAD/src/**.c",
+		"vendor/GLSLCPPBinder/GLSLCPPBinder.h",
+		"vendor/GLAD/src/**.c",
 	}
 
 	includedirs {
@@ -44,6 +44,7 @@ project "Vaulteer"
 		"%{wks.location}/vendor/GLAD/include",
 		"%{wks.location}/vendor/GLFW/include",
 		"%{wks.location}/vendor/GLM/include",
+		"%{wks.location}/vendor/GLSLCPPBinder",
 		"%{wks.location}/vendor/miniball/include",
 		"%{wks.location}/vendor/rectpack2D/include",
 		"%{wks.location}/vendor/sqlite/include",
