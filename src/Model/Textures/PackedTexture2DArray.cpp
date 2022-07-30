@@ -3,6 +3,9 @@
 
 PackedTexture2DArray::PackedTexture2DArray(std::vector<TextureResourceLocator> locators, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
     : Texture2DArray(locators, mipmapEnabled, repeatX, repeatY) {
+    for (TextureResourceLocator loc : locators)
+        std::cout << "init texture with locator: " << loc.path << std::endl;
+
     createPacked();
 
     //glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // hack OMG!!!!!

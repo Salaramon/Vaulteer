@@ -29,7 +29,7 @@ void ShadowCascade::updateBounds(Camera& camera, glm::vec3 lightDirection) {
 
  	float fov = camera.getFov();
 	float aspect_ratio_h = camera.getAspectRatio();
-	float tanHalfFOV = tanf(std::ctradians(fov / 2));
+	float tanHalfFOV = tanf(ctradians(fov / 2));
 
 	float xn = zNear * tanHalfFOV * aspect_ratio_h;
 	float yn = zNear * tanHalfFOV;

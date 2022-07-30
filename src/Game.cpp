@@ -8,8 +8,10 @@ void Game::loadResources() {
 	std::vector<ModelResourceLocator> locators = {
 		{ "crate", "resources/crate/crate1.obj" },
 		{ "palm", "resources/palm/palm.obj", aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
+		//{ "plane", "resources/plane/plane_mesh.obj", aiProcess_GenNormals | aiProcess_Triangulate },
+		//{ "vase", "resources/vase/untitled.obj" },
 		//{ "backpack", "backpack/backpack.obj" },
-		{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
+		//{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};
 	resourceManager.createPack(locators);
 }
@@ -24,11 +26,17 @@ size_t Game::run() {
  	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Renderer
-	auto rebuildGBuffer = [&](int w, int h) { DeferredRenderer::rebuildGBuffer(w, h); };
+	auto rebuildGBuffer = [&](int w, int h) { 
+		DeferredRenderer::rebuildGBuffer(w, h); 
+		BlendingForwardRenderer::rebuildAlphaBuffer(w, h); 
+	};
 	window->addResizeCallback(rebuildGBuffer);
+
 	Renderer<DeferredRenderer> opaqueRenderer;
 	Renderer<BlendingForwardRenderer> transparentRenderer;
+
 	DeferredRenderer::initialize(window->getWidth(), window->getHeight());
+	BlendingForwardRenderer::initialize(window->getWidth(), window->getHeight());
 
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
 	DebugLogger<>::setClassAccessLimit("Shader", 10);
@@ -59,8 +67,8 @@ size_t Game::run() {
 	std::vector<OpaqueModel> opaqueModels;
 
 	//Generate floor
-	intmax_t width = 24;
-	intmax_t height = 24;
+	intmax_t width = 10;
+	intmax_t height = 10;
 	for (intmax_t i = -(ceil(width / 2.0f)); i < (ceil(width / 2.0f)); i++) {
 		for (intmax_t j = -(ceil(height / 2.0f)); j < (ceil(height / 2.0f)); j++) {
 			float r = randf(1.0, 25.0);
@@ -69,12 +77,12 @@ size_t Game::run() {
 
 			model1.setPosition(8 * i + x, ((float)(rand() % 8)/8), 8 * j + y);
 			model1.setRotation(((float) (rand() % 360) / M_PI), glm::vec3(0, 1, 0));
-			model1.setScale(glm::vec3(0.99));
 			opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
 		}
 	}
 
-	model2.setPosition(0, 10, -10);
+	model2.setPosition(0, 0, 0);
+	model2.setScale(glm::vec3(5.0f));
 	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
 
  	opaqueScene.finalize();
@@ -144,9 +152,6 @@ size_t Game::run() {
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		//renderer.add<Renderers, renderer2>(scene);
-		//...
 
 		opaqueRenderer.render(dynamicScene, opaqueScene);
 		transparentRenderer.render(dynamicScene, transparentScene);

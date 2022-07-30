@@ -6,7 +6,7 @@
 #include "Model/Textures/Texture2DArray.h"
 #include "Utils/TypeDefUtils.h"
 
-//using Material = std::unordered_map<aiTextureType, Texture2DArray::TextureResourceLocator>;
+//using Material = std::unordered_map<aiTextureType, TextureResourceLocator>;
 
 class Material {
 public:
@@ -18,7 +18,7 @@ public:
 		float matShininess, matOpacity;
 	} data;
 
-	std::unordered_map<aiTextureType, Texture2DArray::TextureResourceLocator> textureTypeLocators;
+	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
 	// flags
 	// bool twoSided;

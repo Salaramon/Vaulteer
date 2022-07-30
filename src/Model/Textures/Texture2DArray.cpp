@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Model/Textures/Texture2DArray.h"
+#include "Texture2DArray.h"
 
 Texture2DArray::Texture2DArray(std::vector<TextureResourceLocator> locators, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
         : Texture(mipmapEnabled), numLayers(locators.size()), locators(locators){
@@ -13,7 +13,7 @@ Texture2DArray::Texture2DArray(TextureResourceLocator locator, bool mipmapEnable
         : Texture2DArray(std::vector({ locator }), mipmapEnabled, repeatX, repeatY) {
 }
 
-Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled, GLenum repeatX, GLenum repeatY) 
+Texture2DArray::Texture2DArray(int width, int height, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
         : Texture(width, height), numLayers(1) {
     createTexture(GL_TEXTURE_2D);
     setWrap(repeatX, repeatY);
@@ -21,16 +21,18 @@ Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled
     debug("Allocated texture array: ID " + std::to_string(textureID) + "\n");
 }
 
-Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, std::vector<glm::vec4> colors) 
+Texture2DArray::Texture2DArray(int width, int height, std::vector<glm::vec4> colors)
         : Texture(width, height), numLayers(1) {
     createGeneratedTexture(colors);
     debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
 }
 
-Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept {
+Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept
+        : Texture(other.width, other.height, other.mipmapEnabled), locators(other.locators), types(other.types), units(other.units) {
     textureID = other.textureID;
-    other.textureID = 0;
     numLayers = other.numLayers;
+
+    other.textureID = 0;
 }
 
 Texture2DArray::~Texture2DArray() {
@@ -83,10 +85,13 @@ void Texture2DArray::createUnpacked() {
 }
 
 void Texture2DArray::createTextureArrayFromData(GLenum internalFormat, GLenum format, std::vector<Image2D> images) {
-    glTextureStorage3D(textureID, 1, internalFormat, width, height, numLayers);
+    glTextureStorage3D(textureID, 1, internalFormat, width, height, 1); // TODO layers
 
     for (const Image2D& img : images) {
         glTextureSubImage3D(textureID, 0, img.unit.x, img.unit.y, img.unit.layer, img.unit.w, img.unit.h, 1, format, GL_UNSIGNED_BYTE, img.data);
+        std::cout << "- init texture with locator: " << img.path << std::endl;
+        std::cout << "- size: " << sizeof(img.data) << std::endl;
+        std::cout << "- unit: " << img.unit.x << ":" << img.unit.y << ":" << img.unit.w << ":" << img.unit.h << std::endl;
     }
 
     if (mipmapEnabled)

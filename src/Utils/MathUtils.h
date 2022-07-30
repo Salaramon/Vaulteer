@@ -6,20 +6,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace std {
-
-	template<class Type> requires (std::is_floating_point_v<Type>)
-		constexpr Type ctradians(Type deg) {
-		return (M_PI / 180) * deg;
-	}
-
-	template<class Type> requires (std::is_floating_point_v<Type>)
-		constexpr Type ctdegrees(Type rad) {
-		return (180 / M_PI) * rad;
-	}
-
+template<class Type> requires (std::is_floating_point_v<Type>)
+constexpr Type ctradians(Type deg) {
+	return (M_PI / 180) * deg;
 }
 
+template<class Type> requires (std::is_floating_point_v<Type>)
+constexpr Type ctdegrees(Type rad) {
+	return (180 / M_PI) * rad;
+}
 
 static std::vector<glm::vec4> getFrustumCorners(glm::mat4 projectionMatrix) {
 
@@ -72,4 +67,3 @@ namespace mut {
 		}
 	}
 }
-

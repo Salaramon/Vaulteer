@@ -78,7 +78,7 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 				modelUnitTable.setUnit(aiTextureType_DIFFUSE, diffuseUnit);
 				continue;
 			}
-			Texture2DArray::TextureResourceLocator locator = entry.second;
+			TextureResourceLocator locator = entry.second;
 
 			Texture2DArray::TextureUnit unit = texture.getUnit(locator.path);
 			unit = unit.minus(diffuseUnit);

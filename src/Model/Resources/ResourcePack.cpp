@@ -24,10 +24,13 @@ void ResourcePack::finalize() {
 	}
 
 	// find all locators
-	std::vector<Texture2DArray::TextureResourceLocator> allLocators;
-	for (const auto& materialEntries : loader.getMaterialLibrary())
-		for (const auto& locatorsForMaterials : materialEntries.second.textureTypeLocators)
+	std::vector<TextureResourceLocator> allLocators;
+	for (const auto& materialEntries : loader.getMaterialLibrary()) {
+		for (const auto& locatorsForMaterials : materialEntries.second.textureTypeLocators) {
 			allLocators.push_back(locatorsForMaterials.second);
+			std::cout << "making texture with resource: " << locatorsForMaterials.second.path << std::endl;
+		}
+	}
 
 	// create packed texture
 	// TODO: eats memory when loading backpack/models with large textures because it loads everything at once

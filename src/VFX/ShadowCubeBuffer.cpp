@@ -2,17 +2,17 @@
 #include "ShadowCubeBuffer.h"
 
 
-ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize, const glm::vec3 lightPosition, const float farPlane) : FrameBuffer(initTexture(cubeSize, cubeSize)),
+ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize, const glm::vec3 lightPosition, const float farPlane) : TextureFrameBuffer(initTexture(cubeSize, cubeSize)),
 cubeSize(cubeSize), lightPos(lightPosition), farPlane(farPlane)
 {}
 
 
-ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize, const PointLight& pointLight) : FrameBuffer(initTexture(cubeSize, cubeSize)),
+ShadowCubeBuffer::ShadowCubeBuffer(const uint cubeSize, const PointLight& pointLight) : TextureFrameBuffer(initTexture(cubeSize, cubeSize)),
 	cubeSize(cubeSize), lightPos(pointLight.position), farPlane(pointLight.calculatePointRadius())
 {}
 
 ShadowCubeBuffer::ShadowCubeBuffer(ShadowCubeBuffer&& mv) noexcept :
-	FrameBuffer(std::move(mv)),
+	TextureFrameBuffer(std::move(mv)),
 	cubeSize(mv.cubeSize),
 	lightPos(mv.lightPos),
 	farPlane(mv.farPlane)

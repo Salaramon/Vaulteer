@@ -3,24 +3,26 @@
 #include <glad/glad.h>
 #include <iostream>
 
+#include "FrameBuffer.h"
 #include "Utils/TypeDefUtils.h"
 
 /*
 	Abstract frame buffer. Subclasses should implement initTexture() with textures that populate the frame buffer when bound
 */
-class FrameBuffer {
+class TextureFrameBuffer : FrameBuffer {
 public:
-	FrameBuffer();
-	FrameBuffer(uint frameBufferTexId);
-	FrameBuffer(uint frameBufferTexId, uint FBO);
-	FrameBuffer(FrameBuffer&& mv) noexcept;
+	TextureFrameBuffer();
+	TextureFrameBuffer(uint frameBufferTexId);
+	TextureFrameBuffer(uint frameBufferTexId, uint fbo);
+	TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept;
 
-	~FrameBuffer();
+	~TextureFrameBuffer();
 
 	void destroy();
 
 	virtual uint initTexture(uint width, uint height) = 0;
-	bool initFramebuffer();
+
+	bool initWithTexture();
 
 	void bindWrite();
 	void bindRead();
@@ -29,5 +31,4 @@ public:
 
 protected:
 	uint frameBufferTexId;
-	uint FBO;
 };

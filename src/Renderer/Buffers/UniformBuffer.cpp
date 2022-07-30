@@ -1,5 +1,5 @@
 #include "vpch.h"
-#include "Renderer/UniformBuffer.h"
+#include "UniformBuffer.h"
 
 UniformBuffer::UniformBuffer(Binder::UniformBufferInfo bufferInfo, GLenum hint) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint)
 {}

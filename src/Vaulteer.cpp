@@ -27,14 +27,15 @@ void initializeGLFW() {
 
 void initializeOpenGL() {
 	OpenGL::initialize();
-	OpenGL::enableDebugOutput(OpenGL::SYNC);
+	//OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	//OpenGL::enableSRGB();
-	OpenGL::enableDirectDebugMessageing();
+	//OpenGL::enableDirectDebugMessageing();
 }
 
 void initializeShaders() {
-	ShaderProgram<ForwardShader>::load();
+	ShaderProgram<BlendingShader>::load();
+	ShaderProgram<BlendingCompositeShader>::load();
 	ShaderProgram<LineShader>::load();
 	ShaderProgram<DeferredShader>::load();
 	ShaderProgram<GeometryShader>::load();

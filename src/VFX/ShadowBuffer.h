@@ -3,12 +3,12 @@
 #include <iostream>
 
 #include "VFX/LightTypes.h"
-#include "Renderer/FrameBuffer.h"
+#include "Renderer/Buffers/TextureFrameBuffer.h"
 
 /*
 	Shadow buffer that uses a 2D texture to store depth data
 */
-class ShadowBuffer : public FrameBuffer {
+class ShadowBuffer : public TextureFrameBuffer {
 private:
 public:
 	uint width, height;

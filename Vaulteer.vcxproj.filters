@@ -10,8 +10,17 @@
     <Filter Include="Resource Files\backpack">
       <UniqueIdentifier>{9FC13F20-0BF9-87B7-1403-ECDA80B9AEB0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\palm">
+      <UniqueIdentifier>{D9AB08B7-450D-E6C4-CE7A-2C773ADB1C84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\plane">
+      <UniqueIdentifier>{DF002498-CB8F-AD61-74AE-C15C601CBE07}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{B95BBC0E-A555-E560-8EC2-7B717A5B4BCD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\vase">
+      <UniqueIdentifier>{FEF60BB7-6A58-E9C4-F3C5-2F775F262084}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{E9C7FDCE-D52A-8D73-7EB0-C5296AF258F6}</UniqueIdentifier>
@@ -42,6 +51,9 @@
     </Filter>
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{AF019756-1B6E-5251-E461-EAAE508D74B9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\Buffers">
+      <UniqueIdentifier>{2B000E6C-9718-F595-60C5-842FCC9C892F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Renderer\Techniques">
       <UniqueIdentifier>{F72AE883-E37B-D3C5-0CE0-C187F88F662F}</UniqueIdentifier>
@@ -147,7 +159,13 @@
     <ClInclude Include="src\Model\Textures\Texture.h">
       <Filter>Source Files\Model\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Textures\Texture2D.h">
+      <Filter>Source Files\Model\Textures</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Textures\Texture2DArray.h">
+      <Filter>Source Files\Model\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Textures\TextureResourceLocator.h">
       <Filter>Source Files\Model\Textures</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\VertexArray.h">
@@ -155,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="src\Model\VertexBuffer.h">
       <Filter>Source Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Opaque.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OpenGL.h">
       <Filter>Source Files</Filter>
@@ -165,6 +186,24 @@
     <ClInclude Include="src\Renderer\BatchManager.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Buffers\GBuffer.h">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
@@ -172,12 +211,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\ForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\FrameBuffer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\GBuffer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
@@ -192,6 +225,12 @@
     <ClInclude Include="src\Renderer\ShaderProgram.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h">
+      <Filter>Source Files\Renderer\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h">
+      <Filter>Source Files\Renderer\Techniques</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
@@ -204,17 +243,11 @@
     <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\ForwardTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\LineTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\Technique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\UniformBuffer.h">
-      <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\DynamicScene.h">
       <Filter>Source Files\Scene</Filter>
@@ -227,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="src\Scene\StaticScene.h">
       <Filter>Source Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Transparent.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
       <Filter>Source Files\Utils</Filter>
@@ -263,15 +299,6 @@
     </ClInclude>
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Transparent.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Opaque.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -332,6 +359,9 @@
     <ClCompile Include="src\Model\Textures\Texture.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="src\Model\Textures\Texture2D.cpp">
+      <Filter>Source Files\Model\Textures</Filter>
+    </ClCompile>
     <ClCompile Include="src\Model\Textures\Texture2DArray.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
@@ -344,16 +374,28 @@
     <ClCompile Include="src\Renderer\BatchManager.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Buffers\UniformBuffer.cpp">
+      <Filter>Source Files\Renderer\Buffers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\DeferredRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\FrameBuffer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\GBuffer.cpp">
+    <ClCompile Include="src\Renderer\ForwardRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Renderer.cpp">
@@ -364,6 +406,12 @@
     </ClCompile>
     <ClCompile Include="src\Renderer\ShaderProgram.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp">
+      <Filter>Source Files\Renderer\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp">
+      <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
@@ -377,17 +425,11 @@
     <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\ForwardTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\Technique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\UniformBuffer.cpp">
-      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Object3D.cpp">
       <Filter>Source Files\Scene</Filter>
@@ -454,8 +496,35 @@
     <None Include="resources\cube.obj">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\palm\palm.mtl">
+      <Filter>Resource Files\palm</Filter>
+    </None>
+    <None Include="resources\palm\palm.obj">
+      <Filter>Resource Files\palm</Filter>
+    </None>
+    <None Include="resources\plane\plane_mesh.mtl">
+      <Filter>Resource Files\plane</Filter>
+    </None>
+    <None Include="resources\plane\plane_mesh.obj">
+      <Filter>Resource Files\plane</Filter>
+    </None>
+    <None Include="resources\plane\plane_mesh_tri.obj">
+      <Filter>Resource Files\plane</Filter>
+    </None>
     <None Include="resources\quad.obj">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\shaders\blending_composite_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\blending_composite_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\blending_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\blending_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
@@ -514,10 +583,31 @@
     <None Include="resources\shaders\shadow_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="resources\shaders\volume_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\volume_geom.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\volume_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
     <None Include="resources\teapot.obj">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\triangle.obj">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\vase\untitled.mtl">
+      <Filter>Resource Files\vase</Filter>
+    </None>
+    <None Include="resources\vase\untitled.obj">
+      <Filter>Resource Files\vase</Filter>
+    </None>
+    <None Include="resources\water_caustics.tga">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -542,6 +632,18 @@
     </Image>
     <Image Include="resources\backpack\specular.jpg">
       <Filter>Resource Files\backpack</Filter>
+    </Image>
+    <Image Include="resources\palm\leaflong.jpg">
+      <Filter>Resource Files\palm</Filter>
+    </Image>
+    <Image Include="resources\palm\trunk.png">
+      <Filter>Resource Files\palm</Filter>
+    </Image>
+    <Image Include="resources\plane\map.png">
+      <Filter>Resource Files\plane</Filter>
+    </Image>
+    <Image Include="resources\vase\wooden-textured-background.jpg">
+      <Filter>Resource Files\vase</Filter>
     </Image>
   </ItemGroup>
 </Project>

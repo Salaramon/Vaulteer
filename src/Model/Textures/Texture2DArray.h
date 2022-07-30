@@ -1,7 +1,8 @@
 #pragma once
 #include <rectpack2D/finders_interface.h>
 
-#include "Model/Textures/Texture.h"
+#include "Texture.h"
+#include "TextureResourceLocator.h"
 
 class Texture2DArray : public Texture {
 protected:
@@ -10,14 +11,6 @@ protected:
     using rect_type = rectpack2D::output_rect_t<spaces_type>;
 
 public:
-    /// <summary>
-    /// Texture resource metadata 
-    /// </summary>
-    struct TextureResourceLocator {
-        std::string path;
-        aiTextureType type;
-    };
-
     /// <summary>
     /// Defining bounds of a subtexture in a texture collection. Includes texture type for filtering.
     /// </summary>
@@ -52,9 +45,9 @@ public:
 
     Texture2DArray(std::vector<TextureResourceLocator> paths, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
     Texture2DArray(TextureResourceLocator path, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-    Texture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
+    Texture2DArray(int width, int height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
     
-    Texture2DArray(GLsizei width, GLsizei height, std::vector<glm::vec4> colors);
+    Texture2DArray(int width, int height, std::vector<glm::vec4> colors);
 
     template<class... Args>
     requires (std::conjunction_v<std::is_same<glm::vec4, Args>...>)
@@ -68,7 +61,7 @@ public:
     TextureUnit getUnit(std::string texturePath) const;
 
 protected:
-    Texture2DArray();
+    Texture2DArray() {}
 
     void createUnpacked();
 

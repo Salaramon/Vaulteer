@@ -5,13 +5,13 @@
 #include <iostream>
 #include <vector>
 
-#include "Renderer/FrameBuffer.h"
+#include "Renderer/Buffers/TextureFrameBuffer.h"
 #include "VFX/LightTypes.h"
 
 /*
 	Shadow buffer that uses a cubemap to store depth data
 */
-class ShadowCubeBuffer : public FrameBuffer {
+class ShadowCubeBuffer : public TextureFrameBuffer {
 public:
 	ShadowCubeBuffer(const uint cubeSize, const glm::vec3 lightPosition, const float farPlane);
 	ShadowCubeBuffer(const uint cubeSize, const PointLight& pointLight);

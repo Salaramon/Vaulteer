@@ -1,31 +1,31 @@
 #include "vpch.h"
-#include "Renderer/Techniques/ForwardTechnique.h"
+#include "BlendingTechnique.h"
 
-void ForwardTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
+void BlendingTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
     glm::fmat4 modelView = view * model;
     shader->setUniform(Binder::forward_vertex::uniforms::modelView, 1, GL_FALSE, modelView);
     setNormal(model);
 }
 
-void ForwardTechnique::setNormal(const glm::mat4& normal) {
+void BlendingTechnique::setNormal(const glm::mat4& normal) {
     shader->setUniform(Binder::forward_vertex::uniforms::normal, 1, GL_FALSE, glm::transpose(glm::inverse(normal)));
 }
 
-void ForwardTechnique::setInverseViewMatrix(const glm::mat4& view) {
+void BlendingTechnique::setInverseViewMatrix(const glm::mat4& view) {
     shader->setUniform(Binder::forward_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(view));
 }
 
-void ForwardTechnique::setTextureUnit(const GLint& texture) {
+void BlendingTechnique::setTextureUnit(const GLint& texture) {
     shader->setUniform(Binder::forward_frag::uniforms::textureLib, texture);
 }
 
 
-void ForwardTechnique::uploadProjection(const glm::mat4& projection) {
+void BlendingTechnique::uploadProjection(const glm::mat4& projection) {
     auto& camera = getUBCamera();
     UniformBuffer::insert(camera, projection);
 }
 
-void ForwardTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
+void BlendingTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
     std::vector<ModelData::ModelUnitData> unitData;
     for (auto& data : dataVector) {
         unitData.push_back(data->getModelUnitTable().diffuseUnit);
@@ -37,7 +37,7 @@ void ForwardTechnique::uploadModelUnitTables(const std::vector<ModelData*>& data
     UniformBuffer::insert(modelUnitTables, unitData);
 }
 
-void ForwardTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
+void BlendingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
     std::vector<Material::MaterialData> materials;
     for (const auto& model : modelVector) {
         for (const auto& mesh : model->getMeshes()) {

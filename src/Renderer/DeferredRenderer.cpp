@@ -25,7 +25,7 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 	GLint texUnit = 0;
 	DeferredGeometryTechnique::setTextureUnit(texUnit);
 	
-	gbuffer.get()->bindForWriting();
+	gbuffer->bindForWriting();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
 	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
@@ -34,7 +34,7 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 		batch.bind();
 		GLint texID = batch.textureID;
 		if (currentlyBoundTexture != texID) {
-			glBindTextureUnit(texUnit, 1);
+			glBindTextureUnit(texUnit, texID);
 			currentlyBoundTexture = texID;
 		}
 
@@ -42,7 +42,7 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 		batch.unbind();
 	}
 
-	gbuffer.get()->unbind();
+	gbuffer->unbind();
 }
 
 void DeferredRenderer::lightingPass(Camera* camera) {
@@ -57,28 +57,24 @@ void DeferredRenderer::lightingPass(Camera* camera) {
 	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
 	DeferredLightingTechnique::setDirectionalLight(dirLight);
 
-	//DeferredLightingTechnique::setMaterialSpecularIntensity(1.0f); // TODO - ah the classic deferred shading material lookup circumvented
-	//DeferredLightingTechnique::setMaterialShininess(32.0f);         // in the cleanest possible way
-
 	//DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
 
 
-	gbuffer.get()->bindForReading();
+	gbuffer->bindForReading();
 
-	int texId = 0;
-	glBindTextureUnit(texId, gbuffer->textures[texId]);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gPosition, texId++);
-	glBindTextureUnit(texId, gbuffer->textures[texId]);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gNormal, texId++);
-	glBindTextureUnit(texId, gbuffer->textures[texId]);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gColor, texId++);
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
+	DeferredLightingTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
+	DeferredLightingTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
+	DeferredLightingTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 
 	Mesh& quadMesh = quad->getMeshes().front();
 	quadMesh.bind();
 	glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, 0);
 	quadMesh.unbind();
 
-	gbuffer.get()->unbind();
+	gbuffer->unbind();
 }
 
 void DeferredRenderer::reloadShaders() {
@@ -90,8 +86,14 @@ void DeferredRenderer::rebuildBatch() {
 	buildBatch = true;
 }
 
-void DeferredRenderer::rebuildGBuffer(int width, int height)
-{
+void DeferredRenderer::rebuildGBuffer(int width, int height) {
 	gbuffer.reset();
 	gbuffer = std::make_unique<GBuffer>(width, height);
+}
+
+void DeferredRenderer::copyGBufferDepth(GLint fbo) {
+	gbuffer->bindForReading();
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	glBlitFramebuffer(0, 0, gbuffer->width, gbuffer->height, 0, 0, gbuffer->width, gbuffer->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

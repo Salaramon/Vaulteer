@@ -9,7 +9,7 @@
 #include "Renderer/BatchManager.h"
 #include "Model/Model.h"
 #include "API/Camera.h"
-#include "Renderer/GBuffer.h"
+#include "Renderer/Buffers/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
 #include "Renderer/RendererPrerequisites.h"
 #include "Opaque.h"
@@ -38,6 +38,7 @@ public:
 
 	static void rebuildBatch();
 	static void rebuildGBuffer(int width, int height);
+	static void copyGBufferDepth(GLint fbo);
 
 	static void geometryPass(Camera* camera);
 	static void lightingPass(Camera* camera);

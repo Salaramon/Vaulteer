@@ -1,24 +1,23 @@
 #include "vpch.h"
 #include "ShadowBuffer.h"
 
-ShadowBuffer::ShadowBuffer(const uint w, const uint h) : FrameBuffer(initTexture(w, h)), 
+ShadowBuffer::ShadowBuffer(const uint w, const uint h) : TextureFrameBuffer(initTexture(w, h)), 
 	width(w), height(h)
 {}
 
-ShadowBuffer::ShadowBuffer(const uint size) : FrameBuffer(initTexture(size, size)), width(size), height(size) 
+ShadowBuffer::ShadowBuffer(const uint size) : TextureFrameBuffer(initTexture(size, size)), width(size), height(size) 
 {}
 
-ShadowBuffer::ShadowBuffer(const SpotLight& spotLight) {
+ShadowBuffer::ShadowBuffer(const SpotLight& spotLight) : TextureFrameBuffer() {
 	int size = spotLight.calculateSizeAcross();
 	size = 512; // TODO
 	width = size; 
 	height = size;
 	frameBufferTexId = initTexture(width, height);
- 	initFramebuffer();
 }
 
 ShadowBuffer::ShadowBuffer(ShadowBuffer&& mv) noexcept : 
-	FrameBuffer(std::move(mv)),
+	TextureFrameBuffer(std::move(mv)),
 	width(mv.width), height(mv.height) 
 {}
 

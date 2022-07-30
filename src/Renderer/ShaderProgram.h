@@ -12,6 +12,8 @@ public:
 
 };
 
+using BlendingShader = const ShaderUniformPair<Binder::blending_vertex, Binder::blending_frag>;
+using BlendingCompositeShader = const ShaderUniformPair<Binder::blending_composite_vertex, Binder::blending_composite_frag>;
 using ForwardShader = const ShaderUniformPair<Binder::forward_vertex, Binder::forward_frag>;
 using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_frag>;
 using DeferredShader = const ShaderUniformPair<Binder::deferred_vertex, Binder::deferred_frag>;
@@ -22,6 +24,12 @@ using ClusterTileComputeShader = const ShaderUniformPair<Binder::cluster_tile_co
 
 template<class ShaderBinder>
 constexpr const char* getShaderFile() {
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) { return Binder::file_names::blending_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) { return Binder::file_names::blending_frag; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) { return Binder::file_names::blending_composite_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) { return Binder::file_names::blending_composite_frag; }
+
 	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) { return Binder::file_names::forward_vertex; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) { return Binder::file_names::forward_frag; }
 
@@ -39,6 +47,12 @@ constexpr const char* getShaderFile() {
 
 template<class ShaderBinder>
 constexpr const GLenum getShaderType() {
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) { return GL_FRAGMENT_SHADER; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) { return GL_FRAGMENT_SHADER; }
+
 	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) { return GL_FRAGMENT_SHADER; }
 

@@ -1,9 +1,10 @@
 #version 450
 
-// multiple render targets, gbuffer
+// multiple render targets - renders to GBuffer
 layout(location = 0) out vec3 gPosition;
 layout(location = 1) out vec4 gNormal;
 layout(location = 2) out vec4 gColor;
+
 
 in VS_OUT {
     vec3 fragPosition;

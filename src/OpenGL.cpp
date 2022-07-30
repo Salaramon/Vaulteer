@@ -99,3 +99,7 @@ void OpenGL::disableBlending() {
 void OpenGL::setBlendMode(GLenum sourceFactor, GLenum destFactor) {
 	glBlendFunc(sourceFactor, destFactor);
 }
+
+void OpenGL::setBlendMode(GLint target, GLenum sourceFactor, GLenum destFactor) {
+	glBlendFunci(target, sourceFactor, destFactor);
+}

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Renderer/ShaderProgram.h"
-#include "Renderer/UniformBuffer.h"
+#include "Renderer/Buffers/UniformBuffer.h"
 
-class ForwardTechnique : public ShaderProgram<ForwardShader>
+class BlendingTechnique : public ShaderProgram<BlendingShader>
 {
 public:
 	static void setModelView(const glm::dmat4& model, const glm::dmat4& view);

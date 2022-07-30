@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <set>
 
-#include<glad/glad.h>
-#include<assimp/scene.h>
+#include <glad/glad.h>
+#include <assimp/scene.h>
 
 #include "stb_image.h"
 

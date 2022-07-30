@@ -42,7 +42,7 @@ inline void Material::createTexture(aiMaterial* mat, std::string folderPath) {
 		for (size_t j = 0; j < mat->GetTextureCount(type); j++) {
 			aiString string;
 			mat->GetTexture(type, j, &string);
-			Texture2DArray::TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
+			TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
 			textureTypeLocators[type] = loc;
 		}
 	}

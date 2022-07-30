@@ -41,6 +41,7 @@ public:
 	static void enableBlending();
 	static void disableBlending();
 	static void setBlendMode(GLenum sourceFactor, GLenum destFactor);
+	static void setBlendMode(GLint target, GLenum sourceFactor, GLenum destFactor);
 
 	inline static DebugLogger<OpenGL> log;
 	inline static bool directMessaging = false;

@@ -5,8 +5,9 @@
 #include <glm/glm.hpp>
 
 #include "Renderer/RendererPrerequisites.h"
-#include "Renderer/Techniques/ForwardTechnique.h"
+#include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/LineTechnique.h"
+#include "Renderer/Buffers/AlphaBuffer.h"
 #include "Scene/StaticScene.h"
 #include "Scene/DynamicScene.h"
 
@@ -17,12 +18,12 @@
 
 
 
-class ForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<Model<ModelData>, Model<LineData>>>, public ForwardTechnique, public LineTechnique {
+class ForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<Model<ModelData>, Model<LineData>>>, public BlendingTechnique, public LineTechnique {
 public:
 
 	template<class... Args1, class... Args2>
 	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
-		ForwardTechnique::shader->use();
+		BlendingTechnique::shader->use();
 
 		/*auto cameraIteratorPair = dynamicScene.get<Camera>();
 		auto cameraBeginIt = cameraIteratorPair.first;

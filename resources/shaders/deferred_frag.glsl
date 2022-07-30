@@ -1,6 +1,4 @@
 #version 450 core
-in vec2 TexCoords;
-
 out vec4 FragColor;
 
 // light types
@@ -50,7 +48,10 @@ const vec3 sampleOffsetDirections[20] = vec3[]
    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);   
+);
+
+//#scenevar
+const int NUM_MATERIALS = 10;
 
 // gbuffer data
 uniform sampler2D gPosition;
@@ -292,10 +293,11 @@ void main() {
     const float gamma = 1.0;
 
     // -------- reading from GBuffer --------
-
-    vec3 positionSample = texture(gPosition, TexCoords).xyz;
-    vec4 normalSample = texture(gNormal, TexCoords);
-    vec4 colorSample = texture(gColor, TexCoords);
+    
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+    vec3 positionSample = texelFetch(gPosition, coords, 0).xyz;
+    vec4 normalSample = texelFetch(gNormal, coords, 0);
+    vec4 colorSample = texelFetch(gColor, coords, 0);
 
     // ------------- aggregation ------------
 
