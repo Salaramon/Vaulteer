@@ -34,9 +34,6 @@ private:
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
 	inline static std::unique_ptr<ModelData> quad;
 
-	inline static glm::vec4 zeroFiller = glm::vec4(0.0);
-	inline static glm::vec4 oneFiller = glm::vec4(1.0);
-
 public:
 	static void initialize(uint screenWidth, uint screenHeight);
 
@@ -68,11 +65,8 @@ public:
 		OpenGL::setBlendMode(AlphaTexType::Alpha, OpenGL::BlendModes::Zero, OpenGL::BlendModes::OneMinusSourceColor);
 		glBlendEquation(GL_FUNC_ADD);
 
+		alphaBuffer->clear();
 		alphaBuffer->bindForWriting();
-
-		glClearBufferfv(GL_COLOR, 0, &(zeroFiller.x));
-		glClearBufferfv(GL_COLOR, 1, &(oneFiller.x));
-
 
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {
@@ -113,6 +107,9 @@ public:
 	}
 
 	static void compositePass(Camera* camera) {
+		OpenGL::enableStencilTest();
+		glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+
 		BlendingCompositeTechnique::shader->use();
 
 		OpenGL::setBlendMode(OpenGL::BlendModes::SourceAlpha, OpenGL::BlendModes::OneMinusSourceAlpha);
@@ -133,5 +130,6 @@ public:
 		quadMesh.unbind();
 
 		alphaBuffer->unbind();
+		OpenGL::disableStencilTest();
 	}
 };

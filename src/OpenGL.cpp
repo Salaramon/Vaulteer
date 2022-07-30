@@ -20,6 +20,16 @@ void OpenGL::disableDepthTest()
 	log.debug("GL_DEPTH_TEST glDisable.\n", "glDisable()");
 }
 
+void OpenGL::enableStencilTest() {
+	glEnable(GL_STENCIL_TEST);
+	log.debug("GL_STENCIL_TEST glEnable.\n", "glEnable()");
+}
+
+void OpenGL::disableStencilTest() {
+	glDisable(GL_STENCIL_TEST);
+	log.debug("GL_STENCIL_TEST glDisable.\n", "glDisable()");
+}
+
 void OpenGL::enableDebugOutput(GLenum mode)
 {
 	glEnable(GL_DEBUG_OUTPUT);

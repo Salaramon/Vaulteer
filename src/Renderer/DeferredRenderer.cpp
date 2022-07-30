@@ -17,6 +17,11 @@ void DeferredRenderer::preload(ResourcePack& pack) {
 
 
 void DeferredRenderer::geometryPass(Camera* camera) {
+	OpenGL::enableStencilTest();
+	//glStencilMask(0xFF); // don't need to change this
+	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+	glStencilOp(GL_ZERO, GL_INCR, GL_INCR);
+
 	OpenGL::enableDepthTest();
 	DeferredGeometryTechnique::shader->use();
 	DeferredGeometryTechnique::uploadProjection(camera->getProjectionMatrix());
@@ -24,9 +29,9 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 	
 	GLint texUnit = 0;
 	DeferredGeometryTechnique::setTextureUnit(texUnit);
-	
+
+	gbuffer->clear();
 	gbuffer->bindForWriting();
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); // glClearNamedFramebufferfv()
 
 	DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
 
@@ -43,6 +48,8 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 	}
 
 	gbuffer->unbind();
+
+	OpenGL::disableStencilTest();
 }
 
 void DeferredRenderer::lightingPass(Camera* camera) {
@@ -94,6 +101,6 @@ void DeferredRenderer::rebuildGBuffer(int width, int height) {
 void DeferredRenderer::copyGBufferDepth(GLint fbo) {
 	gbuffer->bindForReading();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-	glBlitFramebuffer(0, 0, gbuffer->width, gbuffer->height, 0, 0, gbuffer->width, gbuffer->height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, gbuffer->width, gbuffer->height, 0, 0, gbuffer->width, gbuffer->height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

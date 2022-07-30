@@ -28,6 +28,7 @@ public:
 
 private:
     unsigned int colorTexturesInitialized = 0;
+    std::array<GLenum, 3> drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
     std::array<std::shared_ptr<Texture2D>, NumTextures> textures;
     std::shared_ptr<Texture2D> depthTexture;

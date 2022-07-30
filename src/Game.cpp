@@ -101,6 +101,7 @@ size_t Game::run() {
 	camera->setPosition(0, 10, 0);
 
 	double vel = 0;
+	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
 	while (window->is_running()) {
 
@@ -149,9 +150,7 @@ size_t Game::run() {
 
 		camera->apply();
 
-		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		opaqueRenderer.render(dynamicScene, opaqueScene);
 		transparentRenderer.render(dynamicScene, transparentScene);

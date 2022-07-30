@@ -3,7 +3,7 @@
 
 
 AlphaBuffer::AlphaBuffer(unsigned int width, unsigned int height)
-		: width(width), height(height) {
+		: FrameBuffer(NumTextures), width(width), height(height) {
 	init();
 }
 
@@ -13,9 +13,8 @@ bool AlphaBuffer::init() {
 	// Create the AlphaBuffer textures
  	textures[Accumulated] = initTexture(GL_RGBA16F, GL_RGBA, GL_FLOAT);
 	textures[Alpha] = initTexture(GL_R8, GL_RED, GL_FLOAT);
-	depthTexture = initTexture(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
+	depthTexture = initTexture(GL_DEPTH24_STENCIL8, GL_DEPTH_COMPONENT, GL_FLOAT);
 
-	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(NumTextures, drawBuffers);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -26,13 +25,18 @@ bool AlphaBuffer::init() {
 	return true;
 }
 
+void AlphaBuffer::clearColor() {
+	glClearNamedFramebufferfv(fbo, GL_COLOR, 0, &glm::vec4(0.0)[0]);
+	glClearNamedFramebufferfv(fbo, GL_COLOR, 1, &glm::vec1(1.0)[0]);
+}
+
 std::shared_ptr<Texture2D> AlphaBuffer::initTexture(GLenum internalFormat, GLenum format, GLenum type) {
 	Texture2D texture = Texture2D(width, height);
 	texture.createBlankTexture(internalFormat, format);
 	texture.setMinifyingFilter(GL_NEAREST);
 	texture.setMagnifyingFilter(GL_NEAREST);
 
-	GLenum attachment = (format == GL_DEPTH_COMPONENT ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0 + colorTexturesInitialized++);
+	GLenum attachment = (format == GL_DEPTH_COMPONENT ? GL_DEPTH_STENCIL_ATTACHMENT : GL_COLOR_ATTACHMENT0 + colorTexturesInitialized++);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.textureID, 0);
 
 	return std::make_shared<Texture2D>(texture);

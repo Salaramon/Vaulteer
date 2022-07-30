@@ -18,6 +18,7 @@ using ForwardShader = const ShaderUniformPair<Binder::forward_vertex, Binder::fo
 using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_frag>;
 using DeferredShader = const ShaderUniformPair<Binder::deferred_vertex, Binder::deferred_frag>;
 using GeometryShader = const ShaderUniformPair<Binder::geometry_vertex, Binder::geometry_frag>;
+using VolumeShader = const ShaderUniformPair<Binder::volume_vertex, Binder::volume_geom, Binder::volume_frag>;
 
 using ClusterTileComputeShader = const ShaderUniformPair<Binder::cluster_tile_compute>;
 
@@ -42,6 +43,10 @@ constexpr const char* getShaderFile() {
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return Binder::file_names::geometry_vertex; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return Binder::file_names::geometry_frag; }
 
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) { return Binder::file_names::volume_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) { return Binder::file_names::volume_geom; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return Binder::file_names::volume_frag; }
+
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
 }
 
@@ -64,6 +69,10 @@ constexpr const GLenum getShaderType() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr(std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return GL_FRAGMENT_SHADER; }
+	
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr(std::is_same_v<ShaderBinder, Binder::volume_geom>) { return GL_GEOMETRY_SHADER; }
+	if constexpr(std::is_same_v<ShaderBinder, Binder::volume_frag>) { return GL_FRAGMENT_SHADER; }
 
 	if constexpr(std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
 }

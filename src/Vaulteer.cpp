@@ -29,6 +29,7 @@ void initializeOpenGL() {
 	OpenGL::initialize();
 	//OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
+	OpenGL::enableStencilTest();
 	//OpenGL::enableSRGB();
 	//OpenGL::enableDirectDebugMessageing();
 }
@@ -39,6 +40,7 @@ void initializeShaders() {
 	ShaderProgram<LineShader>::load();
 	ShaderProgram<DeferredShader>::load();
 	ShaderProgram<GeometryShader>::load();
+	ShaderProgram<VolumeShader>::load();
 }
 
 void cleanup() {

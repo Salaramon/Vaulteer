@@ -28,6 +28,8 @@ public:
 
 	static void enableDepthTest();
 	static void disableDepthTest();
+	static void enableStencilTest();
+	static void disableStencilTest();
 	static void enableDebugOutput(GLenum mode = 0);
 	static void disableDebugOutput();
 	static void enableCullFace();
