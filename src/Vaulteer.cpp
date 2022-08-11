@@ -14,15 +14,13 @@
 
 
 void initializeSTBI() {
-	DebugLogger<FUNCTION> log(ObjectAlias::STBI);
 	stbi_set_flip_vertically_on_load(true);
-	log.debug("Vertical flip on load enabled.\n", "stbi_set_flip_vertically_on_load()");
+	//log.debug("Vertical flip on load enabled.\n", "stbi_set_flip_vertically_on_load()");
 }
 
 void initializeGLFW() {
-	DebugLogger<FUNCTION> log(ObjectAlias::GLFW);
 	int init = glfwInit();
-	log.debug("Initialization: " + std::to_string(init) + "\n", "glfwInit()");
+	//log.debug("Initialization: " + std::to_string(init) + "\n", "glfwInit()");
 }
 
 void initializeOpenGL() {
@@ -48,12 +46,6 @@ void cleanup() {
 }
 
 int main() {
-	//Logger settings
-	//DebugLogger<>::disableLogging();
-	//DebugLogger<>::breakAtMessage(206180);
-	DebugLogger<>::breakOnMessageName(MessageAlias::CriticalError);
-	//DebugLogger<>::breakOnMessageName(MessageAlias::ShaderError);
-	DebugLogger<>::setDefaultClassAccessLimit(0);
 
 
 	//Initialization

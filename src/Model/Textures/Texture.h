@@ -14,10 +14,7 @@
 #include "Renderer/Shader.h"
 #include "Utils/TypeDefUtils.h"
 
-#include "Debug/DebugLogger.h"
-#include "Debug/DebugAliases.h"
-
-class Texture : public DebugLogger<Texture> {
+class Texture {
 public:
     Texture();
     Texture(bool mipmapEnabled);

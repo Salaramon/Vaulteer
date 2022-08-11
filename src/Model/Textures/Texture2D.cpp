@@ -9,7 +9,7 @@ Texture2D::Texture2D(TextureResourceLocator locator, bool mipmapEnabled, GLenum 
 
     createSingleImageTexture();
 
-    debug("Allocated texture from file \"" + locator.path + "\": ID " + std::to_string(textureID) + "\n");
+    //debug("Allocated texture from file \"" + locator.path + "\": ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2D::Texture2D(int width, int height, bool mipmapEnabled, GLenum repeatX, GLenum repeatY) 
@@ -17,12 +17,12 @@ Texture2D::Texture2D(int width, int height, bool mipmapEnabled, GLenum repeatX, 
     createTexture(GL_TEXTURE_2D);
     setWrap(repeatX, repeatY);
 
-    debug("Allocated texture: ID " + std::to_string(textureID) + "\n");
+    //debug("Allocated texture: ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2D::Texture2D(int width, int height, std::vector<glm::vec4> colors)
         : Texture(width, height) {
-    debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
+    //debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
 }
 
 Texture2D::Texture2D(Texture2D& other) noexcept 

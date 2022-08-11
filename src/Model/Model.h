@@ -20,10 +20,8 @@
 #include "Renderer/Shader.h"
 #include "Scene/Object3D.h"
 
-#include "Debug/DebugLogger.h"
-
 template<class Data>
-class Model : public DebugLogger<Model<char>>, public Object3D
+class Model : public Object3D
 {
 public:
 

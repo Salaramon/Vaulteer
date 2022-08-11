@@ -2,19 +2,13 @@
 
 #include <glad/glad.h>
 
-#include "Debug/DebugLogger.h"
-#include "Debug/DebugAliases.h"
-
 class OpenGL
 {
 public:
 	inline static void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
 		GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​) {
-		DebugLogger<FUNCTION> log(ObjectAlias::OpenGLMessage);
-		if (directMessaging) {
-			std::cout << std::string(message​) + '\n' << std::endl;
-		}
-		log.debug(std::string(message​) + '\n', MessageAlias::OpenGLMessage);
+
+		//log.debug(std::string(message​) + '\n', MessageAlias::OpenGLMessage);
 	}
 
 	//Face culling enumerations
@@ -45,7 +39,6 @@ public:
 	static void setBlendMode(GLenum sourceFactor, GLenum destFactor);
 	static void setBlendMode(GLint target, GLenum sourceFactor, GLenum destFactor);
 
-	inline static DebugLogger<OpenGL> log;
 	inline static bool directMessaging = false;
 
 	inline static GLenum debugModes = 0;

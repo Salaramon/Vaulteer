@@ -1,13 +1,11 @@
 #include "vpch.h"
 #include "Window.h"
 
-Window::Window(const std::string title, unsigned const int width, unsigned const int height) : DebugLogger<Window>("WindowStuff")
+Window::Window(const std::string title, unsigned const int width, unsigned const int height)
 {
 	setup(title, width, height);
 	int init = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	{
-		debug("GLAD initialization: " + std::to_string(init) + "\n","gladLoadGLLoader");
-	}
+	//debug("GLAD initialization: " + std::to_string(init) + "\n","gladLoadGLLoader");
 }
 
 int Window::is_running()
@@ -83,7 +81,7 @@ void Window::setup(const std::string title, unsigned const int width, unsigned c
 
 	window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 	bool success = window != nullptr;
-	debug("GLFW window initialization: " + std::to_string(success) + "\n");
+	//debug("GLFW window initialization: " + std::to_string(success) + "\n");
 	//MUST IMPLEMENT DEBUGLOGGER STOPPER THINGY
 	//glfwTerminate(); <<<<<<<<<
 

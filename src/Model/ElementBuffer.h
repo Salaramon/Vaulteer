@@ -5,11 +5,9 @@
 #include "Model/Buffer.h"
 #include "Model/VertexArray.h"
 
-#include "Debug/DebugLogger.h"
-
 typedef GLuint Index;
 
-class ElementBuffer : public Buffer<BufferType::ElementBuffer>, public DebugLogger<ElementBuffer> {
+class ElementBuffer : public Buffer<BufferType::ElementBuffer> {
 public:
 	ElementBuffer();
 

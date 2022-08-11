@@ -10,9 +10,6 @@
 
 #include "Data Structures/BoundingSphereHierarchy.h"
 
-#include "Debug/DebugLogger.h"
-#include "Debug/DebugAliases.h"
-
 #include "Model/Model.h"
 #include "Model/Resources/ResourceManager.h"
 
@@ -26,7 +23,7 @@
 #include "Opaque.h"
 #include "Transparent.h"
 
-class Game : public DebugLogger<Game>
+class Game
 {
 public:
 	Game(Window& window);
@@ -55,7 +52,7 @@ Model<T> Game::modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& 
 {
 	auto it = container.find(name);
 	if (it == container.end()) {
-		debug("Model name not found.", MessageAlias::CriticalError);
+		//debug("Model name not found.", MessageAlias::CriticalError);
 	}
 	else {
 		return Model<T>(*it->second);

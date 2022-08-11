@@ -15,9 +15,7 @@
 
 #include "Model/Data/GraphicsData.h"
 
-#include "Debug/DebugLogger.h"
-
-class LineData : public DebugLogger<LineData>, public GraphicsData
+class LineData : public GraphicsData
 {
 public:
 

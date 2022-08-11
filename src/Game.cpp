@@ -39,9 +39,6 @@ size_t Game::run() {
 	BlendingForwardRenderer::initialize(window->getWidth(), window->getHeight());
 
 	// TODO for dan: make function for printing and breaking at the same time (by message key)
-	DebugLogger<>::setClassAccessLimit("Shader", 10);
-	DebugLogger<>::printClass("Shader");
-	DebugLogger<>::disableLogging();
 
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
@@ -138,14 +135,11 @@ size_t Game::run() {
 		}
 
 		if (Event::isKeyPressed(Event::KEY::T)) {
-			DebugLogger<>::enableLogging();
-			std::cout << "reloading shader" << std::endl;
+			//DebugLogger<>::enableLogging();
+			//std::cout << "reloading shader" << std::endl;
 			DeferredRenderer::reloadShaders();
 
 			// TODO for dan: make function for printing and breaking at the same time (by message key)
-			DebugLogger<>::setClassAccessLimit("Shader", 10);
-			DebugLogger<>::printClass("Shader");
-			DebugLogger<>::disableLogging();
 		}
 
 		camera->apply();
@@ -157,18 +151,8 @@ size_t Game::run() {
 
 		glfwSwapBuffers(window->getRawWindow());
 
-		DebugLogger<>::disableLogging();
+		//DebugLogger<>::disableLogging();
 	}
-
-	//DebugLogger<>::setDefaultClassMessageLimit(0);
-	//DebugLogger<>::setClassMessageLimit("FUNCTION", 99999);
-	//DebugLogger<>::setMessageNameMessageLimit(ObjectAlias::OpenGLMessage, 99999);
-
-
-	//DebugLogger<>::setDefaultClassMessageLimit(0);
-	//DebugLogger<>::setClassMessageLimit("Shader", 99999);
-
-	DebugLogger<>::printOrderedByClass();
 
 	return 0;
 }

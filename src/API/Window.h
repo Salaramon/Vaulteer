@@ -8,9 +8,7 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "Debug/DebugLogger.h"
-
-class Window : public DebugLogger<Window>
+class Window
 {
 
 public:

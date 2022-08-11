@@ -9,16 +9,14 @@
 #include "Model/Material.h"
 #include "Renderer/Shader.h"
 
-#include "Debug/DebugLogger.h"
-
-class Mesh : public DebugLogger<Mesh> {
+class Mesh {
 public:
 	Mesh(Vertices vertices, Indices indices) :
 		vertices(vertices),
 		indices(indices),
 		vertexBuffer(vertices),
 		indexBuffer(indices, vertexBuffer.getVAO()) {
-		debug("Mesh created.\n");
+		//debug("Mesh created.\n");
 	}
 	Mesh(Vertices vertices, Indices indices, Material material) :
 		vertices(vertices),
@@ -26,7 +24,7 @@ public:
 		material(material),
 		vertexBuffer(vertices),
 		indexBuffer(indices, vertexBuffer.getVAO()) {
-		debug("Mesh created.\n");
+		//debug("Mesh created.\n");
 	}
 	Mesh(const Mesh& other) noexcept :
 		vertices(other.vertices),
@@ -34,7 +32,7 @@ public:
 		material(other.material),
 		vertexBuffer(vertices),
 		indexBuffer(indices, vertexBuffer.getVAO()) {
-		debug("Mesh copied.\n");
+		//debug("Mesh copied.\n");
 	}
 	Mesh(Mesh&& other) noexcept : 
 		vertices(std::move(other.vertices)),
@@ -42,10 +40,10 @@ public:
 		material(std::move(other.material)),
 		vertexBuffer(std::move(other.vertexBuffer)),
 		indexBuffer(std::move(other.indexBuffer)) {
-		debug("Mesh moved.\n");
+		//debug("Mesh moved.\n");
 	}
 	~Mesh() {
-		debug("Mesh destroyed.\n");
+		//debug("Mesh destroyed.\n");
 	}
 
 	void bind() {

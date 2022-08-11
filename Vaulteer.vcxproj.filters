@@ -99,9 +99,6 @@
     <ClInclude Include="src\Debug\DebugAliases.h">
       <Filter>Source Files\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\DebugLogger.h">
-      <Filter>Source Files\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -313,9 +310,6 @@
     </ClCompile>
     <ClCompile Include="src\Data Structures\PolyTree.cpp">
       <Filter>Source Files\Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Debug\DebugLogger.cpp">
-      <Filter>Source Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="src\Game.cpp">
       <Filter>Source Files</Filter>

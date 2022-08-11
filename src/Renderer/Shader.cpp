@@ -107,7 +107,7 @@ std::string Shader::file_to_string(std::string path) {
 	}
 	catch (std::ifstream::failure& e) {
 		//Return empty string upon error.
-		debug("Error: Could not read file:\n\t" + path + "\n");
+		//debug("Error: Could not read file:\n\t" + path + "\n");
 		return "";
 	}
 
@@ -125,5 +125,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
+	//debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
 }

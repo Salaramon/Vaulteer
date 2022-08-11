@@ -10,7 +10,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 direction, float roll, float render
 {
 	//setRotation(direction, roll);
 
-	debug("Camera created at: " + glm::to_string(position) + "\n");
+	//debug("Camera created at: " + glm::to_string(position) + "\n");
 }
 
 Camera::Camera(float renderDistance, float fov, float aspectRatio) :
@@ -20,7 +20,7 @@ Camera::Camera(float renderDistance, float fov, float aspectRatio) :
 	orientation(glm::vec3(.0f, .0f, .0f))
 {
 
-	debug("Camera created at: " + glm::to_string(position) + "\n");
+	//debug("Camera created at: " + glm::to_string(position) + "\n");
 }
 
 glm::mat4 Camera::getViewMatrix()

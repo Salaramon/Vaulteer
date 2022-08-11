@@ -12,13 +12,13 @@ typedef std::vector<Vertex> Vertices;
 typedef std::vector<GLuint> Indices;
 
 template<class Store>
-class VertexArray : public DebugLogger<VertexArray<void>> {
+class VertexArray {
 public:
 	VertexArray();
 	VertexArray(VertexArray<Store>&& other) :
 		VAO(other.VAO) {
 		other.VAO = 0;
-		debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
+		//debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
 	}
 	~VertexArray();
 	operator GLuint() const { return VAO; }
@@ -47,13 +47,13 @@ private:
 template<class Store>
 VertexArray<Store>::VertexArray() {
 	initialize();
-	debug("VertexArray created VAO: " + std::to_string(VAO) + "\n", "DEFAULT_CONSTRUCTOR");
+	//debug("VertexArray created VAO: " + std::to_string(VAO) + "\n", "DEFAULT_CONSTRUCTOR");
 }
 
 template<class Store>
 VertexArray<Store>::~VertexArray() {
 	cleanup();
-	debug("VertexArray destroyed. VAO: " + std::to_string(VAO) + "\n", "DECONSTRUCTOR");
+	//debug("VertexArray destroyed. VAO: " + std::to_string(VAO) + "\n", "DECONSTRUCTOR");
 }
 
 template<class Store>
@@ -123,7 +123,7 @@ inline void VertexArray<Store>::setUpAttributes(LocationVector locInfo, Location
 
 template<class Store>
 inline void VertexArray<Store>::bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName) {
-	debug("Vertex attribute pointer set with:\n\tlocation: " + std::to_string(location) + "\n\tsize: " + std::to_string(size) + "\n\tstride: " + std::to_string(stride) + "\n\toffset: " + std::to_string(offset) + "\n\tstruct: " + structName + "\n", "glVertexAttribPointer");
+	//debug("Vertex attribute pointer set with:\n\tlocation: " + std::to_string(location) + "\n\tsize: " + std::to_string(size) + "\n\tstride: " + std::to_string(stride) + "\n\toffset: " + std::to_string(offset) + "\n\tstruct: " + structName + "\n", "glVertexAttribPointer");
 }
 
 template<class Store>
@@ -132,7 +132,7 @@ inline void VertexArray<Store>::setVertexDivisors(size_t location, size_t subLoc
 		if (locDivs[i].loc == location) {
 			glVertexArrayBindingDivisor(VAO, bindIndex(), 1);
 			//glVertexAttribDivisor(location + subLoc, 1);
-			debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
+			//debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
 		}
 	}
 }

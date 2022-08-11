@@ -14,9 +14,7 @@
 
 #include "API/Event.h"
 
-#include "Debug/DebugLogger.h"
-
-class Camera : public DebugLogger<Camera>
+class Camera
 {
 public:
 

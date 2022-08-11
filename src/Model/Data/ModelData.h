@@ -25,10 +25,8 @@
 #include "Model/Mesh.h"
 #include "Utils/MathUtils.h"
 
-#include "Debug/DebugLogger.h"
 
-
-class ModelData : public DebugLogger<ModelData>, public GraphicsData
+class ModelData : public GraphicsData
 {
 public:
 	struct ModelVertexHash : public VertexHash<Vertex> {

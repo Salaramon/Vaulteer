@@ -102,7 +102,6 @@
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
     <ClInclude Include="src\Debug\DebugAliases.h" />
-    <ClInclude Include="src\Debug\DebugLogger.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Model\Buffer.h" />
     <ClInclude Include="src\Model\Data\GraphicsData.h" />
@@ -175,7 +174,6 @@
     <ClCompile Include="src\API\Event.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
-    <ClCompile Include="src\Debug\DebugLogger.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Model\Data\GraphicsData.cpp" />
     <ClCompile Include="src\Model\Data\LineData.cpp" />

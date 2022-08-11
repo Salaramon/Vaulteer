@@ -12,11 +12,11 @@ double Event::currentPollTime = 0;
 
 void Event::AddEventHandlingForWindow(Window* window)
 {
-	DebugLogger<Event> log;
+	//DebugLogger<Event> log;
 	GLFWwindow* rawWindow = window->getRawWindow();
 	Event::window = window;
 
-	log.debug("Event window context:" + std::to_string(window->getObjectKey()) + "\n");
+	//log.debug("Event window context:" + std::to_string(window->getObjectKey()) + "\n");
 
 	glfwSetMouseButtonCallback(rawWindow, mouse_button_callback);
 	glfwSetCursorPosCallback(rawWindow, cursor_position_callback);
@@ -35,8 +35,8 @@ void Event::AddEventHandlingForWindow(Window* window)
 
 bool Event::Poll() 
 {
- 	DebugLogger<Event> log;
-	log.debug("Events started polling.\n");
+ 	//DebugLogger<Event> log;
+	//log.debug("Events started polling.\n");
 	if (firstPoll) {
 		currentPollTime = glfwGetTime();
 		lastPollTime = currentPollTime;
@@ -54,7 +54,7 @@ bool Event::Poll()
 	
 	glfwPollEvents();
 
-	log.debug("Events finished polling.\n");
+	//log.debug("Events finished polling.\n");
 
 	return true;
 }

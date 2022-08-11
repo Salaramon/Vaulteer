@@ -10,9 +10,8 @@
 #include <functional>
 
 #include "API/Window.h"
-#include "Debug/DebugLogger.h"
 
-class Event : public DebugLogger<Event>
+class Event
 {
 public:
 

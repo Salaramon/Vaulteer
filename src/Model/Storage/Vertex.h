@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GLSLCPPBinder.h"
-#include "Debug/DebugLogger.h"
 
 typedef std::vector<Binder::LocationInfo> LocationVector;
 
@@ -12,8 +11,7 @@ public:
 		aPos = point;
 	}
 	Vertex() {
-		DebugLogger<Vertex> log;
-		log.debug("Vertex created.\n");
+		//log.debug("Vertex created.\n");
 	}
 	decltype(Binder::geometry_vertex::locations::aPos)::type aPos;
 	decltype(Binder::geometry_vertex::locations::aNormal)::type aNormal;

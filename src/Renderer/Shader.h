@@ -13,10 +13,7 @@
 
 #include "GLSLCPPBinder.h"
 
-#include "Debug/DebugLogger.h"
-#include "Debug/DebugAliases.h"
-
-class Shader : public DebugLogger<Shader> {
+class Shader {
 public:
 	template<class... Args>
 	struct Parameter_Reader {};
@@ -173,7 +170,7 @@ private:
 
 	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;
 
-	struct UniformFunctor : public DebugLogger<Shader> {
+	struct UniformFunctor {
 	public:
 		UniformFunctor(Shader* shader) : shader(shader) {}
 
