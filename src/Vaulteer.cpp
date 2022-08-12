@@ -46,7 +46,7 @@ void cleanup() {
 }
 
 int main() {
-
+	Shader::CB.use(Shader::CB);
 
 	//Initialization
 	initializeGLFW();
@@ -75,5 +75,7 @@ int main() {
 
 
 	cleanup();
+
+	DY::end();
 	return 0;
 }

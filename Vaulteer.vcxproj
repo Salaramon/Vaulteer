@@ -101,7 +101,7 @@
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
-    <ClInclude Include="src\Debug\DebugAliases.h" />
+    <ClInclude Include="src\Debug\Debug.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Model\Buffer.h" />
     <ClInclude Include="src\Model\Data\GraphicsData.h" />
@@ -272,16 +272,13 @@
     <None Include="resources\shaders\volume_geom.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
     <None Include="resources\teapot.obj" />
-    <None Include="resources\triangle.obj" />
-    <None Include="resources\vase\untitled.mtl" />
     <None Include="resources\vase\untitled.obj" />
-    <None Include="resources\water_caustics.tga" />
-    <None Include="resources\water_norm.tga" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resources\Crate\CrateImage1.JPG" />
+    <Image Include="resources\Crate\CrateImage2.JPG" />
     <Image Include="resources\Crate\crate_1.jpg" />
     <Image Include="resources\backpack\ao.jpg" />
-    <Image Include="resources\backpack\box.png" />
     <Image Include="resources\backpack\diffuse.jpg" />
     <Image Include="resources\backpack\normal.png" />
     <Image Include="resources\backpack\roughness.jpg" />
@@ -289,7 +286,6 @@
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />
-    <Image Include="resources\vase\wooden-textured-background.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

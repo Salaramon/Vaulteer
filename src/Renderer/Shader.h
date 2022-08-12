@@ -13,6 +13,8 @@
 
 #include "GLSLCPPBinder.h"
 
+#include "Debug/Debug.h"
+
 class Shader {
 public:
 	template<class... Args>
@@ -50,8 +52,26 @@ public:
 
 			//Loads vertex and fragment shaders on creation.
 	template<class ...Infos>
-	Shader(Infos ...infos) : setUniform(this) {
+	Shader(Infos ...infos) :
+		OR(this,
+			DY::V(
+			&shaderProgramID,
+			&shaderIDs,
+			&uniformLocationCache,
+			&setUniform),
+			DY::N(
+			"shaderProgramID",
+			"shaderIDs",
+			"uniformLocationCache",
+			"setUniform")),
+
+		setUniform(this) {
+		OB.add(OR);
+
 		shaderProgramID = glCreateProgram();
+		
+		LOG::Ctor::debug<Shader>(this, &shaderProgramID, std::format("Shader program created with id: {}", shaderProgramID));
+
 		Parameter_Reader<Infos...> reader(this, infos...);
 
 		if (!shaderProgram_link())
@@ -60,7 +80,12 @@ public:
 
 	Shader(const Shader& other) = delete;
 
-	Shader(Shader&& other) : setUniform(this), uniformLocationCache(other.uniformLocationCache) {
+	Shader(Shader&& other) :
+		OR(other.OR),
+
+		setUniform(this), uniformLocationCache(other.uniformLocationCache) {
+		OB.add(OR);
+
 		shaderProgramID = other.shaderProgramID;
 		shaderIDs = other.shaderIDs;
 		other.shaderProgramID = 0;
@@ -71,6 +96,8 @@ public:
 		for (GLuint id : shaderIDs) {
 			glDeleteShader(id);
 		}
+
+		LOG::Ctor::debug(this, &shaderProgramID, std::format("Shader program destroyed with id: {}", shaderProgramID));
 		glDeleteProgram(shaderProgramID);
 	}
 
@@ -280,4 +307,50 @@ private:
 public:
 	UniformFunctor setUniform;
 
+
+	inline static auto CR = DY::ClassRegister <
+		&loadShader,
+		&populateUniformCache,
+		&use,
+		&getShaderID,
+		&shaderProgram_addShader,
+		&shaderProgram_link,
+		&shader_compile,
+		&shaderProgram_catchError,
+		&shader_catchError,
+		&file_to_string,
+		&getDebugInfo<decltype(glGetProgramiv)>,
+		&getDebugInfo<decltype(glGetShaderiv)>,
+		&getErrorMessage<decltype(glGetProgramInfoLog) > ,
+		&getErrorMessage<decltype(glGetShaderInfoLog)>>(
+			"loadShader",
+			"populateUniformCache",
+			"use",
+			"getShaderID",
+			"shaderProgram_addShader",
+			"shaderProgram_link",
+			"shader_compile",
+			"shaderProgram_catchError",
+			"shader_catchError",
+			"file_to_string",
+			"getDebugInfo<decltype(glGetProgramiv)>",
+			"getDebugInfo<decltype(glGetShaderiv)>",
+			"getErrorMessage<decltype(glGetProgramInfoLog)>",
+			"getErrorMessage<decltype(glGetShaderInfoLog)>");
+
+	DY::ObjectRegister<Shader,
+		decltype(shaderProgramID),
+		decltype(shaderIDs),
+		decltype(uniformLocationCache),
+		decltype(setUniform)> OR;
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+
+	struct LOG {
+	public:
+		using Class = DY_LINK<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>::Class;
+		using Ctor = DY_LINK<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>::Ctor;
+	};
 };

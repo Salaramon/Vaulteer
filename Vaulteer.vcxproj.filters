@@ -96,7 +96,7 @@
     <ClInclude Include="src\Data Structures\PolyTree.h">
       <Filter>Source Files\Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\DebugAliases.h">
+    <ClInclude Include="src\Debug\Debug.h">
       <Filter>Source Files\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\Game.h">
@@ -589,30 +589,21 @@
     <None Include="resources\teapot.obj">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\triangle.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\vase\untitled.mtl">
-      <Filter>Resource Files\vase</Filter>
-    </None>
     <None Include="resources\vase\untitled.obj">
       <Filter>Resource Files\vase</Filter>
     </None>
-    <None Include="resources\water_caustics.tga">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\water_norm.tga">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resources\Crate\CrateImage1.JPG">
+      <Filter>Resource Files\Crate</Filter>
+    </Image>
+    <Image Include="resources\Crate\CrateImage2.JPG">
+      <Filter>Resource Files\Crate</Filter>
+    </Image>
     <Image Include="resources\Crate\crate_1.jpg">
       <Filter>Resource Files\Crate</Filter>
     </Image>
     <Image Include="resources\backpack\ao.jpg">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\box.png">
       <Filter>Resource Files\backpack</Filter>
     </Image>
     <Image Include="resources\backpack\diffuse.jpg">
@@ -635,9 +626,6 @@
     </Image>
     <Image Include="resources\plane\map.png">
       <Filter>Resource Files\plane</Filter>
-    </Image>
-    <Image Include="resources\vase\wooden-textured-background.jpg">
-      <Filter>Resource Files\vase</Filter>
     </Image>
   </ItemGroup>
 </Project>
