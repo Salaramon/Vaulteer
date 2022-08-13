@@ -44,5 +44,8 @@ private:
 	const size_t size;
 
 	const GLenum drawHint;
+
+	using LOG = _LOG<DY::No_CB, DY::No_OB, DY::No_FB, DY::No_VB>;
+
 };
 

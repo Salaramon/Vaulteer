@@ -47,6 +47,7 @@ void cleanup() {
 
 int main() {
 	Shader::CB.use(Shader::CB);
+	Shader::UniformFunctor::FB.use(Shader::UniformFunctor::FB);
 
 	//Initialization
 	initializeGLFW();

@@ -70,7 +70,7 @@ public:
 
 		shaderProgramID = glCreateProgram();
 		
-		LOG::Ctor::debug<Shader>(this, &shaderProgramID, std::format("Shader program created with id: {}", shaderProgramID));
+		LOG::CTOR::debug<Shader>(this, &shaderProgramID, std::format("Shader program created with id: {}", shaderProgramID));
 
 		Parameter_Reader<Infos...> reader(this, infos...);
 
@@ -97,7 +97,7 @@ public:
 			glDeleteShader(id);
 		}
 
-		LOG::Ctor::debug(this, &shaderProgramID, std::format("Shader program destroyed with id: {}", shaderProgramID));
+		LOG::CTOR::debug(this, &shaderProgramID, std::format("Shader program destroyed with id: {}", shaderProgramID));
 		glDeleteProgram(shaderProgramID);
 	}
 
@@ -196,22 +196,30 @@ private:
 	};
 
 	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;
-
+public:
 	struct UniformFunctor {
 	public:
-		UniformFunctor(Shader* shader) : shader(shader) {}
+		UniformFunctor(Shader* shader) :
+			OR(this, 
+				DY::V(&shader),
+				DY::N("shader")),
+			shader(shader) {}
 
 		void operator()(Binder::UniformInfo uniform, GLfloat value1) const {
 			glUniform1f(shader->uniformLocationCache[uniform.name], value1);
+			LOG::SPEC::debug<&glUniform1f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, value1));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2) const {
 			glUniform2f(shader->uniformLocationCache[uniform.name], value1, value2);
+			LOG::SPEC::debug<&glUniform2f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), uniform.name, value1, value2));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3) const {
 			glUniform3f(shader->uniformLocationCache[uniform.name], value1, value2, value3);
+			LOG::SPEC::debug<&glUniform3f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) const {
 			glUniform4f(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
+			LOG::SPEC::debug<&glUniform4f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3, value4));
 		}
 		void operator()(Binder::UniformInfo uniform, GLint value1) const {
 			glUniform1i(shader->uniformLocationCache[uniform.name], value1);
@@ -302,9 +310,88 @@ private:
 		}
 	private:
 		Shader* shader;
+
+	public:
+
+		inline static auto FR = DY::FunctionRegister <
+			&glUniform1f,
+			&glUniform2f,
+			&glUniform3f,
+			&glUniform4f,
+			&glUniform1i,
+			&glUniform2i,
+			&glUniform3i,
+			&glUniform4i,
+			&glUniform1ui,
+			&glUniform2ui,
+			&glUniform3ui,
+			&glUniform4ui,
+			&glUniform1fv,
+			&glUniform2fv,
+			&glUniform3fv,
+			&glUniform4fv,
+			&glUniform1iv,
+			&glUniform2iv,
+			&glUniform3iv,
+			&glUniform4iv,
+			&glUniform1uiv,
+			&glUniform2uiv,
+			&glUniform3uiv,
+			&glUniform4uiv,
+			&glUniformMatrix2fv,
+			&glUniformMatrix3fv,
+			&glUniformMatrix4fv,
+			&glUniformMatrix2x3fv,
+			&glUniformMatrix3x2fv,
+			&glUniformMatrix2x4fv,
+			&glUniformMatrix4x2fv,
+			&glUniformMatrix3x4fv,
+			&glUniformMatrix4x3fv> (
+				"glUniform1f",
+				"glUniform2f",
+				"glUniform3f",
+				"glUniform4f",
+				"glUniform1i",
+				"glUniform2i",
+				"glUniform3i",
+				"glUniform4i",
+				"glUniform1ui",
+				"glUniform2ui",
+				"glUniform3ui",
+				"glUniform4ui",
+				"glUniform1fv",
+				"glUniform2fv",
+				"glUniform3fv",
+				"glUniform4fv",
+				"glUniform1iv",
+				"glUniform2iv",
+				"glUniform3iv",
+				"glUniform4iv",
+				"glUniform1uiv",
+				"glUniform2uiv",
+				"glUniform3uiv",
+				"glUniform4uiv",
+				"glUniformMatrix2fv",
+				"glUniformMatrix3fv",
+				"glUniformMatrix4fv",
+				"glUniformMatrix2x3fv",
+				"glUniformMatrix3x2fv",
+				"glUniformMatrix2x4fv",
+				"glUniformMatrix4x2fv",
+				"glUniformMatrix3x4fv",
+				"glUniformMatrix4x3fv");
+			
+
+		DY::ObjectRegister<UniformFunctor,
+			decltype(shader)> OR;
+
+		inline static auto FB = DY::FunctionBinder(FR);
+		inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+		using LOG = _LOG<DY::No_CB, decltype(OB), decltype(FB), DY::No_VB>;
 	};
 
-public:
+
 	UniformFunctor setUniform;
 
 
@@ -348,9 +435,5 @@ public:
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 
 
-	struct LOG {
-	public:
-		using Class = DY_LINK<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>::Class;
-		using Ctor = DY_LINK<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>::Ctor;
-	};
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
