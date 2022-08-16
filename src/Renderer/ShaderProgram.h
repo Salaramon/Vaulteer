@@ -149,8 +149,15 @@ protected:
 	using Program = const ShaderUniformPair<Args...>;
 public:
 	static void load() {
+		LOG::SPGL::debug<&load, ShaderProgram<const ShaderUniformPair<Args...>>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Loading shader...");
 		_ShaderProgram<sizeof...(Args), Args...>::load();
 	}
+
+	inline static auto FR = DY::FunctionRegister<&load>("load");
+
+	inline static auto FB = DY::FunctionBinder(FR);
+
+	using LOG = _LOG<DY::No_CB, DY::No_OB, decltype(FB), DY::No_VB>;
 };
 
 

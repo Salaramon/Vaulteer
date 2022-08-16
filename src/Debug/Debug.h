@@ -16,15 +16,17 @@ public:
 	using GLOB = DY_LINK<C, O, F, V>::Global;
 	using CLAS = DY_LINK<C, O, F, V>::Class;
 	using CTOR = DY_LINK<C, O, F, V>::Constructor;
-	using SPEC = DY_LINK<C, O, F, V>::Special;
+	using SPGL = DY_LINK<C, O, F, V>::Special::Global;
+	using SPST = DY_LINK<C, O, F, V>::Special::Static;
 };
 
 
-namespace A_Level {
-	constexpr char Constructor[] = "Constructor";
-	constexpr char Main[] = "Main";
-	constexpr char STBI[] = "Library_STBI";
-	constexpr char GLFW[] = "Library_GLFW";
+namespace Tag {
+	namespace Class {
+		namespace ShaderProgram {
+			constexpr char LoadingProcedure[] = "ShaderProgram_LoadingProcedure";
+		}
+	}
 }
 
 
