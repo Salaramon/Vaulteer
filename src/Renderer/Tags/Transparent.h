@@ -8,7 +8,7 @@ public:
 	template<class Model>
 	Transparent(Model&& m) : model(std::move(m)) {}
 
-	Transparent(Transparent& other) : model(other.model) {}
+	Transparent(const Transparent& other) : model(other.model) {}
 	Transparent(Transparent&& other) : model(std::move(other.model)) {}
 
 	template<class Model>

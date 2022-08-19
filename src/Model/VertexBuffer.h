@@ -34,9 +34,9 @@ public:
 
 	void insert(const std::vector<Store>& vertices);
 
-	void insertPartial(const size_t position, const std::vector<Store>& vertices);
+	void insertPartial(size_t position, const std::vector<Store>& vertices);
 
-	void reserve(const size_t bufferSize);
+	void reserve(size_t bufferSize);
 
 //private:
 	void bindVertexArray();
@@ -103,7 +103,7 @@ void VertexBuffer<Store>::insertPartial(const size_t position, const std::vector
 }
 
 template<class Store>
-inline void VertexBuffer<Store>::reserve(const size_t bufferSize) {
+void VertexBuffer<Store>::reserve(const size_t bufferSize) {
 	glNamedBufferStorage(buffer, bufferSize * sizeof(Store), nullptr, GL_DYNAMIC_STORAGE_BIT);
 	//glNamedBufferData(buffer, bufferSize * sizeof(Store), nullptr, GL_DYNAMIC_DRAW);
 }

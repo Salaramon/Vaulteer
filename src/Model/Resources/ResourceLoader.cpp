@@ -1,9 +1,10 @@
 #include "vpch.h"
 #include "Model/Resources/ResourceLoader.h"
 
-ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
+ModelData ResourceLoader::importModel(const std::string& objPath, int importFlags) {
 	// default flags
-	importFlags = (importFlags != -1 ? importFlags : aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	if (importFlags == -1)
+		importFlags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace;
 
 	Assimp::Importer modelImporter;
 	const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);
@@ -13,7 +14,7 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 		std::cout << "Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n" << std::endl;
 	}
 
-	size_t index = objPath.find_last_of("/");
+	size_t index = objPath.find_last_of('/');
 	std::string folderPath = index != std::string::npos ? objPath.substr(0, index) + "/" : ".";
 
 	std::vector<Material> meshMaterials;
@@ -33,7 +34,7 @@ ModelData ResourceLoader::importModel(std::string objPath, int importFlags) {
 	numMaterials = materialKeysByIndex.size();
 	numModels++;
 
-	return ModelData(objPath, meshes);
+	return { objPath, meshes };
 }
 
 std::unordered_map<std::string, Material>& ResourceLoader::getMaterialLibrary() {
@@ -106,7 +107,7 @@ Mesh ResourceLoader::processMesh(const aiScene* scene, aiMesh* mesh) {
 		}
 	}
 
-	return Mesh(vertices, indices, materialLibrary[materialKeysByIndex.at(numMaterials + mesh->mMaterialIndex)]);
+	return {vertices, indices, materialLibrary[materialKeysByIndex.at(numMaterials + mesh->mMaterialIndex)]};
 }
 
 glm::vec3 ResourceLoader::ai_glmVec(aiVector3D aiVec) {

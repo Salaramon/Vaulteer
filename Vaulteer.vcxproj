@@ -127,7 +127,7 @@
     <ClInclude Include="src\Model\Textures\TextureResourceLocator.h" />
     <ClInclude Include="src\Model\VertexArray.h" />
     <ClInclude Include="src\Model\VertexBuffer.h" />
-    <ClInclude Include="src\Opaque.h" />
+    <ClInclude Include="src\Renderer\Tags\Opaque.h" />
     <ClInclude Include="src\OpenGL.h" />
     <ClInclude Include="src\Renderer\Batch.h" />
     <ClInclude Include="src\Renderer\BatchManager.h" />
@@ -156,7 +156,7 @@
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\StaticScene.h" />
-    <ClInclude Include="src\Transparent.h" />
+    <ClInclude Include="src\Renderer\Tags\Transparent.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />
@@ -186,7 +186,6 @@
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />
-    <ClCompile Include="src\Model\Storage\VertexHash.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
     <ClCompile Include="src\Model\Textures\Texture.cpp" />

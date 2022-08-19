@@ -13,11 +13,11 @@ struct BufferType {
 	inline static constexpr GLenum UniformBuffer = GL_UNIFORM_BUFFER;
 };
 
-template<GLenum bufferType>
+template<GLenum BufferType>
 class Buffer {
 public:
 	Buffer() {
-		initialize(bufferType);
+		initialize(BufferType);
 	}
 
 	Buffer(Buffer&& other) noexcept : buffer(other.buffer) {
@@ -35,6 +35,7 @@ public:
 
 	void cleanup() {
 		glDeleteBuffers(1, &buffer);
+		buffer = 0;
 	}
 
 protected:

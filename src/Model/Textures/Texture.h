@@ -1,41 +1,37 @@
 #pragma once
 
-#include <string>
-#include <iostream>
 #include <unordered_map>
-#include <set>
 
 #include <glad/glad.h>
 #include <assimp/scene.h>
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include "stb_image.h"
 
 #include "GLSLCPPBinder.h"
 #include "Renderer/Shader.h"
-#include "Utils/TypeDefUtils.h"
 
 #include "Debug/DebugLogger.h"
-#include "Debug/DebugAliases.h"
 
 class Texture : public DebugLogger<Texture> {
 public:
-    Texture();
-    Texture(bool mipmapEnabled);
-    Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
+	Texture() = default;
+	Texture(bool mipmapEnabled);
+	Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
 
-    void setMinifyingFilter(GLenum filter);
-    void setMagnifyingFilter(GLenum filter);
-    void setAnisotropicFilter(GLfloat filter);
+	void setMinifyingFilter(GLenum filter) const;
+	void setMagnifyingFilter(GLenum filter) const;
+	void setAnisotropicFilter(GLfloat filter) const;
 
-    GLuint textureID = 0;
-    GLsizei width = -1, height = -1;
-    GLint nrComponents = -1;
-    bool mipmapEnabled = false;
+	GLuint textureID = 0;
+	GLsizei width = -1, height = -1;
+	GLint nrComponents = -1;
+	bool mipmapEnabled = false;
 
-    inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
+	inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 protected:
-    void createTexture(GLenum type);
-    void cleanup();
+	void createTexture(GLenum type);
+	void cleanup() const;
 
-    std::pair<GLint, GLint> getFormatsFromComponents(int comp);
+	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents);
 };

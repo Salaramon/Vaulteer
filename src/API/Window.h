@@ -10,12 +10,10 @@
 
 #include "Debug/DebugLogger.h"
 
-class Window : public DebugLogger<Window>
-{
+class Window : public DebugLogger<Window> {
 
 public:
-
-//=============================================================================================================================================//
+	//=============================================================================================================================================//
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
@@ -23,15 +21,15 @@ public:
 		|_______________________________|	*/
 
 	//Creates and sets up the window.
-	Window(const std::string title, unsigned const int width, unsigned const int height);
+	Window(const std::string& title, unsigned int width, unsigned int height);
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		WRAPPER FUNCTIONS 		|
 		|_______________________________|	*/
 
-		//Returns a non-zero value as long the window is running.
-	int is_running();
+	//Returns a non-zero value as long the window is running.
+	int isRunning() const;
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
@@ -42,15 +40,14 @@ public:
 	GLFWwindow* getRawWindow() const;
 
 	//Returns window height.
-	int getHeight();
-	
-	//Returns window width.
-	int getWidth();
+	int getHeight() const;
 
-	void addResizeCallback(std::function<void(int, int)> callback);
+	//Returns window width.
+	int getWidth() const;
+
+	void addResizeCallback(const std::function<void(int, int)>& callback) const;
 
 private:
-
 	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
@@ -69,24 +66,22 @@ private:
 		|_______________________________|	*/
 
 	//Initializes the window.
-	void setup(const std::string title, unsigned const int width, unsigned const int height);
+	void setup(const std::string& title, unsigned int width, unsigned int height);
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
 		|_______________________________|	*/
 
-
 	inline static std::unordered_map<GLFWwindow*, std::vector<std::function<void(int, int)>>> resizeCallbacks;
-protected:
 
-//=============================================================================================================================================//
+protected:
+	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|			VARIABLES			|
 		|_______________________________|	*/
 
 	//GLFW window variable.
-	GLFWwindow* window;
+	GLFWwindow* window{};
 };
-

@@ -5,7 +5,7 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
 	ResourceLoader loader;
-	quad = std::make_unique<ModelData>(std::move(loader.importModel("resources/quad.obj")));
+	quad = std::make_unique<ModelData>(loader.importModel("resources/quad.obj"));
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {
@@ -16,7 +16,7 @@ void DeferredRenderer::preload(ResourcePack& pack) {
 }
 
 
-void DeferredRenderer::geometryPass(Camera* camera) {
+void DeferredRenderer::geometryPass(const Camera* camera) {
 	OpenGL::enableStencilTest();
 	//glStencilMask(0xFF); // don't need to change this
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
@@ -26,7 +26,7 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 	DeferredGeometryTechnique::shader->use();
 	DeferredGeometryTechnique::uploadProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
-	
+
 	GLint texUnit = 0;
 	DeferredGeometryTechnique::setTextureUnit(texUnit);
 
@@ -37,8 +37,7 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 
 	for (Batch& batch : BatchManager::getBatches(batchManager)) {
 		batch.bind();
-		GLint texID = batch.textureID;
-		if (currentlyBoundTexture != texID) {
+		if (GLint texID = batch.textureID; currentlyBoundTexture != texID) {
 			glBindTextureUnit(texUnit, texID);
 			currentlyBoundTexture = texID;
 		}
@@ -52,12 +51,12 @@ void DeferredRenderer::geometryPass(Camera* camera) {
 	OpenGL::disableStencilTest();
 }
 
-void DeferredRenderer::lightingPass(Camera* camera) {
+void DeferredRenderer::lightingPass(const Camera* camera) {
 	OpenGL::disableDepthTest();
 	DeferredLightingTechnique::shader->use();
 	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
-	
-	DirectionalLight dirLight = { glm::vec3(1.0f), 0.03f, 1.0f, lightDir }; // TODO get from scene :3
+
+	DirectionalLight dirLight = {{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}; // TODO get from scene :3
 
 
 	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());
@@ -78,7 +77,7 @@ void DeferredRenderer::lightingPass(Camera* camera) {
 
 	Mesh& quadMesh = quad->getMeshes().front();
 	quadMesh.bind();
-	glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh.indices.size()), GL_UNSIGNED_INT, 0);
 	quadMesh.unbind();
 
 	gbuffer->unbind();
@@ -100,7 +99,9 @@ void DeferredRenderer::rebuildGBuffer(int width, int height) {
 
 void DeferredRenderer::copyGBufferDepth(GLint fbo) {
 	gbuffer->bindForReading();
+
+	GLuint width = gbuffer->width, height = gbuffer->height;
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-	glBlitFramebuffer(0, 0, gbuffer->width, gbuffer->height, 0, 0, gbuffer->width, gbuffer->height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

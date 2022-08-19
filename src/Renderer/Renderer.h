@@ -6,14 +6,6 @@
 
 #include "Utils/TemplateUtility.h"
 
-#include "Scene/StaticScene.h"
-#include "Scene/DynamicScene.h"
-
-#include <vector>
-#include <map>
-#include <iostream>
-
-#include "API/Camera.h"
 #include "Model/Model.h"
 #include "Model/Data/ModelData.h"
 

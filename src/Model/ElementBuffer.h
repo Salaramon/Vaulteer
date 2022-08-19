@@ -17,9 +17,9 @@ public:
 
 	ElementBuffer(size_t bufferSize, GLuint vao);
 
-	ElementBuffer(std::vector<Index>& indices);
+	ElementBuffer(const std::vector<Index>& indices);
 
-	ElementBuffer(std::vector<Index>& indices, GLuint vao);
+	ElementBuffer(const std::vector<Index>& indices, GLuint vao);
 
 	ElementBuffer(ElementBuffer&& other) noexcept;
 
@@ -27,12 +27,7 @@ public:
 
 	void insertPartial(size_t position, const std::vector<Index>& indices);
 
-	void reserve(size_t bufferSize);
+	void reserve(size_t bufferSize) const;
 
 	void bindVertexArray(GLuint vao);
 };
-
-
-
-
-

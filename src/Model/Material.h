@@ -29,7 +29,7 @@ public:
 
 	Material(aiMaterial* mat, std::string folderPath);
 
-	bool isTransparent();
+	bool isTransparent() const;
 
 private:
 	inline static MaterialData defaultMaterial = {
@@ -40,7 +40,7 @@ private:
 		.matOpacity = 1.0f,
 	};
 
-	inline void createTexture(aiMaterial* mat, std::string folderPath);
+	inline void createTexture(const aiMaterial* mat, std::string folderPath);
 
 	glm::vec3 aiCol_glmVec(aiColor3D aiColor);
 };

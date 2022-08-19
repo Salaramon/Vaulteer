@@ -103,9 +103,9 @@ size_t Game::run() {
 	double vel = 0;
 	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
-	while (window->is_running()) {
+	while (window->isRunning()) {
 
-		Event::Poll();
+		Event::poll();
 
 		float sens = 0.155f;
 		float speed = 20.0f;

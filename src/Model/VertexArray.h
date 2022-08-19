@@ -11,17 +11,22 @@
 typedef std::vector<Vertex> Vertices;
 typedef std::vector<GLuint> Indices;
 
-template<class Store>
+template <class Store>
 class VertexArray : public DebugLogger<VertexArray<void>> {
 public:
 	VertexArray();
+
 	VertexArray(VertexArray<Store>&& other) :
-		VAO(other.VAO) {
+		vao(other.VAO) {
 		other.VAO = 0;
-		debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
+		debug("VertexArray moved. VAO: " + std::to_string(vao) + "\n", "MOVE_CONSTRUCTOR");
 	}
+
 	~VertexArray();
-	operator GLuint() const { return VAO; }
+
+	operator GLuint() const {
+		return vao;
+	}
 
 	void bind() const;
 	void unbind() const;
@@ -39,51 +44,51 @@ private:
 
 	void bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName);
 
-	GLuint VAO;
+	GLuint vao;
 
 	bool setUp = false;
 };
 
-template<class Store>
+template <class Store>
 VertexArray<Store>::VertexArray() {
 	initialize();
-	debug("VertexArray created VAO: " + std::to_string(VAO) + "\n", "DEFAULT_CONSTRUCTOR");
+	debug("VertexArray created VAO: " + std::to_string(vao) + "\n", "DEFAULT_CONSTRUCTOR");
 }
 
-template<class Store>
+template <class Store>
 VertexArray<Store>::~VertexArray() {
 	cleanup();
-	debug("VertexArray destroyed. VAO: " + std::to_string(VAO) + "\n", "DECONSTRUCTOR");
+	debug("VertexArray destroyed. VAO: " + std::to_string(vao) + "\n", "DECONSTRUCTOR");
 }
 
-template<class Store>
-inline void VertexArray<Store>::bind() const {
-	glBindVertexArray(VAO);
+template <class Store>
+void VertexArray<Store>::bind() const {
+	glBindVertexArray(vao);
 }
 
-template<class Store>
-inline void VertexArray<Store>::unbind() const {
+template <class Store>
+void VertexArray<Store>::unbind() const {
 	glBindVertexArray(0);
 }
 
-template<class Store>
-inline GLuint VertexArray<Store>::bindIndex() const {
+template <class Store>
+GLuint VertexArray<Store>::bindIndex() const {
 	return 0; // VAO - 1;
 }
 
-template<class Store>
-inline void VertexArray<Store>::initialize() {
-	glCreateVertexArrays(1, &VAO);
+template <class Store>
+void VertexArray<Store>::initialize() {
+	glCreateVertexArrays(1, &vao);
 }
 
-template<class Store>
-inline void VertexArray<Store>::cleanup() {
-	glDeleteVertexArrays(1, &VAO);
+template <class Store>
+void VertexArray<Store>::cleanup() {
+	glDeleteVertexArrays(1, &vao);
 }
 
-template<class Store>
-inline void VertexArray<Store>::setUpAttributes(LocationVector locInfo, LocationVector divisors, size_t structSize, std::string structName) {
-	if (setUp) 
+template <class Store>
+void VertexArray<Store>::setUpAttributes(LocationVector locInfo, LocationVector divisors, size_t structSize, std::string structName) {
+	if (setUp)
 		return;
 
 	//Make a class that can be inherited into a Store class which then can be used to create vertex classes and the code below becomes more type safe.
@@ -98,19 +103,19 @@ inline void VertexArray<Store>::setUpAttributes(LocationVector locInfo, Location
 			for (size_t j = 0; j < locNr; j++) {
 				bindDebugMessage(locInfo[i].loc + j, locInfo[i].name, locInfo[i].size / maxSize, structSize, (offset + (j * maxSize)), structName);
 
-				glEnableVertexArrayAttrib(VAO, locInfo[i].loc + j);
+				glEnableVertexArrayAttrib(vao, locInfo[i].loc + j);
 				//glVertexAttribPointer(locInfo[i].loc + j, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, sizeof(Store), (void*)(offset + (j * maxSize)));
-				glVertexArrayAttribFormat(VAO, locInfo[i].loc, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, offset + (j * maxSize));
-				glVertexArrayAttribBinding(VAO, locInfo[i].loc + j, bindIndex());
+				glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, offset + (j * maxSize));
+				glVertexArrayAttribBinding(vao, locInfo[i].loc + j, bindIndex());
 				setVertexDivisors(locInfo[i].loc, j, divisors);
 			}
 		}
 		else {
 			bindDebugMessage(locInfo[i].loc, locInfo[i].name, locInfo[i].size / sizeof(float), structSize, offset, structName);
-			glEnableVertexArrayAttrib(VAO, locInfo[i].loc);
+			glEnableVertexArrayAttrib(vao, locInfo[i].loc);
 			//glVertexAttribPointer(locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Store), (void*)offset);
-			glVertexArrayAttribFormat(VAO, locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, offset);
-			glVertexArrayAttribBinding(VAO, locInfo[i].loc, bindIndex());
+			glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, offset);
+			glVertexArrayAttribBinding(vao, locInfo[i].loc, bindIndex());
 			setVertexDivisors(locInfo[i].loc, 0, divisors);
 		}
 		offset += locInfo[i].size;
@@ -121,16 +126,16 @@ inline void VertexArray<Store>::setUpAttributes(LocationVector locInfo, Location
 	//Make VertexAttribute take a template argument taking an attribute object type, which will be what it generates attributes for.
 }
 
-template<class Store>
-inline void VertexArray<Store>::bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName) {
+template <class Store>
+void VertexArray<Store>::bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName) {
 	debug("Vertex attribute pointer set with:\n\tlocation: " + std::to_string(location) + "\n\tsize: " + std::to_string(size) + "\n\tstride: " + std::to_string(stride) + "\n\toffset: " + std::to_string(offset) + "\n\tstruct: " + structName + "\n", "glVertexAttribPointer");
 }
 
-template<class Store>
-inline void VertexArray<Store>::setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs) {
+template <class Store>
+void VertexArray<Store>::setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs) {
 	for (size_t i = 0; i < locDivs.size(); i++) {
 		if (locDivs[i].loc == location) {
-			glVertexArrayBindingDivisor(VAO, bindIndex(), 1);
+			glVertexArrayBindingDivisor(vao, bindIndex(), 1);
 			//glVertexAttribDivisor(location + subLoc, 1);
 			debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
 		}

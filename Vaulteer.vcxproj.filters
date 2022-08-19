@@ -174,7 +174,7 @@
     <ClInclude Include="src\Model\VertexBuffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Opaque.h">
+    <ClInclude Include="src\Renderer\Tags\Opaque.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OpenGL.h">
@@ -261,7 +261,7 @@
     <ClInclude Include="src\Scene\StaticScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Transparent.h">
+    <ClInclude Include="src\Renderer\Tags\Transparent.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
@@ -346,9 +346,6 @@
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp">
       <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Storage\VertexHash.cpp">
-      <Filter>Source Files\Model\Storage</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp">
       <Filter>Source Files\Model\Textures</Filter>

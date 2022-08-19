@@ -27,7 +27,7 @@ public:
 	}
 
 	template<class StoreType>
-	const StaticSceneIterator<StoreType> get(std::function<bool(glm::vec4)> boundingFunction) {
+	StaticSceneIterator<StoreType> get(std::function<bool(glm::vec4)> boundingFunction) {
 		auto& container = std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers);
 		return container.equal_range(boundingFunction);
 	}

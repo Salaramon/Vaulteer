@@ -1,5 +1,7 @@
 #pragma once
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
@@ -13,7 +15,7 @@ class ResourceLoader {
 	};
 
 public:
-	ModelData importModel(std::string objPath, int importFlags = -1);
+	ModelData importModel(const std::string& objPath, int importFlags = -1);
 
 	std::unordered_map<std::string, Material>& getMaterialLibrary();
 
@@ -24,12 +26,12 @@ private:
 	//Mesh processMesh(std::vector<Material>& materials, const aiScene* scene, aiMesh* mesh);
 	Mesh processMesh(const aiScene* scene, aiMesh* mesh);
 
-	glm::vec3 ai_glmVec(aiVector3D aiVec);
+	static glm::vec3 ai_glmVec(aiVector3D aiVec);
 
 
 	std::vector<std::string> materialKeysByIndex;
 	std::unordered_map<std::string, Material> materialLibrary;
-	int numMaterials = 0;
+	size_t numMaterials = 0;
 
 	int numModels = 0;
 };

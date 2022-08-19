@@ -3,8 +3,7 @@
 #include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
 
-class BlendingTechnique : public ShaderProgram<BlendingShader>
-{
+class BlendingTechnique : public ShaderProgram<BlendingShader> {
 public:
 	static void setModelView(const glm::dmat4& model, const glm::dmat4& view);
 	static void setNormal(const glm::mat4& matrix);
@@ -14,7 +13,7 @@ public:
 
 	// uniform buffer upload
 	static void uploadProjection(const glm::mat4& projection);
-	static void uploadModelUnitTables(const std::vector<ModelData*>& modelVector);
+	static void uploadModelUnitTables(const std::vector<ModelData*>& dataVector);
 	static void uploadMaterialData(const std::vector<ModelData*>& modelVector);
 
 	static UniformBuffer& getUBCamera() {
@@ -32,4 +31,3 @@ public:
 		return materialData;
 	}
 };
-

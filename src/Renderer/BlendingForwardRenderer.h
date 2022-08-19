@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include <glm/glm.hpp>
 
 #include "OpenGL.h"
@@ -12,23 +10,19 @@
 #include "Renderer/Buffers/AlphaBuffer.h"
 #include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/BlendingCompositeTechnique.h"
-#include "Renderer/Techniques/LineTechnique.h"
 
 #include "Scene/StaticScene.h"
 #include "Scene/DynamicScene.h"
 
-#include "Model/Model.h"
 #include "Model/Data/ModelData.h"
 #include "Model/Data/LineData.h"
-#include "Model/Resources/ResourceLoader.h"
 
 #include "API/Camera.h"
 
-#include "Transparent.h"
+#include "Renderer/Tags/Transparent.h"
 
 class BlendingForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<TransparentModel>>, 
 	public BlendingTechnique, public BlendingCompositeTechnique {
-private:
 	using AlphaTexType = AlphaBuffer::AlphaBufferTextureType;
 
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;

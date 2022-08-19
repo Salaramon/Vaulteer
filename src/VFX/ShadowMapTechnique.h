@@ -6,7 +6,7 @@ class ShadowMapTechnique : public Technique {
 public:
 	using Technique::Technique;
 
-	void setDepthMap(const GLuint depthMapTexId);
+	void setDepthMap(GLuint depthMapTexId);
 
 private:
 };

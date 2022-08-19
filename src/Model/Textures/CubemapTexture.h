@@ -1,6 +1,8 @@
 #pragma once
 #include "Model/Textures/Texture.h"
 
+#include "Utils/TypeDefUtils.h"
+
 class CubemapTexture : protected Texture {
 public:
     CubemapTexture(std::array<std::string, 6> const& paths, bool mipmapEnabled = true, 
@@ -15,6 +17,6 @@ protected:
     void createTextureFromFiles(std::array<std::string, 6> const& paths);
     void createCubeTexture(GLenum internalFormat, GLenum format, std::array<byte*, 6> data);
 
-    void setWrap(GLenum x, GLenum y, GLenum z);
+    void setWrap(GLenum x, GLenum y, GLenum z) const;
 
 };

@@ -1,8 +1,6 @@
 #include "vpch.h"
 #include "Model/Textures/Texture.h"
 
-Texture::Texture() {}
-
 Texture::Texture(bool mipmapEnabled) : mipmapEnabled(mipmapEnabled) {}
 
 Texture::Texture(GLsizei width, GLsizei height, bool mipmapEnabled) : width(width), height(height), mipmapEnabled(mipmapEnabled) {}
@@ -24,18 +22,18 @@ void Texture::createTexture(GLenum type) {
     glCreateTextures(type, 1, &textureID);
 }
 
-void Texture::cleanup() {
+void Texture::cleanup() const {
     glDeleteTextures(1, &textureID);
 }
 
-void Texture::setMinifyingFilter(GLenum filter) {
+void Texture::setMinifyingFilter(GLenum filter) const {
     glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, filter);
 }
 
-void Texture::setMagnifyingFilter(GLenum filter) {
+void Texture::setMagnifyingFilter(GLenum filter) const {
     glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, filter);
 }
 
-void Texture::setAnisotropicFilter(GLfloat filter) {
+void Texture::setAnisotropicFilter(GLfloat filter) const {
     glTextureParameterf(textureID, GL_TEXTURE_MAX_ANISOTROPY, filter);
 }

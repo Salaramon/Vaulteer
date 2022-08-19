@@ -31,23 +31,23 @@ Material::Material(aiMaterial* mat, std::string folderPath) {
 	createTexture(mat, folderPath);
 }
 
-inline bool Material::isTransparent() {
+inline bool Material::isTransparent() const {
 	return data.matOpacity < 1.0;
 }
 
-inline void Material::createTexture(aiMaterial* mat, std::string folderPath) {
+inline void Material::createTexture(const aiMaterial* mat, std::string folderPath) {
 	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
 		aiTextureType type = static_cast<aiTextureType>(i);
 
 		for (size_t j = 0; j < mat->GetTextureCount(type); j++) {
 			aiString string;
 			mat->GetTexture(type, j, &string);
-			TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
+			TextureResourceLocator loc = {std::string(folderPath + string.C_Str()), type};
 			textureTypeLocators[type] = loc;
 		}
 	}
 }
 
 inline glm::vec3 Material::aiCol_glmVec(aiColor3D aiColor) {
-	return { aiColor.r, aiColor.g, aiColor.b };
+	return {aiColor.r, aiColor.g, aiColor.b};
 }

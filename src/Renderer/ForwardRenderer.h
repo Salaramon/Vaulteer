@@ -1,13 +1,8 @@
 #pragma once
 
-#include <type_traits>
-
-#include <glm/glm.hpp>
-
 #include "Renderer/RendererPrerequisites.h"
 #include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/LineTechnique.h"
-#include "Renderer/Buffers/AlphaBuffer.h"
 #include "Scene/StaticScene.h"
 #include "Scene/DynamicScene.h"
 

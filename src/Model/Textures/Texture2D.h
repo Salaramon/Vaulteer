@@ -2,6 +2,7 @@
 
 #include "Texture.h"
 #include "TextureResourceLocator.h"
+#include "Utils/TypeDefUtils.h"
 
 class Texture2D : public Texture {
 public:
@@ -10,16 +11,16 @@ public:
 
     Texture2D(int width, int height, std::vector<glm::vec4> colors);
 
-    const Texture2D(Texture2D& other) noexcept;
+    Texture2D(Texture2D& other) noexcept;
 
-    const Texture2D(Texture2D&& other) noexcept;
+    Texture2D(Texture2D&& other) noexcept;
     ~Texture2D();
 
-    void createBlankTexture(GLenum internalFormat, GLenum format);
+    void createBlankTexture(GLenum internalFormat, GLenum format) const;
 
     GLint getTextureID() const;
 
-    void setWrap(GLenum x, GLenum y);
+    void setWrap(GLenum x, GLenum y) const;
 
 protected:
     TextureResourceLocator locator;

@@ -38,7 +38,7 @@ void Shader::populateUniformCache() {
 
 			GLint uniformLocation = glGetUniformLocation(shaderProgramID, uniformName.get());
 
-			uniformLocationCache.emplace(uniformName.get(), uniformLocation);
+			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderLocation>(uniformLocation));
 		}
 	}
 }
@@ -125,5 +125,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
+	//debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
 }

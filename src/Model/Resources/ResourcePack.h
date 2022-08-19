@@ -16,15 +16,15 @@ public:
 		std::cout << "Resource pack destroyed." << std::endl;
 	}
 
-	void add(ModelResourceLocator modelLocator);
-	void addAll(std::vector<ModelResourceLocator> modelLocators);
+	void add(const ModelResourceLocator& modelLocator);
+	void addAll(const std::vector<ModelResourceLocator>& modelLocators);
 
 	/// Imports all added models
 	void finalize();
 
-	GLint getTextureLibraryId();
+	GLint getTextureLibraryId() const;
 
-	ModelData* getModelByName(std::string modelName);
+	ModelData* getModelByName(const std::string& modelName);
 	const std::vector<ModelData*>& getAllResources();
 
 private:

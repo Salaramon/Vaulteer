@@ -9,8 +9,6 @@
 #include <functional>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 
 struct HierarchyPair {
@@ -52,11 +50,11 @@ class BoundingSphereHierarchyNode {
 public:
 
 	BoundingSphereHierarchyNode() :
-		node({ nullptr, nullptr }),
-		sphere(glm::vec4(0, 0, 0, 0))
-	{}
+		node({nullptr, nullptr}),
+		sphere(glm::vec4(0, 0, 0, 0)),
+		value(nullptr) {}
 
-	BoundingSphereHierarchyNode(BoundingSphereHierarchyNode&& other) :
+	BoundingSphereHierarchyNode(BoundingSphereHierarchyNode&& other) noexcept :
 		node({ std::move(other.node[0]), std::move(other.node[1]) }),
 		sphere(std::move(other.sphere)),
 		value(other.value)
@@ -67,12 +65,13 @@ public:
 	}
 
 	BoundingSphereHierarchyNode(glm::vec4 sphere, BoundingSphereHierarchyNode&& first, BoundingSphereHierarchyNode&& second) :
+		node({std::make_unique<BoundingSphereHierarchyNode>(std::move(first)), std::make_unique<BoundingSphereHierarchyNode>(std::move(second))}),
 		sphere(sphere),
-		node({ std::make_unique<BoundingSphereHierarchyNode>(std::move(first)), std::make_unique<BoundingSphereHierarchyNode>(std::move(second)) })
-	{}
+		value(nullptr) {}
+
 	BoundingSphereHierarchyNode(glm::vec4 sphere) :
-		sphere(sphere)
-	{}
+		sphere(sphere),
+		value(nullptr) {}
 
 	BoundingSphereHierarchyNode(glm::vec4 sphere, Store* value) :
 		sphere(sphere), value(value)
@@ -110,15 +109,15 @@ public:
 		using pointer = Store*;
 		using reference = Store&;
 
-		inline static const intmax_t FORWARD_INCREMENT = 1;
-		inline static const intmax_t BACKWARD_INCREMENT = -1;
-		inline static const intmax_t FORWARD_INITIALIZATION = 0;
-		inline static const intmax_t BACKWARD_INITIALIZATION = 1;
-		inline static const intmax_t FORWARD_LIMIT = 2;
-		inline static const intmax_t BACKWARD_LIMIT = -1;
+		inline static constexpr intmax_t FORWARD_INCREMENT = 1;
+		inline static constexpr intmax_t BACKWARD_INCREMENT = -1;
+		inline static constexpr intmax_t FORWARD_INITIALIZATION = 0;
+		inline static constexpr intmax_t BACKWARD_INITIALIZATION = 1;
+		inline static constexpr intmax_t FORWARD_LIMIT = 2;
+		inline static constexpr intmax_t BACKWARD_LIMIT = -1;
 
 		BoundingSphereHierarchyNode<Store>& getValue() {
-			path.back().first->value;
+			return path.back().first->value;
 		}
 
 		size_t getIndex() {
@@ -146,10 +145,11 @@ public:
 		}
 
 		bool nextDescendPath(intmax_t limit, intmax_t increment) {
-			for (0; path.back().second < limit; path.back().second += increment) {
+			while (path.back().second < limit) {
 				if (comparator(path.back().first->node[path.back().second]->sphere)) {
 					return true;
 				}
+				path.back().second += increment;
 			}
 			return false;
 			/*
@@ -201,7 +201,7 @@ public:
 			return *(path.back().first->value);
 		}
 
-		const bool operator==(const iterator& other) const {
+		bool operator==(const iterator& other) const {
 
 			if (path.empty() != other.path.empty()) {
 				return false;
@@ -221,7 +221,7 @@ public:
 			*/
 		}
 
-		const bool operator!=(const iterator& other) const {
+		bool operator!=(const iterator& other) const {
 			if (path.empty() != other.path.empty()) {
 				return true;
 			}
@@ -279,8 +279,8 @@ public:
 		return container.back()->value;
 	}
 
-	std::pair<BoundingSphereHierarchy<Store>::iterator, BoundingSphereHierarchy<Store>::iterator> equal_range(std::function<bool(glm::vec4)> comp) {
-		std::pair<BoundingSphereHierarchy<Store>::iterator, BoundingSphereHierarchy<Store>::iterator> iteratorPair;
+	std::pair<iterator, iterator> equal_range(std::function<bool(glm::vec4)> comp) {
+		std::pair<iterator, iterator> iteratorPair;
 		iteratorPair.first = begin(comp);
 		iteratorPair.second = end(comp);
 		
@@ -319,11 +319,11 @@ public:
 		std::optional<BoundingSphereHierarchyNode<Store>> oddNode;
 		size_t best = 0;
 		for (size_t i = 0; i < nodes.size(); i++) {
-			if (skipLocations.find(i) == skipLocations.end()) {
+			if (!skipLocations.contains(i)) {
 				HierarchyPair shortestPair{};
 				shortestPair.radius = std::numeric_limits<float>::max();
 				for (size_t j = 0; j < nodes.size(); j++) {
-					if (skipLocations.find(j) == skipLocations.end() && i != j) {
+					if (!skipLocations.contains(j) && i != j) {
 						glm::vec3 ijCenterVector = glm::vec3(nodes[j].sphere) - glm::vec3(nodes[i].sphere);
 						float ijCenterLength = glm::length(ijCenterVector);
 

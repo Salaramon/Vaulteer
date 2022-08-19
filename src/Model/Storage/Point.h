@@ -5,16 +5,14 @@
 #include "GLSLCPPBinder.h"
 #include "Model/Storage/Vertex.h"
 
-class Point
-{
+class Point {
 public:
-	Point(glm::vec3 point) : aPos(point) {
-	}
-	Point(float x, float y, float z) {
-		aPos = glm::vec3(x, y, z);
-	}
-	Point operator=(glm::vec3 point) {
-		return Point(point);
+	Point(glm::vec3 point) : aPos(point) { }
+
+	Point(float x, float y, float z) : aPos(glm::vec3(x, y, z)) {}
+
+	Point operator=(glm::vec3& point) const {
+		return { point };
 	}
 
 
@@ -29,4 +27,3 @@ public:
 		//Binder::geometry_vertex::locations::instanceMatrix
 	};
 };
-

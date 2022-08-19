@@ -466,19 +466,19 @@ protected:
 
 class _NODEBUG_ : public DebugLoggerInstanceFake {
 public:
-	inline _NODEBUG_(std::string classLogName = "") {}
-	inline _NODEBUG_(_NODEBUG_&& other) {}
+	_NODEBUG_(std::string classLogName = "") {}
+	_NODEBUG_(_NODEBUG_&& other) {}
 
-	inline void debug(std::string& message, std::string& log) {}
-	inline void debug(std::string&& message, std::string&& log) {}
-	inline void debug(std::string& message, std::string&& log) {}
-	inline void debug(std::string&& message, std::string& log) {}
-	inline void debug(std::string message) {}
-	inline void setThisLimit(size_t& limit) {}
-	inline void setThisMessageLimit(size_t& limit) {}
-	inline void setThisLimit(size_t&& limit) {}
-	inline void setThisMessageLimit(size_t&& limit) {}
-	inline size_t getObjectKey() const { return 0; }
+	void debug(std::string& message, std::string& log) {}
+	void debug(std::string&& message, std::string&& log) {}
+	void debug(std::string& message, std::string&& log) {}
+	void debug(std::string&& message, std::string& log) {}
+	void debug(std::string message) {}
+	void setThisLimit(size_t& limit) {}
+	void setThisMessageLimit(size_t& limit) {}
+	void setThisLimit(size_t&& limit) {}
+	void setThisMessageLimit(size_t&& limit) {}
+	size_t getObjectKey() const { return 0; }
 };
 
 template<class Class>

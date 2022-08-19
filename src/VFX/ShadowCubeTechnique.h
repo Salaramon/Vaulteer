@@ -11,6 +11,6 @@ public:
 
 	void setLightPos(const glm::vec3& lightPos);
 
-	void setFarPlane(const float farPlane);
+	void setFarPlane(float farPlane);
 };
 

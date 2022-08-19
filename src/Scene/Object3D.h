@@ -1,16 +1,13 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-class Object3D
-{
+class Object3D {
 public:
 	Object3D();
-	Object3D(Object3D&& model);
+	Object3D(Object3D&& object3D);
 
-	glm::mat4 getModelMatrix();
+	glm::mat4 getModelMatrix() const;
 	void rotate(float angle, glm::vec3 axis);
 	void setRotation(float angle, glm::vec3 axis);
 	void move(float x, float y, float z);
@@ -20,7 +17,7 @@ public:
 	void scale(float x, float y, float z);
 	void scale(glm::vec3 scale);
 	void setScale(float x, float y, float z);
-    void setScale(glm::vec3 scale);
+	void setScale(glm::vec3 scale);
 
 	glm::vec3 getPosition();
 
@@ -31,4 +28,3 @@ private:
 	glm::mat4 modelTranslation;
 	glm::mat4 modelRotation;
 };
-

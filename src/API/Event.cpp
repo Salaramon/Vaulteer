@@ -10,8 +10,7 @@ bool Event::startup = true;
 double Event::lastPollTime = 0;
 double Event::currentPollTime = 0;
 
-void Event::AddEventHandlingForWindow(Window* window)
-{
+void Event::addEventHandlingForWindow(Window* window) {
 	DebugLogger<Event> log;
 	GLFWwindow* rawWindow = window->getRawWindow();
 	Event::window = window;
@@ -33,9 +32,8 @@ void Event::AddEventHandlingForWindow(Window* window)
 
 }
 
-bool Event::Poll() 
-{
- 	DebugLogger<Event> log;
+bool Event::poll() {
+	DebugLogger<Event> log;
 	log.debug("Events started polling.\n");
 	if (firstPoll) {
 		currentPollTime = glfwGetTime();
@@ -51,7 +49,7 @@ bool Event::Poll()
 	cursorEvents.clear();
 	cursorEvents.push_back(carry);
 	wheelEvents.clear();
-	
+
 	glfwPollEvents();
 
 	log.debug("Events finished polling.\n");
@@ -60,8 +58,7 @@ bool Event::Poll()
 }
 
 
-void Event::keyHandler(GLFWwindow* window, KeyCode key, ActionCode action)
-{
+void Event::keyHandler(GLFWwindow* window, KeyCode key, ActionCode action) {
 	StateCode enumState = static_cast<StateCode>(action);
 	//Sets and stores the state of each button until changed.
 	if (action == ActionCode::PRESS || action == ActionCode::RELEASE) {
@@ -83,13 +80,11 @@ void Event::keyHandler(GLFWwindow* window, KeyCode key, ActionCode action)
 	}
 }
 
-double Event::now()
-{
+double Event::now() {
 	return currentPollTime;
 }
 
-double Event::delta()
-{
+double Event::delta() {
 	return currentPollTime - lastPollTime;
 }
 
@@ -109,13 +104,11 @@ bool Event::isKeyReleased(KeyName& key) {
 	return key >> Event::ACTION::RELEASE;
 }
 
-void Event::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
+void Event::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	keyHandler(window, static_cast<KeyCode>(button + static_cast<int>(KeyCode::START_OF_MOUSEKEYS) + 1), static_cast<ActionCode>(action));
 }
 
-void Event::cursor_position_callback(GLFWwindow* window, double x, double y)
-{
+void Event::cursor_position_callback(GLFWwindow* window, double x, double y) {
 	if (glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
 		cursorEvents.push_back({
 			.x = x,
@@ -124,8 +117,7 @@ void Event::cursor_position_callback(GLFWwindow* window, double x, double y)
 	}
 }
 
-void Event::scroll_callback(GLFWwindow* window, double x, double y)
-{
+void Event::scroll_callback(GLFWwindow* window, double x, double y) {
 	if (glfwGetWindowAttrib(window, GLFW_FOCUSED)) {
 		wheelEvents.push_back({
 			.ScrollX = x,
@@ -134,8 +126,7 @@ void Event::scroll_callback(GLFWwindow* window, double x, double y)
 	}
 }
 
-void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
+void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	keyHandler(window, static_cast<KeyCode>(key), static_cast<ActionCode>(action));
 }
 
@@ -146,36 +137,34 @@ void Event::window_focus_callback(GLFWwindow* window, int key)
 }
 */
 
-Event::BooleanCheck operator<(const double lhs, const Event::CursorPosition& rhs)
-{
-	return rhs.check(lhs, std::greater<double>());
-}
- Event::BooleanCheck operator>(const double lhs, const Event::CursorPosition& rhs)
-{
-	return rhs.check(lhs, std::less<double>());
-}
- Event::BooleanCheck operator<=(const double lhs, const Event::CursorPosition& rhs)
-{
-	return rhs.check(lhs, std::greater_equal<double>());
-}
- Event::BooleanCheck operator>=(const double lhs, const Event::CursorPosition& rhs)
-{
-	return rhs.check(lhs, std::less_equal<double>());
+Event::BooleanCheck operator<(const double lhs, const Event::CursorPosition& rhs) {
+	return rhs.check(lhs, std::greater());
 }
 
- Event::BooleanCheck operator<(const Event::CursorPosition& lhs, const double rhs)
-{
-	return lhs.check(rhs, std::less<double>());
+Event::BooleanCheck operator>(const double lhs, const Event::CursorPosition& rhs) {
+	return rhs.check(lhs, std::less());
 }
- Event::BooleanCheck operator>(const Event::CursorPosition& lhs, const double rhs)
-{
-	return lhs.check(rhs, std::greater<double>());
+
+Event::BooleanCheck operator<=(const double lhs, const Event::CursorPosition& rhs) {
+	return rhs.check(lhs, std::greater_equal());
 }
- Event::BooleanCheck operator<=(const Event::CursorPosition& lhs, const double rhs)
-{
-	return lhs.check(rhs, std::less_equal<double>());
+
+Event::BooleanCheck operator>=(const double lhs, const Event::CursorPosition& rhs) {
+	return rhs.check(lhs, std::less_equal());
 }
- Event::BooleanCheck operator>=(const Event::CursorPosition& lhs, const double rhs)
-{
-	return lhs.check(rhs, std::greater_equal<double>());
+
+Event::BooleanCheck operator<(const Event::CursorPosition& lhs, const double rhs) {
+	return lhs.check(rhs, std::less());
+}
+
+Event::BooleanCheck operator>(const Event::CursorPosition& lhs, const double rhs) {
+	return lhs.check(rhs, std::greater());
+}
+
+Event::BooleanCheck operator<=(const Event::CursorPosition& lhs, const double rhs) {
+	return lhs.check(rhs, std::less_equal());
+}
+
+Event::BooleanCheck operator>=(const Event::CursorPosition& lhs, const double rhs) {
+	return lhs.check(rhs, std::greater_equal());
 }

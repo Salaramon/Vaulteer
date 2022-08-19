@@ -2,15 +2,12 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
-#include <iostream>
-
 #include <DebugYourself.h>
 
 #include "API/Event.h"
 #include "Renderer/ShaderProgram.h"
 
 #include "Game.h"
-
 
 
 void initializeSTBI() {
@@ -66,7 +63,7 @@ int main() {
 
 	initializeShaders();
 
-	Event::AddEventHandlingForWindow(&window);
+	Event::addEventHandlingForWindow(&window);
 	//Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
 	//Texture::uniformTextureTypes.emplace(aiTextureType_SPECULAR, Binder::lightsource_frag::uniforms::lightColor);
 	//Game game("resourceFolder?");
@@ -79,7 +76,6 @@ int main() {
 		game.loadResources();
 		gameFlags = game.run();
 	}
-
 
 
 	cleanup();

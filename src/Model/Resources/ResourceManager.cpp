@@ -1,9 +1,9 @@
 #include "vpch.h"
 #include "Model/Resources/ResourceManager.h"
 
-ResourcePack& ResourceManager::createPack(std::vector<ModelResourceLocator> resources) {
+ResourcePack& ResourceManager::createPack(const std::vector<ModelResourceLocator>& resources) {
     loadedResourcePacks.push_back(std::make_unique<ResourcePack>(resourceLoader));
-    ResourcePack& pack = *loadedResourcePacks.back().get();
+    ResourcePack& pack = *loadedResourcePacks.back();
 
     pack.addAll(resources);
     pack.finalize();
@@ -11,6 +11,10 @@ ResourcePack& ResourceManager::createPack(std::vector<ModelResourceLocator> reso
     return pack;
 }
 
-ResourcePack& ResourceManager::getPack(size_t index) {
+ResourcePack& ResourceManager::getPack(size_t index) const {
     return *loadedResourcePacks.at(index);
 }
+
+void ResourceManager::setMaxTextureSize() {}
+
+void ResourceManager::enableTexturePacking() {}

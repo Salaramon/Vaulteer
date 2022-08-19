@@ -23,8 +23,8 @@
 #include "Renderer/BlendingForwardRenderer.h"
 #include "Renderer/ShaderProgram.h"
 
-#include "Opaque.h"
-#include "Transparent.h"
+#include "Renderer/Tags/Opaque.h"
+#include "Renderer/Tags/Transparent.h"
 
 class Game : public DebugLogger<Game>
 {

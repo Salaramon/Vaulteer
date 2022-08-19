@@ -1,48 +1,32 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <iostream>
-#include <unordered_map>
-#include <unordered_set>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-#include "Model/Data/LineData.h"
 #include "Model/Data/ModelData.h"
-#include "Model/Textures/Texture.h"
 #include "Renderer/Shader.h"
 #include "Scene/Object3D.h"
 
 #include "Debug/DebugLogger.h"
 
-template<class Data>
-class Model : public DebugLogger<Model<char>>, public Object3D
-{
+template <class Data>
+class Model : public DebugLogger<Model<char>>, public Object3D {
 public:
-
 	struct Faces {
-		inline static const GLenum Front = GL_FRONT;
-		inline static const GLenum Back = GL_BACK;
-		inline static const GLenum Both = GL_FRONT_AND_BACK;
+		inline static constexpr GLenum Front = GL_FRONT;
+		inline static constexpr GLenum Back = GL_BACK;
+		inline static constexpr GLenum Both = GL_FRONT_AND_BACK;
 	};
 
 	struct Polygon {
-		inline static const GLenum Point = GL_POINT;
-		inline static const GLenum Line = GL_LINE;
-		inline static const GLenum Fill = GL_FILL;
+		inline static constexpr GLenum Point = GL_POINT;
+		inline static constexpr GLenum Line = GL_LINE;
+		inline static constexpr GLenum Fill = GL_FILL;
 	};
 
-	Model(Model&) = delete;
-	Model(Model&& model);
 	Model(Data& data);
 	Model(Data* data);
+	Model(Model&) = delete;
+	Model(Model&& model) noexcept;
 
 	void setPolygonFaces(GLenum faces);
 	void setPolygonMode(GLenum mode);
@@ -50,15 +34,14 @@ public:
 
 	glm::vec4 getBoundingSphere();
 
-	GLenum getPolygonFaces();
-	GLenum getPolygonMode();
-	GLfloat getPolygonLineWidth();
+	GLenum getPolygonFaces() const;
+	GLenum getPolygonMode() const;
+	GLfloat getPolygonLineWidth() const;
 
 	Data* getData();
 
 	//void render(const Shader& shader) override;
 private:
-
 	Data* model = nullptr;
 
 	GLenum polygonFaces = Faces::Both;
@@ -67,72 +50,61 @@ private:
 
 };
 
-template<class Data>
-inline Model<Data>::Model(Model&& model) :
+template <class Data>
+Model<Data>::Model(Model&& model) noexcept :
+	Object3D(std::forward<Model>(model)),
 	model(std::move(model.model)),
 	polygonFaces(std::move(model.polygonFaces)),
 	polygonMode(std::move(model.polygonMode)),
-	polygonLineWidth(std::move(model.polygonLineWidth)),
-	Object3D(std::forward<Model>(model))
-{}
+	polygonLineWidth(std::move(model.polygonLineWidth)) {}
 
-template<class Data>
-inline Model<Data>::Model(Data& data) : 
+template <class Data>
+Model<Data>::Model(Data& data) :
 	Object3D(),
-	model(&data)
-{}
+	model(&data) {}
 
-template<class Data>
-inline Model<Data>::Model(Data* data) : 
+template <class Data>
+Model<Data>::Model(Data* data) :
 	Object3D(),
-	model(data)
-{}
+	model(data) {}
 
-template<class Data>
-inline void Model<Data>::setPolygonFaces(GLenum faces)
-{
+template <class Data>
+void Model<Data>::setPolygonFaces(GLenum faces) {
 	polygonFaces = faces;
 }
 
-template<class Data>
-inline void Model<Data>::setPolygonMode(GLenum mode)
-{
+template <class Data>
+void Model<Data>::setPolygonMode(GLenum mode) {
 	polygonMode = mode;
 }
 
-template<class Data>
-inline void Model<Data>::setPolygonLineWidth(GLfloat width)
-{
+template <class Data>
+void Model<Data>::setPolygonLineWidth(GLfloat width) {
 	polygonLineWidth = width;
 }
 
-template<class Data>
-inline GLenum Model<Data>::getPolygonFaces()
-{
+template <class Data>
+GLenum Model<Data>::getPolygonFaces() const {
 	return polygonFaces;
 }
 
-template<class Data>
-inline GLenum Model<Data>::getPolygonMode()
-{
+template <class Data>
+GLenum Model<Data>::getPolygonMode() const {
 	return polygonMode;
 }
 
-template<class Data>
-inline GLfloat Model<Data>::getPolygonLineWidth()
-{
+template <class Data>
+GLfloat Model<Data>::getPolygonLineWidth() const {
 	return polygonLineWidth;
 }
 
-template<class Data>
-inline Data* Model<Data>::getData()
-{
+template <class Data>
+Data* Model<Data>::getData() {
 	return model;
 }
 
-template<class Data>
-glm::vec4 Model<Data>::getBoundingSphere()
-{
+template <class Data>
+glm::vec4 Model<Data>::getBoundingSphere() {
 	glm::vec4 sphere(model->getBoundingSphere());
 	glm::vec3 pos = getPosition();
 	sphere.x += pos.x;

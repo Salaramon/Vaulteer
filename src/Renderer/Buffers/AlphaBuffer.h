@@ -18,10 +18,10 @@ public:
     AlphaBuffer(unsigned int width, unsigned int height);
 
     bool init();
-    virtual void clearColor();
+    void clearColor() override;
 
-    void bindReadTexture(AlphaBufferTextureType TextureType);
-    void bindTextureUnit(AlphaBufferTextureType textureType);
+    void bindReadTexture(AlphaBufferTextureType TextureType) const;
+    void bindTextureUnit(AlphaBufferTextureType textureType) const;
 
 private:
     unsigned int width, height;

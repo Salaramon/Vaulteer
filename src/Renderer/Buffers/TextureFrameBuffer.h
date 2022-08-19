@@ -1,8 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <iostream>
-
 #include "FrameBuffer.h"
 #include "Utils/TypeDefUtils.h"
 
@@ -16,18 +13,18 @@ public:
 	TextureFrameBuffer(uint frameBufferTexId, uint fbo);
 	TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept;
 
-	~TextureFrameBuffer();
+	~TextureFrameBuffer() override;
 
-	void destroy();
+	void destroy() const;
 
 	virtual uint initTexture(uint width, uint height) = 0;
 
-	bool initWithTexture();
+	bool initWithTexture() const;
 
-	void bindWrite();
-	void bindRead();
+	void bindWrite() const;
+	void bindRead() const;
 
-	uint getTextureId();
+	uint getTextureId() const;
 
 protected:
 	uint frameBufferTexId;
