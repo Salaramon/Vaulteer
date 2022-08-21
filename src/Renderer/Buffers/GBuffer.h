@@ -20,7 +20,7 @@ public:
 
     bool init();
 
-    void bindReadTexture(GBufferTextureType TextureType) const;
+    void bindReadTexture(GBufferTextureType textureType) const;
     void bindTextureUnit(GBufferTextureType textureType) const;
 
     unsigned int width, height;

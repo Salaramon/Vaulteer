@@ -21,6 +21,9 @@ void OpenGL::disableDepthTest()
 }
 
 void OpenGL::enableStencilTest() {
+	// query 
+	/*GLint drawFboId = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);*/
 	glEnable(GL_STENCIL_TEST);
 	log.debug("GL_STENCIL_TEST glEnable.\n", "glEnable()");
 }

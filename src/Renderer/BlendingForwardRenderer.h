@@ -91,7 +91,7 @@ public:
 
 			for (Mesh& mesh : modelDataMeshes) {
 				mesh.bind();
-				glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
 				mesh.unbind();
 			}
 		}
@@ -101,9 +101,6 @@ public:
 	}
 
 	static void compositePass(Camera* camera) {
-		OpenGL::enableStencilTest();
-		glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-
 		BlendingCompositeTechnique::shader->use();
 
 		OpenGL::setBlendMode(OpenGL::BlendModes::SourceAlpha, OpenGL::BlendModes::OneMinusSourceAlpha);
@@ -120,10 +117,9 @@ public:
 
 		Mesh& quadMesh = quad->getMeshes().front();
 		quadMesh.bind();
-		glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, nullptr);
 		quadMesh.unbind();
 
 		alphaBuffer->unbind();
-		OpenGL::disableStencilTest();
 	}
 };
