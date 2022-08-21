@@ -1,10 +1,11 @@
 #pragma once
 
 #include <any>
-#include <iostream>
 
 #include "GLSLCPPBinder.h"
 #include "Model/Data/ModelData.h"
+
+#include "Debug/Debug.h"
 
 class UniformBuffer : Buffer<BufferType::UniformBuffer> {
 public:
@@ -20,8 +21,9 @@ public:
 	template<class T>
 	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
-		/*if (dataSize > ubo.size)
-			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << " from vector: " << ubo.size << " <- " << dataSize << std::endl; */
+		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const std::vector<float>&)>(insert), UniformBuffer>(
+			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
+		);
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -31,8 +33,9 @@ public:
 	template<class T>
 	static void insert(UniformBuffer& ubo, const T& data) {
 		size_t dataSize = sizeof(data);
-		/*if (dataSize > ubo.size)
-			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << ": " << ubo.size << " <- " << ubo.dataSize << std::endl;*/
+		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const float&)>(insert), UniformBuffer>(
+			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
+		);
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -45,7 +48,21 @@ private:
 
 	const GLenum drawHint;
 
-	using LOG = _LOG<DY::No_CB, DY::No_OB, DY::No_FB, DY::No_VB>;
+public:
+	inline static auto FR = DY::FunctionRegister<
+        static_cast<void(*)(UniformBuffer&, const std::vector<float>&)>(insert),
+        static_cast<void(*)(UniformBuffer&, const float&)>(insert)
+	>("insert<vector>", "insert<>");
+
+	DY::ObjectRegister<UniformBuffer,
+		decltype(binding),
+		decltype(size),
+		decltype(drawHint)> OR;
+	
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+	inline static auto FB = DY::FunctionBinder(FR);
+
+	using LOG = _LOG<DY::No_CB, decltype(OB), decltype(FB), DY::No_VB>;
 
 };
 
