@@ -17,8 +17,8 @@ public:
 	VertexArray();
 
 	VertexArray(VertexArray<Store>&& other) :
-		vao(other.VAO) {
-		other.VAO = 0;
+		vao(other.vao) {
+		other.vao = 0;
 		debug("VertexArray moved. VAO: " + std::to_string(vao) + "\n", "MOVE_CONSTRUCTOR");
 	}
 

@@ -23,7 +23,7 @@ public:
 
 	VertexBuffer(size_t bufferSize);
 
-	VertexBuffer(std::vector<Store>& vertices);
+	VertexBuffer(const std::vector<Store>& vertices);
 
 	//VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
 
@@ -41,7 +41,7 @@ public:
 //private:
 	void bindVertexArray();
 
-	GLuint getBuffer() { return buffer; }
+	GLuint getBuffer() const { return buffer; }
 };
 
 
@@ -60,7 +60,7 @@ VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 }
 
 template<class Store>
-VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
+VertexBuffer<Store>::VertexBuffer(const std::vector<Store>& vertices) {
 	debug("VertexBuffer destroyed. Buffer: " + std::to_string(buffer) + "\n");
 
 	insert(vertices);
