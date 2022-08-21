@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <type_traits>
 
+#include "Debug/Debug.h"
 
 struct BufferType {
 	inline static constexpr GLenum ArrayBuffer = GL_ARRAY_BUFFER;

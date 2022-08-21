@@ -120,6 +120,7 @@ class _ShaderProgram<0, Args...>
 public:
 	static void load() {
 		shader = std::make_unique<Shader>(initializeShader());
+		LOG::SPGL::debug<&load, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Shader loaded!");
 	}
 
 //protected:
@@ -127,17 +128,36 @@ public:
 
 	template<size_t... n>
 	static const Shader _initializeShader(std::index_sequence<n...>) {
+		LOG::SPGL::debug<&_initializeShader<n...>, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }),  "initializing shader with arguments: !!update log entry for viewing of arguments!!");
 		return Shader((ShaderInfoFromType<n, Args>().value)...);
 	}
 
 	static Shader initializeShader() {
+		LOG::SPGL::debug<&initializeShader, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), 
+			std::format("running shader initialization with {} as argument", typeid(decltype(std::make_index_sequence<sizeof...(Args)>{})).name()));
 		return _initializeShader(std::make_index_sequence<sizeof...(Args)>{});
 	}
 
+	//duplicate of load() ???
 	static void reloadShader() {
+		LOG::SPGL::debug<&reloadShader, _ShaderProgram<0, Args...>>("Duplicate function, consider using load instead!");
 		shader = std::make_unique<Shader>(initializeShader());
 		//shader->populateUniformCache();
 	}
+
+	inline static auto FR = DY::FunctionRegister<
+		//&_initializeShader<>,
+		&load,
+		&initializeShader,
+		&reloadShader
+	>(
+		"load",
+		"initializeShader",
+		"reloadShader");
+
+	inline static auto FB = DY::FunctionBinder(FR);
+
+	using LOG = _LOG<DY::No_CB, DY::No_OB, decltype(FB), DY::No_VB>;
 };
 
 template<class... Args>

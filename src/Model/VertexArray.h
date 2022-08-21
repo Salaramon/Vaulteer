@@ -19,6 +19,7 @@ public:
 		VAO(other.VAO) {
 		other.VAO = 0;
 		//debug("VertexArray moved. VAO: " + std::to_string(VAO) + "\n", "MOVE_CONSTRUCTOR");
+
 	}
 	~VertexArray();
 	operator GLuint() const { return VAO; }

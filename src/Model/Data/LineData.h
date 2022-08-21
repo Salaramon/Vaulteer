@@ -50,6 +50,8 @@ public:
 	glm::vec4 getColor();
 	void setColor(glm::vec4 color);
 
+	glm::vec4 getBoundingSphere() { return glm::vec4(); }
+
 	std::vector<Point> points;
 	Indices indices;
 

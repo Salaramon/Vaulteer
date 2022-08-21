@@ -42,15 +42,39 @@ public:
 	void bindVertexArray();
 
 	GLuint getBuffer() { return buffer; }
+
+	inline static auto CR = DY::ClassRegister<
+		&insert,
+		&insertPartial,
+		&reserve,
+		&bindVertexArray,
+		&getBuffer>(
+			"insert",
+			"insertPartial",
+			"reserve",
+			"bindVertexArray"
+			"getBuffer");
+
+	inline static auto FR = DY::FunctionRegister<&getVAO>("getVAO");
+
+	//Uncomment when ClassBinders and FunctionBinders for Buffer and VertexArray is added.
+	inline static auto CB = DY::ClassBinder(CR/*, Buffer<BufferType::ArrayBuffer>::CB, VertexBuffer<Store>::CB*/);
+	inline static auto FB = DY::FunctionBinder(FR/*, Buffer<BufferType::VertexArray>::FB, VertexArray<Store>::FB*/);
+
+
+	using LOG = _LOG<decltype(CB), DY::No_OB, decltype(FB), DY::No_VB>;
 };
 
 
 template<class Store>
-VertexBuffer<Store>::VertexBuffer() {}
+VertexBuffer<Store>::VertexBuffer() {
+	LOG::CTOR(this, "Empty VertexBuffer created");
+}
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 	//debug("VertexBuffer created with size " + std::to_string(bufferSize) + ".Buffer: " + std::to_string(buffer) + "\n");
+	LOG::CTOR::debug(this, std::format("Creating VertexBuffer of size {}", bufferSize));
 
 	reserve(bufferSize);
 	bindVertexArray();
@@ -61,7 +85,7 @@ VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
-	//debug("VertexBuffer destroyed. Buffer: " + std::to_string(buffer) + "\n");
+	LOG::CTOR::debug(this, "Creating VertexBuffer from vertices...");
 
 	insert(vertices);
 	bindVertexArray();
@@ -75,7 +99,8 @@ template<class Store>
 VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
 	Buffer(std::move(other)) {
 	//other.vao = nullptr;
-	//debug("VertexBuffer moved. Buffer: " + std::to_string(buffer) + "\n");
+
+	LOG::CTOR::debug(this, &other, "Vertex buffer was moved");
 }
 
 
@@ -83,6 +108,8 @@ template<class Store>
 void VertexBuffer<Store>::bindVertexArray() {
 	VertexArray<Store>& vao = getVAO();
 	glVertexArrayVertexBuffer(vao, vao.bindIndex(), buffer, 0, sizeof(Store));
+
+	LOG::CLAS::debug<&VertexBuffer<Store>::bindVertexArray>(this, &vao, std::format("Vertex array of id {} was bound to buffer with id {}", static_cast<GLuint>(vao), buffer));
 }
 
 template<class Store>
@@ -91,7 +118,8 @@ void VertexBuffer<Store>::insert(const std::vector<Store>& vertices) {
 	//glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	//glBufferData(GL_ARRAY_BUFFER, si, vertices.data(), GL_STATIC_DRAW);
 	glNamedBufferData(buffer, vertices.size() * sizeof(Store), vertices.data(), GL_STATIC_DRAW);
-	//debug("Vertices inserted into buffer: " + std::to_string(buffer) + "\n");
+
+	LOG::CLAS::debug<&VertexBuffer<Store>::insert>(this, &buffer, std::format("Vertices inserted into buffer: {}", buffer));
 }
 
 template<class Store>
@@ -99,7 +127,8 @@ void VertexBuffer<Store>::insertPartial(const size_t position, const std::vector
 	//glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	//glBufferSubData(GL_ARRAY_BUFFER, position * sizeof(Store), vertices.size() * sizeof(Store), vertices.data());
 	glNamedBufferSubData(buffer, position * sizeof(Store), vertices.size() * sizeof(Store), vertices.data());
-	//debug("Vertex data replaced in buffer: " + std::to_string(buffer) + "\n");
+	
+	LOG::CLAS::debug<&VertexBuffer<Store>::insertPartial>(this, &buffer, std::format("Vertex data replaced in buffer: {}", buffer));
 }
 
 template<class Store>

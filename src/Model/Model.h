@@ -54,7 +54,7 @@ public:
 
 	Data* getData();
 
-	//void render(const Shader& shader) override;
+	
 private:
 
 	Data* model = nullptr;
@@ -63,10 +63,42 @@ private:
 	GLenum polygonMode = Polygon::Fill;
 	GLfloat polygonLineWidth = 1;
 
+
+public:
+
+	inline static auto CR = DY::ClassRegister<
+		&setPolygonFaces,
+		&setPolygonMode,
+		&setPolygonLineWidth,
+		&getBoundingSphere,
+		&getPolygonFaces,
+		&getPolygonMode,
+		&getPolygonLineWidth,
+		&getData>(
+			"setPolygonFaces",
+			"setPolygonMode",
+			"setPolygonLineWidth",
+			"getBoundingSphere",
+			"getPolygonFaces",
+			"getPolygonMode",
+			"getPolygonLineWidth",
+			"getData");
+
+	DY::ObjectRegister<Model<Data>,
+		decltype(model),
+		decltype(polygonFaces),
+		decltype(polygonMode)> OR;
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR), decltype(Shader::OB)>();
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
 template<class Data>
 inline Model<Data>::Model(Model&& model) :
+	OR(model.OR),
+
 	model(std::move(model.model)),
 	polygonFaces(std::move(model.polygonFaces)),
 	polygonMode(std::move(model.polygonMode)),
@@ -75,16 +107,40 @@ inline Model<Data>::Model(Model&& model) :
 {}
 
 template<class Data>
-inline Model<Data>::Model(Data& data) : 
+inline Model<Data>::Model(Data& data) :
+	OR(this,
+		DY::V(
+			&model,
+			&polygonFaces,
+			&polygonMode),
+		DY::N(
+			"model",
+			"polygonFaces",
+			"polygonMode")),
+
 	Object3D(),
 	model(&data)
-{}
+{
+	LOG::CTOR::debug(this, "Model data loaded into model from reference");
+}
 
 template<class Data>
 inline Model<Data>::Model(Data* data) : 
+	OR(this,
+		DY::V(
+			&model,
+			&polygonFaces,
+			&polygonMode),
+		DY::N(
+			"model",
+			"polygonFaces",
+			"polygonMode")),
+
 	Object3D(),
 	model(data)
-{}
+{
+	LOG::CTOR::debug(this, "Model data loaded into model from pointer");
+}
 
 template<class Data>
 inline void Model<Data>::setPolygonFaces(GLenum faces)
@@ -136,5 +192,6 @@ glm::vec4 Model<Data>::getBoundingSphere()
 	sphere.x += pos.x;
 	sphere.y += pos.y;
 	sphere.z += pos.z;
+	LOG::CLAS::debug<&Model<Data>::getBoundingSphere>(this, std::format("Got bounding sphere with values: {}", glm::to_string(sphere)));
 	return sphere;
 }
