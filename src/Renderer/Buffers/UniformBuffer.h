@@ -22,7 +22,7 @@ public:
 	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
 		
-		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
+		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const std::vector<T>&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
 		assert(dataSize <= ubo.size);
@@ -35,15 +35,14 @@ public:
 	static void insert(UniformBuffer& ubo, const T& data) {
 		size_t dataSize = sizeof(data);
 
-		/* THIS DOES NOT WORK DUE TO LNK1179 https://zal.s-ul.eu/3lZYOnhU
-		//Prefer OverloadSelector over static cast
+		// IF LNK1179 OCCUR EX.(https://zal.s-ul.eu/3lZYOnhU) it probably means debugging is done improper. A quick fix is to use static cast instead.
 		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const T&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
-		*/
-		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
-			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
-		);
+		
+		//LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
+		//	std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
+		//);
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -58,10 +57,10 @@ private:
 
 public:
 	inline static auto FR = DY::FunctionRegister <
-		DY::OverloadSelector<void(UniformBuffer&, const std::vector<ModelData::ModelUnitData>&)>::Get<&UniformBuffer::insert<std::vector<ModelData::ModelUnitData>>>,
-		DY::OverloadSelector<void(UniformBuffer&, const std::vector<Material::MaterialData>&)>::Get<&UniformBuffer::insert<std::vector<Material::MaterialData>>>,
-		DY::OverloadSelector<void(UniformBuffer&, const float&)>::Get<&UniformBuffer::insert<float>>
-	>("insert<std::vector<MaterialData>>",  "insert<std::vector<MaterialData>>", "insert<float>");
+		DY::OverloadSelector<void(UniformBuffer&, const std::vector<ModelData::ModelUnitData>&)>::Get<&UniformBuffer::insert<ModelData::ModelUnitData>>,
+		DY::OverloadSelector<void(UniformBuffer&, const std::vector<Material::MaterialData>&)>::Get<&UniformBuffer::insert<Material::MaterialData>>,
+		DY::OverloadSelector<void(UniformBuffer&, const glm::mat4&)>::Get<&UniformBuffer::insert<glm::mat4>>
+	>("insert<std::vector<ModelUnitData>>",  "insert<std::vector<MaterialData>>", "insert<glm::mat4>");
 
 	DY::ObjectRegister<UniformBuffer,
 		decltype(binding),
