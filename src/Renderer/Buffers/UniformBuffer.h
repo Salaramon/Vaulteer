@@ -21,7 +21,8 @@ public:
 	template<class T>
 	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
-		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const std::vector<float>&)>(insert), UniformBuffer>(
+		
+		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
 		assert(dataSize <= ubo.size);
@@ -33,7 +34,14 @@ public:
 	template<class T>
 	static void insert(UniformBuffer& ubo, const T& data) {
 		size_t dataSize = sizeof(data);
-		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const float&)>(insert), UniformBuffer>(
+
+		/* THIS DOES NOT WORK DUE TO LNK1179 https://zal.s-ul.eu/3lZYOnhU
+		//Prefer OverloadSelector over static cast
+		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const T&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
+			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
+		);
+		*/
+		LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
 		assert(dataSize <= ubo.size);
@@ -49,10 +57,11 @@ private:
 	const GLenum drawHint;
 
 public:
-	inline static auto FR = DY::FunctionRegister<
-        static_cast<void(*)(UniformBuffer&, const std::vector<float>&)>(insert),
-        static_cast<void(*)(UniformBuffer&, const float&)>(insert)
-	>("insert<vector>", "insert<>");
+	inline static auto FR = DY::FunctionRegister <
+		DY::OverloadSelector<void(UniformBuffer&, const std::vector<ModelData::ModelUnitData>&)>::Get<&UniformBuffer::insert<std::vector<ModelData::ModelUnitData>>>,
+		DY::OverloadSelector<void(UniformBuffer&, const std::vector<Material::MaterialData>&)>::Get<&UniformBuffer::insert<std::vector<Material::MaterialData>>>,
+		DY::OverloadSelector<void(UniformBuffer&, const float&)>::Get<&UniformBuffer::insert<float>>
+	>("insert<std::vector<MaterialData>>",  "insert<std::vector<MaterialData>>", "insert<float>");
 
 	DY::ObjectRegister<UniformBuffer,
 		decltype(binding),

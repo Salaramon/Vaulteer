@@ -135,6 +135,12 @@ size_t Game::run() {
 		}
 
 		if (Event::isKeyPressed(Event::KEY::T)) {
+			if (!DY::publishToggle) {
+				DY::enablePublish();
+			}
+			else {
+				DY::disablePublish();
+			}
 			//DebugLogger<>::enableLogging();
 			//std::cout << "reloading shader" << std::endl;
 			DeferredRenderer::reloadShaders();

@@ -7,7 +7,7 @@
 using DY = dy::DebugYourself<dy::CONFIGURATION_STATE>;
 
 template<class C, class O, class F, class V>
-using DY_LINK = DY::Dependencies<C, O, F, V, DY::DirectLogger<DY::AlwaysFalse>>;
+using DY_LINK = DY::Dependencies<C, O, F, V, DY::AlwaysTrue, DY::DirectLogger<DY::AlwaysFalse>>;
 
 template<class C, class O, class F, class V>
 struct _LOG {

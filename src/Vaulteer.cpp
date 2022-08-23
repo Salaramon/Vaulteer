@@ -46,7 +46,7 @@ void cleanup() {
 }
 
 int main() {
-
+	DY::enablePublish();
 	//Initialization
 	initializeGLFW();
 

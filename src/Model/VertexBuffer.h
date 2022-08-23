@@ -56,6 +56,7 @@ public:
 			"getBuffer");
 
 	inline static auto FR = DY::FunctionRegister<&getVAO>("getVAO");
+	//inline static auto VR = DY::VariableRegister<decltype(&(getVAO()))>(); Need to make adding global and static variables once an option for VariableRegister
 
 	//Uncomment when ClassBinders and FunctionBinders for Buffer and VertexArray is added.
 	inline static auto CB = DY::ClassBinder(CR/*, Buffer<BufferType::ArrayBuffer>::CB, VertexBuffer<Store>::CB*/);
