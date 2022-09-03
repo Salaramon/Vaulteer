@@ -8,6 +8,8 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "Debug/Debug.h"
+
 class Window
 {
 
@@ -86,5 +88,35 @@ protected:
 
 	//GLFW window variable.
 	GLFWwindow* window;
+
+
+public:
+	inline static auto CR = DY::ClassRegister<
+		&is_running,
+		&getRawWindow,
+		&getHeight,
+		&addResizeCallback,
+		&setup>(
+			"is_running",
+			"getRawWindow",
+			"getHeight",
+			"addResizeCallback",
+			"framebuffer_size");
+
+	DY::ObjectRegister<Window, decltype(window)> OR;
+
+	inline static auto FR = DY::FunctionRegister<
+		&framebuffer_size_callback,
+		&focus_callback,
+		&iconify_callback>(
+			"framebuffer_size_callback",
+			"getRawWindow",
+			"iconify_callback");
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto FB = DY::FunctionBinder(FR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<decltype(CB), decltype(OB), decltype(FB), DY::No_VB>;
 };
 

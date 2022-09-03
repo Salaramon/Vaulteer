@@ -15,6 +15,7 @@ public:
 	using ALL = DY_LINK<C, O, F, V>;
 	using GLOB = DY_LINK<C, O, F, V>::Global;
 	using CLAS = DY_LINK<C, O, F, V>::Class;
+	using STAT = DY_LINK<C, O, F, V>::Static;
 	using CTOR = DY_LINK<C, O, F, V>::Constructor;
 	using SPGL = DY_LINK<C, O, F, V>::Special::Global;
 	using SPST = DY_LINK<C, O, F, V>::Special::Static;

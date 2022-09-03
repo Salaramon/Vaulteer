@@ -11,6 +11,8 @@
 
 #include "API/Window.h"
 
+#include "Debug/Debug.h"
+
 class Event
 {
 public:
@@ -426,8 +428,6 @@ public:
 		inline static const CursorPosition Y{ offsetof(Cursor,y) };
 	};
 
-
-
 	static double now();
 	static double delta();
 
@@ -462,6 +462,64 @@ private:
 	static double currentPollTime;
 
 	inline static bool firstPoll = true;
+
+
+public:
+
+	inline static auto VR = DY::VariableRegister(DY::V(
+		&buttonEvents,
+		&buttonStates,
+		&cursorEvents,
+		&wheelEvents,
+		&catchEvents,
+		&window,
+		&startup,
+		&lastPollTime,
+		&currentPollTime,
+		&firstPoll), DY::N(
+			"buttonEvents",
+			"buttonStates",
+			"cursorEvents",
+			"wheelEvents",
+			"catchEvents",
+			"window",
+			"startup",
+			"lastPollTime",
+			"currentPollTime",
+			"firstPoll"));
+
+	inline static auto FR = DY::FunctionRegister<
+		&AddEventHandlingForWindow,
+		&Poll,
+		&now,
+		&delta,
+		&isKeyDown,
+		&isKeyUp,
+		&isKeyPressed,
+		&isKeyReleased,
+		&keyHandler,
+		&mouse_button_callback,
+		&cursor_position_callback,
+		&scroll_callback,
+		&key_callback>(
+			"AddEventHandlingForWindow",
+			"Poll",
+			"now",
+			"delta",
+			"isKeyDown",
+			"isKeyUp",
+			"isKeyPressed",
+			"isKeyReleased",
+			"keyHandler",
+			"mouse_button_callback",
+			"cursor_position_callback",
+			"scroll_callback",
+			"key_callback");
+
+	inline static auto VB = DY::VariableBinder(VR);
+	inline static auto FB = DY::FunctionBinder(FR);
+
+	using LOG = _LOG<DY::No_CB, decltype(Window::OB), decltype(FB), decltype(VB)>;
 };
 
 //Create own value type to make compact position checking

@@ -12,10 +12,10 @@ double Event::currentPollTime = 0;
 
 void Event::AddEventHandlingForWindow(Window* window)
 {
-	//DebugLogger<Event> log;
 	GLFWwindow* rawWindow = window->getRawWindow();
 	Event::window = window;
 
+	LOG::SPGL::debug<&Event::AddEventHandlingForWindow, Event>(&window, "Event handline added for window.");
 	//log.debug("Event window context:" + std::to_string(window->getObjectKey()) + "\n");
 
 	glfwSetMouseButtonCallback(rawWindow, mouse_button_callback);

@@ -14,6 +14,8 @@
 
 #include "API/Event.h"
 
+#include "Debug/Debug.h"
+
 class Camera
 {
 public:
@@ -54,7 +56,6 @@ public:
 	Frustum getFrustum();
 	glm::vec3 getPosition();
 
-	std::string getOrientation();
 	glm::vec3 getFront();
 	glm::vec3 getRight();
 	glm::vec3 getUp();
@@ -76,4 +77,56 @@ private:
 
 	glm::quat orientation;
 	glm::vec3 position = { 0,0,0 };
+
+public:
+
+	inline static auto CR = DY::ClassRegister<
+		&move,
+		&rotate,
+		DY::OverloadSelector<Camera, void(float, float, float)>::Get<&Camera::setRotation>,
+		DY::OverloadSelector<Camera, void(glm::vec3, float)>::Get<&Camera::setRotation>,
+		&lockUp,
+		&setPosition,
+		&apply,
+		&getViewMatrix,
+		&getProjectionMatrix,
+		&getFrustum,
+		&getPosition,
+		&getFront,
+		&getRight,
+		&getUp,
+		&getFov,
+		&getAspectRatio,
+		&setAspectRatio
+
+	>(	"lockUp",
+		"setPosition",
+		"apply",
+		"getViewMatrix",
+		"getProjectionMatrix",
+		"getFrustum",
+		"getPosition",
+		"getFront",
+		"getRight",
+		"getUp",
+		"getFov",
+		"getAspectRatio",
+		"setAspectRatio");
+
+	DY::ObjectRegister<Camera,
+		decltype(lockedUp),
+		decltype(yaw),
+		decltype(pitch),
+		decltype(roll),
+		decltype(fov),
+		decltype(renderDistance),
+		decltype(aspectRatio),
+		decltype(orientation),
+		decltype(position)> OR;
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };

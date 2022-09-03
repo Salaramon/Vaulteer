@@ -12,15 +12,37 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Debug/Debug.h>
+
 
 struct HierarchyPair {
 public:
-	HierarchyPair() : first(0), second(0), center(glm::vec3(0,0,0)), radius(0) {}
+	HierarchyPair() :
+		OR(this, DY::V(
+			&first,
+			&second,
+			&center,
+			&radius), DY::N(
+				"first",
+				"second",
+				"center",
+				"radius")),
+
+		first(0), second(0), center(glm::vec3(0,0,0)), radius(0) {
+		OB.add(OR);
+	}
 
 	size_t first;
 	size_t second;
 	glm::vec3 center;
 	float radius;
+
+	DY::ObjectRegister<HierarchyPair,
+		decltype(first),
+		decltype(second),
+		decltype(center),
+		decltype(radius)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 };
 
 template<class Store>

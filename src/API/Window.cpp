@@ -1,11 +1,12 @@
 #include "vpch.h"
 #include "Window.h"
 
-Window::Window(const std::string title, unsigned const int width, unsigned const int height)
+Window::Window(const std::string title, unsigned const int width, unsigned const int height) : 
+	OR(this, DY::V(&window), DY::N("window"))
 {
+	OB.add(OR);
 	setup(title, width, height);
 	int init = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	//debug("GLAD initialization: " + std::to_string(init) + "\n","gladLoadGLLoader");
 }
 
 int Window::is_running()
@@ -15,6 +16,7 @@ int Window::is_running()
 
 GLFWwindow* Window::getRawWindow() const
 {
+	LOG::CLAS::debug<&Window::getRawWindow>(this, &window, "raw GLFWwindow was returned");
 	return window;
 }
 
@@ -35,6 +37,7 @@ int Window::getWidth()
 void Window::addResizeCallback(std::function<void(int, int)> callback)
 {
 	resizeCallbacks.at(window).push_back(callback);
+	LOG::CLAS::debug<&Window::addResizeCallback>(this, &window, "window resize callback added");
 }
 
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -53,6 +56,7 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 		}
 	}
 
+	LOG::SPGL::debug<&framebuffer_size_callback, Window>(&window, "window was resized");
 }
 
 void Window::focus_callback(GLFWwindow* window, int focused)
@@ -64,6 +68,7 @@ void Window::focus_callback(GLFWwindow* window, int focused)
 	//	glfwMakeContextCurrent(nullptr);
 	//}
 
+	LOG::SPGL::debug<&focus_callback, Window>(&window, "Window was focused");
 }
 
 void Window::iconify_callback(GLFWwindow* window, int iconified)
@@ -74,6 +79,8 @@ void Window::iconify_callback(GLFWwindow* window, int iconified)
 	//else {
 	//	glfwMakeContextCurrent(nullptr);
 	//}
+
+	LOG::SPGL::debug<&iconify_callback, Window>(&window, "Window was iconified");
 }
 
 void Window::setup(const std::string title, unsigned const int width, unsigned const int height)
@@ -84,6 +91,8 @@ void Window::setup(const std::string title, unsigned const int width, unsigned c
 	//debug("GLFW window initialization: " + std::to_string(success) + "\n");
 	//MUST IMPLEMENT DEBUGLOGGER STOPPER THINGY
 	//glfwTerminate(); <<<<<<<<<
+
+	LOG::CLAS::debug<&Window::setup>(this, &window, std::format("Window created with title {} and dimensions {}x{}", title, width, height));
 
 	glfwMakeContextCurrent(window);
 

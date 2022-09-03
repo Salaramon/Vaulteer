@@ -121,6 +121,8 @@ inline Model<Data>::Model(Data& data) :
 	Object3D(),
 	model(&data)
 {
+	OB.add(OR);
+
 	LOG::CTOR::debug(this, "Model data loaded into model from reference");
 }
 
@@ -139,6 +141,8 @@ inline Model<Data>::Model(Data* data) :
 	Object3D(),
 	model(data)
 {
+	OB.add(OR);
+
 	LOG::CTOR::debug(this, "Model data loaded into model from pointer");
 }
 

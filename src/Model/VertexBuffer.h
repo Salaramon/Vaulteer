@@ -59,23 +59,23 @@ public:
 	//inline static auto VR = DY::VariableRegister<decltype(&(getVAO()))>(); Need to make adding global and static variables once an option for VariableRegister
 
 	//Uncomment when ClassBinders and FunctionBinders for Buffer and VertexArray is added.
-	inline static auto CB = DY::ClassBinder(CR/*, Buffer<BufferType::ArrayBuffer>::CB, VertexBuffer<Store>::CB*/);
-	inline static auto FB = DY::FunctionBinder(FR/*, Buffer<BufferType::VertexArray>::FB, VertexArray<Store>::FB*/);
+	inline static auto CB = DY::ClassBinder(CR, Buffer<BufferType::ArrayBuffer>::CB/*, VertexArray<Store>::CB */ );
+	inline static auto FB = DY::FunctionBinder(FR);
 
 
-	using LOG = _LOG<decltype(CB), DY::No_OB, decltype(FB), DY::No_VB>;
+	using LOG = _LOG<decltype(CB), decltype(Buffer<BufferType::ArrayBuffer>::OB), decltype(FB), DY::No_VB>;
 };
 
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer() {
-	LOG::CTOR(this, "Empty VertexBuffer created");
+	LOG::CTOR(this, &buffer, ("Empty VertexBuffer created with id {}", buffer));
 }
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 	//debug("VertexBuffer created with size " + std::to_string(bufferSize) + ".Buffer: " + std::to_string(buffer) + "\n");
-	LOG::CTOR::debug(this, std::format("Creating VertexBuffer of size {}", bufferSize));
+	LOG::CTOR::debug(this, &buffer, std::format("Creating VertexBuffer with id {} of size {}", buffer, bufferSize));
 
 	reserve(bufferSize);
 	bindVertexArray();
@@ -86,7 +86,7 @@ VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
-	LOG::CTOR::debug(this, "Creating VertexBuffer from vertices...");
+	LOG::CTOR::debug(this, std::format("Creating VertexBuffer with id {} from vertices...", buffer));
 
 	insert(vertices);
 	bindVertexArray();
@@ -101,7 +101,7 @@ VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
 	Buffer(std::move(other)) {
 	//other.vao = nullptr;
 
-	LOG::CTOR::debug(this, &other, "Vertex buffer was moved");
+	LOG::CTOR::debug(this, &other, std::format("Vertex buffer with id {} was moved", buffer));
 }
 
 

@@ -28,6 +28,22 @@ public:
 	void reserve(size_t bufferSize);
 
 	void bindVertexArray(GLuint vao);
+
+
+	inline static auto CR = DY::ClassRegister<
+		&insert,
+		&insertPartial,
+		&reserve,
+		&bindVertexArray>(
+			"insert",
+			"insertPartial",
+			"reserve",
+			"bindVertexArray");
+
+	inline static auto CB = DY::ClassBinder(CR, Buffer<BufferType::ElementBuffer>::CB);
+
+	using LOG = _LOG<decltype(CB), decltype(Buffer<BufferType::ElementBuffer>::OB), DY::No_FB, DY::No_VB>;
+
 };
 
 
