@@ -5,8 +5,7 @@
 #include "Debug/DebugLogger.h"
 #include "Debug/DebugAliases.h"
 
-class OpenGL
-{
+class OpenGL {
 public:
 	static void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
 	                                   GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​) {
@@ -25,6 +24,7 @@ public:
 	inline static const GLenum SYNC = 0x01;
 
 	static void initialize();
+	static void initializeSTBI();
 
 	static void enableDepthTest();
 	static void disableDepthTest();
@@ -67,4 +67,3 @@ public:
 		inline static constexpr GLenum OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA;
 	};
 };
-

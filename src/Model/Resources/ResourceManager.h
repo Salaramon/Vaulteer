@@ -11,7 +11,11 @@ public:
 	ResourcePack& createPack(const std::vector<ModelResourceLocator>& resources);
 	ResourcePack& getPack(size_t index) const;
 
-	void setMaxTextureSize();
-	void enableTexturePacking();
+	void setMaxTextureSize(size_t maxTextureSize);
+	void setPackTextures(bool packTextures);
+
+	// TODO these are unused
+	size_t maxTextureSize = 8192;
+	size_t packTextures = true;
 };
 

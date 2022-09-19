@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Renderer/Techniques/DeferredGeometryTechnique.h"
 #include "Renderer/Techniques/DeferredLightingTechnique.h"
 #include "Scene/DynamicScene.h"

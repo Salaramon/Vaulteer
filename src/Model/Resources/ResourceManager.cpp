@@ -15,6 +15,10 @@ ResourcePack& ResourceManager::getPack(size_t index) const {
     return *loadedResourcePacks.at(index);
 }
 
-void ResourceManager::setMaxTextureSize() {}
+void ResourceManager::setMaxTextureSize(size_t maxTextureSize) {
+	this->maxTextureSize = maxTextureSize;
+}
+void ResourceManager::setPackTextures(bool packTextures) {
+	this->packTextures = packTextures;
+}
 
-void ResourceManager::enableTexturePacking() {}

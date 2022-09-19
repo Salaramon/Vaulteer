@@ -24,120 +24,56 @@ using ClusterTileComputeShader = const ShaderUniformPair<Binder::cluster_tile_co
 
 template <class ShaderBinder>
 constexpr const char* getShaderFile() {
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) {
-		return Binder::file_names::blending_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) {
-		return Binder::file_names::blending_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) { return Binder::file_names::blending_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) { return Binder::file_names::blending_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) {
-		return Binder::file_names::blending_composite_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) {
-		return Binder::file_names::blending_composite_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) { return Binder::file_names::blending_composite_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) { return Binder::file_names::blending_composite_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) {
-		return Binder::file_names::forward_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) {
-		return Binder::file_names::forward_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) { return Binder::file_names::forward_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) { return Binder::file_names::forward_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) {
-		return Binder::file_names::line_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) {
-		return Binder::file_names::line_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) { return Binder::file_names::line_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) { return Binder::file_names::line_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) {
-		return Binder::file_names::deferred_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) {
-		return Binder::file_names::deferred_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return Binder::file_names::deferred_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return Binder::file_names::deferred_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) {
-		return Binder::file_names::geometry_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) {
-		return Binder::file_names::geometry_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return Binder::file_names::geometry_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return Binder::file_names::geometry_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) {
-		return Binder::file_names::volume_vertex;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) {
-		return Binder::file_names::volume_geom;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) {
-		return Binder::file_names::volume_frag;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) { return Binder::file_names::volume_vertex; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) { return Binder::file_names::volume_geom; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return Binder::file_names::volume_frag; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) {
-		return Binder::file_names::cluster_tile_compute;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
 }
 
 template <class ShaderBinder>
 constexpr const GLenum getShaderType() {
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) {
-		return GL_VERTEX_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) {
-		return GL_GEOMETRY_SHADER;
-	}
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) {
-		return GL_FRAGMENT_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) { return GL_GEOMETRY_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) {
-		return GL_COMPUTE_SHADER;
-	}
+	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
 }
 
 template <class ReturnType, class ShaderUniformType>

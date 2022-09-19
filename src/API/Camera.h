@@ -59,8 +59,15 @@ public:
 	float getAspectRatio() const;
 	void setAspectRatio(int width, int height);
 
+	glm::vec3 getLockedUp() const;
+	void setLockedUp(bool lockedUp);
+
+	glm::vec3 getWorldUp() const;
+	void setWorldUp(const glm::vec3& worldUp);
+
 private:
-	glm::vec3 lockedUp = glm::vec3(0.0f);
+	bool lockedUp = false;
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	float yaw{};
 	float pitch{};
