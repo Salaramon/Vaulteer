@@ -7,8 +7,6 @@
 #include <string>
 #include <array>
 
-#include "API/Event.h"
-
 #include "Debug/DebugLogger.h"
 
 class Camera : public DebugLogger<Camera>

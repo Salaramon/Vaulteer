@@ -84,9 +84,6 @@
     <ClInclude Include="src\API\Camera.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="src\API\Event.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
     <ClInclude Include="src\API\Window.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
@@ -300,12 +297,10 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
+    <ClInclude Include="src\API\Event.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Camera.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\Event.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="src\API\Window.cpp">
@@ -461,6 +456,7 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\API\Event.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">

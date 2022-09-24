@@ -4,7 +4,6 @@
 
 #include <DebugYourself.h>
 
-#include "API/Event.h"
 #include "Renderer/ShaderProgram.h"
 
 #include "Game.h"
@@ -63,12 +62,13 @@ int main() {
 
 	initializeShaders();
 
-	Event::addEventHandlingForWindow(&window);
+	//Event::addEventHandlingForWindow(&window);
+	
 	//Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
 	//Texture::uniformTextureTypes.emplace(aiTextureType_SPECULAR, Binder::lightsource_frag::uniforms::lightColor);
 	//Game game("resourceFolder?");
 
-	Game game(window);
+	Kyse::Game game(window);
 	size_t gameFlags = 1;
 
 	while (gameFlags) {

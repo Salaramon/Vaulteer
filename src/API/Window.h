@@ -37,7 +37,7 @@ public:
 		|_______________________________|	*/
 
 	//Returns the raw GLFW window pointer.
-	GLFWwindow* getRawWindow() const;
+	static GLFWwindow* getRawWindow();
 
 	//Returns window height.
 	int getHeight() const;
@@ -83,5 +83,5 @@ protected:
 		|_______________________________|	*/
 
 	//GLFW window variable.
-	GLFWwindow* window{};
+	inline static GLFWwindow* window = nullptr;
 };

@@ -13,8 +13,9 @@ int Window::isRunning() const {
 	return !glfwWindowShouldClose(window);
 }
 
-GLFWwindow* Window::getRawWindow() const {
-	return window;
+GLFWwindow* Window::getRawWindow()
+{
+	return Window::window;
 }
 
 int Window::getHeight() const {
