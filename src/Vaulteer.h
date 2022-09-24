@@ -17,8 +17,8 @@ public:
 
 	static void initOpenGL();
 	static void initShaders();
+	static void loadResources();
 
-	void loadResources();
 	void setup() override;
 
 

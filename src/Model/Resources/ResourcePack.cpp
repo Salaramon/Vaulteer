@@ -20,14 +20,14 @@ void ResourcePack::finalize() {
 
 	// import all models
 	for (const auto& resource : modelLocatorsByName) {
-		auto ptr = std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
+		auto ptr = std::make_unique<ModelData>(ResourceLoader::importModel(resource.second.path, resource.second.importFlags));
 		resourceViews.push_back(ptr.get());
 		resourcesByName[resource.first] = std::move(ptr);
 	}
 
 	// find all locators
 	std::vector<TextureResourceLocator> allLocators;
-	for (const Material& materials : loader.getMaterialLibrary() | std::views::values) {
+	for (const Material& materials : ResourceLoader::getMaterialLibrary() | std::views::values) {
 		for (const TextureResourceLocator& locators : materials.textureTypeLocators | std::views::values) {
 			allLocators.push_back(locators);
 			std::cout << "making texture with resource: " << locators.path << std::endl;

@@ -26,8 +26,6 @@ public:
 
 	/* Start game loop, calls update on every layer from back to front */
 	size_t run();
-
-	ResourceManager resourceManager;
 	
 protected:
 	virtual void setup() = 0;

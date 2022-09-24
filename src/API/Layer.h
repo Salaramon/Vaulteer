@@ -17,15 +17,13 @@ public:
 	virtual ~Layer() {}
 
 	virtual void onAttach() {
-		std::cout << "running default attach: " << name << std::endl;
+		std::cout << "running default attach for layer: " << name << std::endl;
 	}
 	virtual void onDetach() {
-		std::cout << "running default detach: " << name << std::endl;
+		std::cout << "running default detach for layer: " << name << std::endl;
 	}
 
 	virtual void onUpdate(float timestep) {}
-
-	virtual void onEvent(Event& passedEvent) {}
 
 private:
 	const std::string name;

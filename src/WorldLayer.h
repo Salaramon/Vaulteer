@@ -10,6 +10,7 @@
 class WorldLayer : public Layer {
 public:
 	WorldLayer(std::string name) : Layer(name) {}
+	~WorldLayer() override = default;
 
 	void onAttach() override;
 	void onUpdate(float timestep) override;

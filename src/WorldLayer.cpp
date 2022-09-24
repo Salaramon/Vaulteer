@@ -20,7 +20,7 @@ void WorldLayer::onAttach() {
 	window.addResizeCallback(setAspectRatio);
 
 
-	ResourcePack& pack = Application::get().resourceManager.getPack(0);
+	ResourcePack& pack = ResourceManager::getPack(0);
 	Model<ModelData> model1 = Model<ModelData>(pack.getModelByName("palm"));
 	Model<ModelData> model2 = Model<ModelData>(pack.getModelByName("crate"));
 

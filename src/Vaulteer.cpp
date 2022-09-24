@@ -38,7 +38,7 @@ void Vaulteer::loadResources() {
 		//{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};
 
-	resourceManager.createPack(locators);
+	ResourceManager::createPack(locators);
 }
 
 void Vaulteer::setup() {
