@@ -4,8 +4,7 @@
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
-	ResourceLoader loader;
-	quad = std::make_unique<ModelData>(loader.importModel("resources/quad.obj"));
+	quad = std::make_unique<ModelData>(ResourceLoader::importModel("resources/quad.obj"));
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {

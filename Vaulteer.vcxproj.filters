@@ -99,7 +99,7 @@
     <ClInclude Include="src\Debug\DebugLogger.h">
       <Filter>Source Files\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game.h">
+    <ClInclude Include="src\Vaulteer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Buffer.h">
@@ -297,7 +297,11 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
-    <ClInclude Include="src\API\Event.h" />
+    <ClInclude Include="src\API\Layer.h" />
+    <ClInclude Include="src\API\LayerStack.h" />
+    <ClInclude Include="src\API\CameraController.h" />
+    <ClInclude Include="src\API\Application.h" />
+    <ClInclude Include="src\WorldLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Camera.cpp">
@@ -312,7 +316,7 @@
     <ClCompile Include="src\Debug\DebugLogger.cpp">
       <Filter>Source Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game.cpp">
+    <ClCompile Include="src\Vaulteer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Data\GraphicsData.cpp">
@@ -447,7 +451,7 @@
     <ClCompile Include="src\VFX\ShadowTechnique.cpp">
       <Filter>Source Files\VFX</Filter>
     </ClCompile>
-    <ClCompile Include="src\Vaulteer.cpp">
+    <ClCompile Include="src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vpch.cpp">
@@ -456,7 +460,10 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\API\Event.cpp" />
+    <ClCompile Include="src\API\LayerStack.cpp" />
+    <ClCompile Include="src\API\CameraController.cpp" />
+    <ClCompile Include="src\API\Application.cpp" />
+    <ClCompile Include="src\WorldLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">

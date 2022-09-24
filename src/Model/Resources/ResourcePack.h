@@ -9,7 +9,7 @@
 
 class ResourcePack : DebugLogger<ResourcePack> {
 public:
-	ResourcePack(ResourceLoader& loader) : loader(loader) {
+	ResourcePack() {
 		std::cout << "Resource pack created." << std::endl;
 	}
 	~ResourcePack() {
@@ -28,8 +28,6 @@ public:
 	const std::vector<ModelData*>& getAllResources();
 
 private:
-	ResourceLoader& loader;
-
 	bool finalized = false;
 
 	std::unique_ptr<PackedTexture2DArray> textureLibrary;

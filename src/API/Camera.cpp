@@ -59,8 +59,12 @@ void Camera::setRotation(glm::vec3 direction, float roll) {
 	//orientation *= glm::angleAxis(glm::radians(-roll), glm::vec3(0, 0, 1));
 }
 
-void Camera::lockUp(glm::vec3 fixedUp) {
-	lockedUp = fixedUp;
+glm::vec3 Camera::getLockedUp() const {
+	return (lockedUp ? worldUp : glm::vec3(0.0f));
+}
+
+void Camera::setLockedUp(bool lockedUp) {
+	this->lockedUp = lockedUp;
 }
 
 void Camera::setPosition(float posX, float posY, float posZ) {
@@ -73,14 +77,14 @@ void Camera::apply() {
 		glm::quat yRotation = glm::angleAxis(glm::radians(-yaw), glm::vec3(0, 1, 0));
 		glm::quat zRotation = glm::angleAxis(glm::radians(-roll), glm::vec3(0, 0, 1));
 
-		if (lockedUp == glm::vec3(0.f)) {
+		if (getLockedUp() == glm::vec3(0.f)) {
 			orientation *= xRotation * yRotation * zRotation;
 		}
 		else {
 			glm::quat finalOrientation = orientation * xRotation * yRotation * zRotation;
 			glm::quat finalFront = finalOrientation * glm::quat(0, 0, 0, -1) * glm::conjugate(finalOrientation);
 			glm::vec3 frontVec = glm::normalize(glm::vec3(finalFront.x, finalFront.y, finalFront.z));
-			glm::quat newOri = glm::quatLookAt(frontVec, lockedUp);
+			glm::quat newOri = glm::quatLookAt(frontVec, getLockedUp());
 			orientation = newOri;
 		}
 	}
@@ -134,6 +138,19 @@ float Camera::getAspectRatio() const {
 
 void Camera::setAspectRatio(int width, int height) {
 	aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+}
+
+glm::vec3 Camera::getWorldUp() const {
+	return worldUp;
+}
+
+void Camera::setWorldUp(const glm::vec3& worldUp) {
+	this->worldUp = worldUp;
+}
+
+void Camera::lockUp(glm::vec3 fixedUp) {
+	worldUp = fixedUp;
+	lockedUp = true;
 }
 
 glm::vec3 Camera::getFront() const {

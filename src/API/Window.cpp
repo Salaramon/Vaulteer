@@ -3,38 +3,42 @@
 
 Window::Window(const std::string& title, unsigned const int width, unsigned const int height) : DebugLogger<Window>("WindowStuff") {
 	setup(title, width, height);
-	{
-		int init = !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-		debug("GLAD initialization: " + std::to_string(init) + "\n", "gladLoadGLLoader");
+
+	int init = !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+}
+
+Window::~Window() {
+	if (--GLFWWindowCount == 0) {
+		glfwTerminate();
 	}
 }
 
-int Window::isRunning() const {
+
+int Window::isRunning() {
 	return !glfwWindowShouldClose(window);
 }
 
-GLFWwindow* Window::getRawWindow()
-{
-	return Window::window;
+GLFWwindow* Window::getRawWindow() {
+	return window;
 }
 
-int Window::getHeight() const {
+int Window::getHeight() {
 	int height;
 	glfwGetWindowSize(window, nullptr, &height);
 	return height;
 }
 
-int Window::getWidth() const {
+int Window::getWidth() {
 	int width;
 	glfwGetWindowSize(window, &width, nullptr);
 	return width;
 }
 
-void Window::addResizeCallback(const std::function<void(int, int)>& callback) const {
+void Window::addResizeCallback(const std::function<void(int, int)>& callback) {
 	resizeCallbacks.at(window).push_back(callback);
 }
 
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void Window::framebufferSizeCallback(GLFWwindow*, int width, int height) {
 	glViewport(0, 0, width, height);
 
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
@@ -49,7 +53,7 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 
 }
 
-void Window::focus_callback(GLFWwindow* window, int focused) {
+void Window::focusCallback(GLFWwindow*, int focused) {
 	//if (focused == GLFW_TRUE) {
 	glfwMakeContextCurrent(window);
 	//}
@@ -59,7 +63,7 @@ void Window::focus_callback(GLFWwindow* window, int focused) {
 
 }
 
-void Window::iconify_callback(GLFWwindow* window, int iconified) {
+void Window::iconifyCallback(GLFWwindow*, int iconified) {
 	//if (iconified == GLFW_FALSE) {
 	glfwMakeContextCurrent(window);
 	//}
@@ -68,20 +72,26 @@ void Window::iconify_callback(GLFWwindow* window, int iconified) {
 	//}
 }
 
-void Window::setup(const std::string& title, unsigned const int width, unsigned const int height) {
+void Window::setup(const std::string& title, const int width, const int height) {
+
+	if (GLFWWindowCount++ == 0) {
+		int success = glfwInit();
+		assert(success, "GLFW could not be initialized!");
+	}
 
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 	bool success = window != nullptr;
 	debug("GLFW window initialization: " + std::to_string(success) + "\n");
-	//MUST IMPLEMENT DEBUGLOGGER STOPPER THINGY
-	//glfwTerminate(); <<<<<<<<<
 
 	glfwMakeContextCurrent(window);
 
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
+	glfwSetWindowFocusCallback(window, focusCallback);
+	glfwSetWindowIconifyCallback(window, iconifyCallback);
+}
 
-	glfwSetWindowFocusCallback(window, focus_callback);
-
-	glfwSetWindowIconifyCallback(window, iconify_callback);
+bool Window::onUpdate() {
+	glfwSwapBuffers(window);
+	return isRunning();
 }

@@ -222,6 +222,10 @@ namespace Kyse {
 			return glm::vec2(x, y) - previousPosition;
 		};
 
+		static void poll() {
+			glfwPollEvents();
+		}
+
 
 		struct KeyboardButton {
 		public:

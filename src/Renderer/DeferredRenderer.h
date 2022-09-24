@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Renderer/Techniques/DeferredGeometryTechnique.h"
 #include "Renderer/Techniques/DeferredLightingTechnique.h"
 #include "Scene/DynamicScene.h"
@@ -51,6 +53,7 @@ public:
 			return true;
 		});
 
+		// TODO: 
 		if (buildBatch) {
 			for (auto it = staticSceneIt.first; it != staticSceneIt.second; it++) {
 				auto& model = (*it)->model;
@@ -67,4 +70,5 @@ public:
 		geometryPass(camera);
 		lightingPass(camera);
 	}
+
 };

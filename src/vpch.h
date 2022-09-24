@@ -27,6 +27,7 @@
 #include <cmath>
 #include <iterator>
 #include <limits>
+#include <ranges>
 
 //#include <windows.h>
 

@@ -96,14 +96,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\API\Event.h" />
+    <ClInclude Include="src\API\Application.h" />
+    <ClInclude Include="src\API\CameraController.h" />
+    <ClInclude Include="src\API\Layer.h" />
     <ClInclude Include="src\API\Camera.h" />
+    <ClInclude Include="src\API\Event.h" />
+    <ClInclude Include="src\API\LayerStack.h" />
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
     <ClInclude Include="src\Debug\DebugAliases.h" />
     <ClInclude Include="src\Debug\DebugLogger.h" />
-    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Vaulteer.h" />
     <ClInclude Include="src\Model\Buffer.h" />
     <ClInclude Include="src\Model\Data\GraphicsData.h" />
     <ClInclude Include="src\Model\Data\LineData.h" />
@@ -169,14 +173,18 @@
     <ClInclude Include="src\VFX\ShadowTechnique.h" />
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
+    <ClInclude Include="src\WorldLayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\API\Event.cpp" />
+    <ClCompile Include="src\API\Application.cpp" />
+    <ClCompile Include="src\API\CameraController.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />
+    <ClCompile Include="src\API\Event.cpp" />
+    <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
     <ClCompile Include="src\Debug\DebugLogger.cpp" />
-    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Vaulteer.cpp" />
     <ClCompile Include="src\Model\Data\GraphicsData.cpp" />
     <ClCompile Include="src\Model\Data\LineData.cpp" />
     <ClCompile Include="src\Model\Data\ModelData.cpp" />
@@ -221,13 +229,14 @@
     <ClCompile Include="src\VFX\ShadowCubeTechnique.cpp" />
     <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
     <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
-    <ClCompile Include="src\Vaulteer.cpp" />
+    <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\vpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\WorldLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds" />
