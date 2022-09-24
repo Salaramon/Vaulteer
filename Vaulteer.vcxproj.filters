@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Renderer\Buffers">
       <UniqueIdentifier>{2B000E6C-9718-F595-60C5-842FCC9C892F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Renderer\Tags">
+      <UniqueIdentifier>{EDA0D8FD-D9B0-84CE-426A-E9EC2E997367}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Renderer\Techniques">
       <UniqueIdentifier>{F72AE883-E37B-D3C5-0CE0-C187F88F662F}</UniqueIdentifier>
     </Filter>
@@ -81,7 +84,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\API\Application.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
     <ClInclude Include="src\API\Camera.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="src\API\CameraController.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="src\API\Event.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="src\API\Layer.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="src\API\LayerStack.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
     <ClInclude Include="src\API\Window.h">
@@ -98,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="src\Debug\DebugLogger.h">
       <Filter>Source Files\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vaulteer.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Buffer.h">
       <Filter>Source Files\Model</Filter>
@@ -171,9 +186,6 @@
     <ClInclude Include="src\Model\VertexBuffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Opaque.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\OpenGL.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -222,6 +234,12 @@
     <ClInclude Include="src\Renderer\ShaderProgram.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Tags\Opaque.h">
+      <Filter>Source Files\Renderer\Tags</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Tags\Transparent.h">
+      <Filter>Source Files\Renderer\Tags</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
@@ -258,9 +276,6 @@
     <ClInclude Include="src\Scene\StaticScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Transparent.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -291,20 +306,33 @@
     <ClInclude Include="src\VFX\ShadowTechnique.h">
       <Filter>Source Files\VFX</Filter>
     </ClInclude>
+    <ClInclude Include="src\Vaulteer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WorldLayer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\vpch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
-    <ClInclude Include="src\API\Layer.h" />
-    <ClInclude Include="src\API\LayerStack.h" />
-    <ClInclude Include="src\API\CameraController.h" />
-    <ClInclude Include="src\API\Application.h" />
-    <ClInclude Include="src\WorldLayer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\API\Application.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
     <ClCompile Include="src\API\Camera.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\API\CameraController.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\API\Event.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="src\API\LayerStack.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="src\API\Window.cpp">
@@ -315,9 +343,6 @@
     </ClCompile>
     <ClCompile Include="src\Debug\DebugLogger.cpp">
       <Filter>Source Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Vaulteer.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Data\GraphicsData.cpp">
       <Filter>Source Files\Model\Data</Filter>
@@ -362,6 +387,9 @@
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
     <ClCompile Include="src\OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Batch.cpp">
@@ -451,7 +479,10 @@
     <ClCompile Include="src\VFX\ShadowTechnique.cpp">
       <Filter>Source Files\VFX</Filter>
     </ClCompile>
-    <ClCompile Include="src\Program.cpp">
+    <ClCompile Include="src\Vaulteer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WorldLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vpch.cpp">
@@ -460,10 +491,6 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\API\LayerStack.cpp" />
-    <ClCompile Include="src\API\CameraController.cpp" />
-    <ClCompile Include="src\API\Application.cpp" />
-    <ClCompile Include="src\WorldLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">
@@ -501,6 +528,9 @@
     </None>
     <None Include="resources\palm\palm.obj">
       <Filter>Resource Files\palm</Filter>
+    </None>
+    <None Include="resources\plane.zip">
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\plane\plane_mesh.mtl">
       <Filter>Resource Files\plane</Filter>
