@@ -466,7 +466,6 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\API\Layer.cpp" />
     <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
     <ClCompile Include="src\API\Application.cpp" />

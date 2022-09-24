@@ -178,7 +178,6 @@
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
-    <ClCompile Include="src\API\Layer.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />
     <ClCompile Include="src\API\Event.cpp" />
     <ClCompile Include="src\API\LayerStack.cpp" />
