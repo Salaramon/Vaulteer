@@ -17,5 +17,8 @@ private:
 
 	size_t maxTextureSize = 8192;
 	size_t packTextures = true;
+
+	// this class is static only
+	ResourceManager() {}
 };
 

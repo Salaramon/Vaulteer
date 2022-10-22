@@ -318,6 +318,7 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -491,6 +492,7 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">

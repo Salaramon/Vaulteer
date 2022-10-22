@@ -14,7 +14,7 @@
 class Mesh : public DebugLogger<Mesh> {
 public:
 	Mesh(Vertices vertices, Indices indices);
-	Mesh(Vertices vertices, Indices indices, Material material);
+	Mesh(Vertices vertices, Indices indices, std::shared_ptr<Material> material);
 	Mesh(const Mesh& other) noexcept;
 	Mesh(Mesh&& other) noexcept;
 
@@ -32,6 +32,6 @@ public:
 	VertexBuffer<Vertex> vertexBuffer;
 	ElementBuffer indexBuffer;
 
-	Material material;
+	std::shared_ptr<Material> material;
 };
 

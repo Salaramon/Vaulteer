@@ -26,11 +26,11 @@ void BlendingTechnique::uploadProjection(const glm::mat4& projection) {
 }
 
 void BlendingTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dataVector) {
-	std::vector<ModelData::ModelUnitData> unitData;
+	std::vector<ModelData::ModelUnitData> unitData(MaterialLibrary::size() * 3);
 	for (auto& data : dataVector) {
-		unitData.push_back(data->getModelUnitTable().diffuseUnit);
-		unitData.push_back(data->getModelUnitTable().specularUnit);
-		unitData.push_back(data->getModelUnitTable().normalMapUnit);
+		unitData[data->getMaterialIndex() * 3] = data->getModelUnitTable().diffuseUnit;
+		unitData[data->getMaterialIndex() * 3 + 1] = data->getModelUnitTable().specularUnit;
+		unitData[data->getMaterialIndex() * 3 + 2] = data->getModelUnitTable().normalMapUnit;
 	}
 
 	auto& modelUnitTables = getUBModelUnitTables();
@@ -39,10 +39,8 @@ void BlendingTechnique::uploadModelUnitTables(const std::vector<ModelData*>& dat
 
 void BlendingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
 	std::vector<Material::MaterialData> materials;
-	for (const auto& model : modelVector) {
-		for (const auto& mesh : model->getMeshes()) {
-			materials.push_back(mesh.material.data);
-		}
+	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
+		materials.push_back(pair.second->data);
 	}
 	auto& materialData = getUBMaterialData();
 	UniformBuffer::insert(materialData, materials);

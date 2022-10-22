@@ -11,8 +11,8 @@ class GBuffer : public FrameBuffer
 public:
     enum GBufferTextureType {
         Position,               // vec3 position
-        Normal_Material,        // vec3 normal + int material_index
-        Color_Specular,         // vec3 diffuse + float specular
+        Normal_Material,        // vec3 normal   + int material_index
+        Color_Specular,         // vec3 diffuse  + float specular
         NumTextures
     };
 

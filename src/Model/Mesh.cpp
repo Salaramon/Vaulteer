@@ -9,12 +9,12 @@ Mesh::Mesh(Vertices vertices, Indices indices):
 	debug("Mesh created.\n");
 }
 
-Mesh::Mesh(Vertices vertices, Indices indices, Material material):
+Mesh::Mesh(Vertices vertices, Indices indices, std::shared_ptr<Material> material):
 	vertices(vertices),
 	indices(indices),
 	vertexBuffer(vertices),
 	indexBuffer(indices, VertexBuffer<Vertex>::getVAO()),
-	material(std::move(material)) {
+	material(material) {
 	debug("Mesh created.\n");
 }
 

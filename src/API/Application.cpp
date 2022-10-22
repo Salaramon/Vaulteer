@@ -12,6 +12,8 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	assert(!instance, "Application already exists, but construction was attempted.");
 	instance = this;
 
+	DebugLogger<>::disableLogging();
+
 	if (!specification.workingDir.empty())
 		std::filesystem::current_path(specification.workingDir);
 	

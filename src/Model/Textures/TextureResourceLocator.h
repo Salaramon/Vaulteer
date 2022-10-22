@@ -9,4 +9,5 @@
 struct TextureResourceLocator {
     std::string path;
     aiTextureType type;
+    unsigned int materialIndex;
 };

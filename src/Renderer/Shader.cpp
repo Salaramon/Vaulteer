@@ -125,5 +125,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	//debug(errorMessageAppend + "\n\t" + log.data() + "\n", MessageAlias::ShaderError);
+	std::cout << (errorMessageAppend + "\n\t" + log.data() + "\n") << std::endl;
 }

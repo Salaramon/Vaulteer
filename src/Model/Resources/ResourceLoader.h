@@ -5,7 +5,11 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "Model/ModelResourceLocator.h"
 #include "Model/Data/ModelData.h"
+#include "Model/Resources/MaterialLibrary.h"
+
+constexpr int blank_import_flags = -1;
 
 class ResourceLoader {
 	std::vector<aiTextureType> renderable_texture_types = {
@@ -15,23 +19,21 @@ class ResourceLoader {
 	};
 
 public:
-	static ModelData importModel(const std::string& objPath, int importFlags = -1);
-
-	static std::unordered_map<std::string, Material>& getMaterialLibrary();
+	static std::unique_ptr<ModelData> importModel(const ModelResourceLocator& loc);
+	static std::unique_ptr<ModelData> importModel(const std::string& objPath, int importFlags = blank_import_flags);
 
 private:
 	//void processNode(std::vector<Mesh>& meshes, std::vector<Material>& materials, const aiScene* scene, aiNode* node);
-	static void processNode(std::vector<Mesh>& meshes, const aiScene* scene, aiNode* node);
+	static void processNode(std::vector<Mesh>& meshes, std::vector<std::shared_ptr<Material>>& sceneMaterials, const aiScene* scene, const aiNode* node);
 
 	//Mesh processMesh(std::vector<Material>& materials, const aiScene* scene, aiMesh* mesh);
-	static Mesh processMesh(const aiScene* scene, aiMesh* mesh);
+	static Mesh processMesh(std::vector<std::shared_ptr<Material>>& sceneMaterials, aiMesh* mesh);
 
 	static glm::vec3 ai_glmVec(aiVector3D aiVec);
 
 
-	inline static std::vector<std::string> materialKeysByIndex;
-	inline static std::unordered_map<std::string, Material> materialLibrary;
-
-	inline static size_t numMaterials = 0;
 	inline static int numModels = 0;
+
+	// this class is static only
+	ResourceLoader() = default;
 };

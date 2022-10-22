@@ -39,15 +39,16 @@ public:
 	GLfloat getPolygonLineWidth() const;
 
 	Data* getData();
+	Material* getMaterial();
 
 	//void render(const Shader& shader) override;
 private:
 	Data* model = nullptr;
+	Material* materialOverride = nullptr;
 
 	GLenum polygonFaces = Faces::Both;
 	GLenum polygonMode = Polygon::Fill;
 	GLfloat polygonLineWidth = 1;
-
 };
 
 template <class Data>
@@ -101,6 +102,11 @@ GLfloat Model<Data>::getPolygonLineWidth() const {
 template <class Data>
 Data* Model<Data>::getData() {
 	return model;
+}
+
+template <class Data>
+Material* Model<Data>::getMaterial() {
+	return materialOverride != nullptr ? materialOverride : model->getOriginalMaterial() ;
 }
 
 template <class Data>

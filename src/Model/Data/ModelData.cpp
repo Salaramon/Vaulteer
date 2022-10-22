@@ -32,6 +32,10 @@ GLint ModelData::getTextureID() const {
 	return textureID;
 }
 
+unsigned int ModelData::getMaterialIndex() const {
+	return materialIndex;
+}
+
 const ModelData::ModelUnitTable& ModelData::getModelUnitTable() const {
 	return modelUnitTable;
 }
@@ -57,11 +61,11 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 	this->textureID = texture.getTextureID();
 
 	for (auto& mesh : meshes) {
-		auto& locators = mesh.material.textureTypeLocators;
+		auto& locators = mesh.material->textureTypeLocators;
 		if (locators.empty())
 			continue;
 
-		auto& [path, type] = locators.at(aiTextureType_DIFFUSE);
+		auto& [path, type, matIndex] = locators.at(aiTextureType_DIFFUSE);
 		Texture2DArray::TextureUnit diffuseUnit = texture.getUnit(path);
 
 		// map vertices' texture coordinates to diffuse texture unit in packed library
@@ -85,5 +89,7 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 			unitByTexturePath[trl.path] = unit;
 			modelUnitTable.setUnit(entry.first, unit);
 		}
+
+		this->materialIndex = matIndex;
 	}
 }

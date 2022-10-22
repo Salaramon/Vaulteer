@@ -7,9 +7,9 @@ typedef std::vector<Binder::LocationInfo> LocationVector;
 
 class Vertex {
 public:
-	Vertex(glm::vec3 point) : aPos(point), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aModelNumber(0) {}
+	Vertex(glm::vec3 point) : aPos(point), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {}
 
-	Vertex() : aPos(0.0), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aModelNumber(0) {
+	Vertex() : aPos(0.0), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {
 		DebugLogger<Vertex> log;
 		log.debug("Vertex created.\n");
 	}
@@ -19,7 +19,7 @@ public:
 	decltype(Binder::geometry_vertex::locations::aTexCoords)::type aTexCoords;
 	decltype(Binder::geometry_vertex::locations::aTangent)::type aTangent;
 	decltype(Binder::geometry_vertex::locations::aBitangent)::type aBitangent;
-	decltype(Binder::geometry_vertex::locations::aModelNumber)::type aModelNumber;
+	decltype(Binder::geometry_vertex::locations::aMaterialNumber)::type aMaterialNumber;
 
 
 	inline static LocationVector locInfo = {
@@ -28,7 +28,7 @@ public:
 		Binder::geometry_vertex::locations::aTexCoords,
 		Binder::geometry_vertex::locations::aTangent,
 		Binder::geometry_vertex::locations::aBitangent,
-		Binder::geometry_vertex::locations::aModelNumber
+		Binder::geometry_vertex::locations::aMaterialNumber
 	};
 
 	inline static LocationVector locDivisors = {

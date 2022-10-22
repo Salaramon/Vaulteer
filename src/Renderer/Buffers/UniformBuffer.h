@@ -41,7 +41,7 @@ void UniformBuffer::insert(UniformBuffer& ubo, const std::vector<T>& data) {
 			std::cout << "WARNING: Attempted to push too much data to UniformBuffer " << ubo.buffer << " from vector: " << ubo.size << " <- " << dataSize << std::endl; */
 	assert(dataSize <= ubo.size);
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
+ 	glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
 	glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), data.data(), ubo.drawHint);
 }
 

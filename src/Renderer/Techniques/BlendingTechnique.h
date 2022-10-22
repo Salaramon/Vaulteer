@@ -2,6 +2,7 @@
 
 #include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
+#include "Model/Resources/MaterialLibrary.h"
 
 class BlendingTechnique : public ShaderProgram<BlendingShader> {
 public:

@@ -48,7 +48,7 @@ public:
 	struct ModelUnitTable {
 		ModelUnitData diffuseUnit, specularUnit, normalMapUnit;
 
-		ModelUnitTable() {}
+		ModelUnitTable() = default;
 
 		void setUnit(aiTextureType ttype, const Texture2DArray::TextureUnit& u) {
 			switch (ttype) {
@@ -80,6 +80,7 @@ public:
 
 	std::vector<Mesh>& getMeshes();
 	GLint getTextureID() const;
+	unsigned int getMaterialIndex() const;
 	const ModelUnitTable& getModelUnitTable() const;
 
 	void updateWithTextureUnits(const Texture2DArray& texture);
@@ -94,6 +95,7 @@ private:
 	// populated after texture packing (updateWithTextureUnits)
 	std::unordered_map<std::string, Texture2DArray::TextureUnit> unitByTexturePath;
 	ModelUnitTable modelUnitTable;
+	unsigned int materialIndex;
 
 	std::unordered_set<std::string> textureFiles;
 

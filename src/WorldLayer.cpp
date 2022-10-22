@@ -67,11 +67,9 @@ void WorldLayer::onAttach() {
 
 void WorldLayer::onUpdate(float timestep) {
 	/*
-
 	if (Kyse::Event::isKeyPressed(Event::KEY::T)) {
 		std::cout << "reloading shader" << std::endl;
 		DeferredRenderer::reloadShaders();
-	}
 	*/
 	
 	cameraController.onUpdate();

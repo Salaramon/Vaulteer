@@ -4,7 +4,7 @@
 Material::Material() :
 	name("DefaultMaterial"), data(defaultMaterial) {}
 
-Material::Material(aiMaterial* mat, std::string folderPath) {
+Material::Material(aiMaterial* mat, const std::string& objPath) {
 	aiString aiName;
 	mat->Get(AI_MATKEY_NAME, aiName);
 	name = std::string(aiName.C_Str());
@@ -28,14 +28,24 @@ Material::Material(aiMaterial* mat, std::string folderPath) {
 	mat->Get(AI_MATKEY_COLOR_REFLECTIVE, color);
 	mat->Get(AI_MATKEY_COLOR_TRANSPARENT, color);
 
-	createTexture(mat, folderPath);
+	createTextureLocators(mat, objPath);
 }
 
 inline bool Material::isTransparent() const {
-	return data.matOpacity < 1.0;
+	return data.matOpacity < 1.0f;
 }
 
-inline void Material::createTexture(const aiMaterial* mat, std::string folderPath) {
+void Material::setMaterialIndex(unsigned materialIndex) {
+	this->materialIndex = materialIndex;
+	// update locators
+	for (auto& val : textureTypeLocators | std::views::values)
+		val.materialIndex = materialIndex;
+}
+
+inline void Material::createTextureLocators(const aiMaterial* mat, const std::string& objPath) {
+	size_t index = objPath.find_last_of('/');
+	std::string folderPath = index != std::string::npos ? objPath.substr(0, index) + "/" : ".";
+
 	for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
 		aiTextureType type = static_cast<aiTextureType>(i);
 

@@ -4,7 +4,7 @@
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
-	quad = std::make_unique<ModelData>(ResourceLoader::importModel("resources/quad.obj"));
+	quad = ResourceLoader::importModel("resources/quad.obj");
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {
@@ -36,7 +36,7 @@ void DeferredRenderer::geometryPass(const Camera* camera) {
 			currentlyBoundTexture = texID;
 		}
 
-		glDrawElements(GL_TRIANGLES, batch.numIndices, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, batch.numIndices, GL_UNSIGNED_INT, nullptr);
 		batch.unbind();
 	}
 

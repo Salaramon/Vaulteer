@@ -81,16 +81,17 @@ uniform samplerCube shadowCubeMap_3;
 uniform float cubeMapFarPlanes[MAX_POINT_LIGHTS];
 
 // material data
-struct Material {
+struct DFMaterial {
     vec4 colorAmbient;
     vec4 colorDiffuse;
     vec4 colorSpecular;
     float shininess;
     float opacity;
+    vec2 pad; // for alignment to 16
 };  
 
 layout(shared, binding = 2) uniform MaterialData {
-    uniform Material materialTable[9];
+    uniform DFMaterial materialTable[128];
 };
 
 // uniforms
@@ -204,7 +205,7 @@ float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightInde
 }
 
 vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float shadow) {
-    Material mat = materialTable[p.materialIndex];
+    DFMaterial mat = materialTable[p.materialIndex];
 
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
@@ -229,6 +230,8 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
 
         float shadowFactor = 1.0 - shadow;
         specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
+
+        //specularColor = vec4(specularFactor, 0.0, 0.0, 1.0); // specfactor is weird when material shininess is 0
     }
 
     float adjustFactor = max(ambientColor.r + diffuseColor.r + specularColor.r, ambientColor.g + diffuseColor.g + specularColor.g);
@@ -311,9 +314,31 @@ void main() {
 
     // --------------------------------------
 
+    /*DFMaterial mat = materialTable[4];
+
+    switch (int(gl_FragCoord.y)) {
+        case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
+        case 4*1:  FragColor = vec4(mat.colorAmbient.y); break;
+        case 4*2:  FragColor = vec4(mat.colorAmbient.z); break;
+        case 4*3:  FragColor = vec4(mat.colorAmbient.w); break;
+        case 4*4:  FragColor = vec4(mat.colorDiffuse.x); break;
+        case 4*5:  FragColor = vec4(mat.colorDiffuse.y); break;
+        case 4*6:  FragColor = vec4(mat.colorDiffuse.z); break;
+        case 4*7:  FragColor = vec4(mat.colorDiffuse.w); break;
+        case 4*8:  FragColor = vec4(mat.colorSpecular.x); break;
+        case 4*9:  FragColor = vec4(mat.colorSpecular.y); break;
+        case 4*10: FragColor = vec4(mat.colorSpecular.z); break;
+        case 4*11: FragColor = vec4(mat.colorSpecular.w); break;
+        case 4*12: FragColor = vec4(mat.shininess / 256.0); break;
+        case 4*13: FragColor = vec4(mat.opacity); break;
+        case 4*14: FragColor = vec4(mat.pad.x); break;
+        case 4*15: FragColor = vec4(mat.pad.y); break;
+    }
+    if (gl_FragCoord.y < 64) return;*/
+
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-    //FragColor = vec4(abs(normalSample.rgb), 1.0); // diffuse demo
+    //FragColor = vec4(abs(normalSample.rgb), 1.0); // normal demo
     //return;
 
     //float material = texture(gMaterial, TexCoords).x;

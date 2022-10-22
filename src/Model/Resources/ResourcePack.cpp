@@ -20,15 +20,15 @@ void ResourcePack::finalize() {
 
 	// import all models
 	for (const auto& resource : modelLocatorsByName) {
-		auto ptr = std::make_unique<ModelData>(ResourceLoader::importModel(resource.second.path, resource.second.importFlags));
+		auto ptr = ResourceLoader::importModel(resource.second);
 		resourceViews.push_back(ptr.get());
 		resourcesByName[resource.first] = std::move(ptr);
 	}
 
 	// find all locators
 	std::vector<TextureResourceLocator> allLocators;
-	for (const Material& materials : ResourceLoader::getMaterialLibrary() | std::views::values) {
-		for (const TextureResourceLocator& locators : materials.textureTypeLocators | std::views::values) {
+	for (const auto& materials : MaterialLibrary::getAllMaterials() | std::views::values) {
+		for (const TextureResourceLocator& locators : materials->textureTypeLocators | std::views::values) {
 			allLocators.push_back(locators);
 			std::cout << "making texture with resource: " << locators.path << std::endl;
 		}
@@ -53,7 +53,7 @@ GLint ResourcePack::getTextureLibraryId() const {
 ModelData* ResourcePack::getModelByName(const std::string& modelName) {
 	auto search = resourcesByName.find(modelName);
 	if (search == resourcesByName.end()) {
-		assert(std::string("Resource with name not part of pack: " + modelName).c_str());
+		assert(false, std::string("Resource with name not part of pack: " + modelName));
 	}
 	return search->second.get();
 }

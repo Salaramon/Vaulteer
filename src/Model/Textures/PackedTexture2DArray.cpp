@@ -66,8 +66,8 @@ void PackedTexture2DArray::createPacked() {
 		createTextureArrayFromData(inFormat, exFormat, images);
 	}
 	else
-		std::cout << "Texture data not stored: \t" << std::to_string(textureID) << "\n"
-			<< (packingErrorReported ? "Packing error reported" : "false") << std::endl;
+		std::cout << "Texture data not stored: \t" << std::to_string(textureID) << "\n -"
+			<< (packingErrorReported ? "packing error reported" : "no packing error") << std::endl;
 
 	for (Image2D img : images) {
 		if (img.loaded())
