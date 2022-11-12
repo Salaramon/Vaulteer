@@ -96,6 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\API\Application.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />

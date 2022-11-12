@@ -12,7 +12,8 @@ std::shared_ptr<Material> MaterialLibrary::create(aiMaterial* aiMaterial, const 
 		matPtr->setMaterialIndex(numMaterials++);
 	}
 	else {
-		std::cout << std::format("Material name conflict <{}> for resource {}", aiMaterial->GetName().C_Str(), objPath) << std::endl;
+		std::cout << std::format("Material name conflict <{}> for resource {}, material not inserted",
+			aiMaterial->GetName().C_Str(), objPath) << std::endl;
 	}
 	return it->second;
 }
@@ -26,6 +27,6 @@ std::shared_ptr<Material> MaterialLibrary::get(const std::string& name) {
 	return materialsByName.at(name);
 }
 
-const std::unordered_map<std::string, std::shared_ptr<Material>>& MaterialLibrary::getAllMaterials() {
+const std::map<std::string, std::shared_ptr<Material>>& MaterialLibrary::getAllMaterials() {
 	return materialsByName;
 }

@@ -11,7 +11,7 @@ public:
 	static std::shared_ptr<Material> get(unsigned int index);
 	static std::shared_ptr<Material> get(const std::string& name);
 
-	static const std::unordered_map<std::string, std::shared_ptr<Material>>& getAllMaterials();
+	static const std::map<std::string, std::shared_ptr<Material>>& getAllMaterials();
 
 	static size_t size() {
 		return numMaterials;
@@ -20,7 +20,7 @@ public:
 private:
 	inline static std::array<bool, max_material_count> materialIndexUsed;
 	inline static std::array<std::string, max_material_count> materialKeysByIndex;
-	inline static std::unordered_map<std::string, std::shared_ptr<Material>> materialsByName;
+	inline static std::map<std::string, std::shared_ptr<Material>> materialsByName;
 
 	inline static size_t numMaterials = 0;
 	

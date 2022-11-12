@@ -211,6 +211,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
     vec4 diffuseColor = vec4(0.0);
     vec4 specularColor = vec4(0.0);
 
+
     float diffuseFactor = dot(p.fragNormal, -lightDirection);
     if (diffuseFactor > 0.0) {
         diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
@@ -221,7 +222,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         // blinn-phong shading impl
         vec3 halfwayDir = normalize(viewDir - lightDirection);
         float specularFactor = max(dot(p.fragNormal, halfwayDir), 0.0);
-        
+
         // phong shading impl
         /*vec3 reflectDir = reflect(lightDirection, fragNormal);
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
@@ -314,7 +315,7 @@ void main() {
 
     // --------------------------------------
 
-    /*DFMaterial mat = materialTable[4];
+    /*DFMaterial mat = materialTable[1];
 
     switch (int(gl_FragCoord.y)) {
         case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
@@ -338,7 +339,7 @@ void main() {
 
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-    //FragColor = vec4(abs(normalSample.rgb), 1.0); // normal demo
+    //FragColor = vec4(vec3(normalSample.w / 4.0), 1.0); // normal demo
     //return;
 
     //float material = texture(gMaterial, TexCoords).x;
@@ -385,9 +386,10 @@ void main() {
     //vec4 fragColor = mix(totalLight, fog, fogFactor);
 
     // kinda hdr impl
+    
     totalLight = vec4(min(totalLight.x, 1.0), min(totalLight.y, 1.0), min(totalLight.z, 1.0), totalLight.w) + 
                  vec4(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0), totalLight.w);
-
+                 
     vec4 fragColor = vec4(diffuse.x * totalLight.x, diffuse.y * totalLight.y, diffuse.z * totalLight.z, 1.0);
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }

@@ -32,7 +32,8 @@ public:
 	static void initialize(uint screenWidth, uint screenHeight);
 
 	static void rebuildAlphaBuffer(int width, int height);
-
+	
+	static void reloadShaders();
 
 	template<class... Args1, class... Args2>
 	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {

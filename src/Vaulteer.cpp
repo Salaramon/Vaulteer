@@ -2,6 +2,7 @@
 #include "Vaulteer.h"
 
 #include "WorldLayer.h"
+#include "DebugLayer.h"
 
 Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 	initOpenGL();
@@ -48,4 +49,5 @@ void Vaulteer::setup() {
 	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
 	layerStack.pushLayer(new WorldLayer());
+	layerStack.pushLayer(new DebugLayer());
 }

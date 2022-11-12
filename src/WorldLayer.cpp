@@ -31,7 +31,7 @@ void WorldLayer::onAttach() {
 
 	std::vector<OpaqueModel> opaqueModels;
 
-	//Generate floor
+	//Generate trees how about you kill yourself
 	intmax_t width = 10, height = 10;
 	for (intmax_t i = -(ceil(width / 2.0f)); i < (ceil(width / 2.0f)); i++) {
 		for (intmax_t j = -(ceil(height / 2.0f)); j < (ceil(height / 2.0f)); j++) {
@@ -47,6 +47,8 @@ void WorldLayer::onAttach() {
 
 	model2.setPosition(0, 0, 0);
 	model2.setScale(glm::vec3(5.0f));
+	model2.setRotation(0.0, glm::vec3(1.0, 0.0, 0));
+	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
 	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
 
  	opaqueScene.finalize();
@@ -66,11 +68,7 @@ void WorldLayer::onAttach() {
 }
 
 void WorldLayer::onUpdate(float timestep) {
-	/*
-	if (Kyse::Event::isKeyPressed(Event::KEY::T)) {
-		std::cout << "reloading shader" << std::endl;
-		DeferredRenderer::reloadShaders();
-	*/
+
 	cameraController.onUpdate(timestep);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -79,6 +77,7 @@ void WorldLayer::onUpdate(float timestep) {
 }
 
 void WorldLayer::onEvent(BaseEvent& e) {
+
 	EventDispatcher dispatcher(e);
 	dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));

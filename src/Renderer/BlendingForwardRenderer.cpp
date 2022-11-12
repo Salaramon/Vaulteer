@@ -12,3 +12,8 @@ void BlendingForwardRenderer::rebuildAlphaBuffer(int width, int height) {
 	alphaBuffer = std::make_unique<AlphaBuffer>(width, height);
 }
 
+void BlendingForwardRenderer::reloadShaders() {
+	BlendingTechnique::reloadShader();
+	BlendingCompositeTechnique::reloadShader();
+}
+

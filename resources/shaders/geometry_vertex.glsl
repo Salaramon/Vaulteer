@@ -26,7 +26,8 @@ layout (std140, binding = 0) uniform Camera {
 
 void main() {
     vs_out.fragPosition = (modelView * vec4(aPos, 1.0)).xyz;
-    vs_out.fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
+    // multiplying by 1.000001 fixes interpolation problem that causes stripes in specular lighting on flat surfaces
+    vs_out.fragNormal = (normal * vec4(aNormal * 1.000001, 0.0)).xyz;
     vs_out.TexCoords = aTexCoords;
     vs_out.materialNumber = aMaterialNumber;
 

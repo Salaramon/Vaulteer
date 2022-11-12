@@ -320,6 +320,7 @@
     </ClInclude>
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\Events\EventTypes.h" />
+    <ClInclude Include="src\DebugLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -491,6 +492,7 @@
       <Filter>Vendor Files\GLAD\src</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
+    <ClCompile Include="src\DebugLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">

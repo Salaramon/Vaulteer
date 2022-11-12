@@ -27,7 +27,7 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 }
 
 void Application::init() {
-	auto rebuildGBufferFn = [&](int w, int h) { 
+	auto rebuildGBufferFn = [&](int w, int h) {
 		DeferredRenderer::rebuildGBuffer(w, h); 
 		BlendingForwardRenderer::rebuildAlphaBuffer(w, h);
 	};
@@ -67,4 +67,3 @@ void Application::onEvent(BaseEvent& e) {
 		it->onEvent(e);
 	}
 }
-
