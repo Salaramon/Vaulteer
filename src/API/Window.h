@@ -10,6 +10,8 @@
 
 #include "Debug/DebugLogger.h"
 
+#include "Events/EventTypes.h"
+
 
 static size_t GLFWWindowCount = 0;
 
@@ -36,6 +38,8 @@ public:
 	//Returns a non-zero value as long the window is running
 	static int isRunning();
 
+	static bool isFocused();
+
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
@@ -52,19 +56,19 @@ public:
 	//Displays a completed frame
 	static bool onUpdate();
 
-private:
 	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		CALLBACK FUNCTIONS 		|
 		|_______________________________|	*/
 
-	//Is called when any windows' size is changed to update window parameters
-	static void framebufferSizeCallback(GLFWwindow*, int width, int height);
-
-	static void focusCallback(GLFWwindow*, int focused);
-
+	static bool onWindowCloseEvent(const WindowCloseEvent& e);
+	static bool onWindowFocusEvent(const WindowFocusEvent& e);
+	static void onWindowResizeEvent(GLFWwindow*, int width, int height); // calls all registered callbacks
 	static void iconifyCallback(GLFWwindow*, int iconified);
+	
+
+private:
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		 CLASS FUNCTIONS 		|
@@ -88,4 +92,6 @@ protected:
 
 	//GLFW window variable
 	inline static GLFWwindow* window{};
+
+	inline static bool focused = true;
 };

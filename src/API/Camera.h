@@ -41,7 +41,7 @@ public:
 	void lockUp(glm::vec3 fixedUp);
 	void setPosition(float posX, float posY, float posZ);
 
-	void apply();
+	void applyRotation();
 
 	glm::mat4 getViewMatrix() const;
 	glm::mat4 getProjectionMatrix() const;
@@ -63,6 +63,8 @@ public:
 	glm::vec3 getWorldUp() const;
 	void setWorldUp(const glm::vec3& worldUp);
 
+	bool isRotationDirty();
+
 private:
 	bool lockedUp = false;
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -77,4 +79,6 @@ private:
 
 	glm::quat orientation;
 	glm::vec3 position = { 0,0,0 };
+
+	bool rotationDirty = false;
 };

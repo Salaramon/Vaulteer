@@ -47,5 +47,5 @@ void Vaulteer::setup() {
 	
 	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
-	layerStack.pushLayer(new WorldLayer("World"));
+	layerStack.pushLayer(new WorldLayer());
 }

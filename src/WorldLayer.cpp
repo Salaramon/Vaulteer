@@ -71,10 +71,15 @@ void WorldLayer::onUpdate(float timestep) {
 		std::cout << "reloading shader" << std::endl;
 		DeferredRenderer::reloadShaders();
 	*/
-	
-	cameraController.onUpdate();
-	
+	cameraController.onUpdate(timestep);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	opaqueRenderer.render(dynamicScene, opaqueScene);
 	transparentRenderer.render(dynamicScene, transparentScene);
+}
+
+void WorldLayer::onEvent(BaseEvent& e) {
+	EventDispatcher dispatcher(e);
+	dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
+	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
 }

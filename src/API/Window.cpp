@@ -18,6 +18,10 @@ int Window::isRunning() {
 	return !glfwWindowShouldClose(window);
 }
 
+bool Window::isFocused() {
+	return focused;
+}
+
 GLFWwindow* Window::getRawWindow() {
 	return window;
 }
@@ -34,11 +38,21 @@ int Window::getWidth() {
 	return width;
 }
 
+bool Window::onWindowCloseEvent(const WindowCloseEvent& e) {
+	return true;
+}
+
+bool Window::onWindowFocusEvent(const WindowFocusEvent& e) {
+	//std::cout << "focused: " << e.focused << "\n";
+	focused = e.focused;
+	return true;
+}
+
 void Window::addResizeCallback(const std::function<void(int, int)>& callback) {
 	resizeCallbacks.at(window).push_back(callback);
 }
 
-void Window::framebufferSizeCallback(GLFWwindow*, int width, int height) {
+void Window::onWindowResizeEvent(GLFWwindow*, int width, int height) {
 	glViewport(0, 0, width, height);
 
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
@@ -50,16 +64,6 @@ void Window::framebufferSizeCallback(GLFWwindow*, int width, int height) {
 			fn(width, height);
 		}
 	}
-
-}
-
-void Window::focusCallback(GLFWwindow*, int focused) {
-	//if (focused == GLFW_TRUE) {
-	glfwMakeContextCurrent(window);
-	//}
-	//else {
-	//	glfwMakeContextCurrent(nullptr);
-	//}
 
 }
 
@@ -85,9 +89,8 @@ void Window::setup(const std::string& title, const int width, const int height) 
 
 	glfwMakeContextCurrent(window);
 
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetFramebufferSizeCallback(window, onWindowResizeEvent);
 	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
-	glfwSetWindowFocusCallback(window, focusCallback);
 	glfwSetWindowIconifyCallback(window, iconifyCallback);
 }
 

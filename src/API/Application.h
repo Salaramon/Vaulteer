@@ -1,10 +1,14 @@
 #pragma once
 
 #include <filesystem>
+#include <ranges>
 
+#include "Window.h"
 #include "OpenGL.h"
 #include "Model/Resources/ResourceManager.h"
 #include "LayerStack.h"
+
+#include "Events/Event.h"
 
 
 struct ApplicationSpecification {
@@ -26,12 +30,14 @@ public:
 
 	/* Start game loop, calls update on every layer from back to front */
 	size_t run();
-	
+
+	void onEvent(BaseEvent& e);
+
 protected:
 	virtual void setup() = 0;
 
-	std::unique_ptr<Window> window;
 	const ApplicationSpecification& specification;
+	std::unique_ptr<Window> window;
 
 	LayerStack layerStack;
 	std::vector<std::unique_ptr<Layer>> layers;
@@ -44,4 +50,3 @@ protected:
 private:
 	static Application* instance;
 };
-

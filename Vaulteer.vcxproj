@@ -96,11 +96,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\API\Application.h" />
     <ClInclude Include="src\API\Camera.h" />
     <ClInclude Include="src\API\CameraController.h" />
-    <ClInclude Include="src\API\Event.h" />
+    <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\API\Layer.h" />
     <ClInclude Include="src\API\LayerStack.h" />
     <ClInclude Include="src\API\Window.h" />
@@ -181,7 +182,6 @@
     <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
-    <ClCompile Include="src\API\Event.cpp" />
     <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />

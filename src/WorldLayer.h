@@ -9,11 +9,13 @@
 
 class WorldLayer : public Layer {
 public:
-	WorldLayer(std::string name) : Layer(name) {}
+	WorldLayer() : Layer("WorldLayer") {}
 	~WorldLayer() override = default;
 
 	void onAttach() override;
+
 	void onUpdate(float timestep) override;
+	void onEvent(BaseEvent& e) override;
 
 private:
 	CameraController cameraController;

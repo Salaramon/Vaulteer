@@ -93,7 +93,7 @@
     <ClInclude Include="src\API\CameraController.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="src\API\Event.h">
+    <ClInclude Include="src\Events\Event.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
     <ClInclude Include="src\API\Layer.h">
@@ -319,6 +319,7 @@
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
+    <ClInclude Include="src\Events\EventTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -328,9 +329,6 @@
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="src\API\CameraController.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\Event.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
     <ClCompile Include="src\API\LayerStack.cpp">

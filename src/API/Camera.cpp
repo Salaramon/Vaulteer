@@ -40,6 +40,8 @@ void Camera::rotate(float yaw, float pitch, float roll) {
 	Camera::yaw = yaw;
 	Camera::pitch = pitch;
 	Camera::roll = roll;
+
+	rotationDirty = true;
 }
 
 void Camera::setRotation(float yaw, float pitch, float roll) { }
@@ -71,7 +73,7 @@ void Camera::setPosition(float posX, float posY, float posZ) {
 	position = {posX, posY, posZ};
 }
 
-void Camera::apply() {
+void Camera::applyRotation() {
 	if (pitch != 0 || yaw != 0 || roll != 0) {
 		glm::quat xRotation = glm::angleAxis(glm::radians(-pitch), glm::vec3(1, 0, 0));
 		glm::quat yRotation = glm::angleAxis(glm::radians(-yaw), glm::vec3(0, 1, 0));
@@ -87,7 +89,10 @@ void Camera::apply() {
 			glm::quat newOri = glm::quatLookAt(frontVec, getLockedUp());
 			orientation = newOri;
 		}
+		
 	}
+
+	rotationDirty = false;
 }
 
 glm::mat4 Camera::getProjectionMatrix() const {
@@ -146,6 +151,10 @@ glm::vec3 Camera::getWorldUp() const {
 
 void Camera::setWorldUp(const glm::vec3& worldUp) {
 	this->worldUp = worldUp;
+}
+
+bool Camera::isRotationDirty() {
+	return rotationDirty;
 }
 
 void Camera::lockUp(glm::vec3 fixedUp) {

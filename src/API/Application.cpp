@@ -1,6 +1,7 @@
 #include "vpch.h"
 #include "Application.h"
 
+#include "Events/Event.h"
 #include "Renderer/BlendingForwardRenderer.h"
 #include "Renderer/DeferredRenderer.h"
 
@@ -20,7 +21,9 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	window = std::make_unique<Window>(specification.title, 1280, 720);
 
 	OpenGL::initialize();
-	Kyse::Event::initialize();
+	Event::initialize();
+
+	Event::setEventCallback(FORWARD_FN(onEvent));
 }
 
 void Application::init() {
@@ -36,7 +39,7 @@ void Application::init() {
 size_t Application::run() {
 
 	while (isRunning) {
-		Kyse::Event::poll();
+		Event::poll();
 
 		float time = glfwGetTime();
 		float timestep = time - lastFrameTime;
@@ -50,3 +53,18 @@ size_t Application::run() {
 	}
 	return 0;
 }
+
+void Application::onEvent(BaseEvent& e) {
+
+	EventDispatcher dispatcher(e);
+	dispatcher.dispatch<WindowCloseEvent>(FORWARD_FN(window->onWindowCloseEvent));
+	dispatcher.dispatch<WindowFocusEvent>(FORWARD_FN(window->onWindowFocusEvent));
+
+	for (auto& it : std::ranges::reverse_view(layerStack)) {
+		if (e.handled)
+			return;
+
+		it->onEvent(e);
+	}
+}
+
