@@ -36,8 +36,9 @@ public:
 
 		glfwSetWindowFocusCallback(rawWindow, window_focus_callback);
 		glfwSetWindowCloseCallback(rawWindow, window_close_callback);
-	}
-
+		glfwSetFramebufferSizeCallback(rawWindow, window_resize_callback);
+		glfwSetWindowIconifyCallback(rawWindow, window_iconify_callback);
+	}                                               
 
 	static long double now() {
 		std::chrono::duration<long double, std::ratio<60>> duration = std::chrono::high_resolution_clock::now().time_since_epoch();
@@ -52,6 +53,13 @@ public:
 
 		return glm::vec2(x, y);
 	}
+
+	 static glm::vec2 delta(glm::vec2 previousPosition) { 
+	     double x, y;                                     
+	     glfwGetCursorPos(Window::getRawWindow(), &x, &y);
+	                                                      
+	     return glm::vec2(x, y) - previousPosition;       
+	 };    
 
 	static KeyState state(KeyboardKey keyboardKey) {
 		int key = glfwGetKey(Window::getRawWindow(), static_cast<int>(keyboardKey));
@@ -84,6 +92,11 @@ public:
 
 	static void poll() {
 		glfwPollEvents();
+
+		if (queuedResizeEvent.width != -1) {
+			eventCallbackFn(queuedResizeEvent);
+			queuedResizeEvent = WindowResizeEvent(-1, -1);
+		}
 	}
 
 
@@ -152,6 +165,20 @@ public:
 	static void window_close_callback(GLFWwindow* window) {
 		WindowCloseEvent e;
 		eventCallbackFn(e);
+	}
+
+	inline static WindowResizeEvent queuedResizeEvent = WindowResizeEvent(-1, -1);
+
+	static void window_resize_callback(GLFWwindow* window, int width, int height) {
+		//WindowResizeEvent e(width, height);
+		//eventCallbackFn(e);
+		queuedResizeEvent = WindowResizeEvent(width, height);
+	}
+
+	static void window_iconify_callback(GLFWwindow* window, int iconified) {
+		// TODO this might not be needed
+		glfwMakeContextCurrent(window);
+		//eventCallbackFn(e);
 	}
 
 

@@ -70,6 +70,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\DebugYourself\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -93,6 +94,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\DebugYourself\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -111,7 +113,6 @@
     <ClInclude Include="src\Debug\DebugAliases.h" />
     <ClInclude Include="src\Debug\DebugLogger.h" />
     <ClInclude Include="src\Model\Buffer.h" />
-    <ClInclude Include="src\Model\Data\GraphicsData.h" />
     <ClInclude Include="src\Model\Data\LineData.h" />
     <ClInclude Include="src\Model\Data\ModelData.h" />
     <ClInclude Include="src\Model\ElementBuffer.h" />
@@ -188,7 +189,6 @@
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
     <ClCompile Include="src\Debug\DebugLogger.cpp" />
-    <ClCompile Include="src\Model\Data\GraphicsData.cpp" />
     <ClCompile Include="src\Model\Data\LineData.cpp" />
     <ClCompile Include="src\Model\Data\ModelData.cpp" />
     <ClCompile Include="src\Model\ElementBuffer.cpp" />

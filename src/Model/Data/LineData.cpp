@@ -3,7 +3,7 @@
 
 
 LineData::LineData(glm::vec4 color, std::vector<Point> lines) :
-	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, lines)),
+	vertexBuffer(points),
 	elementBuffer(indices, vertexBuffer.getVAO()),
 	color(color),
 	pointCount(lines.size()) {}

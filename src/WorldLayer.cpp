@@ -16,7 +16,9 @@ void WorldLayer::onAttach() {
 	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window.getWidth() / (float)window.getHeight()));
 	cameraController.setCamera(camera);
 
-	auto setAspectRatio = [&](int w, int h) { camera->setAspectRatio(w, h); };
+	auto setAspectRatio = [camera](int w, int h) {
+		camera->setAspectRatio(w, h);
+	};
 	window.addResizeCallback(setAspectRatio);
 
 

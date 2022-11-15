@@ -12,7 +12,7 @@ public:
 	//void setView(const glm::mat4& view);
 	static void setModel(const glm::dmat4& model);
 	static void setModelView(const glm::dmat4& model, const glm::dmat4& view);
-	static void setNormal(const glm::mat4& model);
+	static void setNormal(const glm::mat4& normal);
 	
 	static void setTextureUnit(const GLint& texture);
 	//void setModelNumber(const GLint& modelNumber);

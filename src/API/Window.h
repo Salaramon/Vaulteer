@@ -51,7 +51,7 @@ public:
 	static int getWidth();
 	static int getHeight();
 
-	static void addResizeCallback(const std::function<void(int, int)>& callback);
+	static void addResizeCallback(std::function<void(int, int)> callback);
 
 	//Displays a completed frame
 	static bool onUpdate();
@@ -64,8 +64,8 @@ public:
 
 	static bool onWindowCloseEvent(const WindowCloseEvent& e);
 	static bool onWindowFocusEvent(const WindowFocusEvent& e);
-	static void onWindowResizeEvent(GLFWwindow*, int width, int height); // calls all registered callbacks
-	static void iconifyCallback(GLFWwindow*, int iconified);
+	static bool onWindowResizeEvent(const WindowResizeEvent& e); // calls all registered callbacks
+	//static void onWindowIconifyCallback(const WindowIconifyEvent& e);
 	
 
 private:

@@ -69,7 +69,7 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 
 	Mesh& quadMesh = quad->getMeshes().front();
 	quadMesh.bind();
-	glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh.indices.size()), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
 	quadMesh.unbind();
 
 	gbuffer->unbind();

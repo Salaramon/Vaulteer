@@ -16,7 +16,7 @@ public:
     Texture2D(Texture2D&& other) noexcept;
     ~Texture2D();
 
-    void createBlankTexture(GLenum internalFormat, GLenum format) const;
+    void setupBlankTexture(GLenum internalFormat, GLenum format) const;
 
     GLint getTextureID() const;
 

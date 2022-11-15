@@ -13,11 +13,11 @@ Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 
 void Vaulteer::initOpenGL() {
 	OpenGL::initialize();
-	//OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	OpenGL::enableStencilTest();
 	//OpenGL::enableSRGB();
-	//OpenGL::enableDirectDebugMessageing();
+	OpenGL::enableDebugOutput(OpenGL::SYNC);
+	OpenGL::enableDirectDebugMessageing();
 }
 
 void Vaulteer::initShaders() {

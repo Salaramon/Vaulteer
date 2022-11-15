@@ -14,7 +14,7 @@ void OpenGL::initializeSTBI() {
 
 void OpenGL::enableDepthTest() {
 	glEnable(GL_DEPTH_TEST);
-	log.debug("GL_DEBUG_OUTPUT enabled.\n", "glEnable()");
+	log.debug("GL_DEPTH_TEST enabled.\n", "glEnable()");
 
 }
 

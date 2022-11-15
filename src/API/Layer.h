@@ -27,7 +27,7 @@ public:
 
 	virtual void onUpdate(float timestep) {}
 
-private:
+protected:
 	const std::string name;
 };
 

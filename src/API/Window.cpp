@@ -48,12 +48,12 @@ bool Window::onWindowFocusEvent(const WindowFocusEvent& e) {
 	return true;
 }
 
-void Window::addResizeCallback(const std::function<void(int, int)>& callback) {
+void Window::addResizeCallback(std::function<void(int, int)> callback) {
 	resizeCallbacks.at(window).push_back(callback);
 }
 
-void Window::onWindowResizeEvent(GLFWwindow*, int width, int height) {
-	glViewport(0, 0, width, height);
+bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
+	glViewport(0, 0, e.width, e.height);
 
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
 
@@ -61,37 +61,36 @@ void Window::onWindowResizeEvent(GLFWwindow*, int width, int height) {
 		std::vector<std::function<void(int, int)>>& callbackVector = it->second;
 
 		for (auto& fn : callbackVector) {
-			fn(width, height);
+			fn(e.width, e.height);
 		}
 	}
-
+	return true;
 }
 
-void Window::iconifyCallback(GLFWwindow*, int iconified) {
+/*void Window::onWindowIconifyEvent(const WindowIconifyEvent& e) {
 	//if (iconified == GLFW_FALSE) {
 	glfwMakeContextCurrent(window);
 	//}
 	//else {
 	//	glfwMakeContextCurrent(nullptr);
 	//}
-}
+}*/
 
 void Window::setup(const std::string& title, const int width, const int height) {
-
 	if (GLFWWindowCount++ == 0) {
 		int success = glfwInit();
 		assert(success, "GLFW could not be initialized!");
 	}
 
+	//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 	bool success = window != nullptr;
 	debug("GLFW window initialization: " + std::to_string(success) + "\n");
-
+	
 	glfwMakeContextCurrent(window);
 
-	glfwSetFramebufferSizeCallback(window, onWindowResizeEvent);
 	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
-	glfwSetWindowIconifyCallback(window, iconifyCallback);
 }
 
 bool Window::onUpdate() {

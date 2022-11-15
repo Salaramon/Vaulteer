@@ -238,3 +238,11 @@ struct WindowFocusEvent : BaseEvent {
 
 	EVENT_CLASS_TYPE(WindowFocus)
 };
+
+struct WindowResizeEvent : BaseEvent {
+	WindowResizeEvent(int width, int height) : width(width), height(height) {}
+
+	int width, height;
+
+	EVENT_CLASS_TYPE(WindowResize)
+};

@@ -11,11 +11,9 @@
 #include "Model/ElementBuffer.h"
 #include "Model/Storage/VertexHash.h"
 
-#include "Model/Data/GraphicsData.h"
-
 #include "Debug/DebugLogger.h"
 
-class LineData : public DebugLogger<LineData>, public GraphicsData {
+class LineData : public DebugLogger<LineData> {
 public:
 	struct PointHash : VertexHash<Point> {
 		size_t hash_combine(size_t lhs, size_t rhs) const {
@@ -53,11 +51,12 @@ public:
 
 	glm::vec4 color;
 	size_t pointCount;
+
 };
 
 template<class... Args>
 	requires (std::conjunction_v<std::is_same<glm::vec3, Args>...> && sizeof...(Args) % 2 == 0)
 LineData::LineData(glm::vec4 color, glm::vec3 first, Args... args) :
-	vertexBuffer(storePointsAndIndices<PointHash>(indices, points, { first, args... })),
+	vertexBuffer(points),
 	color(color),
 	pointCount(sizeof...(Args) + 1) {};

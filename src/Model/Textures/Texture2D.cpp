@@ -42,7 +42,7 @@ Texture2D::~Texture2D() {
 }
 
 
-void Texture2D::createBlankTexture(GLenum internalFormat, GLenum format) const {
+void Texture2D::setupBlankTexture(GLenum internalFormat, GLenum format) const {
 	glTextureStorage2D(textureID, 1, internalFormat, width, height);
 }
 

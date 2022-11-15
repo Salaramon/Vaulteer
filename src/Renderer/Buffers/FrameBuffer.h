@@ -14,7 +14,8 @@ public:
 	}
 
 	virtual ~FrameBuffer() {
-		glDeleteBuffers(1, &fbo);
+		// 12 hours were wasted here by copypasting glDeleteBuffers from Buffer.h
+		glDeleteFramebuffers(1, &fbo);
 	}
 
 

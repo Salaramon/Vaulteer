@@ -120,9 +120,6 @@
     <ClInclude Include="src\Model\Buffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Data\GraphicsData.h">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClInclude>
     <ClInclude Include="src\Model\Data\LineData.h">
       <Filter>Source Files\Model\Data</Filter>
     </ClInclude>
@@ -343,9 +340,6 @@
     </ClCompile>
     <ClCompile Include="src\Debug\DebugLogger.cpp">
       <Filter>Source Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Data\GraphicsData.cpp">
-      <Filter>Source Files\Model\Data</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Data\LineData.cpp">
       <Filter>Source Files\Model\Data</Filter>
