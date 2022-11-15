@@ -97,8 +97,6 @@ public:
 
 template<class Data>
 inline Model<Data>::Model(Model&& model) :
-	OR(model.OR),
-
 	model(std::move(model.model)),
 	polygonFaces(std::move(model.polygonFaces)),
 	polygonMode(std::move(model.polygonMode)),

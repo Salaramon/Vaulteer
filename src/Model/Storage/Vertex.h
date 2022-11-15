@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Debug/Debug.h"
+
 #include "GLSLCPPBinder.h"
 
 typedef std::vector<Binder::LocationInfo> LocationVector;
@@ -8,10 +10,11 @@ class Vertex
 {
 public:
 	Vertex(glm::vec3 point) {
+		LOG::CTOR::debug(this, "Vertex constructor called");
 		aPos = point;
 	}
 	Vertex() {
-		//log.debug("Vertex created.\n");
+		LOG::CTOR::debug(this, "Vertex constructor called");
 	}
 	decltype(Binder::geometry_vertex::locations::aPos)::type aPos;
 	decltype(Binder::geometry_vertex::locations::aNormal)::type aNormal;
@@ -33,5 +36,19 @@ public:
 	inline static LocationVector locDivisors = {
 		//Binder::geometry_vertex::locations::instanceMatrix
 	};
+
+
+	DY::ObjectRegister<Vertex,
+		decltype(aPos),
+		decltype(aNormal),
+		decltype(aTexCoords),
+		decltype(aTangent),
+		decltype(aBitangent),
+		decltype(aModelNumber),
+		decltype(locInfo),
+		decltype(locDivisors)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 };
 

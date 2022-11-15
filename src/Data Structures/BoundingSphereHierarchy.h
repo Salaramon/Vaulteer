@@ -48,57 +48,102 @@ public:
 template<class Store>
 struct BoundedItem {
 public:
-	BoundedItem(Store& value, glm::vec4 sphere) :
-		value(value), center(sphere), radius(sphere.w)
-	{}
+	BoundedItem(Store& value, glm::vec4 sphere) : OR(this,
+		DY::V(&BoundedItem::value, &center, &radius),
+		DY::N("value", "center", "radius")),
 
-	BoundedItem(Store&& value, glm::vec4 sphere) :
 		value(std::forward<Store>(value)), center(sphere), radius(sphere.w)
-	{}
+	{
+		OB.add(OR);
+	}
 
-	BoundedItem(Store& value, glm::vec3 center, double radius) :
-		value(std::forward<Store>(value)), center(center), radius(radius)
-	{}
+	BoundedItem(Store&& value, glm::vec4 sphere) : 
 
-	BoundedItem(Store&& value, glm::vec3 center, double radius) :
+		value(std::forward<Store>(value)), center(sphere), radius(sphere.w)
+	{
+		OB.add(OR);
+	}
+
+	BoundedItem(Store& value, glm::vec3 center, double radius) : OR(this,
+		DY::V(&BoundedItem::value, &BoundedItem::center, &BoundedItem::radius),
+		DY::N("value", "center", "radius")),
+
 		value(std::forward<Store>(value)), center(center), radius(radius)
-	{}
+	{
+		OB.add(OR);
+	}
+
+	BoundedItem(Store&& value, glm::vec3 center, double radius) : OR(this,
+		DY::V(&BoundedItem::value, &center, &radius),
+		DY::N("value", "center", "radius")),
+
+		value(std::forward<Store>(value)), center(center), radius(radius)
+	{
+		OB.add(OR);
+	}
 
 	Store value;
 	glm::vec3 center;
 	float radius;
+
+	DY::ObjectRegister<BoundedItem<Store>,
+		decltype(value),
+		decltype(center),
+		decltype(radius)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 };
 
 template<class Store>
 class BoundingSphereHierarchyNode {
 public:
 
-	BoundingSphereHierarchyNode() :
+	BoundingSphereHierarchyNode() : OR(this,
+		DY::V(&node, &sphere, &value),
+		DY::N("node", "sphere", "value")),
+
 		node({ nullptr, nullptr }),
 		sphere(glm::vec4(0, 0, 0, 0))
-	{}
+	{
+		OB.add(OR);
+	}
 
-	BoundingSphereHierarchyNode(BoundingSphereHierarchyNode&& other) :
+	BoundingSphereHierarchyNode(BoundingSphereHierarchyNode&& other) : 
 		node({ std::move(other.node[0]), std::move(other.node[1]) }),
 		sphere(std::move(other.sphere)),
 		value(other.value)
 	{
+		OB.add(OR);
 		other.node[0].reset();
 		other.node[1].reset();
 		other.value = nullptr;
 	}
 
-	BoundingSphereHierarchyNode(glm::vec4 sphere, BoundingSphereHierarchyNode&& first, BoundingSphereHierarchyNode&& second) :
+	BoundingSphereHierarchyNode(glm::vec4 sphere, BoundingSphereHierarchyNode&& first, BoundingSphereHierarchyNode&& second) : OR(this,
+		DY::V(&node, &this->sphere, &value),
+		DY::N("node", "sphere", "value")),
+
 		sphere(sphere),
 		node({ std::make_unique<BoundingSphereHierarchyNode>(std::move(first)), std::make_unique<BoundingSphereHierarchyNode>(std::move(second)) })
-	{}
-	BoundingSphereHierarchyNode(glm::vec4 sphere) :
-		sphere(sphere)
-	{}
+	{
+		OB.add(OR);
+	}
+	BoundingSphereHierarchyNode(glm::vec4 sphere) : OR(this,
+		DY::V(&node, &this->sphere, &value),
+		DY::N("node", "sphere", "value")),
 
-	BoundingSphereHierarchyNode(glm::vec4 sphere, Store* value) :
+		sphere(sphere)
+	{
+		OB.add(OR);
+	}
+
+	BoundingSphereHierarchyNode(glm::vec4 sphere, Store* value) : OR(this,
+		DY::V(&node, &this->sphere, &this->value),
+		DY::N("node", "sphere", "value")),
+
 		sphere(sphere), value(value)
-	{}
+	{
+		OB.add(OR);
+	}
 
 	BoundingSphereHierarchyNode& operator=(BoundingSphereHierarchyNode&& other) noexcept {
 		this->node[0] = std::move(other.node[0]);
@@ -118,6 +163,12 @@ public:
 	std::array<std::unique_ptr<BoundingSphereHierarchyNode>, 2> node;
 	glm::vec4 sphere;
 	Store* value;
+
+	DY::ObjectRegister<BoundingSphereHierarchyNode<Store>,
+		decltype(node),
+		decltype(sphere),
+		decltype(value)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 };
 
 template<class Store>
@@ -127,6 +178,16 @@ public:
 
 	class iterator {
 	public:
+		iterator() : OR(this,
+			DY::V(&path,
+				&container,
+				&comparator),
+			DY::N("path",
+				"container",
+				"comparator")) {
+			iterator::OB.add(iterator::OR);
+		}
+
 		using difference_type = size_t;
 		using value_type = Store;
 		using pointer = Store*;
@@ -138,10 +199,6 @@ public:
 		inline static const intmax_t BACKWARD_INITIALIZATION = 1;
 		inline static const intmax_t FORWARD_LIMIT = 2;
 		inline static const intmax_t BACKWARD_LIMIT = -1;
-
-		BoundingSphereHierarchyNode<Store>& getValue() {
-			path.back().first->value;
-		}
 
 		size_t getIndex() {
 			return path.back().second;
@@ -268,7 +325,33 @@ public:
 		BoundingSphereHierarchy<Store>* container;
 
 		std::function<bool(glm::vec4)> comparator = [&](glm::vec4 sphere) -> bool {return true; };
+
+
+		inline static auto CR = DY::ClassRegister<
+			&getIndex,
+			&descendNext,
+			&ascendNext,
+			&nextReached,
+			&nextDescendPath>(
+				"getIndex",
+				"descendNext",
+				"ascendNext",
+				"nextReached",
+				"nextDescendPath");
+		inline static auto CB = DY::ClassBinder<decltype(CR)>();
+
+		DY::ObjectRegister<iterator,
+			decltype(path),
+			decltype(container),
+			decltype(comparator)> OR;
+		inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 	};
+
+	BoundingSphereHierarchy() : OR(this,
+		DY::V(&container, &originNode),
+		DY::N("container", "originNode")) {
+		OB.add(OR); 
+	}
 
 	iterator end(std::function<bool(glm::vec4)> comp) {
 		iterator it;
@@ -334,7 +417,7 @@ public:
 	}
 
 
-	template<class Store>
+
 	std::pair<std::vector<BoundingSphereHierarchyNode<Store>>, std::optional<BoundingSphereHierarchyNode<Store>>> getHierarchyPairs(std::vector<BoundingSphereHierarchyNode<Store>>& nodes) {
 		std::vector<BoundingSphereHierarchyNode<Store>> resultPairs;
 		std::unordered_set<size_t> skipLocations;
@@ -386,8 +469,26 @@ public:
 	}
 
 
-	HierarchyPair calculatePairData(glm::vec4 node1, glm::vec4 node2) {
+	inline static auto CR = DY::ClassRegister<
+		&end,
+		&begin,
+		DY::OverloadSelector<BoundingSphereHierarchy<Store>, const Store& (Store&, glm::vec4)>::template Get<&BoundingSphereHierarchy<Store>::insert>,
+		DY::OverloadSelector<BoundingSphereHierarchy<Store>, const Store& (Store&&, glm::vec4)>::template Get<&BoundingSphereHierarchy<Store>::insert>,
+		&equal_range,
+		&establishHierarchy,
+		&getHierarchyPairs>(
+			"end",
+			"begin",
+			"insert(&)",
+			"insert(&&)",
+			"equal_range"
+			"establishHierarchy",
+			"getHierarchyPairs",
+			"calculatePairData");
+	inline static auto CB = DY::ClassBinder<decltype(CR)>();
 
-	}
-	
+	DY::ObjectRegister<BoundingSphereHierarchy,
+		decltype(container),
+		decltype(originNode)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 };

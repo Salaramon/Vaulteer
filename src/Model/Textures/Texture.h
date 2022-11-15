@@ -14,6 +14,8 @@
 #include "Renderer/Shader.h"
 #include "Utils/TypeDefUtils.h"
 
+#include "Debug/Debug.h"
+
 class Texture {
 public:
     Texture();
@@ -35,4 +37,25 @@ protected:
     void cleanup();
 
     std::pair<GLint, GLint> getFormatsFromComponents(int comp);
+
+
+public:
+    inline static auto CR = DY::ClassRegister<
+        &setMinifyingFilter,
+        &setMagnifyingFilter,
+        &setAnisotropicFilter,
+        &createTexture,
+        &cleanup>();
+    inline static auto CB = DY::ClassBinder<decltype(CR)>();
+
+    DY::ObjectRegister<Texture,
+        decltype(textureID),
+        decltype(width),
+        decltype(height),
+        decltype(nrComponents),
+        decltype(mipmapEnabled),
+        decltype(uniformTextureTypes)> OR;
+    inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+    
+    using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };

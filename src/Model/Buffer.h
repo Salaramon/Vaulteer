@@ -25,9 +25,7 @@ public:
 		initialize(bufferType);
 	}
 
-	Buffer(Buffer&& other) noexcept : 
-		OR(other.OR),
-
+	Buffer(Buffer&& other) noexcept :
 		buffer(other.buffer) {
 		LOG::CTOR::debug(this, &other, std::format("moving buffer with id {}", buffer));
 		other.buffer = 0;

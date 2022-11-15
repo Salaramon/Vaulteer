@@ -1,11 +1,30 @@
 #include "vpch.h"
 #include "Model/Textures/Texture.h"
 
-Texture::Texture() {}
+Texture::Texture() : 
+    OR(this,
+        DY::V(&textureID, &width, &height, &nrComponents, &mipmapEnabled, &uniformTextureTypes),
+        DY::N("textureID", "width", "height", "nrComponents", "mipmapEnabled", "uniformTextureTypes")) {
+    OB.add(OR);
+}
 
-Texture::Texture(bool mipmapEnabled) : mipmapEnabled(mipmapEnabled) {}
+Texture::Texture(bool mipmapEnabled) :
+    OR(this,
+        DY::V(&textureID, &width, &height, &nrComponents, &this->mipmapEnabled, &uniformTextureTypes),
+        DY::N("textureID", "width", "height", "nrComponents", "mipmapEnabled", "uniformTextureTypes")),
+    
+    mipmapEnabled(mipmapEnabled) {
+    OB.add(OR);
+}
 
-Texture::Texture(GLsizei width, GLsizei height, bool mipmapEnabled) : width(width), height(height), mipmapEnabled(mipmapEnabled) {}
+Texture::Texture(GLsizei width, GLsizei height, bool mipmapEnabled) :
+    OR(this,
+        DY::V(&textureID, &this->width, &this->height, &nrComponents, &this->mipmapEnabled, &uniformTextureTypes),
+        DY::N("textureID", "width", "height", "nrComponents", "mipmapEnabled", "uniformTextureTypes")),
+
+    width(width), height(height), mipmapEnabled(mipmapEnabled) {
+    OB.add(OR);
+}
 
 
 std::pair<GLint, GLint> Texture::getFormatsFromComponents(int nrComponents) {
@@ -22,20 +41,25 @@ std::pair<GLint, GLint> Texture::getFormatsFromComponents(int nrComponents) {
 
 void Texture::createTexture(GLenum type) {
     glCreateTextures(type, 1, &textureID);
+    LOG::CLAS::debug<&Texture::createTexture>(this, &textureID, DY::std_format("Created texture of type '{}' with id '{}'", type, textureID));
 }
 
 void Texture::cleanup() {
     glDeleteTextures(1, &textureID);
+    LOG::CLAS::debug<&Texture::cleanup>(this, &textureID, DY::std_format("Deleted texture with id '{}'", textureID));
 }
 
 void Texture::setMinifyingFilter(GLenum filter) {
     glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, filter);
+    LOG::CLAS::debug<&Texture::setMinifyingFilter>(this, &textureID, DY::std_format("Min filter of texture with id '{}' set to '{}'", textureID, filter));
 }
 
 void Texture::setMagnifyingFilter(GLenum filter) {
     glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, filter);
+    LOG::CLAS::debug<&Texture::setMagnifyingFilter>(this, &textureID, DY::std_format("Mag filter of texture with id '{}' set to '{}'", textureID, filter));
 }
 
 void Texture::setAnisotropicFilter(GLfloat filter) {
     glTextureParameterf(textureID, GL_TEXTURE_MAX_ANISOTROPY, filter);
+    LOG::CLAS::debug<&Texture::setAnisotropicFilter>(this, &textureID, DY::std_format("Anisotrophy filter of texture with id '{}' set to '{}'", textureID, filter));
 }

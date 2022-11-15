@@ -81,8 +81,6 @@ public:
 	Shader(const Shader& other) = delete;
 
 	Shader(Shader&& other) :
-		OR(other.OR),
-
 		setUniform(this), uniformLocationCache(other.uniformLocationCache) {
 		OB.add(OR);
 

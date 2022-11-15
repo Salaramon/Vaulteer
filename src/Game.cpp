@@ -63,6 +63,10 @@ size_t Game::run() {
 
 	std::vector<OpaqueModel> opaqueModels;
 
+	PolyTree<char, int, 2> test;
+
+	test.insert('a', {2,6});
+
 	//Generate floor
 	intmax_t width = 10;
 	intmax_t height = 10;
@@ -134,19 +138,23 @@ size_t Game::run() {
 			camera->rotate(0, 0, -(float)Event::delta() * (speed / sens));
 		}
 
-		if (Event::isKeyPressed(Event::KEY::T)) {
-			if (!DY::publishToggle) {
-				DY::enablePublish();
-			}
-			else {
-				DY::disablePublish();
-			}
-			//DebugLogger<>::enableLogging();
-			//std::cout << "reloading shader" << std::endl;
-			DeferredRenderer::reloadShaders();
 
-			// TODO for dan: make function for printing and breaking at the same time (by message key)
-		}
+
+		DY::publishState([&](bool state) {
+			if (Event::isKeyPressed(Event::KEY::T)) {
+				if (!state) {
+					DY::enablePublish();
+				}
+				else {
+					DY::disablePublish();
+				}
+				//DebugLogger<>::enableLogging();
+				//std::cout << "reloading shader" << std::endl;
+				DeferredRenderer::reloadShaders();
+
+				// TODO for dan: make function for printing and breaking at the same time (by message key)
+			}
+		});
 
 		camera->apply();
 

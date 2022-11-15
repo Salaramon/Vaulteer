@@ -14,6 +14,8 @@
 
 #include "Utils/MathUtils.h"
 
+#include "Debug/Debug.h"
+
 
 template <typename _Ty, size_t _Size>
 std::array<_Ty, _Size> make_array(const _Ty& v) {
@@ -43,12 +45,17 @@ public:
 	typedef std::array<Value, dimensions> Position;
 	typedef std::array<std::unique_ptr<TreeNode<Content, Value, dimensions>>, mut::ctexp2(dimensions)> Orthants;
 
-	TreeNode(Value size = 0, Position position = make_array<Value, dimensions>(0), TreeNode<Content, Value, dimensions>* parent = nullptr, size_t nodeIndex = 0) :
+	TreeNode(Value size = 0, Position position = make_array<Value, dimensions>(0), TreeNode<Content, Value, dimensions>* parent = nullptr, size_t nodeIndex = 0) : OR(this,
+		DY::V(&nodes, &insertion, &this->position, &this->size, &this->parent, &this->nodeIndex),
+		DY::N("nodes", "insertion", "position", "size", "parent", "nodeIndex")),
+
 		size(size), position(position), parent(parent), nodeIndex(nodeIndex)
-	{}
+	{
+		OB.add(OR);
+	}
 
 	Orthants nodes;
-	std::pair<Position, Content>* insertion;
+	std::pair<Position, Content>* insertion = nullptr;
 	Position position;
 	Value size;
 	TreeNode<Content, Value, dimensions>* parent;
@@ -57,6 +64,27 @@ public:
 	size_t getNodeID(const Position& position);
 	Position getOrthantPosition(const size_t orthantID);
 	Value getSubNodeSize();
+
+
+	inline static auto CR = DY::ClassRegister<
+		&getNodeID,
+		&getOrthantPosition,
+		&getSubNodeSize>(
+			"getNodeID",
+			"getOrthantPosition",
+			"getSubNodeSize");
+	inline static auto CB = DY::ClassBinder(CR);
+
+	DY::ObjectRegister<TreeNode<Content, Value, dimensions>,
+		decltype(nodes),
+		decltype(insertion),
+		decltype(position),
+		decltype(size),
+		decltype(parent),
+		decltype(nodeIndex)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
 template<class Content, class Value, size_t dimensions>
@@ -119,9 +147,14 @@ class PolyTree
 public:
 	typedef std::array<Value, dimensions> Position;
 
-
 	class iterator {
 	public:
+		iterator() : OR(this,
+			DY::V(&this->index, &valuePointer, &nodePointer, &rangePosition, &rangeLenght),
+			DY::N("index", "valuePointer", "nodePointer", "rangePosition", "rangeLength")) {
+			iterator::OB.add(OR);
+		}
+
 		std::pair<Position, Content>& operator*() {
 			return (*valuePointer);
 		}
@@ -196,8 +229,28 @@ public:
 		TreeNode<Content, Value, dimensions>* nodePointer;
 		Position rangePosition;
 		Position rangeLenght;
-	};
 
+		inline static auto CR = DY::ClassRegister<
+			&surface,
+			&delve,
+			&incrementIndex,
+			&getNextValue>();
+		inline static auto CB = DY::ClassBinder<decltype(CR)>();
+
+		DY::ObjectRegister<iterator,
+			decltype(index),
+			decltype(valuePointer),
+			decltype(nodePointer),
+			decltype(rangePosition),
+			decltype(rangeLenght)> OR;
+		inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+	};
+	PolyTree() : OR(this, 
+		DY::V(&insertions, &rootNode),
+		DY::N("insertions", "rootNode")) {
+		OB.add(OR);
+
+	}
 	~PolyTree();
 
 	void insert(Content&& object, const Position& position);
@@ -209,11 +262,30 @@ public:
 
 	std::vector<std::unique_ptr<std::pair<Position, Content>>> insertions;
 	TreeNode<Content, Value, dimensions> rootNode;
+
+	inline static auto CR = DY::ClassRegister<
+		&insert,
+		&equal_range,
+		&remove>(
+			"insert",
+			"equal_range",
+			"remove");
+
+	DY::ObjectRegister<PolyTree<Content, Value, dimensions>,
+		decltype(insertions),
+		decltype(rootNode)> OR;
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
 template<class Content, class Value, size_t dimensions>
 inline PolyTree<Content, Value, dimensions>::~PolyTree()
 {
+	LOG::CTOR::debug(this, "Clearing the tree structure before destroying.");
+
 	std::vector<size_t> indexStackTrace;
 	indexStackTrace.push_back(0);
 	std::vector<TreeNode<Content, Value, dimensions>*> pointerStackTrace;
@@ -256,13 +328,16 @@ inline PolyTree<Content, Value, dimensions>::~PolyTree()
 template<class Content, class Value, size_t dimensions>
 inline void PolyTree<Content, Value, dimensions>::insert(Content&& object, const Position& position)
 {
+	LOG::CLAS::debug<&PolyTree<Content, Value, dimensions>::insert>(this, std::format("object is inserted in position {}", DebugUtils::arrayToString(position, 
+		[](Value val) { return std::to_string(val); }
+	)));
 
 	TreeNode<Content, Value, dimensions>* currentPointer;
 	currentPointer = &rootNode;
 	insertions.emplace_back(std::make_unique<std::pair<Position, Content>>(std::make_pair(position, object)));
 
-	Value bottomValue = std::numeric_limits<Value>::min();
-	if (bottomValue == 0) {
+	Value bottomValue = std::abs(std::numeric_limits<Value>::min());
+	if (bottomValue == 0 || bottomValue < -1) {
 		bottomValue = 1;
 	}
 
@@ -304,4 +379,10 @@ PolyTree<Content, Value, dimensions>::equal_range(Position position, Position le
 
 	return std::make_pair(beginIterator, endIterator);
 
+}
+
+template<class Content, class Value, size_t dimensions>
+inline void PolyTree<Content, Value, dimensions>::remove(Value x, Value y, Value width, Value height)
+{
+	LOG::CLAS::debug<&PolyTree<Content, Value, dimensions>::remove>(this, "Missing implementation");
 }

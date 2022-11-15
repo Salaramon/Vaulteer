@@ -38,7 +38,6 @@ public:
 		glm::vec4 far;
 	};
 
-	Camera(){}
 	Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio);
 	Camera(float renderDistance, float fov, float aspectRatio);
 
@@ -124,7 +123,7 @@ public:
 		decltype(orientation),
 		decltype(position)> OR;
 
-	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto CB = DY::ClassBinder<decltype(CR)>();
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 
 

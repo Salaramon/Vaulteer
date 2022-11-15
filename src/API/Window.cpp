@@ -92,7 +92,7 @@ void Window::setup(const std::string title, unsigned const int width, unsigned c
 	//MUST IMPLEMENT DEBUGLOGGER STOPPER THINGY
 	//glfwTerminate(); <<<<<<<<<
 
-	LOG::CLAS::debug<&Window::setup>(this, &window, std::format("Window created with title {} and dimensions {}x{}", title, width, height));
+	LOG::CLAS::debug<&Window::setup>(this, &window, DY::std_format("Window created with title {} and dimensions {}x{}", title, width, height));
 
 	glfwMakeContextCurrent(window);
 

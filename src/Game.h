@@ -23,6 +23,8 @@
 #include "Opaque.h"
 #include "Transparent.h"
 
+#include "Data Structures/PolyTree.h"
+
 class Game
 {
 public:
