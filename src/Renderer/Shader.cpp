@@ -41,7 +41,7 @@ void Shader::populateUniformCache() {
 
 			GLint uniformLocation = glGetUniformLocation(shaderProgramID, uniformName.get());
 
-			uniformLocationCache.emplace(uniformName.get(), uniformLocation);
+			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderLocation>(uniformLocation));
 		}
 	}
 

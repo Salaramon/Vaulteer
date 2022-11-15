@@ -59,7 +59,7 @@ void CubemapTexture::createCubeTexture(GLenum internalFormat, GLenum format, std
     glGenerateTextureMipmap(textureID);
 }
 
-void CubemapTexture::setWrap(GLenum x, GLenum y, GLenum z) {
+void CubemapTexture::setWrap(GLenum x, GLenum y, GLenum z) const {
     glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, x);
     glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, y);
     glTextureParameteri(textureID, GL_TEXTURE_WRAP_R, z);

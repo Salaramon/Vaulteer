@@ -62,7 +62,7 @@
       <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/MP32 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -84,7 +84,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <AdditionalOptions>/MP32 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -96,15 +96,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\API\Application.h" />
     <ClInclude Include="src\API\Camera.h" />
-    <ClInclude Include="src\API\Event.h" />
+    <ClInclude Include="src\API\CameraController.h" />
+    <ClInclude Include="src\API\Layer.h" />
+    <ClInclude Include="src\API\LayerStack.h" />
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
     <ClInclude Include="src\Debug\Debug.h" />
-    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\DebugLayer.h" />
+    <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\Model\Buffer.h" />
-    <ClInclude Include="src\Model\Data\GraphicsData.h" />
     <ClInclude Include="src\Model\Data\LineData.h" />
     <ClInclude Include="src\Model\Data\ModelData.h" />
     <ClInclude Include="src\Model\ElementBuffer.h" />
@@ -112,6 +116,7 @@
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
+    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceManager.h" />
     <ClInclude Include="src\Model\Resources\ResourcePack.h" />
@@ -126,7 +131,6 @@
     <ClInclude Include="src\Model\Textures\TextureResourceLocator.h" />
     <ClInclude Include="src\Model\VertexArray.h" />
     <ClInclude Include="src\Model\VertexBuffer.h" />
-    <ClInclude Include="src\Opaque.h" />
     <ClInclude Include="src\OpenGL.h" />
     <ClInclude Include="src\Renderer\Batch.h" />
     <ClInclude Include="src\Renderer\BatchManager.h" />
@@ -143,6 +147,8 @@
     <ClInclude Include="src\Renderer\RendererPrerequisites.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShaderProgram.h" />
+    <ClInclude Include="src\Renderer\Tags\Opaque.h" />
+    <ClInclude Include="src\Renderer\Tags\Transparent.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h" />
@@ -155,7 +161,6 @@
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\StaticScene.h" />
-    <ClInclude Include="src\Transparent.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />
@@ -166,31 +171,35 @@
     <ClInclude Include="src\VFX\ShadowCubeTechnique.h" />
     <ClInclude Include="src\VFX\ShadowMapTechnique.h" />
     <ClInclude Include="src\VFX\ShadowTechnique.h" />
+    <ClInclude Include="src\Vaulteer.h" />
+    <ClInclude Include="src\WorldLayer.h" />
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />
-    <ClCompile Include="src\API\Event.cpp" />
+    <ClCompile Include="src\API\CameraController.cpp" />
+    <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
-    <ClCompile Include="src\Game.cpp" />
-    <ClCompile Include="src\Model\Data\GraphicsData.cpp" />
+    <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Model\Data\LineData.cpp" />
     <ClCompile Include="src\Model\Data\ModelData.cpp" />
     <ClCompile Include="src\Model\ElementBuffer.cpp" />
     <ClCompile Include="src\Model\Material.cpp" />
     <ClCompile Include="src\Model\Mesh.cpp" />
+    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />
-    <ClCompile Include="src\Model\Storage\VertexHash.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
     <ClCompile Include="src\Model\Textures\Texture.cpp" />
     <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
     <ClCompile Include="src\Model\Textures\Texture2DArray.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
+    <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\Renderer\Batch.cpp" />
     <ClCompile Include="src\Renderer\BatchManager.cpp" />
     <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp" />
@@ -221,6 +230,7 @@
     <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
     <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
     <ClCompile Include="src\Vaulteer.cpp" />
+    <ClCompile Include="src\WorldLayer.cpp" />
     <ClCompile Include="src\vpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -241,6 +251,7 @@
     <None Include="resources\cube.obj" />
     <None Include="resources\palm\palm.mtl" />
     <None Include="resources\palm\palm.obj" />
+    <None Include="resources\plane.zip" />
     <None Include="resources\plane\plane_mesh.mtl" />
     <None Include="resources\plane\plane_mesh.obj" />
     <None Include="resources\plane\plane_mesh_tri.obj" />
@@ -272,13 +283,16 @@
     <None Include="resources\shaders\volume_geom.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
     <None Include="resources\teapot.obj" />
+    <None Include="resources\triangle.obj" />
+    <None Include="resources\vase\untitled.mtl" />
     <None Include="resources\vase\untitled.obj" />
+    <None Include="resources\water_caustics.tga" />
+    <None Include="resources\water_norm.tga" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\Crate\CrateImage1.JPG" />
-    <Image Include="resources\Crate\CrateImage2.JPG" />
     <Image Include="resources\Crate\crate_1.jpg" />
     <Image Include="resources\backpack\ao.jpg" />
+    <Image Include="resources\backpack\box.png" />
     <Image Include="resources\backpack\diffuse.jpg" />
     <Image Include="resources\backpack\normal.png" />
     <Image Include="resources\backpack\roughness.jpg" />
@@ -286,6 +300,7 @@
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />
+    <Image Include="resources\vase\wooden-textured-background.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

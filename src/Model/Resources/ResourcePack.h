@@ -9,27 +9,25 @@
 
 class ResourcePack {
 public:
-	ResourcePack(ResourceLoader& loader) : loader(loader) {
+	ResourcePack() {
 		std::cout << "Resource pack created." << std::endl;
 	}
 	~ResourcePack() {
 		std::cout << "Resource pack destroyed." << std::endl;
 	}
 
-	void add(ModelResourceLocator modelLocator);
-	void addAll(std::vector<ModelResourceLocator> modelLocators);
+	void add(const ModelResourceLocator& modelLocator);
+	void addAll(const std::vector<ModelResourceLocator>& modelLocators);
 
 	/// Imports all added models
 	void finalize();
 
-	GLint getTextureLibraryId();
+	GLint getTextureLibraryId() const;
 
-	ModelData* getModelByName(std::string modelName);
+	ModelData* getModelByName(const std::string& modelName);
 	const std::vector<ModelData*>& getAllResources();
 
 private:
-	ResourceLoader& loader;
-
 	bool finalized = false;
 
 	std::unique_ptr<PackedTexture2DArray> textureLibrary;

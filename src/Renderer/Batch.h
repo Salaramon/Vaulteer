@@ -14,8 +14,8 @@ public:
 
 	void clear();
 
-	size_t numVertices = 0;
-	size_t numIndices = 0;
+	GLint numVertices = 0;
+	GLint numIndices = 0;
 	GLint textureID;
 
 	void bind();

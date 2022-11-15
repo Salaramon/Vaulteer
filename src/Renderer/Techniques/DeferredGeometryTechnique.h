@@ -12,14 +12,14 @@ public:
 	//void setView(const glm::mat4& view);
 	static void setModel(const glm::dmat4& model);
 	static void setModelView(const glm::dmat4& model, const glm::dmat4& view);
-	static void setNormal(const glm::mat4& model);
+	static void setNormal(const glm::mat4& normal);
 	
 	static void setTextureUnit(const GLint& texture);
 	//void setModelNumber(const GLint& modelNumber);
 
 	// uniform buffer upload
 	static void uploadProjection(const glm::mat4& projection);
-	static void uploadModelUnitTables(const std::vector<ModelData*>& modelVector);
+	static void uploadModelUnitTables(const std::vector<ModelData*>& dataVector);
 
 	static UniformBuffer& getUBCamera() {
 		static UniformBuffer camera = UniformBuffer(Binder::geometry_vertex::buffers::Camera);

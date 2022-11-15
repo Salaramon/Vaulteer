@@ -1,11 +1,13 @@
 #include "vpch.h"
 #include "Model/Resources/ResourcePack.h"
 
-void ResourcePack::add(ModelResourceLocator modelLocator) {
+#include <ranges>
+
+void ResourcePack::add(const ModelResourceLocator& modelLocator) {
 	modelLocatorsByName[modelLocator.name] = modelLocator;
 }
 
-void ResourcePack::addAll(std::vector<ModelResourceLocator> modelLocators) {
+void ResourcePack::addAll(const std::vector<ModelResourceLocator>& modelLocators) {
 	for (auto& modelLocator : modelLocators)
 		add(modelLocator);
 }
@@ -18,40 +20,40 @@ void ResourcePack::finalize() {
 
 	// import all models
 	for (const auto& resource : modelLocatorsByName) {
-		auto ptr = std::make_unique<ModelData>(loader.importModel(resource.second.path, resource.second.importFlags));
+		auto ptr = ResourceLoader::importModel(resource.second);
 		resourceViews.push_back(ptr.get());
 		resourcesByName[resource.first] = std::move(ptr);
 	}
 
 	// find all locators
 	std::vector<TextureResourceLocator> allLocators;
-	for (const auto& materialEntries : loader.getMaterialLibrary()) {
-		for (const auto& locatorsForMaterials : materialEntries.second.textureTypeLocators) {
-			allLocators.push_back(locatorsForMaterials.second);
-			std::cout << "making texture with resource: " << locatorsForMaterials.second.path << std::endl;
+	for (const auto& materials : MaterialLibrary::getAllMaterials() | std::views::values) {
+		for (const TextureResourceLocator& locators : materials->textureTypeLocators | std::views::values) {
+			allLocators.push_back(locators);
+			std::cout << "making texture with resource: " << locators.path << std::endl;
 		}
 	}
 
 	// create packed texture
 	// TODO: eats memory when loading backpack/models with large textures because it loads everything at once
 	textureLibrary = std::make_unique<PackedTexture2DArray>(allLocators);
-	
+
 	// update all models' units
-	for (auto& modelEntries : resourcesByName) {
-		modelEntries.second->updateWithTextureUnits(*textureLibrary);
+	for (std::unique_ptr<ModelData>& model : resourcesByName | std::views::values) {
+		model->updateWithTextureUnits(*textureLibrary);
 	}
 
 	finalized = true;
 }
 
-GLint ResourcePack::getTextureLibraryId() {
-	return textureLibrary.get()->getTextureID();
+GLint ResourcePack::getTextureLibraryId() const {
+	return textureLibrary->getTextureID();
 }
 
-ModelData* ResourcePack::getModelByName(std::string modelName) {
+ModelData* ResourcePack::getModelByName(const std::string& modelName) {
 	auto search = resourcesByName.find(modelName);
 	if (search == resourcesByName.end()) {
-		assert(std::string("Resource with name not part of pack: " + modelName).c_str());
+		assert(false, std::string("Resource with name not part of pack: " + modelName));
 	}
 	return search->second.get();
 }
@@ -59,4 +61,3 @@ ModelData* ResourcePack::getModelByName(std::string modelName) {
 const std::vector<ModelData*>& ResourcePack::getAllResources() {
 	return resourceViews;
 }
-

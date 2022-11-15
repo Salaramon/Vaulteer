@@ -9,11 +9,10 @@
 class GBuffer : public FrameBuffer
 {
 public:
-
     enum GBufferTextureType {
         Position,               // vec3 position
-        Normal_Material,        // vec3 normal + int material_index
-        Color_Specular,         // vec3 diffuse + float specular
+        Normal_Material,        // vec3 normal   + int material_index
+        Color_Specular,         // vec3 diffuse  + float specular
         NumTextures
     };
 
@@ -21,8 +20,8 @@ public:
 
     bool init();
 
-    void bindReadTexture(GBufferTextureType TextureType);
-    void bindTextureUnit(GBufferTextureType textureType);
+    void bindReadTexture(GBufferTextureType textureType) const;
+    void bindTextureUnit(GBufferTextureType textureType) const;
 
     unsigned int width, height;
 

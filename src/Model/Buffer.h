@@ -14,15 +14,15 @@ struct BufferType {
 	inline static constexpr GLenum UniformBuffer = GL_UNIFORM_BUFFER;
 };
 
-template<GLenum bufferType>
+template<GLenum BufferType>
 class Buffer {
 public:
 	Buffer() :
 		OR(this, DY::V(&buffer), DY::N("buffer"))
 	{
 		OB.add(OR);
-
-		initialize(bufferType);
+		
+		initialize(BufferType);
 	}
 
 	Buffer(Buffer&& other) noexcept :
@@ -36,14 +36,15 @@ public:
 	}
 
 	void initialize(GLuint target) {
-		LOG::CLAS::debug<&Buffer<bufferType>::initialize>(this, &buffer, std::format("creating buffer with id {}", buffer));
 		glCreateBuffers(1, &buffer);
 		glBindBuffer(target, buffer);
+		LOG::CLAS::debug<&Buffer<BufferType>::initialize>(this, &buffer, std::format("created buffer with id {}", buffer));
 	}
 
 	void cleanup() {
-		LOG::CLAS::debug<&Buffer<bufferType>::cleanup>(this, &buffer, std::format("deleting buffer with id {}", buffer));
 		glDeleteBuffers(1, &buffer);
+		buffer = 0;
+		LOG::CLAS::debug<&Buffer<BufferType>::cleanup>(this, &buffer, std::format("deleted buffer with id {}", buffer));
 	}
 
 protected:
@@ -56,7 +57,7 @@ public:
 		&cleanup>(
 			"initialize",
 			"cleanup");
-	DY::ObjectRegister<Buffer<bufferType>, decltype(buffer)> OR;
+	DY::ObjectRegister<Buffer<BufferType>, decltype(buffer)> OR;
 
 	inline static auto CB = DY::ClassBinder(CR);
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();

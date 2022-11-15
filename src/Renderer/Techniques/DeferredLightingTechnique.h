@@ -4,7 +4,6 @@
 #include "Renderer/Buffers/UniformBuffer.h"
 
 #include "VFX/LightTypes.h"
-#include "Model/Material.h"
 
 class DeferredLightingTechnique : public ShaderProgram<DeferredShader> {
 public:
@@ -12,8 +11,8 @@ public:
 	static void init();
 
 	static void setDirectionalLight(const DirectionalLight& light);
-	static void setPointLight(const PointLight& light, const int index);
-	static void setSpotLight(const SpotLight& light, const int index);
+	static void setPointLight(const PointLight& light, int index);
+	static void setSpotLight(const SpotLight& light, int index);
 
 	static void setWorldCameraPos(const glm::vec3& cameraPos);
 	static void setCameraViewMat(const glm::mat4& view);

@@ -10,12 +10,12 @@
 class UniformBuffer : Buffer<BufferType::UniformBuffer> {
 public:
 	struct DrawHint {
-		inline static constexpr GLenum Dynamic = GL_DYNAMIC_DRAW;	// modify repeatedly, use often
-		inline static constexpr GLenum Static  = GL_STATIC_DRAW;	// modify once, use often
-		inline static constexpr GLenum Stream  = GL_STREAM_DRAW;	// modify once, use rarely
+		inline static constexpr GLenum Dynamic = GL_DYNAMIC_DRAW; // modify repeatedly, use often
+		inline static constexpr GLenum Static  = GL_STATIC_DRAW; // modify once, use often
+		inline static constexpr GLenum Stream  = GL_STREAM_DRAW; // modify once, use rarely
 	};
 
-	UniformBuffer(Binder::UniformBufferInfo bufferInfo, GLenum hint = DrawHint::Dynamic);
+	UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint = DrawHint::Dynamic);
 	UniformBuffer(UniformBuffer&& other) noexcept;
 
 	template<class T>
@@ -29,6 +29,7 @@ public:
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
 		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), data.data(), ubo.drawHint);
+	
 	}
 
 	template<class T>
@@ -40,14 +41,19 @@ public:
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
 		
-		//LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
-		//	std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
-		//);
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
 		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), &data, ubo.drawHint);
+		
+		//LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
+		//	std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
+		//);
 	}
+
+	UniformBuffer(UniformBuffer& other) = delete;
+	UniformBuffer(const UniformBuffer& other) = delete;
+	UniformBuffer(const UniformBuffer&& other) = delete;
 
 private:
 	const size_t binding;
@@ -73,4 +79,3 @@ public:
 	using LOG = _LOG<DY::No_CB, decltype(OB), decltype(FB), DY::No_VB>;
 
 };
-

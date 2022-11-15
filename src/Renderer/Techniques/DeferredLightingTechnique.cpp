@@ -1,6 +1,8 @@
 #include "vpch.h"
 #include "Renderer/Techniques/DeferredLightingTechnique.h"
 
+#include "Model/Resources/MaterialLibrary.h"
+
 /*
     TODO: replace this with some kind of texture handling technique
 */
@@ -88,14 +90,12 @@ void DeferredLightingTechnique::setMaterialShininess(const float shininess) {
 */
 
 void DeferredLightingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
-    std::vector<Material::MaterialData> materials;
-    for (const auto& model : modelVector) {
-        for (const auto& mesh : model->getMeshes()) {
-            materials.push_back(mesh.material.data);
-        }
-    }
-    auto& materialData = getUBMaterialData();
-    UniformBuffer::insert(materialData, materials);
+	std::vector<Material::MaterialData> materials;
+	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
+		materials.push_back(pair.second->data);
+	}
+	auto& materialData = getUBMaterialData();
+	UniformBuffer::insert(materialData, materials);
 }
 
 /*void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {

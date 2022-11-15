@@ -1,38 +1,25 @@
-﻿#include "vpch.h"
+#include "vpch.h"
+#include "Vaulteer.h"
 
-#define STB_IMAGE_IMPLEMENTATION
+#include "WorldLayer.h"
+#include "DebugLayer.h"
 
-#include <iostream>
-
-#include <DebugYourself.h>
-
-#include "API/Event.h"
-#include "Renderer/ShaderProgram.h"
-
-#include "Game.h"
-
-
-
-void initializeSTBI() {
-	stbi_set_flip_vertically_on_load(true);
-	//log.debug("Vertical flip on load enabled.\n", "stbi_set_flip_vertically_on_load()");
+Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
+	initOpenGL();
+	initShaders();
+	loadResources();
 }
 
-void initializeGLFW() {
-	int init = glfwInit();
-	//log.debug("Initialization: " + std::to_string(init) + "\n", "glfwInit()");
-}
-
-void initializeOpenGL() {
+void Vaulteer::initOpenGL() {
 	OpenGL::initialize();
-	//OpenGL::enableDebugOutput(OpenGL::SYNC);
 	OpenGL::enableDepthTest();
 	OpenGL::enableStencilTest();
 	//OpenGL::enableSRGB();
-	//OpenGL::enableDirectDebugMessageing();
+	OpenGL::enableDebugOutput(OpenGL::SYNC);
+	OpenGL::enableDirectDebugMessageing();
 }
 
-void initializeShaders() {
+void Vaulteer::initShaders() {
 	ShaderProgram<BlendingShader>::load();
 	ShaderProgram<BlendingCompositeShader>::load();
 	ShaderProgram<LineShader>::load();
@@ -41,40 +28,25 @@ void initializeShaders() {
 	ShaderProgram<VolumeShader>::load();
 }
 
-void cleanup() {
-	glfwTerminate();
+void Vaulteer::loadResources() {
+	std::vector<ModelResourceLocator> locators = {
+		{ "crate", "resources/crate/crate1.obj" },
+		{ "palm", "resources/palm/palm.obj", aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
+		//{ "plane", "resources/plane/plane_mesh.obj", aiProcess_GenNormals | aiProcess_Triangulate },
+		//{ "vase", "resources/vase/untitled.obj" },
+		//{ "backpack", "backpack/backpack.obj" },
+		//{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
+	};
+
+	ResourceManager::createPack(locators);
 }
 
-int main() {
-	DY::enablePublish();
-	//Initialization
-	initializeGLFW();
+void Vaulteer::setup() {
+	//glEnable(GL_LINE_SMOOTH);
+	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
+	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
-	Window window("Vaulteer", 1280, 720);
-
-	initializeOpenGL();
-	initializeSTBI();
-
-	initializeShaders();
-
-	Event::AddEventHandlingForWindow(&window);
-	//Texture::uniformTextureTypes.emplace(aiTextureType_DIFFUSE, Binder::forward_frag::uniforms::diffuse1);
-	//Texture::uniformTextureTypes.emplace(aiTextureType_SPECULAR, Binder::lightsource_frag::uniforms::lightColor);
-	//Game game("resourceFolder?");
-
-	Game game(window);
-	size_t gameFlags = 1;
-
-	while (gameFlags) {
-		game.setWindow(window);
-		game.loadResources();
-		gameFlags = game.run();
-	}
-
-
-
-	cleanup();
-
-	DY::end();
-	return 0;
+	layerStack.pushLayer(new WorldLayer());
+	layerStack.pushLayer(new DebugLayer());
 }

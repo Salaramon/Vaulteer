@@ -6,23 +6,24 @@ public:
 		glCreateFramebuffers(1, &fbo);
 	}
 
-	FrameBuffer(GLuint fbo, int numTextures) : numTextures(numTextures), fbo(fbo) 
+	FrameBuffer(GLuint fbo, int numTextures) : fbo(fbo), numTextures(numTextures) 
 	{}
 
 	FrameBuffer(FrameBuffer&& other) noexcept : fbo(other.fbo), numTextures(other.numTextures){
 		other.fbo = 0;
 	}
 
-	~FrameBuffer() {
-		glDeleteBuffers(1, &fbo);
+	virtual ~FrameBuffer() {
+		// 12 hours were wasted here by copypasting glDeleteBuffers from Buffer.h
+		glDeleteFramebuffers(1, &fbo);
 	}
 
 
-	void bindForWriting() {
+	void bindForWriting() const {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	}
 
-	void bindForReading() {
+	void bindForReading() const {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	}
 

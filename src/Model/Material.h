@@ -11,6 +11,8 @@
 class Material {
 public:
 	std::string name;
+	unsigned int materialIndex;			 // populated and used by material library
+	Texture2DArray::TextureUnit texUnit; // populated on resource pack finalization
 
 	// layout used in uniform buffers
 	struct alignas(16) MaterialData {
@@ -27,9 +29,11 @@ public:
 
 	Material();
 
-	Material(aiMaterial* mat, std::string folderPath);
+	Material(aiMaterial* mat, const std::string& objPath);
 
-	bool isTransparent();
+	bool isTransparent() const;
+
+	void setMaterialIndex(unsigned int materialIndex);
 
 private:
 	inline static MaterialData defaultMaterial = {
@@ -40,7 +44,7 @@ private:
 		.matOpacity = 1.0f,
 	};
 
-	inline void createTexture(aiMaterial* mat, std::string folderPath);
+	inline void createTextureLocators(const aiMaterial* mat, const std::string& objPath);
 
 	glm::vec3 aiCol_glmVec(aiColor3D aiColor);
 };

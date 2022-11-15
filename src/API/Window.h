@@ -9,47 +9,49 @@
 #include <unordered_map>
 
 #include "Debug/Debug.h"
+#include "Events/EventTypes.h"
 
-class Window
-{
+static size_t GLFWWindowCount = 0;
 
+class Window {
 public:
-
-//=============================================================================================================================================//
+	//=============================================================================================================================================//
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		  CONSTRUCTORS 			|
 		|_______________________________|	*/
 
-	//Creates and sets up the window.
-	Window(const std::string title, unsigned const int width, unsigned const int height);
+	//Creates and sets up the window
+	Window(const std::string& title, unsigned int width, unsigned int height);
+
+	~Window();
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		WRAPPER FUNCTIONS 		|
 		|_______________________________|	*/
 
-		//Returns a non-zero value as long the window is running.
-	int is_running();
+	//Returns a non-zero value as long the window is running
+	static int isRunning();
+
+	static bool isFocused();
 
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
 		|_______________________________|	*/
 
-	//Returns the raw GLFW window pointer.
-	GLFWwindow* getRawWindow() const;
+	//Returns the raw GLFW window pointer
+	static GLFWwindow* getRawWindow();
 
-	//Returns window height.
-	int getHeight();
-	
-	//Returns window width.
-	int getWidth();
+	static int getWidth();
+	static int getHeight();
 
-	void addResizeCallback(std::function<void(int, int)> callback);
+	static void addResizeCallback(std::function<void(int, int)> callback);
 
-private:
+	//Displays a completed frame
+	static bool onUpdate();
 
 	//=============================================================================================================================================//
 
@@ -57,61 +59,52 @@ private:
 		|		CALLBACK FUNCTIONS 		|
 		|_______________________________|	*/
 
-	//Is called when any windows' size is changed to update window parameters.
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static bool onWindowCloseEvent(const WindowCloseEvent& e);
+	static bool onWindowFocusEvent(const WindowFocusEvent& e);
+	static bool onWindowResizeEvent(const WindowResizeEvent& e); // calls all registered callbacks
+	//static void onWindowIconifyCallback(const WindowIconifyEvent& e);
+	
 
-	static void focus_callback(GLFWwindow* window, int focused);
-
-	static void iconify_callback(GLFWwindow* window, int iconified);
+private:
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		 CLASS FUNCTIONS 		|
 		|_______________________________|	*/
 
-	//Initializes the window.
-	void setup(const std::string title, unsigned const int width, unsigned const int height);
-
+	//Initializes the window
+	void setup(const std::string& title, int width, int height);
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
 		|_______________________________|	*/
 
-
 	inline static std::unordered_map<GLFWwindow*, std::vector<std::function<void(int, int)>>> resizeCallbacks;
-protected:
 
-//=============================================================================================================================================//
+protected:
+	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|			VARIABLES			|
 		|_______________________________|	*/
 
-	//GLFW window variable.
-	GLFWwindow* window;
-
+	//GLFW window variable
+	inline static GLFWwindow* window{};
+	inline static bool focused = true;
 
 public:
 	inline static auto CR = DY::ClassRegister<
-		&is_running,
-		&getRawWindow,
-		&getHeight,
-		&addResizeCallback,
 		&setup>(
-			"is_running",
-			"getRawWindow",
-			"getHeight",
-			"addResizeCallback",
-			"framebuffer_size");
+			"setup");
 
 	DY::ObjectRegister<Window, decltype(window)> OR;
 
 	inline static auto FR = DY::FunctionRegister<
-		&framebuffer_size_callback,
-		&focus_callback,
-		&iconify_callback>(
-			"framebuffer_size_callback",
-			"getRawWindow",
-			"iconify_callback");
+		&onWindowCloseEvent,
+		&onWindowFocusEvent,
+		&onWindowResizeEvent>(
+			"onWindowCloseEvent",
+			"onWindowFocusEvent",
+			"onWindowResizeEvent");
 
 	inline static auto CB = DY::ClassBinder(CR);
 	inline static auto FB = DY::FunctionBinder(FR);
@@ -119,4 +112,3 @@ public:
 
 	using LOG = _LOG<decltype(CB), decltype(OB), decltype(FB), DY::No_VB>;
 };
-

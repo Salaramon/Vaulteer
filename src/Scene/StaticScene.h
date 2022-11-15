@@ -29,7 +29,7 @@ public:
 	}
 
 	template<class StoreType>
-	const StaticSceneIterator<StoreType> get(std::function<bool(glm::vec4)> boundingFunction) {
+	StaticSceneIterator<StoreType> get(std::function<bool(glm::vec4)> boundingFunction) {
 		DIRLOG::CTOR::debug(this, DY::std_format("Requested iterator range of type {}", DY::types_to_string<StoreType>()));
 		auto& container = std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers);
 		return container.equal_range(boundingFunction);

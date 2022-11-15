@@ -25,7 +25,7 @@ public:
 		indexBuffer(indices, vertexBuffer.getVAO()) {
 		LOG::CTOR::debug(this, "Mesh was created");
 	}
-	Mesh(Vertices vertices, Indices indices, Material material) :
+	Mesh(Vertices vertices, Indices indices, std::shared_ptr<Material> material) :
 		OR(this,
 			DY::V(&this->vertices, &this->indices, &vertexBuffer, &indexBuffer, &this->material),
 			DY::N("vertices", "indices", "vertexBuffer", "indexBuffer", "material")),
@@ -60,40 +60,21 @@ public:
 		LOG::CTOR::debug(this, "Mesh was destroyed");
 	}
 
-	void bind() {
-		vertexBuffer.bindVertexArray();
-		indexBuffer.bindVertexArray(VertexBuffer<Vertex>::getVAO());
 
-		vertexBuffer.getVAO().bind();
-		LOG::CLAS::debug<&Mesh::bind>(this, "Mesh was bound.");
-		
-	}
 
-	void unbind() {
-		vertexBuffer.getVAO().unbind();
-		LOG::CLAS::debug<&Mesh::unbind>(this, "Mesh was unbound.");
-	}
+	void bind();
+	void unbind();
 
-	void makeInstanced(VertexBuffer<glm::mat4>& instanceBuffer) {
-		LOG::CLAS::debug<&Mesh::makeInstanced>(this, "Not implemented, does nothing.");
-		//relocated from constructor to here. 
-		//Should locInfo an divisors be defined in the shader which it belongs to 
-		//and a static function in mesh be used to set what will be used for instancing and other settings if any?
-		//instanceBuffer.bindVertexArray(vertexArray, locDivisors, locDivisors);
-	}
-
-	void updateBuffer() {
-		vertexBuffer.insert(vertices);
-		LOG::CLAS::debug<&Mesh::updateBuffer>(this, &vertices, "Mesh's vertex buffer was updated.");
-	}
+	void makeInstanced(VertexBuffer<glm::mat4>& instanceBuffer);
+	void updateBuffer();
 
 	Vertices vertices;
 	Indices indices;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	ElementBuffer indexBuffer;
-
-	Material material;
+	
+	std::shared_ptr<Material> material;
 
 
 	inline static auto CR = DY::ClassRegister<

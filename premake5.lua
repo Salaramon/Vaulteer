@@ -8,7 +8,7 @@ workspace "Vaulteer"
 	}
 
 	buildoptions {
-		"/MP32"
+		"/MP32 /bigobj"
 	}
 
 	--flags { "MultiProcessorCompile" }

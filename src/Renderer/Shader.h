@@ -4,11 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <fstream>
 #include <string>
-#include <sstream>
 #include <iostream>
-#include <functional>
 #include <vector>
 
 #include "GLSLCPPBinder.h"
@@ -21,8 +18,7 @@ public:
 	struct Parameter_Reader {};
 
 	template<class TPath, class TType, class... Args>
-	struct Parameter_Reader<TPath, TType, Args...> : public Parameter_Reader<Args...> {
-	public:
+	struct Parameter_Reader<TPath, TType, Args...> : Parameter_Reader<Args...> {
 		Parameter_Reader(Shader* shader, TPath path, TType type, Args... args)
 			: Parameter_Reader<Args...>(shader, args...) {
 			shader->loadShader(path, type);
@@ -190,7 +186,7 @@ private:
 	// shader is required for setting default values on lookup where uniforms get optimized away
 	struct ShaderLocation {
 		GLint loc = -1;
-		operator GLint() { return loc; }
+		operator GLint() const { return loc; }
 	};
 
 	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;

@@ -23,7 +23,7 @@ public:
 
 	VertexBuffer(size_t bufferSize);
 
-	VertexBuffer(std::vector<Store>& vertices);
+	VertexBuffer(const std::vector<Store>& vertices);
 
 	//VertexBuffer(std::vector<Store>& vertices, VertexArray& vertexArray, LocationVector locInfo, LocationVector divisors = LocationVector(0));
 
@@ -34,14 +34,14 @@ public:
 
 	void insert(const std::vector<Store>& vertices);
 
-	void insertPartial(const size_t position, const std::vector<Store>& vertices);
+	void insertPartial(size_t position, const std::vector<Store>& vertices);
 
-	void reserve(const size_t bufferSize);
+	void reserve(size_t bufferSize);
 
 //private:
 	void bindVertexArray();
 
-	GLuint getBuffer() { return buffer; }
+	GLuint getBuffer() const { return buffer; }
 
 	inline static auto CR = DY::ClassRegister<
 		&insert,
@@ -85,7 +85,7 @@ VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 }
 
 template<class Store>
-VertexBuffer<Store>::VertexBuffer(std::vector<Store>& vertices) {
+VertexBuffer<Store>::VertexBuffer(const std::vector<Store>& vertices) {
 	LOG::CTOR::debug(this, std::format("Creating VertexBuffer with id {} from vertices...", buffer));
 
 	insert(vertices);
@@ -133,7 +133,7 @@ void VertexBuffer<Store>::insertPartial(const size_t position, const std::vector
 }
 
 template<class Store>
-inline void VertexBuffer<Store>::reserve(const size_t bufferSize) {
+void VertexBuffer<Store>::reserve(const size_t bufferSize) {
 	glNamedBufferStorage(buffer, bufferSize * sizeof(Store), nullptr, GL_DYNAMIC_STORAGE_BIT);
 	//glNamedBufferData(buffer, bufferSize * sizeof(Store), nullptr, GL_DYNAMIC_DRAW);
 }

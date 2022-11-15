@@ -7,8 +7,7 @@
 #include "GLSLCPPBinder.h"
 #include "Model/Storage/Vertex.h"
 
-class Point
-{
+class Point {
 public:
 	Point(glm::vec3 point) : aPos(point) {
 		LOG::CTOR::debug(this, &aPos, DY::std_format("Point created with value: {}", DY::glm_to_string(aPos)));
@@ -17,8 +16,8 @@ public:
 		aPos = glm::vec3(x, y, z);
 		LOG::CTOR::debug(this, &aPos, DY::std_format("Point created with value: {}", DY::glm_to_string(aPos)));
 	}
-	Point operator=(glm::vec3 point) {
-		return Point(point);
+	Point operator=(glm::vec3 point) const {
+		return { point };
 	}
 
 
@@ -42,4 +41,3 @@ public:
 
 	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 };
-

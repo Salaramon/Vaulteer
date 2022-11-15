@@ -1,18 +1,11 @@
 #pragma once
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/rotate_vector.hpp >
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <vector>
 #include <string>
 #include <array>
-#include <functional>
-
-#include "API/Event.h"
 
 #include "Debug/Debug.h"
 
@@ -21,8 +14,7 @@ class Camera
 public:
 
 	struct Frustum {
-	public:
-		Frustum(std::array<glm::vec4, 6> arr) : 
+		explicit Frustum(std::array<glm::vec4, 6> arr) : 
 			left(arr[0]),
 			right(arr[1]),
 			bottom(arr[2]),
@@ -38,6 +30,7 @@ public:
 		glm::vec4 far;
 	};
 
+	Camera();
 	Camera(glm::vec3 position, glm::vec3 direction, float roll, float renderDistance, float fov, float aspectRatio);
 	Camera(float renderDistance, float fov, float aspectRatio);
 
@@ -48,27 +41,37 @@ public:
 	void lockUp(glm::vec3 fixedUp);
 	void setPosition(float posX, float posY, float posZ);
 
-	void apply();
+	void applyRotation();
 
-	glm::mat4 getViewMatrix();
-	glm::mat4 getProjectionMatrix();
-	Frustum getFrustum();
-	glm::vec3 getPosition();
+	glm::mat4 getViewMatrix() const;
+	glm::mat4 getProjectionMatrix() const;
+	Frustum getFrustum() const;
+	glm::vec3 getPosition() const;
 
-	glm::vec3 getFront();
-	glm::vec3 getRight();
-	glm::vec3 getUp();
+	std::string getOrientation() const;
+	glm::vec3 getFront() const;
+	glm::vec3 getRight() const;
+	glm::vec3 getUp() const;
+	float getFov() const;
 
-	float getFov();
-	float getAspectRatio();
+	float getAspectRatio() const;
 	void setAspectRatio(int width, int height);
 
-private:
-	glm::vec3 lockedUp = glm::vec3(0.0f);
+	glm::vec3 getLockedUp() const;
+	void setLockedUp(bool lockedUp);
 
-	float yaw;
-	float pitch;
-	float roll;
+	glm::vec3 getWorldUp() const;
+	void setWorldUp(const glm::vec3& worldUp);
+
+	bool isRotationDirty();
+
+private:
+	bool lockedUp = false;
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	float yaw{};
+	float pitch{};
+	float roll{};
 
 	float fov;
 	float renderDistance;
@@ -76,6 +79,8 @@ private:
 
 	glm::quat orientation;
 	glm::vec3 position = { 0,0,0 };
+
+	bool rotationDirty = false;
 
 public:
 
@@ -86,7 +91,7 @@ public:
 		DY::OverloadSelector<Camera, void(glm::vec3, float)>::Get<&Camera::setRotation>,
 		&lockUp,
 		&setPosition,
-		&apply,
+		&applyRotation,
 		&getViewMatrix,
 		&getProjectionMatrix,
 		&getFrustum,
@@ -100,7 +105,7 @@ public:
 
 	>(	"lockUp",
 		"setPosition",
-		"apply",
+		"applyRotation",
 		"getViewMatrix",
 		"getProjectionMatrix",
 		"getFrustum",

@@ -4,16 +4,16 @@
 
 class BatchManager {
 public:
-	const static inline size_t default_vertex_buffer_size = 4000000 / sizeof(Vertex);
-	const static inline size_t default_index_buffer_size = 1000000 / sizeof(Index);
+	constexpr static inline size_t default_vertex_buffer_size = 4000000 / sizeof(Vertex);
+	constexpr static inline size_t default_index_buffer_size = 1000000 / sizeof(Index);
 
-	BatchManager() {}
+	BatchManager() = default;
 
 	static void setTextureID(BatchManager& manager, GLint textureID);
 
-	static void addToBatch(BatchManager& manager, const Mesh& model, glm::mat4 modelMat);
+	static void addToBatch(BatchManager& manager, const Mesh& mesh, glm::mat4 modelMat);
 
-	static std::vector<std::reference_wrapper<Batch>> getBatches(BatchManager& manager);
+	static std::vector<std::reference_wrapper<Batch>> getBatches(const BatchManager& manager);
 
 private:
 	std::vector<std::unique_ptr<Batch>> batches;

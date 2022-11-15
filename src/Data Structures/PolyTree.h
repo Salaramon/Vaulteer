@@ -25,7 +25,7 @@ std::array<_Ty, _Size> make_array(const _Ty& v) {
 }
 
 template<class T>
-inline bool is_overlap(
+bool is_overlap(
 	typename T rect1Pos,
 	typename T rect1Len,
 	typename T rect2Pos,
@@ -62,7 +62,7 @@ public:
 	size_t nodeIndex;
 
 	size_t getNodeID(const Position& position);
-	Position getOrthantPosition(const size_t orthantID);
+	Position getOrthantPosition(size_t orthantID);
 	Value getSubNodeSize();
 
 
@@ -88,7 +88,7 @@ public:
 };
 
 template<class Content, class Value, size_t dimensions>
-inline size_t TreeNode<Content, Value, dimensions>::getNodeID(const Position& position)
+size_t TreeNode<Content, Value, dimensions>::getNodeID(const Position& position)
 {
 	Content value;
 	if (insertion != nullptr) {
@@ -105,7 +105,7 @@ inline size_t TreeNode<Content, Value, dimensions>::getNodeID(const Position& po
 }
 
 template<class Content, class Value, size_t dimensions>
-inline std::array<Value, dimensions> TreeNode<Content, Value, dimensions>::getOrthantPosition(const size_t orthantID)
+std::array<Value, dimensions> TreeNode<Content, Value, dimensions>::getOrthantPosition(const size_t orthantID)
 {
 	const size_t forEnd = mut::ctexp2(position.size());
 	Value orthantSize = getSubNodeSize();
@@ -126,7 +126,7 @@ inline std::array<Value, dimensions> TreeNode<Content, Value, dimensions>::getOr
 }
 
 template<class Content, class Value, size_t dimensions>
-inline Value TreeNode<Content, Value, dimensions>::getSubNodeSize()
+Value TreeNode<Content, Value, dimensions>::getSubNodeSize()
 {
 	Value newSize;
 	if (size == 0) {
@@ -282,7 +282,7 @@ public:
 };
 
 template<class Content, class Value, size_t dimensions>
-inline PolyTree<Content, Value, dimensions>::~PolyTree()
+PolyTree<Content, Value, dimensions>::~PolyTree()
 {
 	LOG::CTOR::debug(this, "Clearing the tree structure before destroying.");
 
@@ -326,7 +326,7 @@ inline PolyTree<Content, Value, dimensions>::~PolyTree()
 }
 
 template<class Content, class Value, size_t dimensions>
-inline void PolyTree<Content, Value, dimensions>::insert(Content&& object, const Position& position)
+void PolyTree<Content, Value, dimensions>::insert(Content&& object, const Position& position)
 {
 	LOG::CLAS::debug<&PolyTree<Content, Value, dimensions>::insert>(this, std::format("object is inserted in position {}", DebugUtils::arrayToString(position, 
 		[](Value val) { return std::to_string(val); }
@@ -362,7 +362,7 @@ inline void PolyTree<Content, Value, dimensions>::insert(Content&& object, const
 }
 
 template<class Content, class Value, size_t dimensions>
-inline std::pair<typename PolyTree<Content, Value, dimensions>::iterator, typename PolyTree<Content, Value, dimensions>::iterator>
+std::pair<typename PolyTree<Content, Value, dimensions>::iterator, typename PolyTree<Content, Value, dimensions>::iterator>
 PolyTree<Content, Value, dimensions>::equal_range(Position position, Position length)
 {
 	iterator beginIterator;

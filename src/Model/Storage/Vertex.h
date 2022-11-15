@@ -6,22 +6,22 @@
 
 typedef std::vector<Binder::LocationInfo> LocationVector;
 
-class Vertex
-{
+class Vertex {
 public:
-	Vertex(glm::vec3 point) {
-		LOG::CTOR::debug(this, "Vertex constructor called");
-		aPos = point;
-	}
-	Vertex() {
+	Vertex() : aPos(0.0), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {
 		LOG::CTOR::debug(this, "Vertex constructor called");
 	}
+
+	Vertex(glm::vec3 point) : aPos(point), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {
+		LOG::CTOR::debug(this, "Vertex constructor called");
+	}
+
 	decltype(Binder::geometry_vertex::locations::aPos)::type aPos;
 	decltype(Binder::geometry_vertex::locations::aNormal)::type aNormal;
 	decltype(Binder::geometry_vertex::locations::aTexCoords)::type aTexCoords;
 	decltype(Binder::geometry_vertex::locations::aTangent)::type aTangent;
 	decltype(Binder::geometry_vertex::locations::aBitangent)::type aBitangent;
-	decltype(Binder::geometry_vertex::locations::aModelNumber)::type aModelNumber;
+	decltype(Binder::geometry_vertex::locations::aMaterialNumber)::type aMaterialNumber;
 
 
 	inline static LocationVector locInfo = {
@@ -30,7 +30,7 @@ public:
 		Binder::geometry_vertex::locations::aTexCoords,
 		Binder::geometry_vertex::locations::aTangent,
 		Binder::geometry_vertex::locations::aBitangent,
-		Binder::geometry_vertex::locations::aModelNumber
+		Binder::geometry_vertex::locations::aMaterialNumber
 	};
 
 	inline static LocationVector locDivisors = {
@@ -44,11 +44,10 @@ public:
 		decltype(aTexCoords),
 		decltype(aTangent),
 		decltype(aBitangent),
-		decltype(aModelNumber),
+		decltype(aMaterialNumber),
 		decltype(locInfo),
 		decltype(locDivisors)> OR;
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 
 	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 };
-

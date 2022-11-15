@@ -24,25 +24,25 @@ public:
 	}
 
 	template<class StoreType>
-	Container<StoreType>::iterator begin() {
+	typename Container<StoreType>::iterator begin() {
 		return std::get<ObjectContainer<StoreType>>(objectContainers.begin());
 	}
 
 	template<class StoreType>
-	Container<StoreType>::iterator end() {
+	typename Container<StoreType>::iterator end() {
 		return std::get<ObjectContainer<StoreType>>(objectContainers.end());
 	}
 
 	template<class Store>
 	struct iterator {
-		using IteratorType = ObjectContainer<Store>::iterator;
+		using iterator_type = typename ObjectContainer<Store>::iterator;
 	public:
-		using difference_type = ObjectContainer<Store>::iterator::difference_type;
-		using value_type = ObjectContainer<Store>::iterator::value_type;
-		using pointer = ObjectContainer<Store>::iterator::pointer;
-		using reference = ObjectContainer<Store>::iterator::reference;
+		using difference_type = typename ObjectContainer<Store>::iterator::difference_type;
+		using value_type = typename ObjectContainer<Store>::iterator::value_type;
+		using pointer = typename ObjectContainer<Store>::iterator::pointer;
+		using reference = typename ObjectContainer<Store>::iterator::reference;
 
-		iterator(IteratorType it) : it(it) {}
+		iterator(iterator_type it) : it(it) {}
 		iterator(const iterator<Store>& other) : it(other.it) {}
 
 		iterator<Store> operator++(int) {
@@ -73,16 +73,16 @@ public:
 			return *it;
 		}
 
-		const bool operator==(const iterator<Store>& other) const {
+		bool operator==(const iterator<Store>& other) const {
 			return it == other.it;
 		}
 
-		const bool operator!=(const iterator<Store>& other) const {
+		bool operator!=(const iterator<Store>& other) const {
 			return it != other.it;
 		}
 
 	private:
-		IteratorType it;
+		iterator_type it;
 	};
 	
 	template<class StoreType>

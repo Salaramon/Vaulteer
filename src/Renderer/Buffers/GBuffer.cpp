@@ -16,7 +16,7 @@ bool GBuffer::init() {
 	textures[Color_Specular] = initTexture(GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE);
 	depthTexture = initTexture(GL_DEPTH24_STENCIL8, GL_DEPTH_COMPONENT, GL_FLOAT);
 
-	glDrawBuffers(NumTextures, &drawBuffers[0]);
+	glDrawBuffers(NumTextures, drawBuffers.data());
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
@@ -29,7 +29,7 @@ bool GBuffer::init() {
 
 std::shared_ptr<Texture2D> GBuffer::initTexture(GLenum internalFormat, GLenum format, GLenum type) {
 	Texture2D texture = Texture2D(width, height);
-	texture.createBlankTexture(internalFormat, format);
+	texture.setupBlankTexture(internalFormat, format);
 	texture.setMinifyingFilter(GL_NEAREST);
 	texture.setMagnifyingFilter(GL_NEAREST);
 
@@ -39,11 +39,11 @@ std::shared_ptr<Texture2D> GBuffer::initTexture(GLenum internalFormat, GLenum fo
 	return std::make_shared<Texture2D>(texture);
 }
 
-void GBuffer::bindReadTexture(GBufferTextureType textureType) {
+void GBuffer::bindReadTexture(GBufferTextureType textureType) const {
 	glBindTexture(GL_TEXTURE_2D, textures[textureType]->textureID);
 }
 
 
-void GBuffer::bindTextureUnit(GBufferTextureType textureType) {
+void GBuffer::bindTextureUnit(GBufferTextureType textureType) const {
 	glBindTextureUnit(textureType, textures[textureType]->textureID);
 }

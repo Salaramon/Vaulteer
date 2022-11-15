@@ -21,7 +21,7 @@ TextureFrameBuffer::~TextureFrameBuffer() {
 	destroy();
 }
 
-bool TextureFrameBuffer::initWithTexture() {
+bool TextureFrameBuffer::initWithTexture() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, frameBufferTexId, 0);
 
@@ -34,7 +34,7 @@ bool TextureFrameBuffer::initWithTexture() {
 	return true;
 }
 
-void TextureFrameBuffer::destroy() {
+void TextureFrameBuffer::destroy() const {
 	if (fbo != 0) {
 		glDeleteFramebuffers(1, &fbo);
 	}
@@ -44,18 +44,15 @@ void TextureFrameBuffer::destroy() {
 	}
 }
 
-void TextureFrameBuffer::bindWrite()
-{
+void TextureFrameBuffer::bindWrite() const {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 }
 
-void TextureFrameBuffer::bindRead()
-{
+void TextureFrameBuffer::bindRead() const {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 }
 
-uint TextureFrameBuffer::getTextureId()
-{
+uint TextureFrameBuffer::getTextureId() const {
 	return frameBufferTexId;
 }
 

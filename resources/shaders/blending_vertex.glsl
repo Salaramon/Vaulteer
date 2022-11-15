@@ -4,13 +4,13 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
-layout(location = 5) in int aModelNumber;
+layout(location = 5) in int aMaterialNumber;
 
 out VS_OUT {
     vec3 fragPosition;
     vec3 fragNormal;
     vec2 TexCoords;
-    flat int modelNumber;
+    flat int materialNumber;
 } vs_out;
 
 uniform mat4 modelView;
@@ -24,7 +24,7 @@ void main() {
     vs_out.fragPosition = (modelView * vec4(aPos, 1.0)).xyz;
     vs_out.fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     vs_out.TexCoords = aTexCoords;
-    vs_out.modelNumber = aModelNumber;
+    vs_out.materialNumber = aMaterialNumber;
        
     gl_Position = projection * modelView * vec4(aPos, 1.0);
 }

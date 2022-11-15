@@ -19,13 +19,13 @@ ElementBuffer::ElementBuffer(size_t bufferSize, GLuint vao) {
 	LOG::CTOR::debug(this, &buffer, std::format("ElementBuffer created with id {} with size {} and vao with id {}", buffer, bufferSize, vao));
 }
 
-ElementBuffer::ElementBuffer(std::vector<Index>& indices) {
+ElementBuffer::ElementBuffer(const std::vector<Index>& indices) {
 	insert(indices);
 
 	LOG::CTOR::debug(this, &buffer, std::format("ElementBuffer created with id {} from indices", buffer));
 }
 
-ElementBuffer::ElementBuffer(std::vector<Index>& indices, GLuint vao) {
+ElementBuffer::ElementBuffer(const std::vector<Index>& indices, GLuint vao) {
 	insert(indices);
 	bindVertexArray(vao);
 
@@ -49,7 +49,7 @@ void ElementBuffer::insertPartial(size_t position, const std::vector<Index>& ind
 	LOG::CLAS::debug<&ElementBuffer::insertPartial>(this, &buffer, std::format("Partial insert of indices into ElementBuffer with id {}", buffer));
 }
 
-void ElementBuffer::reserve(size_t bufferSize) {
+void ElementBuffer::reserve(size_t bufferSize) const {
 	glNamedBufferStorage(buffer, bufferSize * sizeof(Index), nullptr, GL_DYNAMIC_STORAGE_BIT);
 	LOG::CLAS::debug<&ElementBuffer::reserve>(this, &buffer, std::format("element buffer of id {}, size set to {}", buffer, bufferSize * sizeof(Index)));
 }

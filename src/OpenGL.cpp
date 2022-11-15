@@ -1,26 +1,31 @@
 #include "vpch.h"
 #include "OpenGL.h"
 
-void OpenGL::initialize()
-{
+#include <stb_image.h>
+
+void OpenGL::initialize() {
 	glDebugMessageCallback(debugCallback, nullptr);
 	//log.debug("OpenGL debug callback set.\n", "glDebugMessageCallback");
 }
 
-void OpenGL::enableDepthTest()
-{
-	glEnable(GL_DEPTH_TEST);
-	//log.debug("GL_DEBUG_OUTPUT enabled.\n", "glEnable()");
-
+void OpenGL::initializeSTBI() {
+	stbi_set_flip_vertically_on_load(true);
 }
 
-void OpenGL::disableDepthTest()
-{
+void OpenGL::enableDepthTest() {
+	glEnable(GL_DEPTH_TEST);
+	//log.debug("GL_DEPTH_TEST enabled.\n", "glEnable()");
+}
+
+void OpenGL::disableDepthTest() {
 	glDisable(GL_DEPTH_TEST);
 	//log.debug("GL_DEPTH_TEST glDisable.\n", "glDisable()");
 }
 
 void OpenGL::enableStencilTest() {
+	// query 
+	/*GLint drawFboId = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);*/
 	glEnable(GL_STENCIL_TEST);
 	//log.debug("GL_STENCIL_TEST glEnable.\n", "glEnable()");
 }
@@ -30,19 +35,17 @@ void OpenGL::disableStencilTest() {
 	//log.debug("GL_STENCIL_TEST glDisable.\n", "glDisable()");
 }
 
-void OpenGL::enableDebugOutput(GLenum mode)
-{
+void OpenGL::enableDebugOutput(GLenum mode) {
 	glEnable(GL_DEBUG_OUTPUT);
 	//log.debug("GL_DEBUG_OUTPUT enabled.\n", "glEnable()");
 	debugModes = mode;
-	if(mode & SYNC){
+	if (mode & SYNC) {
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		//log.debug("GL_DEBUG_OUTPUT_SYNCHRONOUS enabled.\n", "glEnable()");
 	}
 }
 
-void OpenGL::disableDebugOutput()
-{
+void OpenGL::disableDebugOutput() {
 	glDisable(GL_DEBUG_OUTPUT);
 	//log.debug("GL_DEBUG_OUTPUT disabled.\n", "glDisable()");
 	if (debugModes & SYNC) {
@@ -52,8 +55,7 @@ void OpenGL::disableDebugOutput()
 	debugModes = 0;
 }
 
-void OpenGL::enableCullFace(GLenum faces)
-{
+void OpenGL::enableCullFace(GLenum faces) {
 	glEnable(GL_CULL_FACE);
 	//log.debug("GL_CULL_FACE enabled.\n", "glEnable()");
 	if (faces == (FRONT | BACK)) {
@@ -66,26 +68,22 @@ void OpenGL::enableCullFace(GLenum faces)
 	}
 }
 
-void OpenGL::enableCullFace()
-{
+void OpenGL::enableCullFace() {
 	glEnable(GL_CULL_FACE);
 	//log.debug("GL_CULL_FACE enabled.\n", "glEnable()");
 }
 
-void OpenGL::disableCullFace()
-{
+void OpenGL::disableCullFace() {
 	glDisable(GL_CULL_FACE);
 	//log.debug("GL_CULL_FACE disabled.\n", "glDisable()");
 }
 
-void OpenGL::enableDirectDebugMessageing()
-{
+void OpenGL::enableDirectDebugMessageing() {
 	directMessaging = true;
 	//log.debug("Direct messaging enabled: Messages will be directly printed to the console and logged.\n", "enableDirectDebugMessageing()");
 }
 
-void OpenGL::disableDirectDebugMessageing()
-{
+void OpenGL::disableDirectDebugMessageing() {
 	directMessaging = false;
 	//log.debug("Direct messaging disabled: Messages will only be logged.\n", "disableDirectDebugMessageing()");
 }

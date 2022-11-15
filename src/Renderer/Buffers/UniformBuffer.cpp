@@ -1,7 +1,7 @@
 #include "vpch.h"
 #include "UniformBuffer.h"
 
-UniformBuffer::UniformBuffer(Binder::UniformBufferInfo bufferInfo, GLenum hint) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint) {
+UniformBuffer::UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint) {
 	LOG::CTOR::debug<UniformBuffer>(this, std::format("Creating UBO for {} (size {})", bufferInfo.name, bufferInfo.size));
 }
 

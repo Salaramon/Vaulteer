@@ -1,43 +1,39 @@
 #pragma once
 
-#include <string>
-#include <iostream>
 #include <unordered_map>
-#include <set>
 
 #include <glad/glad.h>
 #include <assimp/scene.h>
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include "stb_image.h"
 
 #include "GLSLCPPBinder.h"
 #include "Renderer/Shader.h"
-#include "Utils/TypeDefUtils.h"
 
 #include "Debug/Debug.h"
 
 class Texture {
 public:
-    Texture();
-    Texture(bool mipmapEnabled);
-    Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
+	Texture();
+	Texture(bool mipmapEnabled);
+	Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
 
-    void setMinifyingFilter(GLenum filter);
-    void setMagnifyingFilter(GLenum filter);
-    void setAnisotropicFilter(GLfloat filter);
+	void setMinifyingFilter(GLenum filter) const;
+	void setMagnifyingFilter(GLenum filter) const;
+	void setAnisotropicFilter(GLfloat filter) const;
 
-    GLuint textureID = 0;
-    GLsizei width = -1, height = -1;
-    GLint nrComponents = -1;
-    bool mipmapEnabled = false;
+	GLuint textureID = 0;
+	GLsizei width = -1, height = -1;
+	GLint nrComponents = -1;
+	bool mipmapEnabled = false;
 
-    inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
+	inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 protected:
-    void createTexture(GLenum type);
-    void cleanup();
-
-    std::pair<GLint, GLint> getFormatsFromComponents(int comp);
-
+	void createTexture(GLenum type);
+	void cleanup() const;
+    
+	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents);
 
 public:
     inline static auto CR = DY::ClassRegister<
