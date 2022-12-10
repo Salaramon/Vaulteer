@@ -278,6 +278,7 @@
     <None Include="resources\shaders\lightsource_vertex.glsl" />
     <None Include="resources\shaders\line_frag.glsl" />
     <None Include="resources\shaders\line_vertex.glsl" />
+    <None Include="resources\shaders\postprocessor\materialTable.glsl" />
     <None Include="resources\shaders\shadow_cube_frag.glsl" />
     <None Include="resources\shaders\shadow_cube_geometry.glsl" />
     <None Include="resources\shaders\shadow_cube_vertex.glsl" />

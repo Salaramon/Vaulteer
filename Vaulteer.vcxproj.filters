@@ -636,6 +636,7 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\shaders\postprocessor\materialTable.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

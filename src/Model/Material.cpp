@@ -35,7 +35,7 @@ inline bool Material::isTransparent() const {
 	return data.matOpacity < 1.0f;
 }
 
-void Material::setMaterialIndex(unsigned materialIndex) {
+void Material::setMaterialIndex(unsigned int materialIndex) {
 	this->materialIndex = materialIndex;
 	// update locators
 	for (auto& val : textureTypeLocators | std::views::values)

@@ -10,8 +10,8 @@ public:
 	using fragUnis = Binder::deferred_frag::uniforms;
 	static void init();
 
-	static void setDirectionalLight(const DirectionalLight& light);
-	static void setPointLight(const PointLight& light, int index);
+	static void setDirectionalLight(const DirectionalLight& dirLight);
+	static void setPointLight(const PointLight& pointLight, int index);
 	static void setSpotLight(const SpotLight& light, int index);
 
 	static void setWorldCameraPos(const glm::vec3& cameraPos);
@@ -23,11 +23,23 @@ public:
 	static void setFogColor(const glm::vec3& color);
 
 	// uniform buffer upload
-	static void uploadMaterialData(const std::vector<ModelData*>& modelVector);
+	static void uploadMaterialData();
+	static void uploadSpotLightData(const std::vector<SpotLight>& lightVector);
+	static void uploadPointLightData(const std::vector<PointLight>& lightVector);
 
 	static UniformBuffer& getUBMaterialData() {
 		static UniformBuffer materialData = UniformBuffer(Binder::deferred_frag::buffers::MaterialData);
 		return materialData;
+	}
+
+	static UniformBuffer& getUBSpotLightData() {
+		static UniformBuffer spotLightData = UniformBuffer(Binder::deferred_frag::buffers::SpotLightData);
+		return spotLightData;
+	}
+
+	static UniformBuffer& getUBPointLightData() {
+		static UniformBuffer pointLightData = UniformBuffer(Binder::deferred_frag::buffers::PointLightData);
+		return pointLightData;
 	}
 };
 

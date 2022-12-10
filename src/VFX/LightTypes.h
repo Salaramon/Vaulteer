@@ -28,25 +28,48 @@ struct BaseLight {
 	}
 };
 
-struct DirectionalLight : public BaseLight {
+struct DirectionalLight {
+	BaseLight light;
 	glm::vec3 direction;
 };
 
-struct PointLight : public BaseLight {
-	glm::vec3 position;
+struct PointLight {
+	BaseLight light;
 	Attenuation attenuation;
+	glm::vec3 position;
+	float radius;
+
+	PointLight(Attenuation a, BaseLight l, glm::vec3 position) : light(l), attenuation(a), position(position) {
+		radius = calculatePointRadius();
+	}
 
 	float calculatePointRadius() const {
-		return attenuation.calculateRadius(getLightMax());
+		return attenuation.calculateRadius(light.getLightMax());
 	}
 };
 
-struct SpotLight : public PointLight {
+struct alignas(16) SpotLight {
+	BaseLight light;
+	Attenuation attenuation;
+	glm::vec3 position;
+	float radius;
 	glm::vec3 direction;
 	float cutoffAngle; // radians
+	glm::mat4 lightSpaceMatrix;
+
+	SpotLight(Attenuation a, BaseLight l, glm::vec3 position, glm::vec3 direction, float angle)
+			: light(l), attenuation(a), position(position), direction(direction), cutoffAngle(angle) {
+		radius = calculatePointRadius();
+		lightSpaceMatrix = getLightSpaceMatrix();
+	}
+
+	
+	float calculatePointRadius() const {
+		return attenuation.calculateRadius(light.getLightMax());
+	}
 
 	float calculateSizeAcross() const {
-		float attLength = attenuation.calculateRadius(getLightMax());
+		float attLength = attenuation.calculateRadius(light.getLightMax());
 
 		float size = tanf(cutoffAngle) * attLength * 2;
 		return size;
@@ -55,7 +78,7 @@ struct SpotLight : public PointLight {
 	// matrix calculation methods
 
 	glm::mat4 getProjectionMatrix() const {
-		float farPlane = calculatePointRadius() * 8; // TODO
+		float farPlane = calculatePointRadius() * 8; // TODO fix the math here
 		return glm::perspective(cutoffAngle, 1.0f, 4.0f, farPlane);
 	}
 

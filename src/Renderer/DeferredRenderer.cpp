@@ -11,7 +11,7 @@ void DeferredRenderer::preload(ResourcePack& pack) {
 	auto& modelVector = pack.getAllResources();
 
 	DeferredGeometryTechnique::uploadModelUnitTables(modelVector);
-	DeferredLightingTechnique::uploadMaterialData(modelVector);
+	DeferredLightingTechnique::uploadMaterialData();
 }
 
 
@@ -50,10 +50,21 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 
 	DirectionalLight dirLight = {{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}; // TODO get from scene :3
 
-
+	
 	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());
 	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
-	DeferredLightingTechnique::setDirectionalLight(dirLight);
+
+	BaseLight whiteLight = {glm::vec3(1.0f), 0.13f, 0.5f};
+	Attenuation att = { 1.0f, 0.18f, 0.032f };
+	PointLight l = {att, whiteLight,  camera->getPosition()};
+	
+	std::vector<PointLight> pointLights;
+	pointLights.push_back(l);
+
+	DeferredLightingTechnique::uploadPointLightData(pointLights);
+
+
+	//DeferredLightingTechnique::setDirectionalLight(dirLight);
 
 	//DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
 

@@ -25,44 +25,26 @@ void DeferredLightingTechnique::init() {
     shader->setUniform(fragUnis::shadowSpotMap_3, texId++);
 }
 
-void DeferredLightingTechnique::setDirectionalLight(const DirectionalLight& light) {
-    shader->setUniform(fragUnis::directionalLight.light.color, 1,light.color);
-    shader->setUniform(fragUnis::directionalLight.light.ambientIntensity, light.ambientIntensity);
-    shader->setUniform(fragUnis::directionalLight.light.diffuseIntensity, light.diffuseIntensity);
+void DeferredLightingTechnique::setDirectionalLight(const DirectionalLight& dirLight) {
+    shader->setUniform(fragUnis::directionalLight.light.color, 1,dirLight.light.color);
+    shader->setUniform(fragUnis::directionalLight.light.ambientIntensity, dirLight.light.ambientIntensity);
+    shader->setUniform(fragUnis::directionalLight.light.diffuseIntensity, dirLight.light.diffuseIntensity);
 
-    shader->setUniform(fragUnis::directionalLight.direction, 1, glm::normalize(light.direction));
+    shader->setUniform(fragUnis::directionalLight.direction, 1, glm::normalize(dirLight.direction));
 }
 
-void DeferredLightingTechnique::setPointLight(const PointLight& light, const int index) {
-    shader->setUniform(fragUnis::pointLights[index].light.color, 1, light.color);
-    shader->setUniform(fragUnis::pointLights[index].light.ambientIntensity, light.ambientIntensity);
-    shader->setUniform(fragUnis::pointLights[index].light.diffuseIntensity, light.diffuseIntensity);
+void DeferredLightingTechnique::setPointLight(const PointLight& pointLight, const int index) {
+    shader->setUniform(fragUnis::pointLights[index].light.color, 1, pointLight.light.color);
+    shader->setUniform(fragUnis::pointLights[index].light.ambientIntensity, pointLight.light.ambientIntensity);
+    shader->setUniform(fragUnis::pointLights[index].light.diffuseIntensity, pointLight.light.diffuseIntensity);
 
-    shader->setUniform(fragUnis::pointLights[index].att.aConstant, light.attenuation.constant);
-    shader->setUniform(fragUnis::pointLights[index].att.aLinear, light.attenuation.linear);
-    shader->setUniform(fragUnis::pointLights[index].att.aQuadratic, light.attenuation.quadratic);
+    shader->setUniform(fragUnis::pointLights[index].att.aConstant, pointLight.attenuation.constant);
+    shader->setUniform(fragUnis::pointLights[index].att.aLinear, pointLight.attenuation.linear);
+    shader->setUniform(fragUnis::pointLights[index].att.aQuadratic, pointLight.attenuation.quadratic);
 
-    shader->setUniform(fragUnis::pointLights[index].radius, light.calculatePointRadius());
+    shader->setUniform(fragUnis::pointLights[index].radius, pointLight.calculatePointRadius());
 
-    shader->setUniform(fragUnis::pointLights[index].position, 1, light.position);
-}
-
-void DeferredLightingTechnique::setSpotLight(const SpotLight& light, const int index) {
-    shader->setUniform(fragUnis::spotLights[index].light.color, 1, light.color);
-    shader->setUniform(fragUnis::spotLights[index].light.ambientIntensity, light.ambientIntensity);
-    shader->setUniform(fragUnis::spotLights[index].light.diffuseIntensity, light.diffuseIntensity);
-
-    shader->setUniform(fragUnis::spotLights[index].att.aConstant, light.attenuation.constant);
-    shader->setUniform(fragUnis::spotLights[index].att.aLinear, light.attenuation.linear);
-    shader->setUniform(fragUnis::spotLights[index].att.aQuadratic, light.attenuation.quadratic);
-
-    shader->setUniform(fragUnis::spotLights[index].position, 1, light.position);
-
-    shader->setUniform(fragUnis::spotLights[index].direction, 1, glm::normalize(light.direction));
-    shader->setUniform(fragUnis::spotLights[index].angle, light.cutoffAngle);
-
-    shader->setUniform(fragUnis::spotLights[index].radius, light.calculatePointRadius());
-    shader->setUniform(fragUnis::spotLightSpaceMatrices[index], 1, GL_FALSE, light.getLightSpaceMatrix());
+    shader->setUniform(fragUnis::pointLights[index].position, 1, pointLight.position);
 }
 
 void DeferredLightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
@@ -79,23 +61,23 @@ void DeferredLightingTechnique::setInverseViewMat(const glm::mat4& inverseViewMa
     shader->setUniform(fragUnis::inverseViewMat, 1, GL_FALSE, inverseViewMat);
 }
 
-/*
-void DeferredLightingTechnique::setMaterialSpecularIntensity(const float intensity) {
-    shader->setUniform(fragUnis::materialSpecularIntensity, intensity);
-}
-
-void DeferredLightingTechnique::setMaterialShininess(const float shininess) {
-    shader->setUniform(fragUnis::materialShininess, shininess);
-}
-*/
-
-void DeferredLightingTechnique::uploadMaterialData(const std::vector<ModelData*>& modelVector) {
+void DeferredLightingTechnique::uploadMaterialData() {
 	std::vector<Material::MaterialData> materials;
 	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
 		materials.push_back(pair.second->data);
 	}
 	auto& materialData = getUBMaterialData();
 	UniformBuffer::insert(materialData, materials);
+}
+
+void DeferredLightingTechnique::uploadSpotLightData(const std::vector<SpotLight>& lightVector) {
+	auto& spotLightBuffer = getUBSpotLightData();
+	UniformBuffer::insert(spotLightBuffer, lightVector);
+}
+
+void DeferredLightingTechnique::uploadPointLightData(const std::vector<PointLight>& lightVector) {
+	auto& pointLightBuffer = getUBPointLightData();
+	UniformBuffer::insert(pointLightBuffer, lightVector);
 }
 
 /*void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {
