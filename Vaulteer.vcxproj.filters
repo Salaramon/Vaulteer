@@ -318,6 +318,8 @@
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\DebugLayer.h" />
+    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
+    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -487,6 +489,7 @@
     </ClCompile>
     <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\DebugLayer.cpp" />
+    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">

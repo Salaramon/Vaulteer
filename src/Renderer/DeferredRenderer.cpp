@@ -50,7 +50,6 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 
 	DirectionalLight dirLight = {{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}; // TODO get from scene :3
 
-	
 	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());
 	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
 

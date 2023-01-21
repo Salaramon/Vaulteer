@@ -159,6 +159,7 @@
     <ClInclude Include="src\Renderer\Techniques\DeferredLightingTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\LineTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\Technique.h" />
     <ClInclude Include="src\Scene\DynamicScene.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="src\WorldLayer.h" />
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
+    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DebugLayer.cpp" />
@@ -241,6 +243,7 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds" />

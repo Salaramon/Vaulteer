@@ -6,8 +6,7 @@
 #include "FrameBuffer.h"
 #include "Model/Textures/Texture2D.h"
 
-class GBuffer : public FrameBuffer
-{
+class GBuffer : public FrameBuffer {
 public:
     enum GBufferTextureType {
         Position,               // vec3 position
