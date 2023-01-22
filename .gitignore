@@ -9,6 +9,9 @@ resources/*
 GLSLCPPBinder.exe
 GLSLCPPBinder.log
 
+#debug database files
+*.db
+
 # DLLs
 /*.dll
 

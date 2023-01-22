@@ -1,17 +1,19 @@
 #pragma once
 
+#include "Debug/Debug.h"
+
 #include "GLSLCPPBinder.h"
-#include "Debug/DebugLogger.h"
 
 typedef std::vector<Binder::LocationInfo> LocationVector;
 
 class Vertex {
 public:
-	Vertex(glm::vec3 point) : aPos(point), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {}
-
 	Vertex() : aPos(0.0), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {
-		DebugLogger<Vertex> log;
-		log.debug("Vertex created.\n");
+		LOG::CTOR::debug(this, "Vertex constructor called");
+	}
+
+	Vertex(glm::vec3 point) : aPos(point), aNormal(0.0), aTexCoords(0.0), aTangent(0.0), aBitangent(0.0), aMaterialNumber(0) {
+		LOG::CTOR::debug(this, "Vertex constructor called");
 	}
 
 	decltype(Binder::geometry_vertex::locations::aPos)::type aPos;
@@ -34,4 +36,18 @@ public:
 	inline static LocationVector locDivisors = {
 		//Binder::geometry_vertex::locations::instanceMatrix
 	};
+
+
+	DY::ObjectRegister<Vertex,
+		decltype(aPos),
+		decltype(aNormal),
+		decltype(aTexCoords),
+		decltype(aTangent),
+		decltype(aBitangent),
+		decltype(aMaterialNumber),
+		decltype(locInfo),
+		decltype(locDivisors)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 };

@@ -5,11 +5,9 @@
 #include "Model/Buffer.h"
 #include "Model/VertexArray.h"
 
-#include "Debug/DebugLogger.h"
-
 typedef GLuint Index;
 
-class ElementBuffer : public Buffer<BufferType::ElementBuffer>, public DebugLogger<ElementBuffer> {
+class ElementBuffer : public Buffer<BufferType::ElementBuffer> {
 public:
 	ElementBuffer();
 
@@ -30,4 +28,20 @@ public:
 	void reserve(size_t bufferSize) const;
 
 	void bindVertexArray(GLuint vao);
+
+
+	inline static auto CR = DY::ClassRegister<
+		&insert,
+		&insertPartial,
+		&reserve,
+		&bindVertexArray>(
+			"insert",
+			"insertPartial",
+			"reserve",
+			"bindVertexArray");
+
+	inline static auto CB = DY::ClassBinder(CR, Buffer<BufferType::ElementBuffer>::CB);
+
+	using LOG = _LOG<decltype(CB), decltype(Buffer<BufferType::ElementBuffer>::OB), DY::No_FB, DY::No_VB>;
+
 };

@@ -11,15 +11,14 @@
 typedef std::vector<Vertex> Vertices;
 typedef std::vector<GLuint> Indices;
 
-template <class Store>
-class VertexArray : public DebugLogger<VertexArray<void>> {
+template<class Store>
+class VertexArray {
 public:
 	VertexArray();
 
 	VertexArray(VertexArray<Store>&& other) :
 		vao(other.vao) {
 		other.vao = 0;
-		debug("VertexArray moved. VAO: " + std::to_string(vao) + "\n", "MOVE_CONSTRUCTOR");
 	}
 
 	~VertexArray();
@@ -52,13 +51,11 @@ private:
 template <class Store>
 VertexArray<Store>::VertexArray() {
 	initialize();
-	debug("VertexArray created VAO: " + std::to_string(vao) + "\n", "DEFAULT_CONSTRUCTOR");
 }
 
 template <class Store>
 VertexArray<Store>::~VertexArray() {
 	cleanup();
-	debug("VertexArray destroyed. VAO: " + std::to_string(vao) + "\n", "DECONSTRUCTOR");
 }
 
 template <class Store>
@@ -101,19 +98,14 @@ void VertexArray<Store>::setUpAttributes(LocationVector locInfo, LocationVector 
 
 			size_t locNr = locInfo[i].size / maxSize;
 			for (size_t j = 0; j < locNr; j++) {
-				bindDebugMessage(locInfo[i].loc + j, locInfo[i].name, locInfo[i].size / maxSize, structSize, (offset + (j * maxSize)), structName);
-
 				glEnableVertexArrayAttrib(vao, locInfo[i].loc + j);
-				//glVertexAttribPointer(locInfo[i].loc + j, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, sizeof(Store), (void*)(offset + (j * maxSize)));
 				glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, offset + (j * maxSize));
 				glVertexArrayAttribBinding(vao, locInfo[i].loc + j, bindIndex());
 				setVertexDivisors(locInfo[i].loc, j, divisors);
 			}
 		}
 		else {
-			bindDebugMessage(locInfo[i].loc, locInfo[i].name, locInfo[i].size / sizeof(float), structSize, offset, structName);
 			glEnableVertexArrayAttrib(vao, locInfo[i].loc);
-			//glVertexAttribPointer(locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(Store), (void*)offset);
 			glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, offset);
 			glVertexArrayAttribBinding(vao, locInfo[i].loc, bindIndex());
 			setVertexDivisors(locInfo[i].loc, 0, divisors);
@@ -127,17 +119,12 @@ void VertexArray<Store>::setUpAttributes(LocationVector locInfo, LocationVector 
 }
 
 template <class Store>
-void VertexArray<Store>::bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName) {
-	debug("Vertex attribute pointer set with:\n\tlocation: " + std::to_string(location) + "\n\tsize: " + std::to_string(size) + "\n\tstride: " + std::to_string(stride) + "\n\toffset: " + std::to_string(offset) + "\n\tstruct: " + structName + "\n", "glVertexAttribPointer");
-}
-
-template <class Store>
 void VertexArray<Store>::setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs) {
 	for (size_t i = 0; i < locDivs.size(); i++) {
 		if (locDivs[i].loc == location) {
 			glVertexArrayBindingDivisor(vao, bindIndex(), 1);
 			//glVertexAttribDivisor(location + subLoc, 1);
-			debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
+			//debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
 		}
 	}
 }

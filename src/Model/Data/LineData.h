@@ -11,9 +11,7 @@
 #include "Model/ElementBuffer.h"
 #include "Model/Storage/VertexHash.h"
 
-#include "Debug/DebugLogger.h"
-
-class LineData : public DebugLogger<LineData> {
+class LineData {
 public:
 	struct PointHash : VertexHash<Point> {
 		size_t hash_combine(size_t lhs, size_t rhs) const {
@@ -42,6 +40,8 @@ public:
 
 	glm::vec4 getColor() const;
 	void setColor(glm::vec4 color);
+
+	glm::vec4 getBoundingSphere() { return glm::vec4(); }
 
 	std::vector<Point> points;
 	Indices indices;

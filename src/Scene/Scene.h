@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "Debug/Debug.h"
+
 template<template<class> class Container, class... Stores>
 class Scene {
 public:
@@ -16,7 +18,10 @@ public:
 
 	using ObjectContainerTuple = std::tuple<ObjectContainer<Stores>...>;
 
-	Scene() {}
+	Scene() : OR(this, DY::V(&objectContainers), DY::N("objectContainers")) { 
+		OB.add(OR); 
+		LOG::CTOR::debug(this, DY::std_format("Scene created of type {}", DY::types_to_string<decltype(*this)>()));
+	}
 
 	template<class StoreType>
 	typename Container<StoreType>::iterator begin() {
@@ -87,4 +92,10 @@ public:
 protected:
 	//std::tupleContainer::iterator 
 	ObjectContainerTuple objectContainers;
+
+public:
+	DY::ObjectRegister<Scene, decltype(objectContainers)> OR;
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 };

@@ -11,11 +11,11 @@
 #include "GLSLCPPBinder.h"
 #include "Renderer/Shader.h"
 
-#include "Debug/DebugLogger.h"
+#include "Debug/Debug.h"
 
-class Texture : public DebugLogger<Texture> {
+class Texture {
 public:
-	Texture() = default;
+	Texture();
 	Texture(bool mipmapEnabled);
 	Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
 
@@ -32,6 +32,26 @@ public:
 protected:
 	void createTexture(GLenum type);
 	void cleanup() const;
-
+    
 	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents);
+
+public:
+    inline static auto CR = DY::ClassRegister<
+        &setMinifyingFilter,
+        &setMagnifyingFilter,
+        &setAnisotropicFilter,
+        &createTexture,
+        &cleanup>();
+    inline static auto CB = DY::ClassBinder<decltype(CR)>();
+
+    DY::ObjectRegister<Texture,
+        decltype(textureID),
+        decltype(width),
+        decltype(height),
+        decltype(nrComponents),
+        decltype(mipmapEnabled),
+        decltype(uniformTextureTypes)> OR;
+    inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+    
+    using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };

@@ -34,6 +34,9 @@
     <Filter Include="Source Files\Debug">
       <UniqueIdentifier>{1F5D6260-0B41-23B6-74A1-1D0960A40D38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{AD533870-19B5-157E-A222-5C300E834C3D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{E9BB0A61-D59F-CBB6-3E00-C6092A03B638}</UniqueIdentifier>
     </Filter>
@@ -93,9 +96,6 @@
     <ClInclude Include="src\API\CameraController.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="src\Events\Event.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
     <ClInclude Include="src\API\Layer.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
@@ -111,11 +111,17 @@
     <ClInclude Include="src\Data Structures\PolyTree.h">
       <Filter>Source Files\Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\DebugAliases.h">
+    <ClInclude Include="src\Debug\Debug.h">
       <Filter>Source Files\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\DebugLogger.h">
-      <Filter>Source Files\Debug</Filter>
+    <ClInclude Include="src\DebugLayer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\Event.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\EventTypes.h">
+      <Filter>Source Files\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Buffer.h">
       <Filter>Source Files\Model</Filter>
@@ -140,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="src\Model\ModelResourceLocator.h">
       <Filter>Source Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
+      <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\ResourceLoader.h">
       <Filter>Source Files\Model\Resources</Filter>
@@ -340,8 +349,8 @@
     <ClCompile Include="src\Data Structures\PolyTree.cpp">
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
-    <ClCompile Include="src\Debug\DebugLogger.cpp">
-      <Filter>Source Files\Debug</Filter>
+    <ClCompile Include="src\DebugLayer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Data\LineData.cpp">
       <Filter>Source Files\Model\Data</Filter>
@@ -357,6 +366,9 @@
     </ClCompile>
     <ClCompile Include="src\Model\Mesh.cpp">
       <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp">
+      <Filter>Source Files\Model\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp">
       <Filter>Source Files\Model\Resources</Filter>
@@ -676,4 +688,3 @@
       <Filter>Resource Files\vase</Filter>
     </Image>
   </ItemGroup>
-</Project>

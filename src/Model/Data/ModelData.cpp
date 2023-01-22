@@ -20,7 +20,7 @@ ModelData::ModelData(ModelData&& other) noexcept :
 	textureID(-1),
 	meshes(std::move(other.meshes)),
 	unitByTexturePath(std::move(other.unitByTexturePath)) {
-	std::cout << "Model moved: " << modelPath << std::endl;
+	//std::cout << "Model moved: " << modelPath << std::endl;
 };
 
 

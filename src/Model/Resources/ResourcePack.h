@@ -7,7 +7,7 @@
 #include "Model/Resources/ResourceLoader.h"
 #include "Model/Textures/PackedTexture2DArray.h"
 
-class ResourcePack : DebugLogger<ResourcePack> {
+class ResourcePack {
 public:
 	ResourcePack() {
 		std::cout << "Resource pack created." << std::endl;

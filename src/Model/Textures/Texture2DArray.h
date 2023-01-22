@@ -104,6 +104,6 @@ protected:
 
 template <class ...Args>
 	requires (std::conjunction_v<std::is_same<glm::vec4, Args>...>)
-Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, glm::vec4 first, Args ...args) : width(width), height(height) {
+Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, glm::vec4 first, Args ...args) : Texture(width, height) {
 	createGeneratedTexture({first, args...});
 };

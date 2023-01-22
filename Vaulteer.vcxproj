@@ -62,7 +62,7 @@
       <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/MP32 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -70,7 +70,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\DebugYourself\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -85,7 +84,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <AdditionalOptions>/MP32 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -94,24 +93,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\DebugYourself\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\DebugLayer.h" />
-    <ClInclude Include="src\Events\EventTypes.h" />
-    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\API\Application.h" />
     <ClInclude Include="src\API\Camera.h" />
     <ClInclude Include="src\API\CameraController.h" />
-    <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\API\Layer.h" />
     <ClInclude Include="src\API\LayerStack.h" />
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
-    <ClInclude Include="src\Debug\DebugAliases.h" />
-    <ClInclude Include="src\Debug\DebugLogger.h" />
+    <ClInclude Include="src\Debug\Debug.h" />
+    <ClInclude Include="src\DebugLayer.h" />
+    <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\Model\Buffer.h" />
     <ClInclude Include="src\Model\Data\LineData.h" />
     <ClInclude Include="src\Model\Data\ModelData.h" />
@@ -120,6 +116,7 @@
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
+    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceManager.h" />
     <ClInclude Include="src\Model\Resources\ResourcePack.h" />
@@ -182,20 +179,19 @@
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\DebugLayer.cpp" />
-    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\Camera.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
     <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
-    <ClCompile Include="src\Debug\DebugLogger.cpp" />
+    <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Model\Data\LineData.cpp" />
     <ClCompile Include="src\Model\Data\ModelData.cpp" />
     <ClCompile Include="src\Model\ElementBuffer.cpp" />
     <ClCompile Include="src\Model\Material.cpp" />
     <ClCompile Include="src\Model\Mesh.cpp" />
+    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />

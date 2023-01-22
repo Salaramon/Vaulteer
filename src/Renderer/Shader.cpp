@@ -3,6 +3,7 @@
 
 void Shader::use() {
 	glUseProgram(shaderProgramID);
+	LOG::CLAS::debug<&Shader::use>(this, &shaderProgramID, std::format("Shader program with id {} is currently active", shaderProgramID));
 }
 
 size_t Shader::getShaderID() {
@@ -10,10 +11,12 @@ size_t Shader::getShaderID() {
 }
 
 void Shader::loadShader(std::string path, GLenum type) {
+	LOG::CLAS::debug<&Shader::loadShader>(this, std::format("Loading shader \"{}, of type {}", path, type));
 	std::string shaderCode = file_to_string(path);
 	const char* rawCode = shaderCode.c_str();
 
 	shaderIDs.push_back(glCreateShader(type));
+	LOG::CLAS::debug<&Shader::loadShader>(this, std::format("Shader created with id: {}", shaderIDs.back()));
 
 	shader_compile(shaderIDs.back(), &rawCode);
 	shaderProgram_addShader(shaderIDs.back());
@@ -41,17 +44,20 @@ void Shader::populateUniformCache() {
 			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderLocation>(uniformLocation));
 		}
 	}
+
+	LOG::CLAS::debug<&Shader::populateUniformCache>(this, &uniformLocationCache, std::format("unifrom cache populated with {} uniforms", uniformLocationCache.size()));
 }
 
 
 void Shader::shaderProgram_addShader(GLuint id) {
 	glAttachShader(shaderProgramID, id);
+	LOG::CLAS::debug<&Shader::shaderProgram_addShader>(this, &shaderProgramID, std::format("shader with id {} is attached to program with id {}", id, shaderProgramID));
 }
 
 
 bool Shader::shaderProgram_link() {
 	glLinkProgram(shaderProgramID);
-
+	LOG::CLAS::debug<&Shader::shaderProgram_link>(this, &shaderProgramID, std::format("shader program with id {} is linked", shaderProgramID));
 	return shaderProgram_catchError();
 }
 
@@ -59,6 +65,8 @@ bool Shader::shaderProgram_link() {
 bool Shader::shader_compile(GLuint id, const char** code) {
 	glShaderSource(id, 1, code, NULL);
 	glCompileShader(id);
+
+	LOG::CLAS::debug<&Shader::shader_compile>(this, std::format("shader with id {} is compiled", id));
 
 	return shader_catchError(id);
 }
@@ -107,7 +115,7 @@ std::string Shader::file_to_string(std::string path) {
 	}
 	catch (std::ifstream::failure& e) {
 		//Return empty string upon error.
-		debug("Error: Could not read file:\n\t" + path + "\n");
+		LOG::CLAS::debug<&Shader::file_to_string>(this, std::format("Could not read file:\n\t{}", path));
 		return "";
 	}
 
@@ -125,5 +133,5 @@ template<class T>
 void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
-	std::cout << (errorMessageAppend + "\n\t" + log.data() + "\n") << std::endl;
+	LOG::CLAS::debug<&Shader::getErrorMessage<T>>(this, std::format("{}\n\t{}\n", errorMessageAppend, log.data()));
 }

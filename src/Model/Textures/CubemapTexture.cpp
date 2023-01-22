@@ -3,7 +3,7 @@
 
 CubemapTexture::CubemapTexture(std::array<std::string, 6> const& paths, bool mipmapEnabled,
                                GLenum repeatX, GLenum repeatY, GLenum repeatZ) {
-    debug("Loading cubemap: " + paths[0] + "\n");
+    //debug("Loading cubemap: " + paths[0] + "\n");
 
     createTexture(GL_TEXTURE_CUBE_MAP);
     createTextureFromFiles(paths);
@@ -34,7 +34,7 @@ void CubemapTexture::createTextureFromFiles(std::array<std::string, 6> const& pa
             loaded[i] = true;
             loadCount++;
         }
-        else debug("Failed to load texture: \n\t" + *paths.data() + "\n");
+        //else debug("Failed to load texture: \n\t" + *paths.data() + "\n");
     }
 
     if (loadCount == 6) {

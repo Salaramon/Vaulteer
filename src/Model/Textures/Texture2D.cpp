@@ -2,27 +2,36 @@
 #include "Texture2D.h"
 
 
-Texture2D::Texture2D(TextureResourceLocator locator, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
-	: Texture(mipmapEnabled), locator(locator) {
-	createTexture(GL_TEXTURE_2D);
-	setWrap(repeatX, repeatY);
+Texture2D::Texture2D(TextureResourceLocator locator, bool mipmapEnabled, GLenum repeatX, GLenum repeatY) :
+	Texture(mipmapEnabled),
+    locator(locator),
+	OR(this, DY::V(&this->locator), DY::N("locator")) {
+    OB.add(OR);
+
+    createTexture(GL_TEXTURE_2D);
+    setWrap(repeatX, repeatY);
 
 	createSingleImageTexture();
 
-	debug("Allocated texture from file \"" + locator.path + "\": ID " + std::to_string(textureID) + "\n");
+    LOG::CTOR::debug(this, DY::std_format("Allocated texture from file {}: ID {}", locator.path, textureID));
 }
 
-Texture2D::Texture2D(int width, int height, bool mipmapEnabled, GLenum repeatX, GLenum repeatY)
-	: Texture(width, height) {
-	createTexture(GL_TEXTURE_2D);
-	setWrap(repeatX, repeatY);
+Texture2D::Texture2D(int width, int height, bool mipmapEnabled, GLenum repeatX, GLenum repeatY) :
+    Texture(width, height, mipmapEnabled),
+    OR(this, DY::V(&this->locator), DY::N("locator")) {
+    OB.add(OR);
 
-	debug("Allocated texture: ID " + std::to_string(textureID) + "\n");
+    createTexture(GL_TEXTURE_2D);
+    setWrap(repeatX, repeatY);
+
+    LOG::CTOR::debug(this, DY::std_format("Allocated texture: ID {}", textureID));
 }
 
-Texture2D::Texture2D(int width, int height, std::vector<glm::vec4> colors)
-	: Texture(width, height) {
-	debug("Loaded hardcoded " + std::to_string(colors.size()) + " colors texture: ID " + std::to_string(textureID) + "\n");
+Texture2D::Texture2D(int width, int height, std::vector<glm::vec4> colors) :
+    Texture(width, height),
+    OR(this, DY::V(&this->locator), DY::N("locator")) {
+
+    LOG::CTOR::debug(this, DY::std_format("Loaded hardcoded {} colors texture: ID {}", colors.size(), textureID));
 }
 
 Texture2D::Texture2D(Texture2D& other) noexcept
@@ -52,7 +61,9 @@ void Texture2D::createSingleImageTexture() {
 	GLsizei w, h, comp;
 	byte* data = stbi_load(locator.path.data(), &w, &h, &comp, 0);
 
-	auto [inFormat, exFormat] = getFormatsFromComponents(comp);
+    LOG::CLAS::debug<&Texture2D::createSingleImageTexture>(this, DY::std_format("Loaded file gave width: {}, height: {}, component: {}", w, h, comp));
+
+    auto [inFormat, exFormat] = getFormatsFromComponents(comp);
 	createTextureFromData(inFormat, exFormat, data);
 
 	if (data)
@@ -73,6 +84,7 @@ GLint Texture2D::getTextureID() const {
 }
 
 void Texture2D::setWrap(GLenum x, GLenum y) const {
-	glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, x);
-	glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, y);
+    LOG::CLAS::debug<&Texture2D::setWrap>(this, DY::std_format("Texture wrap set to x: {}, y: {}", x, y));
+    glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, x);
+    glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, y);
 }

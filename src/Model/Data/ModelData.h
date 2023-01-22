@@ -15,10 +15,8 @@
 #include "Model/Storage/VertexHash.h"
 #include "Model/Mesh.h"
 
-#include "Debug/DebugLogger.h"
 
-
-class ModelData : public DebugLogger<ModelData> {
+class ModelData {
 public:
 	struct ModelVertexHash : VertexHash<Vertex> {
 		size_t hash_combine(size_t lhs, size_t rhs) const {

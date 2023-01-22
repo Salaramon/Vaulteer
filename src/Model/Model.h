@@ -6,10 +6,9 @@
 #include "Renderer/Shader.h"
 #include "Scene/Object3D.h"
 
-#include "Debug/DebugLogger.h"
-
-template <class Data>
-class Model : public DebugLogger<Model<char>>, public Object3D {
+template<class Data>
+class Model : public Object3D
+{
 public:
 	struct Faces {
 		inline static constexpr GLenum Front = GL_FRONT;
@@ -41,7 +40,7 @@ public:
 	Data* getData();
 	Material* getMaterial();
 
-	//void render(const Shader& shader) override;
+	
 private:
 	Data* model = nullptr;
 	Material* materialOverride = nullptr;
@@ -49,6 +48,36 @@ private:
 	GLenum polygonFaces = Faces::Both;
 	GLenum polygonMode = Polygon::Fill;
 	GLfloat polygonLineWidth = 1;
+
+
+public:
+	inline static auto CR = DY::ClassRegister<
+		&setPolygonFaces,
+		&setPolygonMode,
+		&setPolygonLineWidth,
+		&getBoundingSphere,
+		&getPolygonFaces,
+		&getPolygonMode,
+		&getPolygonLineWidth,
+		&getData>(
+			"setPolygonFaces",
+			"setPolygonMode",
+			"setPolygonLineWidth",
+			"getBoundingSphere",
+			"getPolygonFaces",
+			"getPolygonMode",
+			"getPolygonLineWidth",
+			"getData");
+
+	DY::ObjectRegister<Model<Data>,
+		decltype(model),
+		decltype(polygonFaces),
+		decltype(polygonMode)> OR;
+
+	inline static auto CB = DY::ClassBinder(CR);
+	inline static auto OB = DY::ObjectBinder<decltype(OR), decltype(Shader::OB)>();
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
 template <class Data>
@@ -59,15 +88,45 @@ Model<Data>::Model(Model&& model) noexcept :
 	polygonMode(std::move(model.polygonMode)),
 	polygonLineWidth(std::move(model.polygonLineWidth)) {}
 
-template <class Data>
-Model<Data>::Model(Data& data) :
-	Object3D(),
-	model(&data) {}
+template<class Data>
+inline Model<Data>::Model(Data& data) :
+	OR(this,
+		DY::V(
+			&model,
+			&polygonFaces,
+			&polygonMode),
+		DY::N(
+			"model",
+			"polygonFaces",
+			"polygonMode")),
 
-template <class Data>
-Model<Data>::Model(Data* data) :
 	Object3D(),
-	model(data) {}
+	model(&data)
+{
+	OB.add(OR);
+
+	LOG::CTOR::debug(this, "Model data loaded into model from reference");
+}
+
+template<class Data>
+inline Model<Data>::Model(Data* data) : 
+	OR(this,
+		DY::V(
+			&model,
+			&polygonFaces,
+			&polygonMode),
+		DY::N(
+			"model",
+			"polygonFaces",
+			"polygonMode")),
+
+	Object3D(),
+	model(data)
+{
+	OB.add(OR);
+
+	LOG::CTOR::debug(this, "Model data loaded into model from pointer");
+}
 
 template <class Data>
 void Model<Data>::setPolygonFaces(GLenum faces) {
@@ -116,5 +175,6 @@ glm::vec4 Model<Data>::getBoundingSphere() {
 	sphere.x += pos.x;
 	sphere.y += pos.y;
 	sphere.z += pos.z;
+	LOG::CLAS::debug<&Model<Data>::getBoundingSphere>(this, std::format("Got bounding sphere with values: {}", glm::to_string(sphere)));
 	return sphere;
 }

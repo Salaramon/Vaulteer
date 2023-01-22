@@ -7,9 +7,9 @@
 #include <string>
 #include <array>
 
-#include "Debug/DebugLogger.h"
+#include "Debug/Debug.h"
 
-class Camera : public DebugLogger<Camera>
+class Camera
 {
 public:
 
@@ -81,4 +81,56 @@ private:
 	glm::vec3 position = { 0,0,0 };
 
 	bool rotationDirty = false;
+
+public:
+
+	inline static auto CR = DY::ClassRegister<
+		&move,
+		&rotate,
+		DY::OverloadSelector<Camera, void(float, float, float)>::Get<&Camera::setRotation>,
+		DY::OverloadSelector<Camera, void(glm::vec3, float)>::Get<&Camera::setRotation>,
+		&lockUp,
+		&setPosition,
+		&applyRotation,
+		&getViewMatrix,
+		&getProjectionMatrix,
+		&getFrustum,
+		&getPosition,
+		&getFront,
+		&getRight,
+		&getUp,
+		&getFov,
+		&getAspectRatio,
+		&setAspectRatio
+
+	>(	"lockUp",
+		"setPosition",
+		"applyRotation",
+		"getViewMatrix",
+		"getProjectionMatrix",
+		"getFrustum",
+		"getPosition",
+		"getFront",
+		"getRight",
+		"getUp",
+		"getFov",
+		"getAspectRatio",
+		"setAspectRatio");
+
+	DY::ObjectRegister<Camera,
+		decltype(lockedUp),
+		decltype(yaw),
+		decltype(pitch),
+		decltype(roll),
+		decltype(fov),
+		decltype(renderDistance),
+		decltype(aspectRatio),
+		decltype(orientation),
+		decltype(position)> OR;
+
+	inline static auto CB = DY::ClassBinder<decltype(CR)>();
+	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+
+	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };

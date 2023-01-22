@@ -7,7 +7,6 @@
 Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 	initOpenGL();
 	initShaders();
-
 	loadResources();
 }
 

@@ -27,5 +27,20 @@ protected:
 
     void createSingleImageTexture();
     void createTextureFromData(GLenum internalFormat, GLenum format, byte* data);
+
+public:
+    inline static auto CR = DY::ClassRegister<
+        &setupBlankTexture,
+        &getTextureID,
+        &setWrap,
+        &createSingleImageTexture,
+        &createTextureFromData>();
+    inline static auto CB = DY::ClassBinder<decltype(CR)>();
+
+    DY::ObjectRegister<Texture2D,
+        decltype(locator)> OR;
+    inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+
+    using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
