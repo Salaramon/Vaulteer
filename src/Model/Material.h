@@ -23,8 +23,18 @@ public:
 	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
 	// flags
-	// bool twoSided;
-	// bool doDepthTest;
+	bool twoSided;
+	bool doDepthTest;
+
+	bool hasNormalMap;
+	bool hasSpecularMap;
+
+	//bool emissiveLight; ?
+	//bool reflectiveLight; ?
+
+	bool transparent;
+	bool shadow;
+	bool blur;
 
 
 	Material();

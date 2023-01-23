@@ -82,11 +82,12 @@ public:
 		const auto modelDataIteratorPair = staticScene.get<TransparentModel>(staticSceneRestriction);
 
 		BlendingTechnique::setInverseViewMatrix(camera->getViewMatrix());
+		BlendingTechnique::setView(camera->getViewMatrix());
 
 		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
 			auto& model = (*it).get()->model;
 			ModelData* modelData = model.getData();
-			BlendingTechnique::setModelView(model.getModelMatrix(), camera->getViewMatrix());
+			BlendingTechnique::setModel(model.getModelMatrix());
 
 			std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
 

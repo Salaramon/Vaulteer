@@ -91,7 +91,7 @@ private:
 	// populated after texture packing (updateWithTextureUnits)
 	std::unordered_map<std::string, Texture2DArray::TextureUnit> unitByTexturePath;
 	ModelUnitTable modelUnitTable;
-	unsigned int materialIndex;
+	unsigned int materialIndex = 0;
 
 	std::unordered_set<std::string> textureFiles;
 

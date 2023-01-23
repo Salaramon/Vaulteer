@@ -1,5 +1,7 @@
 #pragma once
 
+//#define DEBUG_ENABLED 1
+
 #include <format>
 #include <functional>
 #include <glm/gtx/string_cast.hpp>
@@ -52,9 +54,13 @@ public:
 	static std::nullptr_t pack_to_string(Args...) { return nullptr; }
 };
 
+#ifdef DEBUG_ENABLED
+	#define DEBUG_STATE dy::CONFIGURATION_STATE
+#else
+	#define DEBUG_STATE false
+#endif
 
-
-using DY = dy::DebugYourself<dy::CONFIGURATION_STATE, Format<>>;
+using DY = dy::DebugYourself<false, Format<>>;
 
 template<class C, class O, class F, class V>
 using DY_LINK = DY::Dependencies<C, O, F, V, DY::AlwaysTrue, DY::DirectLogger<DY::AlwaysFalse>>;

@@ -6,7 +6,8 @@
 
 class BlendingTechnique : public ShaderProgram<BlendingShader> {
 public:
-	static void setModelView(const glm::dmat4& model, const glm::dmat4& view);
+	static void setModel(const glm::dmat4& model);
+	static void setView(const glm::dmat4& view);
 	static void setNormal(const glm::mat4& matrix);
 	static void setInverseViewMatrix(const glm::mat4& view);
 

@@ -28,6 +28,9 @@ private:
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
 
+	// for debugging while we're not fetching lights from scene
+	inline static bool buildLights = true;
+
 	inline static BatchManager batchManager;
 
 public:

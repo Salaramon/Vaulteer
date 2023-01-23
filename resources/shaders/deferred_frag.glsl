@@ -129,7 +129,7 @@ SpotLight lightFromUBSpotlight(UBSpotLight ubl) {
 // ------------- replace with spotlight macro end
 
 // ------------- replace with pointlight macro
-const int MAX_POINT_LIGHTS = 1;
+const int MAX_POINT_LIGHTS = 2;
 
 struct PointLight {
     BaseLight light;

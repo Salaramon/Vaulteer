@@ -1,22 +1,25 @@
 #include "vpch.h"
 #include "BlendingTechnique.h"
 
-void BlendingTechnique::setModelView(const glm::dmat4& model, const glm::dmat4& view) {
-	glm::fmat4 modelView = view * model;
-	shader->setUniform(Binder::forward_vertex::uniforms::modelView, 1, GL_FALSE, modelView);
+void BlendingTechnique::setModel(const glm::dmat4& model) {
+	shader->setUniform(Binder::blending_vertex::uniforms::model, 1, GL_FALSE, model);
 	setNormal(model);
 }
 
+void BlendingTechnique::setView(const glm::dmat4& view) {
+	shader->setUniform(Binder::blending_vertex::uniforms::view, 1, GL_FALSE, view);
+}
+
 void BlendingTechnique::setNormal(const glm::mat4& normal) {
-	shader->setUniform(Binder::forward_vertex::uniforms::normal, 1, GL_FALSE, glm::transpose(glm::inverse(normal)));
+	shader->setUniform(Binder::blending_vertex::uniforms::normal, 1, GL_FALSE, glm::inverse(normal));
 }
 
 void BlendingTechnique::setInverseViewMatrix(const glm::mat4& view) {
-	shader->setUniform(Binder::forward_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(view));
+	shader->setUniform(Binder::blending_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(view));
 }
 
 void BlendingTechnique::setTextureUnit(const GLint& texture) {
-	shader->setUniform(Binder::forward_frag::uniforms::textureLib, texture);
+	shader->setUniform(Binder::blending_frag::uniforms::textureLib, texture);
 }
 
 

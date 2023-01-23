@@ -52,15 +52,19 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 
 	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());
 	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
-
-	BaseLight whiteLight = {glm::vec3(1.0f), 0.13f, 0.5f};
-	Attenuation att = { 1.0f, 0.18f, 0.032f };
-	PointLight l = {att, whiteLight,  camera->getPosition()};
 	
-	std::vector<PointLight> pointLights;
-	pointLights.push_back(l);
+	if (buildLights) {
+		std::vector<PointLight> pointLights;
+		BaseLight whiteLight = {glm::vec3(1.0f), 0.13f, 0.5f};
+		Attenuation att = { 0.5f, 0.09f, 0.016f };
 
-	DeferredLightingTechnique::uploadPointLightData(pointLights);
+		pointLights.push_back({att, whiteLight,  glm::vec3(20, 2, 0)});
+		pointLights.push_back({att, whiteLight,  glm::vec3(0, 2, 20)});
+
+		DeferredLightingTechnique::uploadPointLightData(pointLights);
+
+		buildLights = false;
+	}
 
 
 	//DeferredLightingTechnique::setDirectionalLight(dirLight);
