@@ -93,9 +93,9 @@ public:
 	static void poll() {
 		glfwPollEvents();
 
-		if (queuedResizeEvent.width != -1) {
-			eventCallbackFn(queuedResizeEvent);
-			queuedResizeEvent = WindowResizeEvent(-1, -1);
+		if (queuedResizeEvent != nullptr) {
+			eventCallbackFn(*queuedResizeEvent);
+			queuedResizeEvent.reset();
 		}
 	}
 
@@ -167,12 +167,15 @@ public:
 		eventCallbackFn(e);
 	}
 
-	inline static WindowResizeEvent queuedResizeEvent = WindowResizeEvent(-1, -1);
+	inline static std::unique_ptr<WindowResizeEvent> queuedResizeEvent;
 
 	static void window_resize_callback(GLFWwindow* window, int width, int height) {
 		//WindowResizeEvent e(width, height);
 		//eventCallbackFn(e);
-		queuedResizeEvent = WindowResizeEvent(width, height);
+		if (width == 0 || height == 0)
+			window_iconify_callback(window, true);
+		else 
+			queuedResizeEvent = std::make_unique<WindowResizeEvent>(width, height);
 	}
 
 	static void window_iconify_callback(GLFWwindow* window, int iconified) {

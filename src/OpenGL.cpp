@@ -6,6 +6,12 @@
 void OpenGL::initialize() {
 	glDebugMessageCallback(debugCallback, nullptr);
 	//log.debug("OpenGL debug callback set.\n", "glDebugMessageCallback");
+	
+	enableDepthTest();
+	enableStencilTest();
+	//enableSRGB();
+	enableDebugOutput(SYNC);
+	enableDirectDebugMessageing();
 }
 
 void OpenGL::initializeSTBI() {

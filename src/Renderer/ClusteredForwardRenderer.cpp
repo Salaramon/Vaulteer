@@ -10,14 +10,14 @@ ClusteredForwardRenderer::ClusteredForwardRenderer() : computedTilingTex(1280, 7
 }
 
 /*void ClusteredForwardRenderer::render(Scene& scene) {
-	ClusterTileTechnique::shader->use();
+	ClusterTileTechnique::use();
 	glBindTextureUnit(0, computedTilingTex.textureID);
 
 	float values[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, work_size.x, work_size.y, 0, GL_RED, GL_FLOAT, values);
 
-	ClusterTileTechnique::shader->use();
+	ClusterTileTechnique::use();
 	glBindTextureUnit(0, computedTilingTex.textureID);
 
 	glDispatchCompute(work_size.x, work_size.y, 1);

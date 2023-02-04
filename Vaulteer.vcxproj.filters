@@ -258,7 +258,7 @@
     <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredLightingTechnique.h">
+    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h">
@@ -329,6 +329,7 @@
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -451,7 +452,7 @@
     <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredLightingTechnique.cpp">
+    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp">
@@ -502,6 +503,7 @@
     <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds">
@@ -570,10 +572,10 @@
     <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\deferred_frag.glsl">
+    <None Include="resources\shaders\deferred_point_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\deferred_vertex.glsl">
+    <None Include="resources\shaders\deferred_point_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\depth_map_frag.glsl">
@@ -652,6 +654,8 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\shaders\postprocessor\materialTable.glsl" />
+    <None Include="resources\shaders\deferred_directional_frag.glsl" />
+    <None Include="resources\shaders\deferred_directional_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

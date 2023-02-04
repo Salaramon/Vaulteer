@@ -15,38 +15,34 @@ using BlendingShader = const ShaderUniformPair<Binder::blending_vertex, Binder::
 using BlendingCompositeShader = const ShaderUniformPair<Binder::blending_composite_vertex, Binder::blending_composite_frag>;
 using ForwardShader = const ShaderUniformPair<Binder::forward_vertex, Binder::forward_frag>;
 using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_frag>;
-using DeferredShader = const ShaderUniformPair<Binder::deferred_vertex, Binder::deferred_frag>;
+using DeferredDirShader = const ShaderUniformPair<Binder::deferred_directional_vertex, Binder::deferred_directional_frag>;
+using DeferredPointShader = const ShaderUniformPair<Binder::deferred_point_vertex, Binder::deferred_point_frag>;
 using GeometryShader = const ShaderUniformPair<Binder::geometry_vertex, Binder::geometry_frag>;
 using VolumeShader = const ShaderUniformPair<Binder::volume_vertex, Binder::volume_geom, Binder::volume_frag>;
 
 using ClusterTileComputeShader = const ShaderUniformPair<Binder::cluster_tile_compute>;
 
+#define KYSE_CHECK_SHADER_FILE_NAME(shaderType) \
+	if constexpr (std::is_same_v<ShaderBinder, Binder::shaderType ## _vertex>) { return Binder::file_names::shaderType ## _vertex; } \
+	if constexpr (std::is_same_v<ShaderBinder, Binder::shaderType ## _frag>) { return Binder::file_names::shaderType ## _frag; }
 
 template <class ShaderBinder>
 constexpr const char* getShaderFile() {
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_vertex>) { return Binder::file_names::blending_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_frag>) { return Binder::file_names::blending_frag; }
+	KYSE_CHECK_SHADER_FILE_NAME(blending)
+	KYSE_CHECK_SHADER_FILE_NAME(blending_composite)
+	KYSE_CHECK_SHADER_FILE_NAME(forward)
+	KYSE_CHECK_SHADER_FILE_NAME(line)
+	KYSE_CHECK_SHADER_FILE_NAME(deferred_directional)
+	KYSE_CHECK_SHADER_FILE_NAME(deferred_point)
+	KYSE_CHECK_SHADER_FILE_NAME(geometry)
+	KYSE_CHECK_SHADER_FILE_NAME(volume)
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_vertex>) { return Binder::file_names::blending_composite_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::blending_composite_frag>) { return Binder::file_names::blending_composite_frag; }
-
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_vertex>) { return Binder::file_names::forward_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::forward_frag>) { return Binder::file_names::forward_frag; }
-
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) { return Binder::file_names::line_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) { return Binder::file_names::line_frag; }
-
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return Binder::file_names::deferred_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return Binder::file_names::deferred_frag; }
-
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return Binder::file_names::geometry_vertex; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return Binder::file_names::geometry_frag; }
-
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_vertex>) { return Binder::file_names::volume_vertex; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_geom>) { return Binder::file_names::volume_geom; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return Binder::file_names::volume_frag; }
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
+
+	assert(true, "No shader file found for input");
+	return "";
 }
 
 template <class ShaderBinder>
@@ -63,8 +59,11 @@ constexpr const GLenum getShaderType() {
 	if constexpr (std::is_same_v<ShaderBinder, Binder::line_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::line_frag>) { return GL_FRAGMENT_SHADER; }
 
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_vertex>) { return GL_VERTEX_SHADER; }
-	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_frag>) { return GL_FRAGMENT_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_point_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_point_frag>) { return GL_FRAGMENT_SHADER; }
+
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_directional_vertex>) { return GL_VERTEX_SHADER; }
+	if constexpr (std::is_same_v<ShaderBinder, Binder::deferred_directional_frag>) { return GL_FRAGMENT_SHADER; }
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_vertex>) { return GL_VERTEX_SHADER; }
 	if constexpr (std::is_same_v<ShaderBinder, Binder::geometry_frag>) { return GL_FRAGMENT_SHADER; }
@@ -74,6 +73,9 @@ constexpr const GLenum getShaderType() {
 	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return GL_FRAGMENT_SHADER; }
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
+	
+	assert(true, "No shader type found for input");
+	return 0;
 }
 
 template <class ReturnType, class ShaderUniformType>
@@ -119,7 +121,12 @@ public:
 		LOG::SPGL::debug<&load, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Shader loaded!");
 	}
 
-	//protected:
+	static void use() {
+		assert(shader != nullptr);
+		use();
+	}
+
+public:
 	inline static std::unique_ptr<Shader> shader = nullptr;
 
 	template<size_t... n>
@@ -138,7 +145,6 @@ public:
 	static void reloadShader() {
 		LOG::SPGL::debug<&reloadShader, _ShaderProgram<0, Args...>>("Duplicate function, consider using load instead!");
 		shader = std::make_unique<Shader>(initializeShader());
-		//shader->populateUniformCache();
 	}
 
 	inline static auto FR = DY::FunctionRegister<
@@ -163,11 +169,16 @@ class ShaderProgram {
 template <class... Args>
 class ShaderProgram<const ShaderUniformPair<Args...>> : protected _ShaderProgram<sizeof...(Args), Args...> {
 protected:
+public:
 	using Program = const ShaderUniformPair<Args...>;
 public:
 	static void load() {
 		LOG::SPGL::debug<&load, ShaderProgram<const ShaderUniformPair<Args...>>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Loading shader...");
 		_ShaderProgram<sizeof...(Args), Args...>::load();
+	}
+
+	static void use() {
+		_ShaderProgram<sizeof...(Args), Args...>::use();
 	}
 
 	inline static auto FR = DY::FunctionRegister<&load>("load");

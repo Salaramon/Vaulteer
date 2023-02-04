@@ -34,7 +34,7 @@ public:
 	};
 
 	struct Shader_Info {
-		Shader_Info(std::string path, GLenum type) : path(path), type(type) {}
+		Shader_Info(std::string path, GLenum type) : path(std::move(path)), type(type) {}
 		std::string path;
 		GLenum type;
 	};
@@ -49,19 +49,19 @@ public:
 			//Loads vertex and fragment shaders on creation.
 	template<class ...Infos>
 	Shader(Infos ...infos) :
-		OR(this,
-			DY::V(
-			&shaderProgramID,
-			&shaderIDs,
-			&uniformLocationCache,
-			&setUniform),
-			DY::N(
-			"shaderProgramID",
-			"shaderIDs",
-			"uniformLocationCache",
-			"setUniform")),
+		setUniform(this),
 
-		setUniform(this) {
+		OR(this,
+		   DY::V(
+			   &shaderProgramID,
+			   &shaderIDs,
+			   &uniformLocationCache,
+			   &setUniform),
+		   DY::N(
+			   "shaderProgramID",
+			   "shaderIDs",
+			   "uniformLocationCache",
+			   "setUniform")) {
 		OB.add(OR);
 
 		shaderProgramID = glCreateProgram();
@@ -77,7 +77,8 @@ public:
 	Shader(const Shader& other) = delete;
 
 	Shader(Shader&& other) :
-		setUniform(this), uniformLocationCache(other.uniformLocationCache) {
+		uniformLocationCache(other.uniformLocationCache),
+		setUniform(this) {
 		OB.add(OR);
 
 		shaderProgramID = other.shaderProgramID;
@@ -194,10 +195,10 @@ public:
 	struct UniformFunctor {
 	public:
 		UniformFunctor(Shader* shader) :
+			shader(shader),
 			OR(this, 
-				DY::V(&shader),
-				DY::N("shader")),
-			shader(shader) {}
+			   DY::V(&shader),
+			   DY::N("shader")) {}
 
 		void operator()(Binder::UniformInfo uniform, GLfloat value1) const {
 			glUniform1f(shader->uniformLocationCache[uniform.name], value1);

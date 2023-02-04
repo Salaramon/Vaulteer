@@ -15,11 +15,6 @@ struct BaseLight {
     float diffuseIntensity;
 };
 
-struct DirectionalLight {
-    BaseLight light;
-    vec3 direction;
-};
-
 
 // constants
 const int NUM_CASCADES = 1;
@@ -108,7 +103,7 @@ struct UBSpotLight {
     mat4 lightSpaceMatrix;
 };
 
-layout(shared, binding = 3) uniform SpotLightData {
+layout(shared, binding = 5) uniform SpotLightData {
     uniform UBSpotLight spotLightTable[MAX_SPOT_LIGHTS];
 };
 
@@ -130,6 +125,8 @@ SpotLight lightFromUBSpotlight(UBSpotLight ubl) {
 
 // ------------- replace with pointlight macro
 const int MAX_POINT_LIGHTS = 2;
+
+uniform int pointLightIndex;
 
 struct PointLight {
     BaseLight light;
@@ -171,7 +168,6 @@ PointLight lightFromUBPointlight(UBPointLight ubl) {
 
 uniform vec3 worldCameraPos;
 uniform mat4 cameraViewMat;
-uniform mat4 inverseViewMat;
 
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
@@ -282,7 +278,6 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
     vec4 diffuseColor = vec4(0.0);
     vec4 specularColor = vec4(0.0);
 
-
     float diffuseFactor = dot(p.fragNormal, -lightDirection);
     if (diffuseFactor > 0.0) {
         diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
@@ -298,7 +293,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         /*vec3 reflectDir = reflect(lightDirection, fragNormal);
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
-        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess);
+        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
 
         float shadowFactor = 1.0 - shadow;
         specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
@@ -314,18 +309,22 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
 }
 
 vec4 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3 lightDirection, float radius, float lightDistance) {
-    const float pointLightAngleDropoff = 10.0; // determines light fade rate at edge
+    const float pointLightAngleDropoff = 0.01; // determines light fade rate at edge
 
     if (lightDistance > radius)
         return vec4(0.0);
+        //return vec4(1.0, vec3(0.0));
 
-    float radiusCutoffFactor = min(1.0, (radius - lightDistance) / (radius / pointLightAngleDropoff));
+    float radiusCutoffFactor = min(1.0, (radius - lightDistance) / (radius * pointLightAngleDropoff));
+
+    //return vec4(max(radius - lightDistance * 2.5, 0.0)) + vec4(0, 0.1, 0, 0);
+    //return vec4((radius - lightDistance) / (radius * pointLightAngleDropoff));
 
     lightDirection = normalize(lightDirection);
 
     float attenuation = 1 / (att.aConstant
         + att.aLinear * lightDistance
-        + att.aQuadratic * (lightDistance * lightDistance));
+        + 0.1 *att.aQuadratic * (lightDistance * lightDistance));
 
     return (calcLightInternal(p, light, lightDirection, 0.0) * attenuation) * radiusCutoffFactor;
 }
@@ -335,11 +334,6 @@ vec4 calcPointLight(FragParams p, PointLight pointLight) {
     float lightDistance = length(lightDirection);
 
     return calcPointLightInternal(p, pointLight.light, pointLight.att, lightDirection, pointLight.radius, lightDistance);
-}
-
-vec4 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow) {
-    vec3 lightDirection = normalize(dirLight.direction);
-    return calcLightInternal(p, dirLight.light, lightDirection, shadow);
 }
 
 vec4 calcSpotLight(FragParams p, SpotLight spotLight, int index) {
@@ -406,7 +400,7 @@ void main() {
     }
     if (gl_FragCoord.y < 64) return;*/
 
-    SpotLight l = lightFromUBSpotlight(spotLightTable[0]);
+    /*SpotLight l = lightFromUBSpotlight(spotLightTable[0]);
     switch (int(gl_FragCoord.y)) {
         case 4*0:  FragColor = vec4(l.light.color.r/ 64.0); break;
         case 4*1:  FragColor = vec4(l.light.color.g/ 128.0); break;
@@ -425,14 +419,15 @@ void main() {
         case 4*14: FragColor = vec4(l.direction.z); break;
         case 4*15: FragColor = vec4(l.angle / 2); break;
     }
-    if (gl_FragCoord.y < 64) return;
+    if (gl_FragCoord.y < 64) return;*/
     
     //mat4 lightSpaceMatrix;
 
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-    //FragColor = vec4(vec3(normalSample.w / 4.0), 1.0); // normal demo
-    //return;
+    diffuse = vec3(-normalSample.rgb); // normal demo
+    FragColor = vec4(diffuse, 1.0);
+    return;
 
     //float material = texture(gMaterial, TexCoords).x;
  
@@ -459,7 +454,7 @@ void main() {
     float dirLightShadowFactor = 1.0;
 
     // light calc
-    vec4 totalLight = calcDirectionalLight(params, directionalLight, dirLightShadow) * dirLightShadowFactor;
+    vec4 totalLight = vec4(0.0);
     
     for (int i = 0; i < MAX_SPOT_LIGHTS; i++) {
         totalLight += calcSpotLight(params, lightFromUBSpotlight(spotLightTable[i]), i);
@@ -468,10 +463,13 @@ void main() {
     //FragColor = spotLightSpaceMatrices[0] * vec4(fragPosition, 1.0) / spotLights[0].radius;
     //return;
 
-    for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
-        float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
-        totalLight += calcPointLight(params, lightFromUBPointlight(pointLightTable[i])) * (1.0 - pointLightShadow);
-    }
+    float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
+    totalLight = calcPointLight(params, lightFromUBPointlight(pointLightTable[pointLightIndex])) * (1.0 - pointLightShadow);
+
+    //if (diffuse.x + diffuse.y + diffuse.z > 0.0)
+    //    FragColor = vec4(totalLight.x, totalLight.y, totalLight.z, 1.0);
+    //return;
+
 
     //float fogFactor = min(fragDepth / 20.0, 1.0);
     //vec4 fog = vec4((vec3(1.0) - vec3(1.0-fogColor.r, 1.0-fogColor.g, 1.0-fogColor.b) * fogFactor), 1.0);

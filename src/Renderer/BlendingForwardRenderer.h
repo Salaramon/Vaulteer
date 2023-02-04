@@ -52,12 +52,12 @@ public:
 
 	template<class... Args2>
 	static void blendingPass(StaticScene<Args2...>& staticScene, Camera* camera) {
-		BlendingTechnique::shader->use();
+		BlendingTechnique::use();
 
 		glDepthMask(GL_FALSE);
 		OpenGL::enableDepthTest();
-		OpenGL::setBlendMode(AlphaTexType::Accumulated, OpenGL::BlendModes::One, OpenGL::BlendModes::One);
-		OpenGL::setBlendMode(AlphaTexType::Alpha, OpenGL::BlendModes::Zero, OpenGL::BlendModes::OneMinusSourceColor);
+		OpenGL::setBlendMode(AlphaTexType::Accumulated, GLBlendModes::One, GLBlendModes::One);
+		OpenGL::setBlendMode(AlphaTexType::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
 		glBlendEquation(GL_FUNC_ADD);
 
 		alphaBuffer->clear();
@@ -103,9 +103,9 @@ public:
 	}
 
 	static void compositePass(Camera* camera) {
-		BlendingCompositeTechnique::shader->use();
+		BlendingCompositeTechnique::use();
 
-		OpenGL::setBlendMode(OpenGL::BlendModes::SourceAlpha, OpenGL::BlendModes::OneMinusSourceAlpha);
+		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
 		//glDepthFunc(GL_LESS); // less is the default
 

@@ -2,6 +2,24 @@
 
 #include <glad/glad.h>
 
+
+struct GLBlendModes {
+	inline static constexpr GLenum Zero = GL_ZERO;
+	inline static constexpr GLenum One = GL_ONE;
+	inline static constexpr GLenum SourceColor = GL_SRC_COLOR;
+	inline static constexpr GLenum OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR;
+	inline static constexpr GLenum DestColor = GL_DST_COLOR;
+	inline static constexpr GLenum OneMinusDestColor = GL_ONE_MINUS_DST_COLOR;
+	inline static constexpr GLenum SourceAlpha = GL_SRC_ALPHA;
+	inline static constexpr GLenum OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA;
+	inline static constexpr GLenum DestAlpha = GL_DST_ALPHA;
+	inline static constexpr GLenum OneMinusDestAlpha = GL_ONE_MINUS_DST_ALPHA;
+	inline static constexpr GLenum ConstantColor = GL_CONSTANT_COLOR;
+	inline static constexpr GLenum OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR;
+	inline static constexpr GLenum ConstantAlpha = GL_CONSTANT_ALPHA;
+	inline static constexpr GLenum OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA;
+};
+
 class OpenGL {
 public:
 	inline static void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
@@ -42,21 +60,4 @@ public:
 	inline static bool directMessaging = false;
 
 	inline static GLenum debugModes = 0;
-
-	struct BlendModes {
-		inline static constexpr GLenum Zero = GL_ZERO;
-		inline static constexpr GLenum One = GL_ONE;
-		inline static constexpr GLenum SourceColor = GL_SRC_COLOR;
-		inline static constexpr GLenum OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR;
-		inline static constexpr GLenum DestColor = GL_DST_COLOR;
-		inline static constexpr GLenum OneMinusDestColor = GL_ONE_MINUS_DST_COLOR;
-		inline static constexpr GLenum SourceAlpha = GL_SRC_ALPHA;
-		inline static constexpr GLenum OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA;
-		inline static constexpr GLenum DestAlpha = GL_DST_ALPHA;
-		inline static constexpr GLenum OneMinusDestAlpha = GL_ONE_MINUS_DST_ALPHA;
-		inline static constexpr GLenum ConstantColor = GL_CONSTANT_COLOR;
-		inline static constexpr GLenum OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR;
-		inline static constexpr GLenum ConstantAlpha = GL_CONSTANT_ALPHA;
-		inline static constexpr GLenum OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA;
-	};
 };

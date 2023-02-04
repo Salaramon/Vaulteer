@@ -7,24 +7,22 @@
 
 
 void WorldLayer::onAttach() {
-	Window& window = Application::getWindow();
-
-	DeferredRenderer::initialize(window.getWidth(), window.getHeight());
-	BlendingForwardRenderer::initialize(window.getWidth(), window.getHeight());
+	DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
+	BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 	
 	//Setting up cameras in the scene.
-	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)window.getWidth() / (float)window.getHeight()));
+	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)Window::getWidth() / (float)Window::getHeight()));
 	cameraController.setCamera(camera);
 
 	auto setAspectRatio = [camera](int w, int h) {
 		camera->setAspectRatio(w, h);
 	};
-	window.addResizeCallback(setAspectRatio);
+	Window::addResizeCallback(setAspectRatio);
 
 
 	ResourcePack& pack = ResourceManager::getPack(0);
-	Model<ModelData> model1 = Model<ModelData>(pack.getModelByName("palm"));
-	Model<ModelData> model2 = Model<ModelData>(pack.getModelByName("crate"));
+	auto model1 = Model(pack.getModelByName("palm"));
+	auto model2 = Model(pack.getModelByName("crate"));
 
 	DeferredRenderer::preload(pack);
 

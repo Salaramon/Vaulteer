@@ -1,12 +1,12 @@
 #include "vpch.h"
-#include "Renderer/Techniques/DeferredLightingTechnique.h"
+#include "Renderer/Techniques/DeferredPointLightTechnique.h"
 
 #include "Model/Resources/MaterialLibrary.h"
 
 /*
     TODO: replace this with some kind of texture handling technique
 */
-void DeferredLightingTechnique::init() {
+void DeferredPointLightTechnique::init() {
     int texId = 0;
 
     shader->setUniform(fragUnis::gPosition, texId++);
@@ -23,45 +23,32 @@ void DeferredLightingTechnique::init() {
     shader->setUniform(fragUnis::shadowSpotMap_1, texId++);
     shader->setUniform(fragUnis::shadowSpotMap_2, texId++);
     shader->setUniform(fragUnis::shadowSpotMap_3, texId++);
+} 
+
+
+void DeferredPointLightTechnique::setPointLightIndex(const int index) {
+    shader->setUniform(fragUnis::pointLightIndex, index);
 }
 
-void DeferredLightingTechnique::setDirectionalLight(const DirectionalLight& dirLight) {
-    shader->setUniform(fragUnis::directionalLight.light.color, 1,dirLight.light.color);
-    shader->setUniform(fragUnis::directionalLight.light.ambientIntensity, dirLight.light.ambientIntensity);
-    shader->setUniform(fragUnis::directionalLight.light.diffuseIntensity, dirLight.light.diffuseIntensity);
-
-    shader->setUniform(fragUnis::directionalLight.direction, 1, glm::normalize(dirLight.direction));
+void DeferredPointLightTechnique::setModel(const glm::dmat4& model) {
+	shader->setUniform(vertUnis::model, 1, GL_FALSE, model);
 }
 
-void DeferredLightingTechnique::setPointLight(const PointLight& pointLight, const int index) {
-    shader->setUniform(fragUnis::pointLights[index].light.color, 1, pointLight.light.color);
-    shader->setUniform(fragUnis::pointLights[index].light.ambientIntensity, pointLight.light.ambientIntensity);
-    shader->setUniform(fragUnis::pointLights[index].light.diffuseIntensity, pointLight.light.diffuseIntensity);
-
-    shader->setUniform(fragUnis::pointLights[index].att.aConstant, pointLight.attenuation.constant);
-    shader->setUniform(fragUnis::pointLights[index].att.aLinear, pointLight.attenuation.linear);
-    shader->setUniform(fragUnis::pointLights[index].att.aQuadratic, pointLight.attenuation.quadratic);
-
-    shader->setUniform(fragUnis::pointLights[index].radius, pointLight.calculatePointRadius());
-
-    shader->setUniform(fragUnis::pointLights[index].position, 1, pointLight.position);
+void DeferredPointLightTechnique::setView(const glm::dmat4& view) {
+	shader->setUniform(vertUnis::view, 1, GL_FALSE, view);
 }
 
-void DeferredLightingTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
+void DeferredPointLightTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
     shader->setUniform(fragUnis::worldCameraPos, 1, cameraPos);
 }
 
-void DeferredLightingTechnique::setCameraViewMat(const glm::mat4& view) {
+void DeferredPointLightTechnique::setCameraViewMat(const glm::mat4& view) {
     shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, view);
 
-    setInverseViewMat(glm::inverse(view));
+    //setInverseViewMat(glm::inverse(view));
 }
 
-void DeferredLightingTechnique::setInverseViewMat(const glm::mat4& inverseViewMat) {
-    shader->setUniform(fragUnis::inverseViewMat, 1, GL_FALSE, inverseViewMat);
-}
-
-void DeferredLightingTechnique::uploadMaterialData() {
+void DeferredPointLightTechnique::uploadMaterialData() {
 	std::vector<Material::MaterialData> materials;
 	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
 		materials.push_back(pair.second->data);
@@ -70,12 +57,12 @@ void DeferredLightingTechnique::uploadMaterialData() {
 	UniformBuffer::insert(materialData, materials);
 }
 
-void DeferredLightingTechnique::uploadSpotLightData(const std::vector<SpotLight>& lightVector) {
+void DeferredPointLightTechnique::uploadSpotLightData(const std::vector<SpotLight>& lightVector) {
 	auto& spotLightBuffer = getUBSpotLightData();
 	UniformBuffer::insert(spotLightBuffer, lightVector);
 }
 
-void DeferredLightingTechnique::uploadPointLightData(const std::vector<PointLight>& lightVector) {
+void DeferredPointLightTechnique::uploadPointLightData(const std::vector<PointLight>& lightVector) {
 	auto& pointLightBuffer = getUBPointLightData();
 	UniformBuffer::insert(pointLightBuffer, lightVector);
 }
@@ -91,6 +78,6 @@ void DeferredLightingTechnique::uploadPointLightData(const std::vector<PointLigh
     }
 }*/
 
-void DeferredLightingTechnique::setFogColor(const glm::vec3& color) {
+void DeferredPointLightTechnique::setFogColor(const glm::vec3& color) {
     shader->setUniform(fragUnis::fogColor, 1, color);
 }

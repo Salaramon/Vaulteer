@@ -5,19 +5,20 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
 	quad = ResourceLoader::importModel("resources/quad.obj");
+	sphereData = ResourceLoader::importModel("resources/sphere-hd.obj");
+	sphere = std::make_unique<Model<ModelData>>(*sphereData);
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {
 	auto& modelVector = pack.getAllResources();
 
 	DeferredGeometryTechnique::uploadModelUnitTables(modelVector);
-	DeferredLightingTechnique::uploadMaterialData();
+	DeferredPointLightTechnique::uploadMaterialData();
 }
 
 
 void DeferredRenderer::geometryPass(const Camera* camera) {
-	OpenGL::enableDepthTest();
-	DeferredGeometryTechnique::shader->use();
+	DeferredGeometryTechnique::use();
 	DeferredGeometryTechnique::uploadProjection(camera->getProjectionMatrix());
 	glm::mat4 viewMatrix = camera->getViewMatrix();
 
@@ -43,44 +44,30 @@ void DeferredRenderer::geometryPass(const Camera* camera) {
 	gbuffer->unbind();
 }
 
-void DeferredRenderer::lightingPass(const Camera* camera) {
-	OpenGL::disableDepthTest();
-	DeferredLightingTechnique::shader->use();
+void DeferredRenderer::directionalLightPass(const Camera* camera) {
+	DeferredDirLightTechnique::use();
 	glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
-
-	DirectionalLight dirLight = {{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}; // TODO get from scene :3
-
-	DeferredLightingTechnique::setWorldCameraPos(camera->getPosition());
-	DeferredLightingTechnique::setCameraViewMat(camera->getViewMatrix());
 	
+	DeferredDirLightTechnique::setWorldCameraPos(camera->getPosition());
+	DeferredDirLightTechnique::setCameraViewMat(camera->getViewMatrix());
+
 	if (buildLights) {
-		std::vector<PointLight> pointLights;
-		BaseLight whiteLight = {glm::vec3(1.0f), 0.13f, 0.5f};
-		Attenuation att = { 0.5f, 0.09f, 0.016f };
-
-		pointLights.push_back({att, whiteLight,  glm::vec3(20, 2, 0)});
-		pointLights.push_back({att, whiteLight,  glm::vec3(0, 2, 20)});
-
-		DeferredLightingTechnique::uploadPointLightData(pointLights);
-
-		buildLights = false;
+		std::vector<DirectionalLight> dirLights = {
+			{{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}
+		}; // TODO get from scene :3
+		 
+		DeferredDirLightTechnique::uploadDirectionalLightData(dirLights);
 	}
-
-
-	//DeferredLightingTechnique::setDirectionalLight(dirLight);
-
-	//DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
-
 
 	gbuffer->bindForReading();
 
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+	DeferredDirLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+	DeferredDirLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-	DeferredLightingTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
-
+	DeferredDirLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+	
 	Mesh& quadMesh = quad->getMeshes().front();
 	quadMesh.bind();
 	glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -89,9 +76,63 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 	gbuffer->unbind();
 }
 
+void DeferredRenderer::lightingPass(const Camera* camera) {
+	DeferredPointLightTechnique::use();
+
+	DeferredPointLightTechnique::setWorldCameraPos(camera->getPosition());
+	DeferredPointLightTechnique::setView(camera->getViewMatrix());
+	DeferredPointLightTechnique::setCameraViewMat(camera->getViewMatrix());
+	
+	if (buildLights) {
+		BaseLight whiteLight = {glm::vec3(1.0f), 0.1f, 1.0f };
+		Attenuation att = { 1.0f, 0.15f, 0.042f };
+
+		pointLights.emplace_back(att, whiteLight,  glm::vec3(20, 2, 0));
+		pointLights.emplace_back(att, whiteLight,  glm::vec3(0, 2, 20));
+
+		DeferredPointLightTechnique::uploadPointLightData(pointLights);
+
+		buildLights = false;
+	}
+
+
+	//DeferredLightingTechnique::setDirectionalLight(dirLight);
+	//DeferredLightingTechnique::shader->setUniform(fragUnis::cascadeFarPlanes[0], 1000.0f);
+
+
+	gbuffer->bindForReading();
+
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
+	DeferredPointLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
+	DeferredPointLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
+	DeferredPointLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+
+
+	Mesh& sphereMesh = sphereData->getMeshes().front();
+	sphereMesh.bind();
+	int i = 0;
+	for (auto& light : pointLights) {
+		singleLightVolumePass(light, i++);
+	}
+	sphereMesh.unbind();
+
+	gbuffer->unbind();
+}
+
+void DeferredRenderer::singleLightVolumePass(const PointLight& light, const int index) {
+	Mesh& sphereMesh = sphereData->getMeshes().front();
+	sphere->setPosition(light.position);
+	sphere->setScale(glm::vec3(light.calculatePointRadius() / 5.93f));
+	DeferredPointLightTechnique::setModel(sphere->getModelMatrix());
+	DeferredPointLightTechnique::setPointLightIndex(index);
+	glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+}
+
 void DeferredRenderer::reloadShaders() {
 	DeferredGeometryTechnique::reloadShader();
-	DeferredLightingTechnique::reloadShader();
+	DeferredPointLightTechnique::reloadShader();
 }
 
 void DeferredRenderer::rebuildBatch() {

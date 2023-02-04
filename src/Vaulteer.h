@@ -15,14 +15,11 @@ class Vaulteer : public Application {
 public:
 	Vaulteer(const ApplicationSpecification& spec);
 
-	static void initOpenGL();
 	static void initShaders();
 	static void loadResources();
 
 	void setup() override;
 
-
-	
 private:
 	template <class T>
 	Model<T> modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name);

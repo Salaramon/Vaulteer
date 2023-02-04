@@ -152,8 +152,9 @@
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DeferredLightingTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\LineTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
@@ -218,8 +219,9 @@
     <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredLightingTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\Technique.cpp" />
@@ -264,8 +266,10 @@
     <None Include="resources\shaders\blending_frag.glsl" />
     <None Include="resources\shaders\blending_vertex.glsl" />
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
-    <None Include="resources\shaders\deferred_frag.glsl" />
-    <None Include="resources\shaders\deferred_vertex.glsl" />
+    <None Include="resources\shaders\deferred_directional_frag.glsl" />
+    <None Include="resources\shaders\deferred_directional_vertex.glsl" />
+    <None Include="resources\shaders\deferred_point_frag.glsl" />
+    <None Include="resources\shaders\deferred_point_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
     <None Include="resources\shaders\forward_frag.glsl" />

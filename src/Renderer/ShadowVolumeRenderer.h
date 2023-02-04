@@ -48,7 +48,7 @@ public:
 
 	template<class... Args2>
 	static void blendingPass(StaticScene<Args2...>& staticScene, Camera* camera) {
-		ShadowVolumeTechnique::shader->use();
+		ShadowVolumeTechnique::use();
 
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {

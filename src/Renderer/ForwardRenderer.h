@@ -18,7 +18,7 @@ public:
 
 	template<class... Args1, class... Args2>
 	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
-		BlendingTechnique::shader->use();
+		BlendingTechnique::use();
 
 		/*auto cameraIteratorPair = dynamicScene.get<Camera>();
 		auto cameraBeginIt = cameraIteratorPair.first;
@@ -73,7 +73,7 @@ public:
 
 
 
-		LineTechnique::shader->use();
+		LineTechnique::use();
 
 		auto lineDataIteratorPair = staticScene.get<Model<LineData>>(staticSceneRestriction);
 

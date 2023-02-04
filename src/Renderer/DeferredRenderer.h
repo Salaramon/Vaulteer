@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Renderer/Techniques/DeferredGeometryTechnique.h"
-#include "Renderer/Techniques/DeferredLightingTechnique.h"
+#include "Renderer/Techniques/DeferredPointLightTechnique.h"
+#include "Renderer/Techniques/DeferredDirLightTechnique.h"
+
 #include "Scene/DynamicScene.h"
 #include "Scene/StaticScene.h"
 #include "OpenGL.h"
@@ -17,13 +19,15 @@
 using deferred_dynamic_scene = DynamicScene<Camera>;
 using deferred_static_scene = StaticScene<Opaque<Model<ModelData>>>;
 
-class DeferredRenderer : public RendererPrerequisites<deferred_dynamic_scene, deferred_static_scene>, public DeferredGeometryTechnique, public DeferredLightingTechnique {
+class DeferredRenderer : public RendererPrerequisites<deferred_dynamic_scene, deferred_static_scene>, public DeferredGeometryTechnique, public DeferredPointLightTechnique {
 private:
 	template <class... Args>
 	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Opaque<Model<ModelData>>>;
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
 	inline static std::unique_ptr<ModelData> quad;
+	inline static std::unique_ptr<ModelData> sphereData;
+	inline static std::unique_ptr<Model<ModelData>> sphere;
 
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
@@ -32,6 +36,8 @@ private:
 	inline static bool buildLights = true;
 
 	inline static BatchManager batchManager;
+
+	inline static std::vector<PointLight> pointLights;
 
 public:
 	static void initialize(uint screenWidth, uint screenHeight);
@@ -43,7 +49,9 @@ public:
 	static void copyGBufferDepth(GLint fbo);
 
 	static void geometryPass(const Camera* camera);
+	static void directionalLightPass(const Camera* camera);
 	static void lightingPass(const Camera* camera);
+	static void singleLightVolumePass(const PointLight& light, const int index);
 
 	template <class... DynamicSceneObjects, class... StaticSceneObjects>
 	static void render(DynamicScene<DynamicSceneObjects...>& dynamicScene, StaticScene<StaticSceneObjects...>& staticScene) {
@@ -69,9 +77,20 @@ public:
 
 			buildBatch = false;
 		}
-
+		
+		OpenGL::enableDepthTest();
 		geometryPass(camera);
+
+		OpenGL::disableDepthTest();
+		directionalLightPass(camera);
+
+		OpenGL::enableCullFace(OpenGL::FRONT);
+
+		OpenGL::enableBlending();
+		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 		lightingPass(camera);
+		OpenGL::disableBlending();
+		OpenGL::disableCullFace();
 	}
 
 };
