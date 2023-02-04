@@ -5,11 +5,11 @@
 
 
 void DeferredDirLightTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
-    shader->setUniform(fragUnis::worldCameraPos, 1, cameraPos);
+    shader->setUniform(dirFragUnis::worldCameraPos, 1, cameraPos);
 }
 
 void DeferredDirLightTechnique::setCameraViewMat(const glm::mat4& view) {
-    shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, view);
+    shader->setUniform(dirFragUnis::cameraViewMat, 1, GL_FALSE, view);
 
     //setInverseViewMat(glm::inverse(view));
 }
@@ -40,5 +40,5 @@ void DeferredDirLightTechnique::uploadDirectionalLightData(const std::vector<Dir
 }*/
 
 void DeferredDirLightTechnique::setFogColor(const glm::vec3& color) {
-    shader->setUniform(fragUnis::fogColor, 1, color);
+    shader->setUniform(dirFragUnis::fogColor, 1, color);
 }

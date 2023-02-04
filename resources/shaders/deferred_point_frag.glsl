@@ -169,7 +169,6 @@ PointLight lightFromUBPointlight(UBPointLight ubl) {
 uniform vec3 worldCameraPos;
 uniform mat4 cameraViewMat;
 
-uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform vec3 fogColor;
@@ -422,12 +421,12 @@ void main() {
     if (gl_FragCoord.y < 64) return;*/
     
     //mat4 lightSpaceMatrix;
-
+     
     //FragColor = vec4(colorSample.a); //spec demo
     //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-    diffuse = vec3(-normalSample.rgb); // normal demo
-    FragColor = vec4(diffuse, 1.0);
-    return;
+    //diffuse = vec3(-normalSample.rgb); // normal demo
+    //FragColor = vec4(diffuse, 1.0);
+    //return;
 
     //float material = texture(gMaterial, TexCoords).x;
  

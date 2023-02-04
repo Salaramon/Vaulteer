@@ -226,6 +226,9 @@ void main() {
 
     // light calc
     vec4 totalLight = calcDirectionalLight(params, lightFromUBDirectionalLight(directionalLight), dirLightShadow) * dirLightShadowFactor;
+    //FragColor = vec4(diffuse, 1.0);
+    //return;
+
     
     // kinda hdr impl
     

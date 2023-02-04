@@ -15,8 +15,8 @@ using BlendingShader = const ShaderUniformPair<Binder::blending_vertex, Binder::
 using BlendingCompositeShader = const ShaderUniformPair<Binder::blending_composite_vertex, Binder::blending_composite_frag>;
 using ForwardShader = const ShaderUniformPair<Binder::forward_vertex, Binder::forward_frag>;
 using LineShader = const ShaderUniformPair<Binder::line_vertex, Binder::line_frag>;
-using DeferredDirShader = const ShaderUniformPair<Binder::deferred_directional_vertex, Binder::deferred_directional_frag>;
 using DeferredPointShader = const ShaderUniformPair<Binder::deferred_point_vertex, Binder::deferred_point_frag>;
+using DeferredDirShader = const ShaderUniformPair<Binder::deferred_directional_vertex, Binder::deferred_directional_frag>;
 using GeometryShader = const ShaderUniformPair<Binder::geometry_vertex, Binder::geometry_frag>;
 using VolumeShader = const ShaderUniformPair<Binder::volume_vertex, Binder::volume_geom, Binder::volume_frag>;
 
@@ -41,7 +41,7 @@ constexpr const char* getShaderFile() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
 
-	assert(true, "No shader file found for input");
+	assert(false, "No shader file found for input");
 	return "";
 }
 
@@ -74,7 +74,7 @@ constexpr const GLenum getShaderType() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
 	
-	assert(true, "No shader type found for input");
+	assert(false, "No shader type found for input");
 	return 0;
 }
 
@@ -116,17 +116,16 @@ class _ShaderProgram<i, T, Args...> : public _ShaderProgram<i - 1, Args..., T, T
 template <class... Args>
 class _ShaderProgram<0, Args...> {
 public:
-	static void load() {
+	static void loadShader() {
 		shader = std::make_unique<Shader>(initializeShader());
-		LOG::SPGL::debug<&load, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Shader loaded!");
+		LOG::SPGL::debug<&loadShader, _ShaderProgram<0, Args...>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Shader loaded!");
 	}
 
 	static void use() {
-		assert(shader != nullptr);
-		use();
+		assert(shader, "tried to use an uninitialized shader!");
+		shader->use();
 	}
 
-public:
 	inline static std::unique_ptr<Shader> shader = nullptr;
 
 	template<size_t... n>
@@ -141,21 +140,13 @@ public:
 		return _initializeShader(std::make_index_sequence<sizeof...(Args)>{});
 	}
 
-	//duplicate of load() ???
-	static void reloadShader() {
-		LOG::SPGL::debug<&reloadShader, _ShaderProgram<0, Args...>>("Duplicate function, consider using load instead!");
-		shader = std::make_unique<Shader>(initializeShader());
-	}
-
 	inline static auto FR = DY::FunctionRegister<
 		//&_initializeShader<>,
-		&load,
-		&initializeShader,
-		&reloadShader
+		&loadShader,
+		&initializeShader
 	>(
 		"load",
-		"initializeShader",
-		"reloadShader");
+		"initializeShader");
 
 	inline static auto FB = DY::FunctionBinder(FR);
 
@@ -167,21 +158,20 @@ class ShaderProgram {
 };
 
 template <class... Args>
-class ShaderProgram<const ShaderUniformPair<Args...>> : protected _ShaderProgram<sizeof...(Args), Args...> {
+class ShaderProgram<const ShaderUniformPair<Args...>> : public _ShaderProgram<sizeof...(Args), Args...> {
 protected:
-public:
 	using Program = const ShaderUniformPair<Args...>;
 public:
-	static void load() {
-		LOG::SPGL::debug<&load, ShaderProgram<const ShaderUniformPair<Args...>>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Loading shader...");
-		_ShaderProgram<sizeof...(Args), Args...>::load();
+	static void loadShader() {
+		LOG::SPGL::debug<&loadShader, ShaderProgram<const ShaderUniformPair<Args...>>>(std::vector<SQL::Types::TEXT>({ Tag::Class::ShaderProgram::LoadingProcedure }), "Loading shader...");
+		_ShaderProgram<sizeof...(Args), Args...>::loadShader();
 	}
 
 	static void use() {
 		_ShaderProgram<sizeof...(Args), Args...>::use();
 	}
 
-	inline static auto FR = DY::FunctionRegister<&load>("load");
+	inline static auto FR = DY::FunctionRegister<&loadShader>("load");
 
 	inline static auto FB = DY::FunctionBinder(FR);
 

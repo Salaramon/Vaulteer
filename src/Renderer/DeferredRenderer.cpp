@@ -1,6 +1,8 @@
 #include "vpch.h"
 #include "DeferredRenderer.h"
 
+#include "Techniques/BlendingTechnique.h"
+
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
@@ -51,22 +53,20 @@ void DeferredRenderer::directionalLightPass(const Camera* camera) {
 	DeferredDirLightTechnique::setWorldCameraPos(camera->getPosition());
 	DeferredDirLightTechnique::setCameraViewMat(camera->getViewMatrix());
 
-	if (buildLights) {
-		std::vector<DirectionalLight> dirLights = {
-			{{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}
-		}; // TODO get from scene :3
-		 
-		DeferredDirLightTechnique::uploadDirectionalLightData(dirLights);
-	}
+	std::vector<DirectionalLight> dirLights = {
+		{{glm::vec3(1.0f,0.0f,0.0f), 0.33f, 1.0f}, lightDir}
+	}; // TODO get from scene :3
+	 
+	DeferredDirLightTechnique::uploadDirectionalLightData(dirLights);
 
 	gbuffer->bindForReading();
 
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-	DeferredDirLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+	DeferredDirLightTechnique::shader->setUniform(dirFragUnis::gPosition, GBuffer::GBufferTextureType::Position);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-	DeferredDirLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+	DeferredDirLightTechnique::shader->setUniform(dirFragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-	DeferredDirLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+	DeferredDirLightTechnique::shader->setUniform(dirFragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 	
 	Mesh& quadMesh = quad->getMeshes().front();
 	quadMesh.bind();
@@ -84,11 +84,12 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 	DeferredPointLightTechnique::setCameraViewMat(camera->getViewMatrix());
 	
 	if (buildLights) {
-		BaseLight whiteLight = {glm::vec3(1.0f), 0.1f, 1.0f };
+		BaseLight whiteLight = {glm::vec3(0.0f,0.0f,1.0f), 0.1f, 1.0f };
+		BaseLight greenLight = {glm::vec3(0.0f,1.0f,0.0f), 0.1f, 1.0f };
 		Attenuation att = { 1.0f, 0.15f, 0.042f };
 
 		pointLights.emplace_back(att, whiteLight,  glm::vec3(20, 2, 0));
-		pointLights.emplace_back(att, whiteLight,  glm::vec3(0, 2, 20));
+		pointLights.emplace_back(att, greenLight,  glm::vec3(0, 2, 20));
 
 		DeferredPointLightTechnique::uploadPointLightData(pointLights);
 
@@ -103,11 +104,11 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 	gbuffer->bindForReading();
 
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-	DeferredPointLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+	DeferredPointLightTechnique::shader->setUniform(dirFragUnis::gPosition, GBuffer::GBufferTextureType::Position);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-	DeferredPointLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+	DeferredPointLightTechnique::shader->setUniform(dirFragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
 	gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-	DeferredPointLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+	DeferredPointLightTechnique::shader->setUniform(dirFragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 
 
 	Mesh& sphereMesh = sphereData->getMeshes().front();
@@ -131,8 +132,9 @@ void DeferredRenderer::singleLightVolumePass(const PointLight& light, const int 
 }
 
 void DeferredRenderer::reloadShaders() {
-	DeferredGeometryTechnique::reloadShader();
-	DeferredPointLightTechnique::reloadShader();
+	DeferredGeometryTechnique::loadShader();
+	DeferredDirLightTechnique::loadShader();
+	DeferredPointLightTechnique::loadShader();
 }
 
 void DeferredRenderer::rebuildBatch() {

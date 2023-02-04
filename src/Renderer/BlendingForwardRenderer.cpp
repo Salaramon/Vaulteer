@@ -13,7 +13,7 @@ void BlendingForwardRenderer::rebuildAlphaBuffer(int width, int height) {
 }
 
 void BlendingForwardRenderer::reloadShaders() {
-	BlendingTechnique::reloadShader();
-	BlendingCompositeTechnique::reloadShader();
+	BlendingTechnique::loadShader();
+	BlendingCompositeTechnique::loadShader();
 }
 

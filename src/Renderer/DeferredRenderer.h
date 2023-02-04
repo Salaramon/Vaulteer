@@ -19,7 +19,7 @@
 using deferred_dynamic_scene = DynamicScene<Camera>;
 using deferred_static_scene = StaticScene<Opaque<Model<ModelData>>>;
 
-class DeferredRenderer : public RendererPrerequisites<deferred_dynamic_scene, deferred_static_scene>, public DeferredGeometryTechnique, public DeferredPointLightTechnique {
+class DeferredRenderer : public RendererPrerequisites<deferred_dynamic_scene, deferred_static_scene>, public DeferredGeometryTechnique, public DeferredPointLightTechnique, public DeferredDirLightTechnique {
 private:
 	template <class... Args>
 	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Opaque<Model<ModelData>>>;
@@ -37,6 +37,7 @@ private:
 
 	inline static BatchManager batchManager;
 
+	// TODO
 	inline static std::vector<PointLight> pointLights;
 
 public:
@@ -82,12 +83,13 @@ public:
 		geometryPass(camera);
 
 		OpenGL::disableDepthTest();
+		OpenGL::enableBlending();
+		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
+
 		directionalLightPass(camera);
 
 		OpenGL::enableCullFace(OpenGL::FRONT);
 
-		OpenGL::enableBlending();
-		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 		lightingPass(camera);
 		OpenGL::disableBlending();
 		OpenGL::disableCullFace();

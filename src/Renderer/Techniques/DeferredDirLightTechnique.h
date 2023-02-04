@@ -7,8 +7,8 @@
 
 class DeferredDirLightTechnique : public ShaderProgram<DeferredDirShader> {
 public:
-	using vertUnis = Binder::deferred_directional_vertex::uniforms;
-	using fragUnis = Binder::deferred_directional_frag::uniforms;
+	using dirVertUnis = Binder::deferred_directional_vertex::uniforms;
+	using dirFragUnis = Binder::deferred_directional_frag::uniforms;
 
 	static void setWorldCameraPos(const glm::vec3& cameraPos);
 	static void setCameraViewMat(const glm::mat4& view);

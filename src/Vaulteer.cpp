@@ -10,13 +10,13 @@ Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 }
 
 void Vaulteer::initShaders() {
-	ShaderProgram<BlendingShader>::load();
-	ShaderProgram<BlendingCompositeShader>::load();
-	ShaderProgram<LineShader>::load();
-	ShaderProgram<DeferredDirShader>::load();
-	ShaderProgram<DeferredPointShader>::load();
-	ShaderProgram<GeometryShader>::load();
-	ShaderProgram<VolumeShader>::load();
+	ShaderProgram<BlendingShader>::loadShader();
+	ShaderProgram<BlendingCompositeShader>::loadShader();
+	ShaderProgram<LineShader>::loadShader();
+	ShaderProgram<DeferredDirShader>::loadShader();
+	ShaderProgram<DeferredPointShader>::loadShader();
+	ShaderProgram<GeometryShader>::loadShader();
+	ShaderProgram<VolumeShader>::loadShader();
 }
 
 void Vaulteer::loadResources() {
