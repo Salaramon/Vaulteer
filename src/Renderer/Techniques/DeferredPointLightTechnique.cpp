@@ -49,9 +49,9 @@ void DeferredPointLightTechnique::setCameraViewMat(const glm::mat4& view) {
 }
 
 void DeferredPointLightTechnique::uploadMaterialData() {
-	std::vector<Material::MaterialData> materials;
-	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
-		materials.push_back(pair.second->data);
+	std::array<Material::MaterialData, 128> materials;
+	for (const auto& val : MaterialLibrary::getAllMaterials() | std::views::values) {
+		materials[val->materialIndex] = val->data;
 	}
 	auto& materialData = getUBMaterialData();
 	UniformBuffer::insert(materialData, materials);

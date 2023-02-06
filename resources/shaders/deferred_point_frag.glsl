@@ -292,7 +292,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         /*vec3 reflectDir = reflect(lightDirection, fragNormal);
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
-        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
+        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, max(1.0, mat.shininess / 5.0));
 
         float shadowFactor = 1.0 - shadow;
         specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
@@ -308,7 +308,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
 }
 
 vec4 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3 lightDirection, float radius, float lightDistance) {
-    const float pointLightAngleDropoff = 0.01; // determines light fade rate at edge
+    const float pointLightAngleDropoff = 0.20; // determines light fade rate at edge
 
     if (lightDistance > radius)
         return vec4(0.0);
@@ -324,6 +324,8 @@ vec4 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3
     float attenuation = 1 / (att.aConstant
         + att.aLinear * lightDistance
         + 0.1 *att.aQuadratic * (lightDistance * lightDistance));
+
+    //attenuation = 1.0 * radiusCutoffFactor;
 
     return (calcLightInternal(p, light, lightDirection, 0.0) * attenuation) * radiusCutoffFactor;
 }
@@ -374,6 +376,7 @@ void main() {
 
     vec3 diffuse = colorSample.rgb;
     params.specIntensity = colorSample.a;
+
 
     // --------------------------------------
 
@@ -465,6 +468,7 @@ void main() {
     float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
     totalLight = calcPointLight(params, lightFromUBPointlight(pointLightTable[pointLightIndex])) * (1.0 - pointLightShadow);
 
+    
     //if (diffuse.x + diffuse.y + diffuse.z > 0.0)
     //    FragColor = vec4(totalLight.x, totalLight.y, totalLight.z, 1.0);
     //return;
