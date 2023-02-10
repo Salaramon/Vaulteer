@@ -1,3 +1,5 @@
+const MAX_MATERIALS = %%[maxMaterials,int];
+
 // material data
 struct Material {
     vec4 colorAmbient;
@@ -9,5 +11,5 @@ struct Material {
 };
 
 layout(shared, binding = 2) uniform MaterialData {
-    uniform DFMaterial materialTable[%MAX_MATERIALS%];
+    uniform Material materialTable[MAX_MATERIALS];
 };

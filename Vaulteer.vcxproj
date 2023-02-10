@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -69,7 +69,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\DebugYourself\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\DebugYourself\lib\Debug;vendor\GEM\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -92,7 +92,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\DebugYourself\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\DebugYourself\lib\Release;vendor\GEM\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -147,6 +147,7 @@
     <ClInclude Include="src\Renderer\RendererPrerequisites.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShaderProgram.h" />
+    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Tags\Opaque.h" />
     <ClInclude Include="src\Renderer\Tags\Transparent.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
@@ -176,8 +177,8 @@
     <ClInclude Include="src\Vaulteer.h" />
     <ClInclude Include="src\WorldLayer.h" />
     <ClInclude Include="src\vpch.h" />
+    <ClInclude Include="vendor\GEM\GEM.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
-    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
@@ -216,6 +217,7 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\ShaderProgram.cpp" />
+    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
@@ -241,7 +243,6 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds" />
@@ -268,7 +269,6 @@
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_frag.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
-    <None Include="resources\shaders\deferred_point_frag.glsl" />
     <None Include="resources\shaders\deferred_point_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
@@ -276,12 +276,10 @@
     <None Include="resources\shaders\forward_vertex.glsl" />
     <None Include="resources\shaders\geometry_frag.glsl" />
     <None Include="resources\shaders\geometry_vertex.glsl" />
-    <None Include="resources\shaders\light_frag.glsl.ignored" />
-    <None Include="resources\shaders\lightsource_frag.glsl" />
-    <None Include="resources\shaders\lightsource_vertex.glsl" />
     <None Include="resources\shaders\line_frag.glsl" />
     <None Include="resources\shaders\line_vertex.glsl" />
-    <None Include="resources\shaders\postprocessor\materialTable.glsl" />
+    <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />
+    <None Include="resources\shaders\preprocessor\fragments\materialTable.gem" />
     <None Include="resources\shaders\shadow_cube_frag.glsl" />
     <None Include="resources\shaders\shadow_cube_geometry.glsl" />
     <None Include="resources\shaders\shadow_cube_vertex.glsl" />
@@ -290,6 +288,8 @@
     <None Include="resources\shaders\volume_frag.glsl" />
     <None Include="resources\shaders\volume_geom.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
+    <None Include="resources\sphere-hd.obj" />
+    <None Include="resources\sphere.obj" />
     <None Include="resources\teapot.obj" />
     <None Include="resources\triangle.obj" />
     <None Include="resources\vase\untitled.mtl" />

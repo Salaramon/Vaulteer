@@ -60,21 +60,9 @@ uniform samplerCube shadowCubeMap_3;
 
 uniform float cubeMapFarPlanes[1];
 
-// ------------- replace with material macro
-struct DFMaterial {
-    vec4 colorAmbient;
-    vec4 colorDiffuse;
-    vec4 colorSpecular;
-    float shininess;
-    float opacity;
-    vec2 pad; // for alignment to 16
-};
 
-layout(shared, binding = 2) uniform MaterialData {
-    uniform DFMaterial materialTable[128];
-};
-// ------------- replace with material macro end
-//##scenevars materialTable.glsl
+##[fragments/materialTable]
+
 
 // ------------- replace with spotlight macro
 const int MAX_SPOT_LIGHTS = 1;
