@@ -48,7 +48,8 @@ project "Vaulteer"
 		"%{wks.location}/vendor/miniball/include",
 		"%{wks.location}/vendor/rectpack2D/include",
 		"%{wks.location}/vendor/sqlite/include",
-		"%{wks.location}/vendor/stb_image"
+		"%{wks.location}/vendor/stb_image",
+		"%{wks.location}/vendor/entt"
 	}
 
 	libdirs {

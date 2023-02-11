@@ -5,44 +5,36 @@
 #include <type_traits>
 #include <vector>
 
+#include <entt.hpp>
+
 #include "Scene/Scene.h"
 
 #include "Debug/Debug.h"
 
-template<class... SceneObjects>
-class DynamicScene : public Scene<std::vector, SceneObjects...>
+#include "Entity.h"
+#include "Register.h"
+
+
+class DynamicStore : public Register
 {
 public:
-	using BaseScope = Scene<std::vector, SceneObjects...>;
+	DynamicStore() {}
+	
 
-	template<class StoreType>
-	using DynamicSceneIterator = BaseScope::template StoreRangeIterator<StoreType>;
 
-	template<class StoreType>
-	StoreType* addObject(StoreType&& object) {
-		DIRLOG::CTOR::debug(this, DY::std_format("Requested iterator range of type {}", DY::types_to_string<StoreType>()));
-		std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).emplace_back(std::make_unique<StoreType>(std::move(object)));
-		return std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).back().get();
+	uint32_t allocate() {
+		return registry.create();
+		
 	}
 
-	template<class StoreType>
-	StoreType* addObject(StoreType& object) {
-		DIRLOG::CTOR::debug(this, DY::std_format("Requested iterator range of type {}", DY::types_to_string<StoreType>()));
-		std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).emplace_back(std::make_unique<StoreType>(object));
-		return std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers).back().get();
+	void add() {
+		
 	}
 
-	template<class StoreType>
-	const DynamicSceneIterator<StoreType> get() {
-		//LOG::CLAS::debug<&DynamicScene<SceneObjects...>::get<StoreType>>(this, &DynamicScene::objectContainers, DY::std_format("Requested iterator range of type {}", DY::types_to_string<StoreType>()));
-		DIRLOG::CTOR::debug(this, DY::std_format("Requested iterator range of type {}", DY::types_to_string<StoreType>()));
-
-		using it = typename BaseScope::template iterator<StoreType>;
-		auto& container = std::get<BaseScope::template ObjectContainer<StoreType>>(BaseScope::objectContainers);
-		return std::make_pair(container.begin(), container.end());
+	void deallocate(uint32_t val) {
+		registry.destroy(val);
 	}
 
-	static inline auto OB = DY::ObjectBinder<decltype(BaseScope::OB)>();
-
-	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
+private:
+	
 };

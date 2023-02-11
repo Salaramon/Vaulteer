@@ -1,695 +1,210 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{C0DE3DEC-ACAC-31F2-9540-A21881AD0D57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Crate">
-      <UniqueIdentifier>{3EFDF894-2A8C-825E-D3AA-9659BF189304}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\backpack">
-      <UniqueIdentifier>{9FC13F20-0BF9-87B7-1403-ECDA80B9AEB0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\palm">
-      <UniqueIdentifier>{D9AB08B7-450D-E6C4-CE7A-2C773ADB1C84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\plane">
-      <UniqueIdentifier>{DF002498-CB8F-AD61-74AE-C15C601CBE07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{B95BBC0E-A555-E560-8EC2-7B717A5B4BCD}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\vase">
-      <UniqueIdentifier>{FEF60BB7-6A58-E9C4-F3C5-2F775F262084}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{E9C7FDCE-D52A-8D73-7EB0-C5296AF258F6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\API">
-      <UniqueIdentifier>{52791C27-3E72-3B79-67A4-20FE53FC1A85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Data Structures">
-      <UniqueIdentifier>{D681CBD9-C23C-BB85-6BF4-33D0578E0516}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Debug">
-      <UniqueIdentifier>{1F5D6260-0B41-23B6-74A1-1D0960A40D38}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Events">
-      <UniqueIdentifier>{AD533870-19B5-157E-A222-5C300E834C3D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model">
-      <UniqueIdentifier>{E9BB0A61-D59F-CBB6-3E00-C6092A03B638}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Data">
-      <UniqueIdentifier>{F20AF3EE-5E42-3B86-674C-9FA9D302627F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Resources">
-      <UniqueIdentifier>{9398F2B2-7F53-E25E-280B-5BA914A52CEF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Storage">
-      <UniqueIdentifier>{2D93BF22-19A3-6BF3-825C-D0116E8B5A8C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Textures">
-      <UniqueIdentifier>{DC0378F9-4811-A6DF-D1F7-A1CA3D047296}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Renderer">
-      <UniqueIdentifier>{AF019756-1B6E-5251-E461-EAAE508D74B9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Renderer\Buffers">
-      <UniqueIdentifier>{2B000E6C-9718-F595-60C5-842FCC9C892F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Renderer\Tags">
-      <UniqueIdentifier>{EDA0D8FD-D9B0-84CE-426A-E9EC2E997367}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Renderer\Techniques">
-      <UniqueIdentifier>{F72AE883-E37B-D3C5-0CE0-C187F88F662F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Scene">
-      <UniqueIdentifier>{C6BF7061-B2A3-31B7-1B04-2C0A07071C39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Utils">
-      <UniqueIdentifier>{09549E61-F537-5FB7-5E98-590A4A9B4939}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\VFX">
-      <UniqueIdentifier>{6CD11C27-58CA-3B79-81FC-20FE6D541B85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor Files">
-      <UniqueIdentifier>{E6B5EBAC-D218-7B51-7B9E-B30767E046D4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor Files\GLAD">
-      <UniqueIdentifier>{2D1082C9-9926-805F-E29D-0B814EF350E7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor Files\GLAD\src">
-      <UniqueIdentifier>{C41C54DF-3089-0FDA-F97C-A73765A83142}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor Files\GLSLCPPBinder">
-      <UniqueIdentifier>{3E7F7E7C-2A8F-2A4D-9348-8F6B7F7719E6}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\API\Application.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\API\Camera.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\API\CameraController.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\API\Layer.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\API\LayerStack.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\API\Window.h">
-      <Filter>Source Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h">
-      <Filter>Source Files\Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Data Structures\PolyTree.h">
-      <Filter>Source Files\Data Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Debug\Debug.h">
-      <Filter>Source Files\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DebugLayer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Events\Event.h">
-      <Filter>Source Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Events\EventTypes.h">
-      <Filter>Source Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Buffer.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Data\LineData.h">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Data\ModelData.h">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\ElementBuffer.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Material.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Mesh.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Model.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\ModelResourceLocator.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\ResourceLoader.h">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\ResourceManager.h">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\ResourcePack.h">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Storage\Point.h">
-      <Filter>Source Files\Model\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Storage\Vertex.h">
-      <Filter>Source Files\Model\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Storage\VertexHash.h">
-      <Filter>Source Files\Model\Storage</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\CubemapTexture.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\PackedTexture2DArray.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\Texture.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\Texture2D.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\Texture2DArray.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\TextureResourceLocator.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\VertexArray.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\VertexBuffer.h">
-      <Filter>Source Files\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OpenGL.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Batch.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\BatchManager.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\GBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\DeferredRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\ForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Renderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\RendererPrerequisites.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Shader.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\ShaderProgram.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Opaque.h">
-      <Filter>Source Files\Renderer\Tags</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Transparent.h">
-      <Filter>Source Files\Renderer\Tags</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\LineTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\Technique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\DynamicScene.h">
-      <Filter>Source Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Object3D.h">
-      <Filter>Source Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Scene.h">
-      <Filter>Source Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\StaticScene.h">
-      <Filter>Source Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\MathUtils.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\TemplateUtility.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils\TypeDefUtils.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\LightTypes.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowBuffer.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowCascade.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowCubeBuffer.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowCubeTechnique.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowMapTechnique.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowTechnique.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vaulteer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldLayer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vpch.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
-      <Filter>Vendor Files\GLSLCPPBinder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
-    <ClInclude Include="src\Events\EventTypes.h" />
-    <ClInclude Include="src\DebugLayer.h" />
-    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
-    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\API\Application.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\Camera.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\CameraController.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\LayerStack.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\API\Window.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Data Structures\PolyTree.cpp">
-      <Filter>Source Files\Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DebugLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Data\LineData.cpp">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Data\ModelData.cpp">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\ElementBuffer.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Material.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Mesh.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\ResourceLoader.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\ResourceManager.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\ResourcePack.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\CubemapTexture.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\Texture.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\Texture2D.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\Texture2DArray.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OpenGL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Program.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Batch.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\BatchManager.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\UniformBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\DeferredRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Renderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Shader.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ShaderProgram.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\Technique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Object3D.cpp">
-      <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Scene.cpp">
-      <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowBuffer.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowCascade.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowCubeTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowMapTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Vaulteer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vpch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\GLAD\src\glad.c">
-      <Filter>Vendor Files\GLAD\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
+    <ClCompile Include="src\API\Application.cpp" />
+    <ClCompile Include="src\API\Camera.cpp" />
+    <ClCompile Include="src\API\CameraController.cpp" />
+    <ClCompile Include="src\API\LayerStack.cpp" />
+    <ClCompile Include="src\API\Window.cpp" />
+    <ClCompile Include="src\Data Structures\PolyTree.cpp" />
     <ClCompile Include="src\DebugLayer.cpp" />
+    <ClCompile Include="src\Model\Data\LineData.cpp" />
+    <ClCompile Include="src\Model\Data\ModelData.cpp" />
+    <ClCompile Include="src\Model\ElementBuffer.cpp" />
+    <ClCompile Include="src\Model\Material.cpp" />
+    <ClCompile Include="src\Model\Mesh.cpp" />
+    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
+    <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
+    <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
+    <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />
+    <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
+    <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
+    <ClCompile Include="src\Model\Textures\Texture.cpp" />
+    <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
+    <ClCompile Include="src\Model\Textures\Texture2DArray.cpp" />
+    <ClCompile Include="src\OpenGL.cpp" />
+    <ClCompile Include="src\Program.cpp" />
+    <ClCompile Include="src\Renderer\Batch.cpp" />
+    <ClCompile Include="src\Renderer\BatchManager.cpp" />
+    <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Buffers\UniformBuffer.cpp" />
+    <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp" />
+    <ClCompile Include="src\Renderer\DeferredRenderer.cpp" />
+    <ClCompile Include="src\Renderer\ForwardRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\ShaderProgram.cpp" />
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp" />
+    <ClCompile Include="src\Renderer\Techniques\Technique.cpp" />
+    <ClCompile Include="src\Scene\Object3D.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\VFX\ShadowBuffer.cpp" />
+    <ClCompile Include="src\VFX\ShadowCascade.cpp" />
+    <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp" />
+    <ClCompile Include="src\VFX\ShadowCubeTechnique.cpp" />
+    <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
+    <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
+    <ClCompile Include="src\Vaulteer.cpp" />
+    <ClCompile Include="src\WorldLayer.cpp" />
+    <ClCompile Include="src\vpch.cpp" />
+    <ClCompile Include="vendor\GLAD\src\glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\Crate\Crate1.3ds">
-      <Filter>Resource Files\Crate</Filter>
-    </None>
-    <None Include="resources\Crate\Crate1.blend">
-      <Filter>Resource Files\Crate</Filter>
-    </None>
-    <None Include="resources\Crate\Crate1.mtl">
-      <Filter>Resource Files\Crate</Filter>
-    </None>
-    <None Include="resources\Crate\Crate1.obj">
-      <Filter>Resource Files\Crate</Filter>
-    </None>
-    <None Include="resources\backpack\backpack.mtl">
-      <Filter>Resource Files\backpack</Filter>
-    </None>
-    <None Include="resources\backpack\backpack.obj">
-      <Filter>Resource Files\backpack</Filter>
-    </None>
-    <None Include="resources\backpack\source_attribution.txt">
-      <Filter>Resource Files\backpack</Filter>
-    </None>
-    <None Include="resources\backpack\teapot.mtl">
-      <Filter>Resource Files\backpack</Filter>
-    </None>
-    <None Include="resources\backpack\teapot.obj">
-      <Filter>Resource Files\backpack</Filter>
-    </None>
-    <None Include="resources\cube.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\palm\palm.mtl">
-      <Filter>Resource Files\palm</Filter>
-    </None>
-    <None Include="resources\palm\palm.obj">
-      <Filter>Resource Files\palm</Filter>
-    </None>
-    <None Include="resources\plane.zip">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\plane\plane_mesh.mtl">
-      <Filter>Resource Files\plane</Filter>
-    </None>
-    <None Include="resources\plane\plane_mesh.obj">
-      <Filter>Resource Files\plane</Filter>
-    </None>
-    <None Include="resources\plane\plane_mesh_tri.obj">
-      <Filter>Resource Files\plane</Filter>
-    </None>
-    <None Include="resources\quad.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\shaders\blending_composite_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\blending_composite_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\blending_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\blending_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\cluster_tile_compute.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\deferred_point_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\deferred_point_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\depth_map_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\depth_map_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\forward_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\forward_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\geometry_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\geometry_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\light_frag.glsl.ignored">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\lightsource_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\lightsource_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\line_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\line_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\shadow_cube_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\shadow_cube_geometry.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\shadow_cube_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\shadow_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\shadow_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\volume_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\volume_geom.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\volume_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\teapot.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\triangle.obj">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\vase\untitled.mtl">
-      <Filter>Resource Files\vase</Filter>
-    </None>
-    <None Include="resources\vase\untitled.obj">
-      <Filter>Resource Files\vase</Filter>
-    </None>
-    <None Include="resources\water_caustics.tga">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\water_norm.tga">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\shaders\postprocessor\materialTable.glsl" />
+    <ClInclude Include="src\API\Application.h" />
+    <ClInclude Include="src\API\Camera.h" />
+    <ClInclude Include="src\API\CameraController.h" />
+    <ClInclude Include="src\API\Layer.h" />
+    <ClInclude Include="src\API\LayerStack.h" />
+    <ClInclude Include="src\API\Window.h" />
+    <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
+    <ClInclude Include="src\Data Structures\PolyTree.h" />
+    <ClInclude Include="src\Debug\Debug.h" />
+    <ClInclude Include="src\DebugLayer.h" />
+    <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\EventTypes.h" />
+    <ClInclude Include="src\Model\Buffer.h" />
+    <ClInclude Include="src\Model\Data\LineData.h" />
+    <ClInclude Include="src\Model\Data\ModelData.h" />
+    <ClInclude Include="src\Model\ElementBuffer.h" />
+    <ClInclude Include="src\Model\Material.h" />
+    <ClInclude Include="src\Model\Mesh.h" />
+    <ClInclude Include="src\Model\Model.h" />
+    <ClInclude Include="src\Model\ModelResourceLocator.h" />
+    <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
+    <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
+    <ClInclude Include="src\Model\Resources\ResourceManager.h" />
+    <ClInclude Include="src\Model\Resources\ResourcePack.h" />
+    <ClInclude Include="src\Model\Storage\Point.h" />
+    <ClInclude Include="src\Model\Storage\Vertex.h" />
+    <ClInclude Include="src\Model\Storage\VertexHash.h" />
+    <ClInclude Include="src\Model\Textures\CubemapTexture.h" />
+    <ClInclude Include="src\Model\Textures\PackedTexture2DArray.h" />
+    <ClInclude Include="src\Model\Textures\Texture.h" />
+    <ClInclude Include="src\Model\Textures\Texture2D.h" />
+    <ClInclude Include="src\Model\Textures\Texture2DArray.h" />
+    <ClInclude Include="src\Model\Textures\TextureResourceLocator.h" />
+    <ClInclude Include="src\Model\VertexArray.h" />
+    <ClInclude Include="src\Model\VertexBuffer.h" />
+    <ClInclude Include="src\OpenGL.h" />
+    <ClInclude Include="src\Renderer\Batch.h" />
+    <ClInclude Include="src\Renderer\BatchManager.h" />
+    <ClInclude Include="src\Renderer\BlendingForwardRenderer.h" />
+    <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\GBuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h" />
+    <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h" />
+    <ClInclude Include="src\Renderer\DeferredRenderer.h" />
+    <ClInclude Include="src\Renderer\ForwardRenderer.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
+    <ClInclude Include="src\Renderer\RendererPrerequisites.h" />
+    <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\Renderer\ShaderProgram.h" />
+    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
+    <ClInclude Include="src\Renderer\Tags\Opaque.h" />
+    <ClInclude Include="src\Renderer\Tags\Transparent.h" />
+    <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\LineTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\Technique.h" />
+    <ClInclude Include="src\Scene\DynamicScene.h" />
+    <ClInclude Include="src\Scene\Entity.h" />
+    <ClInclude Include="src\Scene\Object3D.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
+    <ClInclude Include="src\Scene\StaticScene.h" />
+    <ClInclude Include="src\Utils\MathUtils.h" />
+    <ClInclude Include="src\Utils\TemplateUtility.h" />
+    <ClInclude Include="src\Utils\TypeDefUtils.h" />
+    <ClInclude Include="src\VFX\LightTypes.h" />
+    <ClInclude Include="src\VFX\ShadowBuffer.h" />
+    <ClInclude Include="src\VFX\ShadowCascade.h" />
+    <ClInclude Include="src\VFX\ShadowCubeBuffer.h" />
+    <ClInclude Include="src\VFX\ShadowCubeTechnique.h" />
+    <ClInclude Include="src\VFX\ShadowMapTechnique.h" />
+    <ClInclude Include="src\VFX\ShadowTechnique.h" />
+    <ClInclude Include="src\Vaulteer.h" />
+    <ClInclude Include="src\WorldLayer.h" />
+    <ClInclude Include="src\vpch.h" />
+    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
+    <ClInclude Include="src\Scene\Register.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\Crate\crate_1.jpg" />
+    <Image Include="resources\palm\leaflong.jpg" />
+    <Image Include="resources\palm\trunk.png" />
+    <Image Include="resources\plane\map.png" />
+    <Image Include="resources\vase\wooden-textured-background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\Crate\Crate1.3ds" />
+    <None Include="resources\Crate\Crate1.blend" />
+    <None Include="resources\Crate\Crate1.mtl" />
+    <None Include="resources\Crate\Crate1.obj" />
+    <None Include="resources\backpack\backpack.mtl" />
+    <None Include="resources\backpack\source_attribution.txt" />
+    <None Include="resources\backpack\teapot.mtl" />
+    <None Include="resources\backpack\teapot.obj" />
+    <None Include="resources\cube.obj" />
+    <None Include="resources\palm\palm.mtl" />
+    <None Include="resources\palm\palm.obj" />
+    <None Include="resources\plane.zip" />
+    <None Include="resources\plane\plane_mesh.mtl" />
+    <None Include="resources\plane\plane_mesh.obj" />
+    <None Include="resources\plane\plane_mesh_tri.obj" />
+    <None Include="resources\quad.obj" />
+    <None Include="resources\shaders\blending_composite_frag.glsl" />
+    <None Include="resources\shaders\blending_composite_vertex.glsl" />
+    <None Include="resources\shaders\blending_frag.glsl" />
+    <None Include="resources\shaders\blending_vertex.glsl" />
+    <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_frag.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\Crate\crate_1.jpg">
-      <Filter>Resource Files\Crate</Filter>
-    </Image>
-    <Image Include="resources\backpack\ao.jpg">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\box.png">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\diffuse.jpg">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\normal.png">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\roughness.jpg">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\backpack\specular.jpg">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
-    <Image Include="resources\palm\leaflong.jpg">
-      <Filter>Resource Files\palm</Filter>
-    </Image>
-    <Image Include="resources\palm\trunk.png">
-      <Filter>Resource Files\palm</Filter>
-    </Image>
-    <Image Include="resources\plane\map.png">
-      <Filter>Resource Files\plane</Filter>
-    </Image>
-    <Image Include="resources\vase\wooden-textured-background.jpg">
-      <Filter>Resource Files\vase</Filter>
-    </Image>
+    <None Include="resources\shaders\deferred_point_frag.glsl" />
+    <None Include="resources\shaders\deferred_point_vertex.glsl" />
+    <None Include="resources\shaders\depth_map_frag.glsl" />
+    <None Include="resources\shaders\depth_map_vertex.glsl" />
+    <None Include="resources\shaders\forward_frag.glsl" />
+    <None Include="resources\shaders\forward_vertex.glsl" />
+    <None Include="resources\shaders\geometry_frag.glsl" />
+    <None Include="resources\shaders\geometry_vertex.glsl" />
+    <None Include="resources\shaders\light_frag.glsl.ignored" />
+    <None Include="resources\shaders\lightsource_frag.glsl" />
+    <None Include="resources\shaders\lightsource_vertex.glsl" />
+    <None Include="resources\shaders\line_frag.glsl" />
+    <None Include="resources\shaders\line_vertex.glsl" />
+    <None Include="resources\shaders\postprocessor\materialTable.glsl" />
+    <None Include="resources\shaders\shadow_cube_frag.glsl" />
+    <None Include="resources\shaders\shadow_cube_geometry.glsl" />
+    <None Include="resources\shaders\shadow_cube_vertex.glsl" />
+    <None Include="resources\shaders\shadow_frag.glsl" />
+    <None Include="resources\shaders\shadow_vertex.glsl" />
+    <None Include="resources\shaders\volume_frag.glsl" />
+    <None Include="resources\shaders\volume_geom.glsl" />
+    <None Include="resources\shaders\volume_vertex.glsl" />
+    <None Include="resources\sphere.obj" />
+    <None Include="resources\teapot.obj" />
+    <None Include="resources\triangle.obj" />
+    <None Include="resources\vase\untitled.mtl" />
+    <None Include="resources\vase\untitled.obj" />
+    <None Include="resources\water_caustics.tga" />
+    <None Include="resources\water_norm.tga" />
   </ItemGroup>
 </Project>

@@ -5,10 +5,17 @@
 #include "Model/Resources/ResourceManager.h"
 #include "Utils/MathUtils.h"
 
+#include <entt.hpp>
 
 void WorldLayer::onAttach() {
-	DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
-	BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+	entt::registry r;
+	r.storage();
+	entt::
+
+	Window& window = Application::getWindow();
+
+	DeferredRenderer::initialize(window.getWidth(), window.getHeight());
+	BlendingForwardRenderer::initialize(window.getWidth(), window.getHeight());
 	
 	//Setting up cameras in the scene.
 	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)Window::getWidth() / (float)Window::getHeight()));

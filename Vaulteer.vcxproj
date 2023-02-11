@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -147,6 +147,7 @@
     <ClInclude Include="src\Renderer\RendererPrerequisites.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShaderProgram.h" />
+    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Tags\Opaque.h" />
     <ClInclude Include="src\Renderer\Tags\Transparent.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
@@ -160,7 +161,9 @@
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\Technique.h" />
     <ClInclude Include="src\Scene\DynamicScene.h" />
+    <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
+    <ClInclude Include="src\Scene\Register.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\StaticScene.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
@@ -177,7 +180,6 @@
     <ClInclude Include="src\WorldLayer.h" />
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
-    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
@@ -216,6 +218,7 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\ShaderProgram.cpp" />
+    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
@@ -241,7 +244,6 @@
     <ClCompile Include="vendor\GLAD\src\glad.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Crate\Crate1.3ds" />
@@ -249,7 +251,6 @@
     <None Include="resources\Crate\Crate1.mtl" />
     <None Include="resources\Crate\Crate1.obj" />
     <None Include="resources\backpack\backpack.mtl" />
-    <None Include="resources\backpack\backpack.obj" />
     <None Include="resources\backpack\source_attribution.txt" />
     <None Include="resources\backpack\teapot.mtl" />
     <None Include="resources\backpack\teapot.obj" />
@@ -290,6 +291,7 @@
     <None Include="resources\shaders\volume_frag.glsl" />
     <None Include="resources\shaders\volume_geom.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
+    <None Include="resources\sphere.obj" />
     <None Include="resources\teapot.obj" />
     <None Include="resources\triangle.obj" />
     <None Include="resources\vase\untitled.mtl" />
@@ -299,12 +301,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg" />
-    <Image Include="resources\backpack\ao.jpg" />
-    <Image Include="resources\backpack\box.png" />
-    <Image Include="resources\backpack\diffuse.jpg" />
-    <Image Include="resources\backpack\normal.png" />
-    <Image Include="resources\backpack\roughness.jpg" />
-    <Image Include="resources\backpack\specular.jpg" />
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />
