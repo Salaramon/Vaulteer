@@ -19,6 +19,9 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{B95BBC0E-A555-E560-8EC2-7B717A5B4BCD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\build">
+      <UniqueIdentifier>{B84EFC34-A409-ECE0-4DC1-642B395B3671}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\shaders\preprocessor">
       <UniqueIdentifier>{6F6F1739-DB28-82E3-6488-9CBDD0403853}</UniqueIdentifier>
     </Filter>
@@ -586,10 +589,16 @@
     <None Include="resources\shaders\blending_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\cluster_tile_compute.glsl">
-      <Filter>Resource Files\shaders</Filter>
+    <None Include="resources\shaders\build\deferred_directional_frag.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
     </None>
-    <None Include="resources\shaders\deferred_directional_frag.glsl">
+    <None Include="resources\shaders\build\deferred_point_frag.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
+    </None>
+    <None Include="resources\shaders\build\geometry_vertex.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
+    </None>
+    <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\deferred_directional_vertex.glsl">
@@ -613,20 +622,41 @@
     <None Include="resources\shaders\geometry_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\geometry_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\line_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\line_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\baseLight.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
     <None Include="resources\shaders\preprocessor\fragments\materialTable.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\spotLightData.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\geometry_vertex.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\shadow_cube_frag.glsl">
       <Filter>Resource Files\shaders</Filter>

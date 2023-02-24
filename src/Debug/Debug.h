@@ -9,8 +9,52 @@
 
 #include <DebugYourself.h>
 
+namespace Tag {
+	namespace Class {
+		namespace ShaderProgram {
+			constexpr char LoadingProcedure[] = "ShaderProgram_LoadingProcedure";
+		}
+	}
+	
+	namespace Debug {
+        constexpr char DirectOutput[] = "DirectOutput";
+    }
+}
+
+
+namespace ObjectAlias {
+	constexpr char OpenGLMessage[] = "OpenGLMessage";
+	constexpr char Main[] = "Main";
+	constexpr char STBI[] = "Library_STBI";
+	constexpr char GLFW[] = "Library_GLFW";
+}
+
+namespace A_Severity {
+	constexpr char CriticalError[] = "CriticalError";
+	constexpr char Error[] = "Error";
+	constexpr char Warining[] = "Warning";
+	constexpr char Message[] = "Message";
+}
+
+
+namespace DebugUtils {
+	template<class T>
+	std::string arrayToString(T& arr, auto func ) {
+		std::string returnString = "[";
+		for (auto& e : arr) {
+			returnString += func(e) + ", ";
+		}
+		returnString.erase(returnString.end() - 2, returnString.end());
+		returnString = "]";
+
+		return returnString;
+	}
+}
+
+
 template<class Enable = dy::State>
 struct Format;
+
 
 template<>
 struct Format<dy::Enabled> {
@@ -60,10 +104,34 @@ public:
 	#define DEBUG_STATE false
 #endif
 
-using DY = dy::DebugYourself<false, Format<>>;
+using DY = dy::DebugYourself<DEBUG_STATE, Format<>>;
+
+struct TaggedDirectLogger : public DY::LoggingAction {
+    void operator()(
+        DY::SQLTypes::TEXT class_name,
+        DY::SQLTypes::TEXT object_name,
+        DY::SQLTypes::INTEGER object,
+        DY::SQLTypes::REAL objectTime,
+        DY::SQLTypes::TEXT function_name,
+        DY::SQLTypes::INTEGER function,
+        DY::SQLTypes::TEXT variable_name,
+        DY::SQLTypes::INTEGER variable,
+        DY::SQLTypes::INTEGER rank,
+        DY::SQLTypes::REAL time,
+        DY::SQLTypes::TEXT message,
+        std::vector<DY::SQLTypes::TEXT> tags) override {
+
+        for (DY::SQLTypes::TEXT tag : tags) {
+            if (tag == Tag::Debug::DirectOutput) {
+                std::cout << message << "\n";
+            }
+        }
+
+    }
+};
 
 template<class C, class O, class F, class V>
-using DY_LINK = DY::Dependencies<C, O, F, V, DY::AlwaysTrue, DY::DirectLogger<DY::AlwaysFalse>>;
+using DY_LINK = DY::Dependencies<C, O, F, V, DY::AlwaysTrue, TaggedDirectLogger>;
 
 template<class C, class O, class F, class V>
 struct _LOG {
@@ -80,43 +148,3 @@ public:
 
 using DIRLOG = _LOG<DY::No_CB, DY::No_OB, DY::No_FB, DY::No_VB>;
 
-
-
-
-namespace Tag {
-	namespace Class {
-		namespace ShaderProgram {
-			constexpr char LoadingProcedure[] = "ShaderProgram_LoadingProcedure";
-		}
-	}
-}
-
-
-namespace ObjectAlias {
-	constexpr char OpenGLMessage[] = "OpenGLMessage";
-	constexpr char Main[] = "Main";
-	constexpr char STBI[] = "Library_STBI";
-	constexpr char GLFW[] = "Library_GLFW";
-}
-
-namespace A_Severity {
-	constexpr char CriticalError[] = "CriticalError";
-	constexpr char Error[] = "Error";
-	constexpr char Warining[] = "Warning";
-	constexpr char Message[] = "Message";
-}
-
-
-namespace DebugUtils {
-	template<class T>
-	std::string arrayToString(T& arr, auto func ) {
-		std::string returnString = "[";
-		for (auto& e : arr) {
-			returnString += func(e) + ", ";
-		}
-		returnString.erase(returnString.end() - 2, returnString.end());
-		returnString = "]";
-
-		return returnString;
-	}
-}

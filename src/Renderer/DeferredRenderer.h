@@ -1,8 +1,11 @@
 #pragma once
 
+#include <GEM.h>
+
 #include "Renderer/Techniques/DeferredGeometryTechnique.h"
 #include "Renderer/Techniques/DeferredPointLightTechnique.h"
 #include "Renderer/Techniques/DeferredDirLightTechnique.h"
+#include "Renderer/Techniques/BlendingTechnique.h"
 
 #include "Scene/DynamicScene.h"
 #include "Scene/StaticScene.h"

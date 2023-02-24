@@ -1,8 +1,6 @@
 #include "vpch.h"
 #include "DeferredRenderer.h"
 
-#include "Techniques/BlendingTechnique.h"
-
 void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 	gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
@@ -132,6 +130,11 @@ void DeferredRenderer::singleLightVolumePass(const PointLight& light, const int 
 }
 
 void DeferredRenderer::reloadShaders() {
+	gem::Shader<gem::deferred_point_frag> point; 
+	point.compile();
+	gem::Shader<gem::deferred_directional_frag> dir;
+	dir.compile();
+
 	DeferredGeometryTechnique::loadShader();
 	DeferredDirLightTechnique::loadShader();
 	DeferredPointLightTechnique::loadShader();

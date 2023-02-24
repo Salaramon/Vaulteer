@@ -1,19 +1,13 @@
 #version 450 core
 out vec4 FragColor;
 
-// light types
-
-struct DDFBaseLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-};
+// imports
+##[fragments/dirLightData] //! #include "fragments/dirLightData.gem"
+##[fragments/materialTable] //! #include "fragments/materialTable.gem"
 
 
 // constants
 const int NUM_CASCADES = 1;
-
-//##scenevars(lights)
 
 const vec3 sampleOffsetDirections[20] = vec3[]
 (
@@ -41,47 +35,6 @@ uniform mat4 lightSpaceMatrices[NUM_CASCADES];
 uniform float cascadeFarPlanes[NUM_CASCADES];
 
 
-// ------------- replace with material macro
-struct DDFMaterial {
-    vec4 colorAmbient;
-    vec4 colorDiffuse;
-    vec4 colorSpecular;
-    float shininess;
-    float opacity;
-    vec2 pad; // for alignment to 16
-};
-
-layout(shared, binding = 2) uniform MaterialData {
-    uniform DDFMaterial materialTable[128];
-};
-// ------------- replace with material macro end
-
-// ------------- replace with dirlight macro
-struct DirectionalLight {
-    DDFBaseLight light;
-    vec3 direction;
-};
-
-struct UBDirectionalLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-    vec3 direction;
-};
-
-layout(shared, binding = 3) uniform DirectionalLightData {
-    uniform UBDirectionalLight directionalLight;
-};
-
-DirectionalLight lightFromUBDirectionalLight(UBDirectionalLight ubl) {
-    DirectionalLight l;
-    l.light.color = ubl.color;
-    l.light.ambientIntensity = ubl.ambientIntensity;
-    l.light.diffuseIntensity = ubl.diffuseIntensity;
-    l.direction = ubl.direction;
-    return l;
-}
-// ------------- replace with dirlight macro end
 
 // uniforms
 
@@ -91,7 +44,7 @@ uniform mat4 cameraViewMat;
 uniform vec3 fogColor;
 
 
-struct DDFFragParams {
+struct FragParams {
     vec3 fragPosition;
     vec3 fragNormal;
     int materialIndex;
@@ -137,8 +90,8 @@ float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D sh
     return shadow;
 }
 
-vec4 calcLightInternal(DDFFragParams p, DDFBaseLight light, vec3 lightDirection, float shadow) {
-    DDFMaterial mat = materialTable[p.materialIndex];
+vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float shadow) {
+    Material mat = materialTable[p.materialIndex];
 
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
@@ -174,7 +127,7 @@ vec4 calcLightInternal(DDFFragParams p, DDFBaseLight light, vec3 lightDirection,
     return (ambientColor + diffuseColor + specularColor) * adjustFactor;
 }
 
-vec4 calcDirectionalLight(DDFFragParams p, DirectionalLight dirLight, float shadow) {
+vec4 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow) {
     vec3 lightDirection = normalize(dirLight.direction);
     return calcLightInternal(p, dirLight.light, lightDirection, shadow);
 }
@@ -225,9 +178,7 @@ void main() {
     float dirLightShadowFactor = 1.0;
 
     // light calc
-    vec4 totalLight = calcDirectionalLight(params, lightFromUBDirectionalLight(directionalLight), dirLightShadow) * dirLightShadowFactor;
-    //FragColor = vec4(diffuse, 1.0);
-    //return;
+    vec4 totalLight = calcDirectionalLight(params, getDirLight(), dirLightShadow) * dirLightShadowFactor;
 
     
     // kinda hdr impl

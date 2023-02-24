@@ -17,7 +17,7 @@ in VS_OUT {
 
 
 struct ModelUnitData {
-    int xDelta; 
+    int xDelta;
     int yDelta;
     int wDelta;
     int hDelta;

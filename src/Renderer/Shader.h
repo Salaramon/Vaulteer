@@ -46,7 +46,7 @@ public:
 			|		  CONSTRUCTORS 			|
 			|_______________________________|	*/
 
-			//Loads vertex and fragment shaders on creation.
+	//Loads vertex and fragment shaders on creation.
 	template<class ...Infos>
 	Shader(Infos ...infos) :
 		setUniform(this),
@@ -116,6 +116,9 @@ public:
 
 	size_t getShaderID();
 
+	std::string getShaderDesc();
+	std::vector<std::string>& getShaderFileNames();
+
 private:
 
 	//=============================================================================================================================================//
@@ -128,6 +131,7 @@ private:
 	GLuint shaderProgramID;
 
 	std::vector<GLuint> shaderIDs;
+	std::vector<std::string> shaderFileNames;
 
 
 	//=============================================================================================================================================//
@@ -151,7 +155,7 @@ private:
 
 	//Compiles shader
 	//Returns true on error.
-	bool shader_compile(GLuint id, const char** code);
+	bool shader_compile(GLuint id, std::string& filename, const char** code);
 
 	//Checks for shader program error.
 	//Returns true on error.
@@ -159,7 +163,7 @@ private:
 
 	//Checks for shader error.
 	//Returns true if an error occured in the shader.
-	bool shader_catchError(GLuint id);
+	bool shader_catchError(GLuint id, std::string& filename);
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
@@ -167,7 +171,7 @@ private:
 
 	//Takes file contents and converts it to string.
 	//Returns contents of a file in string format.
-	std::string file_to_string(std::string path);
+	std::string file_to_string(std::string& path);
 
 	//Wraps OpenGL int vector(iv) functions. !!(Warning: May be incomplete!)
 	//Returns an integer representing parameters pertaining to OpenGL's object status.
@@ -176,7 +180,7 @@ private:
 
 	//Wraps OpenGL info log functions. !!(Warning: May be incomplete!)
 	template<class T>
-	void getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessageAppend);
+	void getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessagePrepend);
 
 	//=============================================================================================================================================//
 

@@ -16,8 +16,8 @@ void DeferredDirLightTechnique::setCameraViewMat(const glm::mat4& view) {
 
 void DeferredDirLightTechnique::uploadMaterialData() {
 	std::vector<Material::MaterialData> materials;
-	for (const auto& pair : MaterialLibrary::getAllMaterials()) {
-		materials.push_back(pair.second->data);
+	for (const auto& val : MaterialLibrary::getAllMaterials() | std::views::values) {
+		materials.push_back(val->data);
 	}
 	auto& materialData = getUBMaterialData();
 	UniformBuffer::insert(materialData, materials);

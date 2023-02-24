@@ -4,6 +4,7 @@ vendor/*
 # assets; include shaders
 resources/*
 !resources/shaders
+resources/shaders/build/
 
 # binder
 GLSLCPPBinder.exe

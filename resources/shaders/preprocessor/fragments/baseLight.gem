@@ -1,0 +1,11 @@
+struct Attenuation {
+    float aConstant;
+    float aLinear;
+    float aQuadratic;
+};
+
+struct BaseLight {
+    vec3 color;
+    float ambientIntensity;
+    float diffuseIntensity;
+};

@@ -1,8 +1,6 @@
 #include "vpch.h"
 #include "Vaulteer.h"
 
-#include "GEM.h"
-
 #include "WorldLayer.h"
 #include "DebugLayer.h"
 
@@ -12,8 +10,15 @@ Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 }
 
 void Vaulteer::initShaders() {
-	gem::Shader<gem::deferred_point_frag> shader;
-	shader.compile();
+	gem::Shader<gem::deferred_point_frag> point;
+	point.setdeferred_point_frag_materialTable(128);
+	point.setdeferred_point_frag_pointLightData(1);
+	point.compile();
+	gem::Shader<gem::deferred_directional_frag> dir;
+	dir.setdeferred_directional_frag_materialTable(128);
+	dir.compile();
+	gem::Shader<gem::geometry_vertex> gvert;
+	gvert.compile();
 
 	ShaderProgram<BlendingShader>::loadShader();
 	ShaderProgram<BlendingCompositeShader>::loadShader();

@@ -1,25 +1,14 @@
 #version 450 core
 out vec4 FragColor;
 
-// light types
-
-struct Attenuation {
-    float aConstant;
-    float aLinear;
-    float aQuadratic;
-};
-
-struct BaseLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-};
+// imports
+##[fragments/spotLightData] //! #include "fragments/spotLightData.gem"
+##[fragments/materialTable] //! #include "fragments/materialTable.gem"
 
 
 // constants
 const int NUM_CASCADES = 1;
 
-//##scenevars(lights)
 
 const vec3 sampleOffsetDirections[20] = vec3[]
 (
@@ -29,9 +18,6 @@ const vec3 sampleOffsetDirections[20] = vec3[]
    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
 );
-
-//#scenevar
-const int NUM_MATERIALS = 10;
 
 // gbuffer data
 uniform sampler2D gPosition;
@@ -52,130 +38,20 @@ uniform sampler2D shadowSpotMap_2;
 uniform sampler2D shadowSpotMap_3;
 //uniform mat4 spotLightSpaceMatrices[MAX_SPOT_LIGHTS];
 
-// shadow cube maps
-uniform samplerCube shadowCubeMap_0;
-uniform samplerCube shadowCubeMap_1;
-uniform samplerCube shadowCubeMap_2;
-uniform samplerCube shadowCubeMap_3;
-
 uniform float cubeMapFarPlanes[1];
 
-
-const MAX_MATERIALS = %%[maxMaterials,int];
-
-// material data
-struct Material {
-    vec4 colorAmbient;
-    vec4 colorDiffuse;
-    vec4 colorSpecular;
-    float shininess;
-    float opacity;
-    vec2 pad; // for alignment to 16
-};
-
-layout(shared, binding = 2) uniform MaterialData {
-    uniform Material materialTable[MAX_MATERIALS];
-};
-
-
-
-
-// ------------- replace with spotlight macro
-const int MAX_SPOT_LIGHTS = 1;
-
-struct SpotLight {
-    BaseLight light;
-    Attenuation att;
-    vec3 position;
-    float radius;
-    vec3 direction;
-    float angle;
-    mat4 lightSpaceMatrix;
-};
-
-struct UBSpotLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-    float aConstant;
-    float aLinear;
-    float aQuadratic;
-    vec3 position;
-    float radius;
-    vec3 direction;
-    float angle;
-    mat4 lightSpaceMatrix;
-};
-
-layout(shared, binding = 5) uniform SpotLightData {
-    uniform UBSpotLight spotLightTable[MAX_SPOT_LIGHTS];
-};
-
-SpotLight lightFromUBSpotlight(UBSpotLight ubl) {
-    SpotLight l;
-    l.light.color = ubl.color;
-    l.light.ambientIntensity = ubl.ambientIntensity;
-    l.light.diffuseIntensity = ubl.diffuseIntensity;
-    l.att.aConstant = ubl.aConstant;
-    l.att.aLinear = ubl.aLinear;
-    l.att.aQuadratic = ubl.aQuadratic;
-    l.position = ubl.position;
-    l.radius = ubl.radius;
-    l.direction = ubl.direction;
-    l.angle = ubl.angle;
-    return l;
-}
-// ------------- replace with spotlight macro end
-
-// ------------- replace with pointlight macro
-const int MAX_POINT_LIGHTS = 2;
-
-uniform int pointLightIndex;
-
-struct PointLight {
-    BaseLight light;
-    Attenuation att;
-    vec3 position;
-    float radius;
-};
-
-struct UBPointLight {
-    vec3 color;
-    float ambientIntensity;
-    float diffuseIntensity;
-    float aConstant;
-    float aLinear;
-    float aQuadratic;
-    vec3 position;
-    float radius;
-};
-
-layout(shared, binding = 4) uniform PointLightData {
-    uniform UBPointLight pointLightTable[MAX_POINT_LIGHTS];
-};
-
-PointLight lightFromUBPointlight(UBPointLight ubl) {
-    PointLight l;
-    l.light.color = ubl.color;
-    l.light.ambientIntensity = ubl.ambientIntensity;
-    l.light.diffuseIntensity = ubl.diffuseIntensity;
-    l.att.aConstant = ubl.aConstant;
-    l.att.aLinear = ubl.aLinear;
-    l.att.aQuadratic = ubl.aQuadratic;
-    l.position = ubl.position;
-    l.radius = ubl.radius;
-    return l;
-}
-// ------------- replace with pointlight macro end
 
 // uniforms
 
 uniform vec3 worldCameraPos;
 uniform mat4 cameraViewMat;
 
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 uniform vec3 fogColor;
+
+
+// TODO instancing
+uniform int spotLightIndex;
 
 
 struct FragParams {
@@ -211,16 +87,6 @@ sampler2D getSpotShadowMap(int spotIndex) {
     }
 }
 
-samplerCube getShadowCubeMap(int pointLightIndex) {
-    switch(pointLightIndex) {
-    case 0: return shadowCubeMap_0;
-    case 1: return shadowCubeMap_1;
-    case 2: return shadowCubeMap_2;
-    case 3: return shadowCubeMap_3;
-    default: return shadowCubeMap_0;
-    }
-}
-
 float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D shadowMap, vec3 lightDirection, float farPlane) {
     vec4 fragPosLightSpace = lightSpaceMat * vec4(fragPos, 1.0);
 
@@ -249,33 +115,8 @@ float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D sh
     return shadow;
 }
 
-float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightIndex) {
-    // get vector between fragment position and light position
-    vec3 fragToLight = fragPos - pointLights[pointLightIndex].position;
-    // use the light to fragment vector to sample from the depth map
-    float currentDepth = length(fragToLight);
-
-    // now test for shadows
-    float bias = 0.1;
-    float shadow = 0.0;
-
-    int samples = 20;
-    float viewDistance = length(worldCameraPos - fragPos);
-    float diskRadius = 0.05;
-    for(int i = 0; i < samples; ++i)
-    {
-        float closestDepth = texture(shadowCubeMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= cubeMapFarPlanes[pointLightIndex];   // undo mapping [0;1]
-        if(currentDepth - bias > closestDepth)
-            shadow += 1.0;
-    }
-    shadow /= float(samples);  
-
-    return shadow;
-}
-
 vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float shadow) {
-    DFMaterial mat = materialTable[p.materialIndex];
+    Material mat = materialTable[p.materialIndex];
 
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
     vec4 diffuseColor = vec4(0.0);
@@ -316,12 +157,8 @@ vec4 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3
 
     if (lightDistance > radius)
         return vec4(0.0);
-        //return vec4(1.0, vec3(0.0));
 
     float radiusCutoffFactor = min(1.0, (radius - lightDistance) / (radius * pointLightAngleDropoff));
-
-    //return vec4(max(radius - lightDistance * 2.5, 0.0)) + vec4(0, 0.1, 0, 0);
-    //return vec4((radius - lightDistance) / (radius * pointLightAngleDropoff));
 
     lightDirection = normalize(lightDirection);
 
@@ -329,19 +166,10 @@ vec4 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3
         + att.aLinear * lightDistance
         + 0.1 *att.aQuadratic * (lightDistance * lightDistance));
 
-    //attenuation = 1.0 * radiusCutoffFactor;
-
     return (calcLightInternal(p, light, lightDirection, 0.0) * attenuation) * radiusCutoffFactor;
 }
 
-vec4 calcPointLight(FragParams p, PointLight pointLight) {
-    vec3 lightDirection = p.fragPosition - pointLight.position;
-    float lightDistance = length(lightDirection);
-
-    return calcPointLightInternal(p, pointLight.light, pointLight.att, lightDirection, pointLight.radius, lightDistance);
-}
-
-vec4 calcSpotLight(FragParams p, SpotLight spotLight, int index) {
+vec4 calcSpotLight(FragParams p, SpotLight spotLight) {
     const float spotLightAngleDropoff = 5.0; // determines light fade rate at edge
     const float spotLightAngleThreshold = 0.002; // hides early shadowmap dropoff
 
@@ -384,29 +212,7 @@ void main() {
 
     // --------------------------------------
 
-    /*DFMaterial mat = materialTable[1];
-
-    switch (int(gl_FragCoord.y)) {
-        case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
-        case 4*1:  FragColor = vec4(mat.colorAmbient.y); break;
-        case 4*2:  FragColor = vec4(mat.colorAmbient.z); break;
-        case 4*3:  FragColor = vec4(mat.colorAmbient.w); break;
-        case 4*4:  FragColor = vec4(mat.colorDiffuse.x); break;
-        case 4*5:  FragColor = vec4(mat.colorDiffuse.y); break;
-        case 4*6:  FragColor = vec4(mat.colorDiffuse.z); break;
-        case 4*7:  FragColor = vec4(mat.colorDiffuse.w); break;
-        case 4*8:  FragColor = vec4(mat.colorSpecular.x); break;
-        case 4*9:  FragColor = vec4(mat.colorSpecular.y); break;
-        case 4*10: FragColor = vec4(mat.colorSpecular.z); break;
-        case 4*11: FragColor = vec4(mat.colorSpecular.w); break;
-        case 4*12: FragColor = vec4(mat.shininess / 256.0); break;
-        case 4*13: FragColor = vec4(mat.opacity); break;
-        case 4*14: FragColor = vec4(mat.pad.x); break;
-        case 4*15: FragColor = vec4(mat.pad.y); break;
-    }
-    if (gl_FragCoord.y < 64) return;*/
-
-    /*SpotLight l = lightFromUBSpotlight(spotLightTable[0]);
+    /*SpotLight l = getSpotLight(0);
     switch (int(gl_FragCoord.y)) {
         case 4*0:  FragColor = vec4(l.light.color.r/ 64.0); break;
         case 4*1:  FragColor = vec4(l.light.color.g/ 128.0); break;
@@ -440,41 +246,14 @@ void main() {
     float fragDepth = abs((cameraViewMat * vec4(params.fragPosition, 1.0)).z);
 
     // shadow calc
-    
-    /*int cascadeIndex = 0;
-    for (int i = 0; i < NUM_CASCADES; i++) {
-        if (fragDepth < cascadeFarPlanes[i]) {
-            cascadeIndex = i;
-            break;
-        }
-        cascadeIndex = NUM_CASCADES; 
-    }
-
-    float dirLightShadow = cascadeIndex > -1 ? 
-            calcShadow(fragPosition, fragNormal, lightSpaceMatrices[cascadeIndex], getShadowMap(cascadeIndex), directionalLight.direction, cascadeFarPlanes[cascadeIndex]) :
-            0.0; 
-
-    float dirLightShadowFactor = (1.0 - dirLightShadow / 1.5);*/
 
     float dirLightShadow = 0.0;
     float dirLightShadowFactor = 1.0;
 
     // light calc
-    vec4 totalLight = vec4(0.0);
-    
-    for (int i = 0; i < MAX_SPOT_LIGHTS; i++) {
-        totalLight += calcSpotLight(params, lightFromUBSpotlight(spotLightTable[i]), i);
-    }
+    vec4 totalLight = calcSpotLight(params, getSpotLight(spotLightIndex));
 
     //FragColor = spotLightSpaceMatrices[0] * vec4(fragPosition, 1.0) / spotLights[0].radius;
-    //return;
-
-    float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
-    totalLight = calcPointLight(params, lightFromUBPointlight(pointLightTable[pointLightIndex])) * (1.0 - pointLightShadow);
-
-    
-    //if (diffuse.x + diffuse.y + diffuse.z > 0.0)
-    //    FragColor = vec4(totalLight.x, totalLight.y, totalLight.z, 1.0);
     //return;
 
 
@@ -486,8 +265,7 @@ void main() {
     
     totalLight = vec4(min(totalLight.x, 1.0), min(totalLight.y, 1.0), min(totalLight.z, 1.0), totalLight.w) + 
                  vec4(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0), totalLight.w);
-                 
+
     vec4 fragColor = vec4(diffuse.x * totalLight.x, diffuse.y * totalLight.y, diffuse.z * totalLight.z, 1.0);
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }
-
