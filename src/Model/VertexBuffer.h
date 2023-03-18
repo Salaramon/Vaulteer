@@ -69,13 +69,13 @@ public:
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer() {
-	LOG::CTOR(this, &buffer, ("Empty VertexBuffer created with id {}", buffer));
+	//LOG::CTOR(this, &buffer, ("Empty VertexBuffer created with id {}", buffer));
 }
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 	//debug("VertexBuffer created with size " + std::to_string(bufferSize) + ".Buffer: " + std::to_string(buffer) + "\n");
-	LOG::CTOR::debug(this, &buffer, std::format("Creating VertexBuffer with id {} of size {}", buffer, bufferSize));
+	LOG::CTOR::debug(this, &buffer, DY::std_format("Creating VertexBuffer with id {} of size {}", buffer, bufferSize));
 
 	reserve(bufferSize);
 	bindVertexArray();
@@ -86,7 +86,7 @@ VertexBuffer<Store>::VertexBuffer(size_t bufferSize) {
 
 template<class Store>
 VertexBuffer<Store>::VertexBuffer(const std::vector<Store>& vertices) {
-	LOG::CTOR::debug(this, std::format("Creating VertexBuffer with id {} from vertices...", buffer));
+	LOG::CTOR::debug(this, DY::std_format("Creating VertexBuffer with id {} from vertices...", buffer));
 
 	insert(vertices);
 	bindVertexArray();
@@ -101,7 +101,7 @@ VertexBuffer<Store>::VertexBuffer(VertexBuffer&& other) noexcept :
 	Buffer(std::move(other)) {
 	//other.vao = nullptr;
 
-	LOG::CTOR::debug(this, &other, std::format("Vertex buffer with id {} was moved", buffer));
+	LOG::CTOR::debug(this, &other, DY::std_format("Vertex buffer with id {} was moved", buffer));
 }
 
 
@@ -110,7 +110,7 @@ void VertexBuffer<Store>::bindVertexArray() {
 	VertexArray<Store>& vao = getVAO();
 	glVertexArrayVertexBuffer(vao, vao.bindIndex(), buffer, 0, sizeof(Store));
 
-	LOG::CLAS::debug<&VertexBuffer<Store>::bindVertexArray>(this, &vao, std::format("Vertex array of id {} was bound to buffer with id {}", static_cast<GLuint>(vao), buffer));
+	LOG::CLAS::debug<&VertexBuffer<Store>::bindVertexArray>(this, &vao, DY::std_format("Vertex array of id {} was bound to buffer with id {}", static_cast<GLuint>(vao), buffer));
 }
 
 template<class Store>
@@ -120,7 +120,7 @@ void VertexBuffer<Store>::insert(const std::vector<Store>& vertices) {
 	//glBufferData(GL_ARRAY_BUFFER, si, vertices.data(), GL_STATIC_DRAW);
 	glNamedBufferData(buffer, vertices.size() * sizeof(Store), vertices.data(), GL_STATIC_DRAW);
 
-	LOG::CLAS::debug<&VertexBuffer<Store>::insert>(this, &buffer, std::format("Vertices inserted into buffer: {}", buffer));
+	LOG::CLAS::debug<&VertexBuffer<Store>::insert>(this, &buffer, DY::std_format("Vertices inserted into buffer: {}", buffer));
 }
 
 template<class Store>
@@ -129,7 +129,7 @@ void VertexBuffer<Store>::insertPartial(const size_t position, const std::vector
 	//glBufferSubData(GL_ARRAY_BUFFER, position * sizeof(Store), vertices.size() * sizeof(Store), vertices.data());
 	glNamedBufferSubData(buffer, position * sizeof(Store), vertices.size() * sizeof(Store), vertices.data());
 	
-	LOG::CLAS::debug<&VertexBuffer<Store>::insertPartial>(this, &buffer, std::format("Vertex data replaced in buffer: {}", buffer));
+	LOG::CLAS::debug<&VertexBuffer<Store>::insertPartial>(this, &buffer, DY::std_format("Vertex data replaced in buffer: {}", buffer));
 }
 
 template<class Store>

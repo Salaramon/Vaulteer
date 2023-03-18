@@ -2,10 +2,9 @@
 
 #include "Model/Model.h"
 #include "Scene/Scene.h"
-#include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
 
-class DeferredGeometryTechnique : public ShaderProgram<GeometryShader>
+class DeferredGeometryTechnique
 {
 public:
 	//virtual void setModel(const glm::mat4& model);
@@ -19,7 +18,7 @@ public:
 
 	// uniform buffer upload
 	static void uploadProjection(const glm::mat4& projection);
-	static void uploadModelUnitTables(const std::vector<ModelData*>& dataVector);
+	static void uploadModelUnitTables(const ViewCollection<ModelUnitTable, PropertiesModel>& modelUnitTableView);
 
 	static UniformBuffer& getUBCamera() {
 		static UniformBuffer camera = UniformBuffer(Binder::geometry_vertex::buffers::Camera);

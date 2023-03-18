@@ -328,7 +328,7 @@ PolyTree<Content, Value, dimensions>::~PolyTree()
 template<class Content, class Value, size_t dimensions>
 void PolyTree<Content, Value, dimensions>::insert(Content&& object, const Position& position)
 {
-	LOG::CLAS::debug<&PolyTree<Content, Value, dimensions>::insert>(this, std::format("object is inserted in position {}", DebugUtils::arrayToString(position, 
+	LOG::CLAS::debug<&PolyTree<Content, Value, dimensions>::insert>(this, DY::std_format("object is inserted in position {}", DebugUtils::arrayToString(position, 
 		[](Value val) { return std::to_string(val); }
 	)));
 

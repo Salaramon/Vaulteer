@@ -3,7 +3,6 @@
 #include "Renderer/Techniques/ClusterTileTechnique.h"
 
 #include "Model/Model.h"
-#include "Model/Data/ModelData.h"
 #include "API/Camera.h"
 
 class ClusteredForwardRenderer : public ClusterTileTechnique

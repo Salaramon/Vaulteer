@@ -26,7 +26,8 @@ void ShadowCascade::setProjection(const glm::mat4& projection) {
 
 void ShadowCascade::updateBounds(Camera& camera, glm::vec3 lightDirection) {
 	// calculate frustum corners
-
+	/*
+	
  	float fov = camera.getFov();
 	float aspect_ratio_h = camera.getAspectRatio();
 	float tanHalfFOV = tanf(ctradians(fov / 2));
@@ -52,7 +53,8 @@ void ShadowCascade::updateBounds(Camera& camera, glm::vec3 lightDirection) {
 
 	// get inverse camera matrix
 	glm::mat4 cameraInverseMat = glm::inverse(camera.getViewMatrix());
-
+	
+	
 	// find minimum bounding box for frustum (in light space)
 
 	glm::vec4 frustumCornersLightSpace[8];
@@ -99,4 +101,6 @@ void ShadowCascade::updateBounds(Camera& camera, glm::vec3 lightDirection) {
 		cascadeCorners[i] = glm::inverse(lightView) * cascadeCorners[i];
 		cascadeCorners[i] = { cascadeCorners[i].x, cascadeCorners[i].y, cascadeCorners[i].z, cascadeCorners[i].w };
 	}
+
+	*/
 }

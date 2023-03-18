@@ -13,6 +13,7 @@ void CameraController::setCamera(Camera* camera) {
 }
 
 void CameraController::onUpdate(float timestep) {
+	/*
 	glm::vec3 worldUp = camera->getWorldUp();
 	
 	if (Event::isDown(KeyboardKey::SPACE)) {
@@ -42,6 +43,7 @@ void CameraController::onUpdate(float timestep) {
 
 	if (camera->isRotationDirty())
 		camera->applyRotation();
+	*/
 }
 
 bool CameraController::onMouseMoveEvent(MouseMoveEvent& e) {

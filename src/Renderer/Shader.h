@@ -66,7 +66,7 @@ public:
 
 		shaderProgramID = glCreateProgram();
 		
-		LOG::CTOR::debug<Shader>(this, &shaderProgramID, std::format("Shader program created with id: {}", shaderProgramID));
+		LOG::CTOR::debug<Shader>(this, &shaderProgramID, DY::std_format("Shader program created with id: {}", shaderProgramID));
 
 		Parameter_Reader<Infos...> reader(this, infos...);
 
@@ -92,7 +92,7 @@ public:
 			glDeleteShader(id);
 		}
 
-		LOG::CTOR::debug(this, &shaderProgramID, std::format("Shader program destroyed with id: {}", shaderProgramID));
+		LOG::CTOR::debug(this, &shaderProgramID, DY::std_format("Shader program destroyed with id: {}", shaderProgramID));
 		glDeleteProgram(shaderProgramID);
 	}
 
@@ -202,135 +202,135 @@ public:
 
 		void operator()(Binder::UniformInfo uniform, GLfloat value1) const {
 			glUniform1f(shader->uniformLocationCache[uniform.name], value1);
-			LOG::SPST::debug<&glUniform1f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, value1));
+			LOG::SPST::debug<&glUniform1f>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, value1));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2) const {
 			glUniform2f(shader->uniformLocationCache[uniform.name], value1, value2);
-			LOG::SPST::debug<&glUniform2f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), uniform.name, value1, value2));
+			LOG::SPST::debug<&glUniform2f>(this, &shader, DY::std_format("shader of id{} with uniform{}, was set to{{{}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3) const {
 			glUniform3f(shader->uniformLocationCache[uniform.name], value1, value2, value3);
-			LOG::SPST::debug<&glUniform3f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3));
+			LOG::SPST::debug<&glUniform3f>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2, value3));
 		}
 		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) const {
 			glUniform4f(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
-			LOG::SPST::debug<&glUniform4f>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3, value4));
+			LOG::SPST::debug<&glUniform4f>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2, value3, value4));
 		}
 		void operator()(Binder::UniformInfo uniform, GLint value1) const {
 			glUniform1i(shader->uniformLocationCache[uniform.name], value1);
-			LOG::SPST::debug<&glUniform1i>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, value1));
+			LOG::SPST::debug<&glUniform1i>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, value1));
 		}
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2) const {
 			glUniform2i(shader->uniformLocationCache[uniform.name], value1, value2);
-			LOG::SPST::debug<&glUniform2i>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), uniform.name, value1, value2));
+			LOG::SPST::debug<&glUniform2i>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2));
 		}
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3) const {
 			glUniform3i(shader->uniformLocationCache[uniform.name], value1, value2, value3);
-			LOG::SPST::debug<&glUniform3i>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3));
+			LOG::SPST::debug<&glUniform3i>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), (std::string)(std::string)uniform.name, value1, value2, value3));
 		}
 		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3, GLint value4) const {
 			glUniform4i(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
-			LOG::SPST::debug<&glUniform4i>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3, value4));
+			LOG::SPST::debug<&glUniform4i>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2, value3, value4));
 		}
 		void operator()(Binder::UniformInfo uniform, GLuint value1) const {
 			glUniform1ui(shader->uniformLocationCache[uniform.name], value1);
-			LOG::SPST::debug<&glUniform1ui>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, value1));
+			LOG::SPST::debug<&glUniform1ui>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, value1));
 		}
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2) const {
 			glUniform2ui(shader->uniformLocationCache[uniform.name], value1, value2);
-			LOG::SPST::debug<&glUniform2ui>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), uniform.name, value1, value2));
+			LOG::SPST::debug<&glUniform2ui>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2));
 		}
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3) const {
 			glUniform3ui(shader->uniformLocationCache[uniform.name], value1, value2, value3);
-			LOG::SPST::debug<&glUniform3ui>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3));
+			LOG::SPST::debug<&glUniform3ui>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2, value3));
 		}
 		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) const {
 			glUniform4ui(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
-			LOG::SPST::debug<&glUniform4ui>(this, &shader, std::format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), uniform.name, value1, value2, value3, value4));
+			LOG::SPST::debug<&glUniform4ui>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {{{}, {}, {}, {}}}", shader->getShaderID(), (std::string)uniform.name, value1, value2, value3, value4));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec1& value) const {
 			glUniform1fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform1fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform1fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec2& value) const {
 			glUniform2fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform2fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform2fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec3& value) const {
 			glUniform3fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform3fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform3fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec4& value) const {
 			glUniform4fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform4fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform4fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec1& value) const {
 			glUniform1iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform1iv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform1iv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec2& value) const {
 			glUniform2iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform2iv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform2iv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec3& value) const {
 			glUniform3iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform3iv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform3iv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec4& value) const {
 			glUniform4iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform4iv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform4iv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec1& value) const {
 			glUniform1uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform1uiv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform1uiv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec2& value) const {
 			glUniform2uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform2uiv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform2uiv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec3& value) const {
 			glUniform3uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform3uiv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform3uiv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec4& value) const {
 			glUniform4uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
-			LOG::SPST::debug<&glUniform4uiv>(this, &shader, std::format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), uniform.name, glm::to_string(value)));
+			LOG::SPST::debug<&glUniform4uiv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to {}", shader->getShaderID(), (std::string)uniform.name, glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2& value) const {
 			glUniformMatrix2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix2fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix2fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3& value) const {
 			glUniformMatrix3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix3fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix3fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) const {
 			glUniformMatrix4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix4fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix4fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x3& value) const {
 			glUniformMatrix2x3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix2x3fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix2x3fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3x2& value) const {
 			glUniformMatrix3x2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix3x2fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix3x2fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x4& value) const {
 			glUniformMatrix2x4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix2x4fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix2x4fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4x2& value) const {
 			glUniformMatrix4x2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix4x2fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix4x2fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3x4& value) const {
 			glUniformMatrix3x4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix3x4fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix3x4fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4x3& value) const {
 			glUniformMatrix4x3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
-			LOG::SPST::debug<&glUniformMatrix4x3fv>(this, &shader, std::format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
+			LOG::SPST::debug<&glUniformMatrix4x3fv>(this, &shader, DY::std_format("shader of id {} with uniform {}, was set to a {} value of {}", shader->getShaderID(), (std::string)uniform.name, (transpose ? "transposed" : ""), glm::to_string(value)));
 		}
 	private:
 		Shader* shader;

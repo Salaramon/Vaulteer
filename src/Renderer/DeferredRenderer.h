@@ -4,8 +4,6 @@
 #include "Renderer/Techniques/DeferredPointLightTechnique.h"
 #include "Renderer/Techniques/DeferredDirLightTechnique.h"
 
-#include "Scene/DynamicScene.h"
-#include "Scene/StaticScene.h"
 #include "OpenGL.h"
 
 #include "Renderer/BatchManager.h"
@@ -13,21 +11,16 @@
 #include "API/Camera.h"
 #include "Renderer/Buffers/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
-#include "Renderer/RendererPrerequisites.h"
-#include "Renderer/Tags/Opaque.h"
 
-using deferred_dynamic_scene = DynamicScene<Camera>;
-using deferred_static_scene = StaticScene<Opaque<Model<ModelData>>>;
 
-class DeferredRenderer : public RendererPrerequisites<deferred_dynamic_scene, deferred_static_scene>, public DeferredGeometryTechnique, public DeferredPointLightTechnique {
+class DeferredRenderer : 
+	public DeferredGeometryTechnique, 
+	public DeferredPointLightTechnique {
 private:
-	template <class... Args>
-	using DeferredStaticModelIteratorPair = typename StaticScene<Args...>::template StaticSceneIterator<Opaque<Model<ModelData>>>;
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
-	inline static std::unique_ptr<ModelData> quad;
-	inline static std::unique_ptr<ModelData> sphereData;
-	inline static std::unique_ptr<Model<ModelData>> sphere;
+	inline static Mesh* quadMesh;
+	inline static Mesh* sphereMesh;
 
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
@@ -53,9 +46,9 @@ public:
 	static void lightingPass(const Camera* camera);
 	static void singleLightVolumePass(const PointLight& light, const int index);
 
-	template <class... DynamicSceneObjects, class... StaticSceneObjects>
-	static void render(DynamicScene<DynamicSceneObjects...>& dynamicScene, StaticScene<StaticSceneObjects...>& staticScene) {
-
+	template<size_t SCENE_ID>
+	static void render(Scene<SCENE_ID>& scene) {
+		/*
 		auto cameraIteratorFirst = dynamicScene.template get<Camera>().first;
 		auto* camera = (*cameraIteratorFirst).get();
 
@@ -91,6 +84,7 @@ public:
 		lightingPass(camera);
 		OpenGL::disableBlending();
 		OpenGL::disableCullFace();
+		*/
 	}
 
 };

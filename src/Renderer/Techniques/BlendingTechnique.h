@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
 #include "Model/Resources/MaterialLibrary.h"
+#include "Model/Model.h"
+#include "Scene/Scene.h"
 
-class BlendingTechnique : public ShaderProgram<BlendingShader> {
+class BlendingTechnique {
 public:
 	static void setModel(const glm::dmat4& model);
 	static void setView(const glm::dmat4& view);
@@ -15,8 +16,8 @@ public:
 
 	// uniform buffer upload
 	static void uploadProjection(const glm::mat4& projection);
-	static void uploadModelUnitTables(const std::vector<ModelData*>& dataVector);
-	static void uploadMaterialData(const std::vector<ModelData*>& modelVector);
+	static void uploadModelUnitTables(const ViewCollection<ModelUnitTable, PropertiesModel>& modelUnitTableView);
+	static void uploadMaterialData();
 
 	static UniformBuffer& getUBCamera() {
 		static UniformBuffer camera = UniformBuffer(Binder::forward_vertex::buffers::Camera);

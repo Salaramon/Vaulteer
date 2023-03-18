@@ -3,9 +3,10 @@
 #include <any>
 
 #include "GLSLCPPBinder.h"
-#include "Model/Data/ModelData.h"
 
 #include "Debug/Debug.h"
+
+#include "Model/Buffer.h"
 
 class UniformBuffer : Buffer<BufferType::UniformBuffer> {
 public:
@@ -15,16 +16,24 @@ public:
 		inline static constexpr GLenum Stream  = GL_STREAM_DRAW; // modify once, use rarely
 	};
 
-	UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint = DrawHint::Dynamic);
-	UniformBuffer(UniformBuffer&& other) noexcept;
+	UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint = DrawHint::Dynamic) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint) {
+		LOG::CTOR::debug<UniformBuffer>(this, DY::std_format("Creating UBO for {} (size {})", (std::string)bufferInfo.name, bufferInfo.size));
+	}
+
+	UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(other)), binding(other.binding), size(other.size), drawHint(other.drawHint) {
+		other.buffer = 0;
+	}
 
 	template<class T>
 	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
 		
-		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const std::vector<T>&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
+		/*
+		LOG::SPGL::debug<DY::OverloadSelector<UniformBuffer, void(UniformBuffer&, const std::vector<T>&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
+		*/
+		
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -37,9 +46,11 @@ public:
 		size_t dataSize = sizeof(data);
 
 		// IF LNK1179 OCCUR EX.(https://zal.s-ul.eu/3lZYOnhU) it probably means debugging is done improper. A quick fix is to use static cast instead.
-		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const T&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
+		/*
+		LOG::SPGL::debug<DY::OverloadSelector<UniformBuffer, void(UniformBuffer&, const T&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
 			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
 		);
+		*/
 		
 		assert(dataSize <= ubo.size);
 
@@ -60,22 +71,5 @@ private:
 	const size_t size;
 
 	const GLenum drawHint;
-
-public:
-	inline static auto FR = DY::FunctionRegister <
-		DY::OverloadSelector<void(UniformBuffer&, const std::vector<ModelData::ModelUnitData>&)>::Get<&UniformBuffer::insert<ModelData::ModelUnitData>>,
-		DY::OverloadSelector<void(UniformBuffer&, const std::vector<Material::MaterialData>&)>::Get<&UniformBuffer::insert<Material::MaterialData>>,
-		DY::OverloadSelector<void(UniformBuffer&, const glm::mat4&)>::Get<&UniformBuffer::insert<glm::mat4>>
-	>("insert<std::vector<ModelUnitData>>",  "insert<std::vector<MaterialData>>", "insert<glm::mat4>");
-
-	DY::ObjectRegister<UniformBuffer,
-		decltype(binding),
-		decltype(size),
-		decltype(drawHint)> OR;
-	
-	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
-	inline static auto FB = DY::FunctionBinder(FR);
-
-	using LOG = _LOG<DY::No_CB, decltype(OB), decltype(FB), DY::No_VB>;
 
 };

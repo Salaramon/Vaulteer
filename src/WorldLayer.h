@@ -21,12 +21,14 @@ private:
 	CameraController cameraController;
 	
 	//Scenes
-	DynamicScene<Camera> dynamicScene;
+	inline static constexpr size_t scene_0 = 0;
+
+	Scene<scene_0> scene;
 	//StaticScene<Model<ModelData>> staticScene;
-	StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
-	StaticScene<TransparentModel> transparentScene;
+	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
+	//StaticScene<TransparentModel> transparentScene;
 	
-	Renderer<DeferredRenderer> opaqueRenderer;
-	Renderer<BlendingForwardRenderer> transparentRenderer;
+	//Renderer<DeferredRenderer> opaqueRenderer;
+	//Renderer<BlendingForwardRenderer> transparentRenderer;
 };
 

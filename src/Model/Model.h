@@ -1,180 +1,133 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#
 
-#include "Model/Data/ModelData.h"
+#include <glm/glm.hpp>
+#include <assimp/scene.h>
+
 #include "Renderer/Shader.h"
 #include "Scene/Object3D.h"
+#include "Model/Mesh.h"
+#include "Textures/Texture2DArray.h"
 
-template<class Data>
-class Model : public Object3D
-{
-public:
-	struct Faces {
-		inline static constexpr GLenum Front = GL_FRONT;
-		inline static constexpr GLenum Back = GL_BACK;
-		inline static constexpr GLenum Both = GL_FRONT_AND_BACK;
-	};
+#include <Seb.h> 
 
-	struct Polygon {
-		inline static constexpr GLenum Point = GL_POINT;
-		inline static constexpr GLenum Line = GL_LINE;
-		inline static constexpr GLenum Fill = GL_FILL;
-	};
-
-	Model(Data& data);
-	Model(Data* data);
-	Model(Model&) = delete;
-	Model(Model&& model) noexcept;
-
-	void setPolygonFaces(GLenum faces);
-	void setPolygonMode(GLenum mode);
-	void setPolygonLineWidth(GLfloat width);
-
-	glm::vec4 getBoundingSphere();
-
-	GLenum getPolygonFaces() const;
-	GLenum getPolygonMode() const;
-	GLfloat getPolygonLineWidth() const;
-
-	Data* getData();
-	Material* getMaterial();
-
-	
-private:
-	Data* model = nullptr;
-	Material* materialOverride = nullptr;
-
-	GLenum polygonFaces = Faces::Both;
-	GLenum polygonMode = Polygon::Fill;
-	GLfloat polygonLineWidth = 1;
-
-
-public:
-	inline static auto CR = DY::ClassRegister<
-		&setPolygonFaces,
-		&setPolygonMode,
-		&setPolygonLineWidth,
-		&getBoundingSphere,
-		&getPolygonFaces,
-		&getPolygonMode,
-		&getPolygonLineWidth,
-		&getData>(
-			"setPolygonFaces",
-			"setPolygonMode",
-			"setPolygonLineWidth",
-			"getBoundingSphere",
-			"getPolygonFaces",
-			"getPolygonMode",
-			"getPolygonLineWidth",
-			"getData");
-
-	DY::ObjectRegister<Model<Data>,
-		decltype(model),
-		decltype(polygonFaces),
-		decltype(polygonMode)> OR;
-
-	inline static auto CB = DY::ClassBinder(CR);
-	inline static auto OB = DY::ObjectBinder<decltype(OR), decltype(Shader::OB)>();
-
-	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
+enum class Faces {
+	FRONT = GL_FRONT,
+	BACK = GL_BACK,
+	BOTH = GL_FRONT_AND_BACK
 };
 
-template <class Data>
-Model<Data>::Model(Model&& model) noexcept :
-	Object3D(std::forward<Model>(model)),
-	model(std::move(model.model)),
-	polygonFaces(std::move(model.polygonFaces)),
-	polygonMode(std::move(model.polygonMode)),
-	polygonLineWidth(std::move(model.polygonLineWidth)) {}
+struct PropertiesModel {
+public:
+	glm::vec4 boundingSphere;
+	Faces faces;
+	size_t textureID;
+};
 
-template<class Data>
-inline Model<Data>::Model(Data& data) :
-	OR(this,
-		DY::V(
-			&model,
-			&polygonFaces,
-			&polygonMode),
-		DY::N(
-			"model",
-			"polygonFaces",
-			"polygonMode")),
+struct Meshes : public std::vector<Mesh*> {
+public:
+	using std::vector<Mesh*>::operator=;
+	using std::vector<Mesh*>::vector;
+};
 
-	Object3D(),
-	model(&data)
-{
-	OB.add(OR);
+struct ModelUnitTable {
+public:
+	struct ModelUnitData {
+		int xDelta, yDelta, wDelta, hDelta, layerDelta;
+		ModelUnitData() : xDelta(0), yDelta(0), wDelta(0), hDelta(0), layerDelta(1) {}
+		ModelUnitData(const Texture2DArray::TextureUnit& u) : xDelta(u.x), yDelta(u.y), wDelta(u.w), hDelta(u.h), layerDelta(u.layer) {}
+	};
 
-	LOG::CTOR::debug(this, "Model data loaded into model from reference");
-}
+	ModelUnitData diffuseUnit, specularUnit, normalMapUnit;
 
-template<class Data>
-inline Model<Data>::Model(Data* data) : 
-	OR(this,
-		DY::V(
-			&model,
-			&polygonFaces,
-			&polygonMode),
-		DY::N(
-			"model",
-			"polygonFaces",
-			"polygonMode")),
+	ModelUnitTable() = default;
 
-	Object3D(),
-	model(data)
-{
-	OB.add(OR);
+	void setUnit(aiTextureType ttype, const Texture2DArray::TextureUnit& u) {
+		switch (ttype) {
+		case aiTextureType_DIFFUSE: diffuseUnit = u;
+			break;
+		case aiTextureType_SPECULAR: specularUnit = u;
+			break;
+		case aiTextureType_HEIGHT: normalMapUnit = u;
+			break;
+		default:;
+		}
+	}
 
-	LOG::CTOR::debug(this, "Model data loaded into model from pointer");
-}
+	const ModelUnitData& operator[](size_t index) const {
+		switch (index) {
+		case 0: return diffuseUnit;
+		case 1: return specularUnit;
+		case 2: return normalMapUnit;
+		default: throw std::exception("invalid index");
+		}
+	}
+};
 
-template <class Data>
-void Model<Data>::setPolygonFaces(GLenum faces) {
-	polygonFaces = faces;
-}
+template<class... TupleArgs>
+class ModelUtility : public Entity::Restricter<TupleArgs...> {
+public:
+	ModelUtility(TupleArgs... args) :
+		meshes(Entity::tryGet<Meshes>(std::tie(args...))),
+		propertiesModel(Entity::tryGet<PropertiesModel>(std::tie(args...))),
+		modelUnitTable(Entity::tryGet<ModelUnitTable>(std::tie(args...)))
+	{}
 
-template <class Data>
-void Model<Data>::setPolygonMode(GLenum mode) {
-	polygonMode = mode;
-}
+	ModelUtility(std::tuple<TupleArgs...> tuple) :
+		meshes(Entity::tryGet<Meshes>(tuple)),
+		propertiesModel(Entity::tryGet<PropertiesModel>(tuple)),
+		modelUnitTable(Entity::tryGet<ModelUnitTable>(tuple))
+	{}
 
-template <class Data>
-void Model<Data>::setPolygonLineWidth(GLfloat width) {
-	polygonLineWidth = width;
-}
+	
 
-template <class Data>
-GLenum Model<Data>::getPolygonFaces() const {
-	return polygonFaces;
-}
+protected:
+	Meshes* meshes;
+	PropertiesModel* propertiesModel;
+	ModelUnitTable* modelUnitTable;
+};
 
-template <class Data>
-GLenum Model<Data>::getPolygonMode() const {
-	return polygonMode;
-}
+class Model : public Object3D {
+public:
 
-template <class Data>
-GLfloat Model<Data>::getPolygonLineWidth() const {
-	return polygonLineWidth;
-}
+	Model() :
+		meshes(this->add<Meshes>()),
+		propertiesModel(this->add<PropertiesModel>(PropertiesModel{
+			.boundingSphere = boundingSphere(),
+			.faces = Faces::FRONT,
+			.textureID = 0
+			})),
+		modelUnitTable(this->add<ModelUnitTable>())
+	{}
 
-template <class Data>
-Data* Model<Data>::getData() {
-	return model;
-}
+	Meshes& meshes;
+	PropertiesModel& propertiesModel;
+	ModelUnitTable& modelUnitTable;
 
-template <class Data>
-Material* Model<Data>::getMaterial() {
-	return materialOverride != nullptr ? materialOverride : model->getOriginalMaterial() ;
-}
+	void setPolygonFaces(Faces faces) {
+		propertiesModel.faces = faces;
+	}
+	
+private:
 
-template <class Data>
-glm::vec4 Model<Data>::getBoundingSphere() {
-	glm::vec4 sphere(model->getBoundingSphere());
-	glm::vec3 pos = getPosition();
-	sphere.x += pos.x;
-	sphere.y += pos.y;
-	sphere.z += pos.z;
-	LOG::CLAS::debug<&Model<Data>::getBoundingSphere>(this, std::format("Got bounding sphere with values: {}", glm::to_string(sphere)));
-	return sphere;
-}
+	glm::vec4 boundingSphere() {
+		std::vector<Seb::Point<double>> points;
+		for (const Mesh* mesh : meshes) {
+			for (const Vertex& vertex : mesh->vertices) {
+				std::vector<double> converter({ vertex.aPos.x, vertex.aPos.y, vertex.aPos.z });
+				points.emplace_back(3, converter.begin());
+			}
+		}
+		Seb::Smallest_enclosing_ball<double> ball(3, points);
+		Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
+
+		glm::vec4 boundingSphere(it[0], it[1], it[2], ball.radius());
+
+		boundingSphere.x += position.x;
+		boundingSphere.y += position.y;
+		boundingSphere.z += position.z;
+
+		return boundingSphere;
+	}
+};

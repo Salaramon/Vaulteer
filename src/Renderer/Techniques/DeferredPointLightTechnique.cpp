@@ -9,41 +9,41 @@
 void DeferredPointLightTechnique::init() {
     int texId = 0;
 
-    shader->setUniform(fragUnis::gPosition, texId++);
-    shader->setUniform(fragUnis::gNormal, texId++);
-    shader->setUniform(fragUnis::gColor, texId++);
-    shader->setUniform(fragUnis::shadowMap_0, texId++);
-    shader->setUniform(fragUnis::shadowMap_1, texId++);
-    shader->setUniform(fragUnis::shadowMap_2, texId++);
-    shader->setUniform(fragUnis::shadowCubeMap_0, texId++);
-    shader->setUniform(fragUnis::shadowCubeMap_1, texId++);
-    shader->setUniform(fragUnis::shadowCubeMap_2, texId++);
-    shader->setUniform(fragUnis::shadowCubeMap_3, texId++);
-    shader->setUniform(fragUnis::shadowSpotMap_0, texId++);
-    shader->setUniform(fragUnis::shadowSpotMap_1, texId++);
-    shader->setUniform(fragUnis::shadowSpotMap_2, texId++);
-    shader->setUniform(fragUnis::shadowSpotMap_3, texId++);
+    //shader->setUniform(fragUnis::gPosition, texId++);
+    //shader->setUniform(fragUnis::gNormal, texId++);
+    //shader->setUniform(fragUnis::gColor, texId++);
+    //shader->setUniform(fragUnis::shadowMap_0, texId++);
+    //shader->setUniform(fragUnis::shadowMap_1, texId++);
+    //shader->setUniform(fragUnis::shadowMap_2, texId++);
+    //shader->setUniform(fragUnis::shadowCubeMap_0, texId++);
+    //shader->setUniform(fragUnis::shadowCubeMap_1, texId++);
+    //shader->setUniform(fragUnis::shadowCubeMap_2, texId++);
+    //shader->setUniform(fragUnis::shadowCubeMap_3, texId++);
+    //shader->setUniform(fragUnis::shadowSpotMap_0, texId++);
+    //shader->setUniform(fragUnis::shadowSpotMap_1, texId++);
+    //shader->setUniform(fragUnis::shadowSpotMap_2, texId++);
+    //shader->setUniform(fragUnis::shadowSpotMap_3, texId++);
 } 
 
 
 void DeferredPointLightTechnique::setPointLightIndex(const int index) {
-    shader->setUniform(fragUnis::pointLightIndex, index);
+    //shader->setUniform(fragUnis::pointLightIndex, index);
 }
 
 void DeferredPointLightTechnique::setModel(const glm::dmat4& model) {
-	shader->setUniform(vertUnis::model, 1, GL_FALSE, model);
+	//shader->setUniform(vertUnis::model, 1, GL_FALSE, model);
 }
 
 void DeferredPointLightTechnique::setView(const glm::dmat4& view) {
-	shader->setUniform(vertUnis::view, 1, GL_FALSE, view);
+	//shader->setUniform(vertUnis::view, 1, GL_FALSE, view);
 }
 
 void DeferredPointLightTechnique::setWorldCameraPos(const glm::vec3& cameraPos) {
-    shader->setUniform(fragUnis::worldCameraPos, 1, cameraPos);
+    //shader->setUniform(fragUnis::worldCameraPos, 1, cameraPos);
 }
 
 void DeferredPointLightTechnique::setCameraViewMat(const glm::mat4& view) {
-    shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, view);
+    ////shader->setUniform(fragUnis::cameraViewMat, 1, GL_FALSE, view);
 
     //setInverseViewMat(glm::inverse(view));
 }
@@ -69,15 +69,15 @@ void DeferredPointLightTechnique::uploadPointLightData(const std::vector<PointLi
 
 /*void LightingTechnique::setShadowMapData(ShadowRenderer& shadowRenderer) {
     for (unsigned int i = 0; i < shadowRenderer.numCascades; i++) {
-        shader->setUniform(fragUnis::lightSpaceMatrices[i], 1, GL_FALSE, shadowRenderer.getCascade(i).getLightSpaceMatrix());
-        shader->setUniform(fragUnis::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
+        //shader->setUniform(fragUnis::lightSpaceMatrices[i], 1, GL_FALSE, shadowRenderer.getCascade(i).getLightSpaceMatrix());
+        //shader->setUniform(fragUnis::cascadeFarPlanes[i], shadowRenderer.getCascade(i).zFar);
     }
 
     for (unsigned int i = 0; i < shadowRenderer.numPointBuffers; i++) {
-        shader->setUniform(fragUnis::cubeMapFarPlanes[i], shadowRenderer.getPointBuffer(i).farPlane);
+        //shader->setUniform(fragUnis::cubeMapFarPlanes[i], shadowRenderer.getPointBuffer(i).farPlane);
     }
 }*/
 
 void DeferredPointLightTechnique::setFogColor(const glm::vec3& color) {
-    shader->setUniform(fragUnis::fogColor, 1, color);
+    ////shader->setUniform(fragUnis::fogColor, 1, color);
 }

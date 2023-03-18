@@ -8,37 +8,31 @@
 
 #include "Renderer/DeferredRenderer.h"
 
-#include "Renderer/RendererPrerequisites.h"
 #include "Renderer/Buffers/AlphaBuffer.h"
 #include "Renderer/Techniques/ShadowVolumeTechnique.h"
 
-#include "Scene/StaticScene.h"
-#include "Scene/DynamicScene.h"
-
-#include "Model/Data/ModelData.h"
 #include "Model/Data/LineData.h"
 
 #include "API/Camera.h"
 
-#include "Renderer/Tags/Opaque.h"
 
-class ShadowVolumeRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<OpaqueModel>>, 
+class ShadowVolumeRenderer :
 	public ShadowVolumeTechnique {
 	inline static std::unique_ptr<FrameBuffer> frameBuffer;
-	inline static std::unique_ptr<ModelData> quad;
+	inline static Mesh* quad;
 
 public:
 	static void initialize(uint screenWidth, uint screenHeight);
 	
 	static void reloadShaders();
 
-	template<class... Args1, class... Args2>
-	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
-		auto cameraIteratorPair = dynamicScene.get<Camera>();
+	template<auto SCENE_ID>
+	static void render(Scene<SCENE_ID>& scene) {
+		auto cameraIteratorPair = scene.get<Camera>();
 		auto cameraBeginIt = cameraIteratorPair.first;
 		auto* camera = (*cameraBeginIt).get();
 
-		blendingPass(staticScene, camera);
+		blendingPass(scene, camera);
 
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -46,8 +40,9 @@ public:
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	template<class... Args2>
-	static void blendingPass(StaticScene<Args2...>& staticScene, Camera* camera) {
+
+	template<size_t SCENE_ID>
+	static void blendingPass(Scene<SCENE_ID>& scene, Camera* camera) {
 		ShadowVolumeTechnique::use();
 
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
@@ -66,23 +61,27 @@ public:
 			return result;*/
 		};
 
-		const auto modelDataIteratorPair = staticScene.get<OpaqueModel>(staticSceneRestriction);
+		//const auto modelDataIteratorPair = scene.get<OpaqueModel>(staticSceneRestriction);
 
-		ShadowVolumeTechnique::setInverseViewMatrix(camera->getViewMatrix());
+		//ShadowVolumeTechnique::setInverseViewMatrix(camera->getViewMatrix());
 
+		/*
 		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
 			auto& model = (*it).get()->model;
 			ModelData* modelData = model.getData();
 			ShadowVolumeTechnique::setModelView(model.getModelMatrix(), camera->getViewMatrix());
 
 			std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
+			
 
 			for (Mesh& mesh : modelDataMeshes) {
 				mesh.bind();
 				glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
 				mesh.unbind();
 			}
+			
 		}
+		*/
 	}
 };
 

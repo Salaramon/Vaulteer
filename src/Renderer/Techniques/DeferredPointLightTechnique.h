@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
 
 #include "VFX/LightTypes.h"
 
-class DeferredPointLightTechnique : public ShaderProgram<DeferredPointShader> {
+class DeferredPointLightTechnique {
 public:
 	using vertUnis = Binder::deferred_point_vertex::uniforms;
 	using fragUnis = Binder::deferred_point_frag::uniforms;

@@ -8,9 +8,6 @@
 #include <entt.hpp>
 
 void WorldLayer::onAttach() {
-	entt::registry r;
-	r.storage();
-	entt::
 
 	Window& window = Application::getWindow();
 
@@ -18,25 +15,31 @@ void WorldLayer::onAttach() {
 	BlendingForwardRenderer::initialize(window.getWidth(), window.getHeight());
 	
 	//Setting up cameras in the scene.
-	Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)Window::getWidth() / (float)Window::getHeight()));
-	cameraController.setCamera(camera);
+	Camera camera;
+	
+	Object3DUtility camUtil(camera.rotation, camera.position, camera.properties3D);
 
-	auto setAspectRatio = [camera](int w, int h) {
-		camera->setAspectRatio(w, h);
+	camUtil.viewMatrix();
+	//Camera* camera = dynamicScene.addObject(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0, 1000, 60, (float)Window::getWidth() / (float)Window::getHeight()));
+	//cameraController.setCamera(camera);
+
+
+	auto setAspectRatio = [/*camera*/](int w, int h) {
+		//camera->setAspectRatio(w, h);
 	};
 	Window::addResizeCallback(setAspectRatio);
 
 
 	ResourcePack& pack = ResourceManager::getPack(0);
-	auto model1 = Model(pack.getModelByName("palm"));
-	auto model2 = Model(pack.getModelByName("crate"));
+	//auto model1 = Model(pack.getModelByName("palm"));
+	//auto model2 = Model(pack.getModelByName("crate"));
 
 	DeferredRenderer::preload(pack);
 
 	//Add models to scene layers(s)
 	std::vector<Object3D*> objects;
 
-	std::vector<OpaqueModel> opaqueModels;
+	//std::vector<OpaqueModel> opaqueModels;
 
 	//Generate trees how about you kill yourself
 	intmax_t width = 10, height = 10;
@@ -46,31 +49,31 @@ void WorldLayer::onAttach() {
 			float x = sin(randf(0.f, M_2_PI)) * r;
 			float y = cos(randf(0.f, M_2_PI)) * r;
 
-			model1.setPosition(8 * i + x, ((float)(rand() % 8)/8), 8 * j + y);
-			model1.setRotation((float) (rand() % 360) / M_PI, glm::vec3(0, 1, 0));
-			opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
+			//model1.setPosition(8 * i + x, ((float)(rand() % 8)/8), 8 * j + y);
+			//model1.setRotation((float) (rand() % 360) / M_PI, glm::vec3(0, 1, 0));
+			//opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
 		}
 	}
 
-	model2.setPosition(0, 0, 0);
-	model2.setScale(glm::vec3(5.0f));
-	model2.setRotation(0.0, glm::vec3(1.0, 0.0, 0));
-	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
-	opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
+	//model2.setPosition(0, 0, 0);
+	//model2.setScale(glm::vec3(5.0f));
+	//model2.setRotation(0.0, glm::vec3(1.0, 0.0, 0));
+	//opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
+	//opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
 
- 	opaqueScene.finalize();
+ 	//opaqueScene.finalize();
 
-	model2.setPosition(20, 2, 0);
-	model2.setScale(glm::vec3(0.5f));
-	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
-	model2.setPosition(0, 2, 20);
-	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
+	//model2.setPosition(20, 2, 0);
+	//model2.setScale(glm::vec3(0.5f));
+	//transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
+	//model2.setPosition(0, 2, 20);
+	//transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
 
-	transparentScene.finalize();
+	//transparentScene.finalize();
 
 	//Setup variables and function calls.
-	camera->setLockedUp(true);
-	camera->setPosition(0, 10, 0);
+	//camera->setLockedUp(true);
+	//camera->setPosition(0, 10, 0);
 
 	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 }
@@ -80,8 +83,8 @@ void WorldLayer::onUpdate(float timestep) {
 	cameraController.onUpdate(timestep);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	opaqueRenderer.render(dynamicScene, opaqueScene);
-	transparentRenderer.render(dynamicScene, transparentScene);
+	//opaqueRenderer.render(dynamicScene, opaqueScene);
+	//transparentRenderer.render(dynamicScene, transparentScene);
 }
 
 void WorldLayer::onEvent(BaseEvent& e) {

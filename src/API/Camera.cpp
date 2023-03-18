@@ -1,6 +1,7 @@
 #include "vpch.h"
 #include "API/Camera.h"
 
+/*
 Camera::Camera(): fov(45.0f), renderDistance(1000.0f), aspectRatio(1.6f), orientation(glm::vec3(0.0f)), 
 	OR(this, DY::V(
 			&lockedUp,
@@ -111,7 +112,8 @@ void Camera::rotate(float yaw, float pitch, float roll) {
 void Camera::setRotation(float yaw, float pitch, float roll) {
 	LOG::CLAS::debug<DY::OverloadSelector<Camera, void(float, float, float)>::Get<&Camera::setRotation>>(this, "this function is not implemented!");
 }
-
+*/
+/*
 void Camera::setRotation(glm::vec3 direction, float roll) {
 	/*
 	glm::vec3 up = getUp();
@@ -123,11 +125,13 @@ void Camera::setRotation(glm::vec3 direction, float roll) {
 	}
 
 	orientation = glm::quatLookAt(glm::normalize(direction), up);
-	*/
+	
 	//orientation *= glm::angleAxis(glm::radians(-roll), glm::vec3(0, 0, 1));
 
 	LOG::CLAS::debug<DY::OverloadSelector<Camera, void(glm::vec3, float)>::Get<&Camera::setRotation>>(this, "this function is not implemented!");
 }
+*/
+/*
 
 glm::vec3 Camera::getLockedUp() const {
 	return (lockedUp ? worldUp : glm::vec3(0.0f));
@@ -205,18 +209,19 @@ glm::vec3 Camera::getPosition() const {
 	LOG::CLAS::debug<&Camera::getPosition>(this, &position, DY::std_format("camera position returned {}", DY::glm_to_string(position)));
 	return position;
 }
-
+*/
 /*
 void Camera::updateShaderMatrices()
 {
 	//can be optimized by only calling glm::perspective and GetViewMatrix only when changes happened.
 	mProjection =  glm::perspective(glm::radians(fov), aspectRatio, 0.1f, renderDistance);
-	shader->setUniform(uProjection, 1, GL_FALSE, mProjection);
+	//shader->setUniform(uProjection, 1, GL_FALSE, mProjection);
 
 	mView = GetViewMatrix();
-	shader->setUniform(uView, 1, GL_FALSE, mView);
+	//shader->setUniform(uView, 1, GL_FALSE, mView);
 }
 */
+/*
 
 float Camera::getFov() const {
 	LOG::CLAS::debug<&Camera::getFov>(this, &fov, DY::std_format("camera fov returned {}", fov));
@@ -277,3 +282,5 @@ glm::vec3 Camera::getUp() const {
 
 	return result;
 }
+
+*/

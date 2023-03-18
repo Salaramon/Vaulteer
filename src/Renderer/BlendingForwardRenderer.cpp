@@ -3,8 +3,6 @@
 
 void BlendingForwardRenderer::initialize(uint screenWidth, uint screenHeight) {
 	alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
-
-	quad = ResourceLoader::importModel("resources/quad.obj");
 }
 
 void BlendingForwardRenderer::rebuildAlphaBuffer(int width, int height) {
@@ -13,7 +11,7 @@ void BlendingForwardRenderer::rebuildAlphaBuffer(int width, int height) {
 }
 
 void BlendingForwardRenderer::reloadShaders() {
-	BlendingTechnique::reloadShader();
-	BlendingCompositeTechnique::reloadShader();
+	//BlendingTechnique::reloadShader();
+	//BlendingCompositeTechnique::reloadShader();
 }
 

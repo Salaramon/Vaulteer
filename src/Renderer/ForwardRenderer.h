@@ -1,23 +1,22 @@
 #pragma once
 
-#include "Renderer/RendererPrerequisites.h"
 #include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/LineTechnique.h"
-#include "Scene/StaticScene.h"
-#include "Scene/DynamicScene.h"
 
 #include "Model/Model.h"
-#include "Model/Data/ModelData.h"
-#include "Model/Data/LineData.h"
 #include "API/Camera.h"
 
+#include "Scene/Scene.h"
 
 
-class ForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<Model<ModelData>, Model<LineData>>>, public BlendingTechnique, public LineTechnique {
+
+class ForwardRenderer : 
+	public BlendingTechnique, 
+	public LineTechnique {
 public:
 
-	template<class... Args1, class... Args2>
-	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
+	template<size_t SCENE_ID>
+	static void render(Scene<SCENE_ID>& scene) {
 		BlendingTechnique::use();
 
 		/*auto cameraIteratorPair = dynamicScene.get<Camera>();

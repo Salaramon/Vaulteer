@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Renderer/ShaderProgram.h"
 
-class LineTechnique : public ShaderProgram<LineShader>
+class LineTechnique
 {
 public:
 	static void setModel(glm::mat4 matrix);
