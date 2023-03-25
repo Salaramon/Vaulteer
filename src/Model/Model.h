@@ -96,14 +96,20 @@ private:
 				points.emplace_back(3, converter.begin());
 			}
 		}
-		Seb::Smallest_enclosing_ball<double> ball(3, points);
-		Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
 
-		glm::vec4 boundingSphere(it[0], it[1], it[2], ball.radius());
 
-		boundingSphere.x += position.x;
-		boundingSphere.y += position.y;
-		boundingSphere.z += position.z;
+		glm::vec4 boundingSphere{0, 0, 0, 0};
+
+		if (points.size() != 0) {
+			Seb::Smallest_enclosing_ball<double> ball(3, points);
+			Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
+
+			glm::vec4 boundingSphere(it[0], it[1], it[2], ball.radius());
+
+			boundingSphere.x += position.x;
+			boundingSphere.y += position.y;
+			boundingSphere.z += position.z;
+		}
 
 		return boundingSphere;
 	}

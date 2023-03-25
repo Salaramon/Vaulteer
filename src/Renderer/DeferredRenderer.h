@@ -227,7 +227,6 @@ public:
 		
 		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, ModelUnitTable, Position3D, Rotation3D>();
 
-
 		if (buildBatch) {
 			modelView.each([](const PropertiesModel& propertiesModel, const Properties3D& properties3D, const Meshes& meshes, const ModelUnitTable& modelUnitTable, const Position3D& position3D, const Rotation3D& rotation3D) {
 				

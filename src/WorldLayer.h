@@ -42,6 +42,17 @@ public:
 
 		Window::addResizeCallback(setAspectRatio);
 
+		modelA.position = { 1,1,1 };
+		modelB.position = { 2,2,2 };
+
+		Vertices vertices;
+		Indices indices;
+		Mesh* mesh = new Mesh(vertices, indices);
+		modelA.meshes.push_back(mesh);
+
+		scene.add(modelA);
+		scene.add(modelB);
+
 
 		//ResourcePack& pack = ResourceManager::getPack(0);
 		//auto model1 = Model(pack.getModelByName("palm"));
@@ -107,6 +118,9 @@ private:
 	Camera camera;
 	CameraController cameraController;
 	
+	Model modelA;
+	Model modelB;
+
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
 

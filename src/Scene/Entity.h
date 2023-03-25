@@ -50,11 +50,23 @@ public:
 	};
 
 
+	template<class T1, class T2, class... Args>
+	struct TryGetType {
+	public:
+		using type = std::conditional_t<std::is_same_v<std::remove_cvref_t<T1>, std::remove_cvref_t<T2>>, T2, typename TryGetType<T1, Args...>::type>;
+	};
+
+	template<class T1, class T2>
+	struct TryGetType<T1, T2> {
+	public:
+		using type = std::conditional_t<std::is_same_v<std::remove_cvref_t<T1>, std::remove_cvref_t<T2>>, T2, void>;
+	};
+
 	template<class T, class... Args>
 	inline static T* tryGet(std::tuple<Args...> tuple) {
-		constexpr bool typeExists = std::disjunction_v<std::is_same<T, Args>...>;
+		constexpr bool typeExists = std::disjunction_v<std::is_same<std::remove_cvref_t<T>, std::remove_cvref_t<Args>>...>;
 		if constexpr (typeExists) {
-			return &std::get<T>(tuple);
+			return &std::get<typename TryGetType<T, Args...>::type>(tuple);
 		}
 		return nullptr;
 	}
