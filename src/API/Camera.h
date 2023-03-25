@@ -40,22 +40,45 @@ struct Frustum {
 };
 
 
-template<class... TupleArgs>
-class CameraUtility : public Entity::Restricter<TupleArgs...> {
+class Camera : public Object3D {
 public:
 
-	CameraUtility(TupleArgs... args) :
-		properties(Entity::tryGet<PropertiesCamera>(std::tie(args...)))
+	Camera() :
+		propertiesCamera(this->add<PropertiesCamera>(PropertiesCamera{
+			.aspectRatio = 0.f,
+			.fov = 45.f,
+			.near = 1000.f,
+			.far = 0.1f }))
 	{}
 
-	CameraUtility(std::tuple<TupleArgs...> tuple) :
-		properties(Entity::tryGet<PropertiesCamera>(tuple))
+	~Camera() {
+		this->remove<PropertiesCamera>();
+	}
+
+	PropertiesCamera& propertiesCamera;
+};
+
+
+
+template<class... TupleArgs>
+class CameraUtility : public Object3DUtility<TupleArgs...>, public Entity::Restricter<TupleArgs...> {
+public:
+
+	CameraUtility(const Camera& camera) : Object3DUtility<TupleArgs...>(camera),
+		propertiesCamera(&camera.propertiesCamera) {}
+
+	CameraUtility(TupleArgs... args) : Object3DUtility<TupleArgs...>(args...),
+		propertiesCamera(Entity::tryGet<PropertiesCamera>(std::tie(args...)))
+	{}
+
+	CameraUtility(std::tuple<TupleArgs...> tuple) : Object3DUtility<TupleArgs...>(tuple),
+		propertiesCamera(Entity::tryGet<PropertiesCamera>(tuple))
 	{}
 
 
 	template<class T = glm::mat4>
 	CameraUtility::EnableWith<T, PropertiesCamera> projectionMatrix() const {
-		glm::mat4 result = glm::perspective(glm::radians(properties.fov), properties.aspectRatio, properties.near, properties.far);
+		glm::mat4 result = glm::perspective(glm::radians(propertiesCamera->fov), propertiesCamera->aspectRatio, propertiesCamera->near, propertiesCamera->far);
 
 		return result;
 	};
@@ -77,24 +100,8 @@ public:
 		return frustum;
 	};
 
-protected:
-	const PropertiesCamera* properties;
+
+	const PropertiesCamera* const propertiesCamera;
 };
 
-class Camera : public Object3D {
-public:
-
-	Camera() :
-		propertiesCamera(this->add<PropertiesCamera>(PropertiesCamera{
-			.aspectRatio = 0.f,
-			.fov = 45.f,
-			.near = 1000.f,
-			.far = 0.1f }))
-	{}
-
-	~Camera() {
-		this->remove<PropertiesCamera>();
-	}
-
-	PropertiesCamera& propertiesCamera;
-};
+using CameraUtilityAll = CameraUtility<PropertiesCamera, Position3D, Rotation3D, Properties3D>;

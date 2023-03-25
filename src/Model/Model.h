@@ -65,29 +65,6 @@ public:
 	}
 };
 
-template<class... TupleArgs>
-class ModelUtility : public Entity::Restricter<TupleArgs...> {
-public:
-	ModelUtility(TupleArgs... args) :
-		meshes(Entity::tryGet<Meshes>(std::tie(args...))),
-		propertiesModel(Entity::tryGet<PropertiesModel>(std::tie(args...))),
-		modelUnitTable(Entity::tryGet<ModelUnitTable>(std::tie(args...)))
-	{}
-
-	ModelUtility(std::tuple<TupleArgs...> tuple) :
-		meshes(Entity::tryGet<Meshes>(tuple)),
-		propertiesModel(Entity::tryGet<PropertiesModel>(tuple)),
-		modelUnitTable(Entity::tryGet<ModelUnitTable>(tuple))
-	{}
-
-	
-
-protected:
-	Meshes* meshes;
-	PropertiesModel* propertiesModel;
-	ModelUnitTable* modelUnitTable;
-};
-
 class Model : public Object3D {
 public:
 
@@ -130,4 +107,32 @@ private:
 
 		return boundingSphere;
 	}
+};
+
+
+template<class... TupleArgs>
+class ModelUtility : public Object3DUtility<TupleArgs...>, public Entity::Restricter<TupleArgs...> {
+public:
+	ModelUtility(const Model& model) : Object3DUtility<TupleArgs...>(model),
+		meshes(&model.meshes),
+		propertiesModel(&model.propertiesModel),
+		modelUnitTable(&model.modelUnitTable)
+	{}
+
+	ModelUtility(TupleArgs... args) : Object3DUtility<TupleArgs...>(args...),
+		meshes(Entity::tryGet<Meshes>(std::tie(args...))),
+		propertiesModel(Entity::tryGet<PropertiesModel>(std::tie(args...))),
+		modelUnitTable(Entity::tryGet<ModelUnitTable>(std::tie(args...)))
+	{}
+
+	ModelUtility(std::tuple<TupleArgs...> tuple) : Object3DUtility<TupleArgs...>(tuple),
+		meshes(Entity::tryGet<Meshes>(tuple)),
+		propertiesModel(Entity::tryGet<PropertiesModel>(tuple)),
+		modelUnitTable(Entity::tryGet<ModelUnitTable>(tuple))
+	{}
+
+
+	const Meshes* const meshes;
+	const PropertiesModel* const propertiesModel;
+	const ModelUnitTable* const modelUnitTable;
 };

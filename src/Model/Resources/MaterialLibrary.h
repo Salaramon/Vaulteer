@@ -19,9 +19,9 @@ public:
 		auto [it, inserted] = materialsByName.try_emplace(matPtr->name, std::move(matPtr));
 
 		if (inserted) {
-			materialIndexUsed[numMaterials] = true;
-			materialKeysByIndex[numMaterials] = matPtr->name;
-			matPtr->setMaterialIndex(numMaterials++);
+			//materialIndexUsed[numMaterials] = true;
+			//materialKeysByIndex[numMaterials] = matPtr->name;
+			//matPtr->setMaterialIndex(numMaterials++);
 		}
 		else {
 			std::cout << std::format("Material name conflict <{}> for resource {}, material not inserted",

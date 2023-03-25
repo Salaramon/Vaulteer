@@ -70,18 +70,16 @@ public:
 		return registry.emplace<Type>(entity_id, std::forward<Args>(initializerValues)...);
 	}
 
-	template<class Type, class Component>
-	void removeReference(uint64_t entity, decltype(registry)& registry) {
-		if (entity_id == entity) {
-			registry.remove<Reference<Type>>(entity);
-			registry.on_destroy<Component>().template disconnect<&removeReference<Reference<Type>, Component>>(*this);
-		}
+	template<class Component, class Type>
+	void removeReference(decltype(registry)& registry) {
+		registry.remove<Reference<Type>>(entity_id);
+		registry.on_destroy<Component>().template disconnect<&removeReference<Reference<Type>, Component>>(entity_id);
 	}
 
-	template<class Type, class Component>
+	template<class Component, class Type>
 	void addReference(Type& subComponent) {
 		add<Reference<Type>>(Reference<Type>(subComponent));
-		registry.on_destroy<Component>().template connect<&removeReference<Type, Component>>(*this);
+		registry.on_destroy<Component>().template connect<&removeReference<Component, Type>>(entity_id);
 	}
 
 	template<typename Type, typename... Func>
@@ -100,9 +98,9 @@ public:
 	}
 
 	
+	const uint64_t entity_id;
 
 private:
-	const uint64_t entity_id;
 
 	struct Types {
 	public:

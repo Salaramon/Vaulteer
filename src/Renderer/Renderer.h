@@ -4,17 +4,16 @@
 #include <tuple>
 #include <utility>
 
-#include "Utils/TemplateUtility.h"
-
-#include "Model/Model.h"
+#include "Scene/Scene.h"
 
 
 
-
+template<class... Renderers>
 class Renderer {
 public:
-	void render() {
-
+	template<size_t SCENE_ID>
+	void render(Scene<SCENE_ID>& scene) {
+		(Renderers::render(scene), ...);
 	}
 	
 };

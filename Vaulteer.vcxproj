@@ -204,7 +204,6 @@
     <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp" />
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp" />
-    <ClCompile Include="src\Renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\Renderer\ForwardRenderer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
@@ -213,12 +212,9 @@
     <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\Technique.cpp" />
-    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\VFX\ShadowBuffer.cpp" />
     <ClCompile Include="src\VFX\ShadowCascade.cpp" />
     <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp" />
@@ -226,7 +222,6 @@
     <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
     <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
     <ClCompile Include="src\Vaulteer.cpp" />
-    <ClCompile Include="src\WorldLayer.cpp" />
     <ClCompile Include="src\vpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

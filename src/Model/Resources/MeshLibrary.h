@@ -43,7 +43,7 @@ public:
 		}
 
 		const auto& mesh = meshByName.emplace(objPath, std::make_unique<Mesh>(vertices, indices));
-		meshKeysByIndex[meshByName.size()] = objPath;
+		//meshKeysByIndex[meshByName.size()] = objPath;
 		return mesh.first->second.get();
 	}
 
