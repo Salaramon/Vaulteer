@@ -22,9 +22,9 @@ struct GLBlendModes {
 
 class OpenGL {
 public:
-	inline static void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
+	static void APIENTRY debugCallback(GLenum source​, GLenum type​, GLuint id​,
 		GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​) {
-		//std::cout << std::string(message​) << std::endl;
+		std::cout << std::string(message​) + '\n' << std::endl;
 		//log.debug(std::string(message​) + '\n', MessageAlias::OpenGLMessage);
 	}
 

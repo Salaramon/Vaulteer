@@ -25,13 +25,12 @@ private:
 	Model<T> modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name);
 
 	std::unordered_map<std::string, std::unique_ptr<ModelData>> models;
-	std::unordered_map<std::string, std::unique_ptr<LineData>> lines;
 };
 
 template <class T>
 Model<T> Vaulteer::modelByName(std::unordered_map<std::string, std::unique_ptr<T>>& container, std::string name) {
 	auto it = container.find(name);
-	assert(it != container.end(), "Model name not found.");
+	assert(it != container.end()); // "Model name not found."
 
 	return Model<T>(*it->second);
 }

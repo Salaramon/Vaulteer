@@ -10,7 +10,7 @@ Application* Application::instance = nullptr;
 
 
 Application::Application(const ApplicationSpecification& spec) : specification(spec) {
-	assert(!instance, "Application already exists, but construction was attempted.");
+	assert(!instance); // "Application already exists, but construction was attempted."
 	instance = this;
 
 	if (!specification.workingDir.empty())

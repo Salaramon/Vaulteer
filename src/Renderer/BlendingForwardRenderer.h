@@ -15,7 +15,6 @@
 #include "Scene/DynamicScene.h"
 
 #include "Model/Data/ModelData.h"
-#include "Model/Data/LineData.h"
 
 #include "API/Camera.h"
 

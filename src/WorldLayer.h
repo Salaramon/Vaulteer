@@ -23,7 +23,7 @@ private:
 	//Scenes
 	DynamicScene<Camera> dynamicScene;
 	//StaticScene<Model<ModelData>> staticScene;
-	StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
+	StaticScene<OpaqueModel> opaqueScene;
 	StaticScene<TransparentModel> transparentScene;
 	
 	Renderer<DeferredRenderer> opaqueRenderer;

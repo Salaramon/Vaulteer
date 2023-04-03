@@ -50,13 +50,13 @@ void ResourceLoader::processNode(std::vector<Mesh>& meshes, std::vector<std::sha
 }
 
 Mesh ResourceLoader::processMesh(std::vector<std::shared_ptr<Material>>& sceneMaterials, aiMesh* mesh) {
-	Vertices vertices;
-	Indices indices;
+	std::vector<MaterialVertex> vertices;
+	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
 	auto mat = sceneMaterials.at(mesh->mMaterialIndex);
 
 	for (size_t i = 0; i < mesh->mNumVertices; i++) {
-		Vertex vertex;
+		MaterialVertex vertex;
 		vertex.aPos = ai_glmVec(mesh->mVertices[i]);
 		vertex.aNormal = mesh->HasNormals() ? ai_glmVec(mesh->mNormals[i]) : glm::vec3(0);
 		vertex.aTexCoords = mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
@@ -66,16 +66,10 @@ Mesh ResourceLoader::processMesh(std::vector<std::shared_ptr<Material>>& sceneMa
 			vertex.aBitangent = ai_glmVec(mesh->mBitangents[i]);
 		}
 
-		unsigned int firstSceneMatIndex = MaterialLibrary::size() - sceneMaterials.size();
 		vertex.aMaterialNumber = mat->materialIndex;
-
-		// random
-		//vertex.shininess = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		//vertex.c = glm::fvec3(rand() % 2, rand() % 2, rand() % 2);
 
 		vertices.push_back(vertex);
 	}
-
 
 	for (size_t i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
@@ -84,7 +78,7 @@ Mesh ResourceLoader::processMesh(std::vector<std::shared_ptr<Material>>& sceneMa
 		}
 	}
 	
- 	return {vertices, indices, mat};
+	return Mesh{ vertices, indices, &(*mat) };
 }
 
 glm::vec3 ResourceLoader::ai_glmVec(aiVector3D aiVec) {

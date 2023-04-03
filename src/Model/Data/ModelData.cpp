@@ -42,8 +42,8 @@ const ModelData::ModelUnitTable& ModelData::getModelUnitTable() const {
 
 glm::vec4 ModelData::getBoundingSphere() {
 	std::vector<Seb::Point<double>> points;
-	for (const Mesh& m : meshes) {
-		for (const Vertex& v : m.vertices) {
+	for (Mesh& m : meshes) {
+		for (const MaterialVertex& v : m.getCopiedData<MaterialVertex>()) {
 			std::vector<double> converter({ v.aPos.x, v.aPos.y, v.aPos.z });
 			points.emplace_back(3, converter.begin());
 		}
@@ -52,7 +52,6 @@ glm::vec4 ModelData::getBoundingSphere() {
 	Seb::Smallest_enclosing_ball<double>::Coordinate_iterator it = ball.center_begin();
 
 	glm::vec4 data(it[0], it[1], it[2], ball.radius());
-
 	return data;
 }
 
@@ -69,9 +68,11 @@ void ModelData::updateWithTextureUnits(const Texture2DArray& texture) {
 		Texture2DArray::TextureUnit diffuseUnit = texture.getUnit(path);
 
 		// map vertices' texture coordinates to diffuse texture unit in packed library
-		for (auto& vertex : mesh.vertices) {
-			vertex.aTexCoords.x = vertex.aTexCoords.x * static_cast<float>(diffuseUnit.w) / texture.width + static_cast<float>(diffuseUnit.x) / texture.width;
-			vertex.aTexCoords.y = vertex.aTexCoords.y * static_cast<float>(diffuseUnit.h) / texture.height + static_cast<float>(diffuseUnit.y) / texture.height;
+		for (int i = 0; i < mesh.vertexContainer.size(); i++) {
+			auto vertex = mesh.vertexContainer.at<MaterialVertex>(i);
+			vertex->aTexCoords.x = vertex->aTexCoords.x * static_cast<float>(diffuseUnit.w) / texture.width + static_cast<float>(diffuseUnit.x) / texture.width;
+			vertex->aTexCoords.y = vertex->aTexCoords.y * static_cast<float>(diffuseUnit.h) / texture.height + static_cast<float>(diffuseUnit.y) / texture.height;
+			mesh.vertexContainer.set(i, *vertex);
 		}
 		mesh.updateBuffer();
 

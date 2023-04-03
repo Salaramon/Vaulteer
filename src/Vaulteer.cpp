@@ -10,10 +10,12 @@ Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
 }
 
 void Vaulteer::initShaders() {
-	gem::Shader<gem::deferred_point_frag> point;
-	point.setdeferred_point_frag_materialTable(128);
-	point.setdeferred_point_frag_pointLightData(1);
-	point.compile();
+	gem::Shader<gem::deferred_point_vertex> dpvert;
+	dpvert.compile();
+	gem::Shader<gem::deferred_point_frag> dpfrag;
+	dpfrag.setdeferred_point_frag_materialTable(128);
+	dpfrag.setdeferred_point_frag_pointLightData(2);
+	dpfrag.compile();
 	gem::Shader<gem::deferred_directional_frag> dir;
 	dir.setdeferred_directional_frag_materialTable(128);
 	dir.compile();

@@ -4,40 +4,32 @@
 
 #include <glm/glm.hpp>
 
-#include "GLSLCPPBinder.h"
-#include "Model/Storage/Vertex.h"
+#include "Vertex.h"
 
-class Point {
+class Point : Vertex {
 public:
-	Point(glm::vec3 point) : aPos(point) {
-		LOG::CTOR::debug(this, &aPos, DY::std_format("Point created with value: {}", DY::glm_to_string(aPos)));
-	}
-	Point(float x, float y, float z) {
-		aPos = glm::vec3(x, y, z);
-		LOG::CTOR::debug(this, &aPos, DY::std_format("Point created with value: {}", DY::glm_to_string(aPos)));
-	}
-	Point operator=(glm::vec3 point) const {
-		return { point };
+	Point() : aPos(0.0) {
+		LOG::CTOR::debug(this, "Point constructor called");
 	}
 
+	Point(glm::vec3 p) : aPos(p) {
+		LOG::CTOR::debug(this, "Point constructor called with point");
+	}
 
-	decltype(Binder::line_vertex::locations::aPos)::type aPos;
+	glm::vec3 aPos;
 
-
-	inline static LocationVector locInfo = {
-		Binder::line_vertex::locations::aPos
-	};
-
-	inline static LocationVector locDivisors = {
-		//Binder::geometry_vertex::locations::instanceMatrix
-	};
-
+	static BufferLayout& getFormat() {
+		return format;
+	}
 	
-	DY::ObjectRegister<Point,
-		decltype(aPos),
-		decltype(locInfo),
-		decltype(locDivisors)> OR;
+private:
+	inline static BufferLayout format = {
+		{"aPos", ShaderDataType::Float3 }
+	};
+
+	DY::ObjectRegister<Point> OR;
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
 
 	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
+
 };

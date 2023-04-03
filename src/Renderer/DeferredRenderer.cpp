@@ -6,7 +6,16 @@ void DeferredRenderer::initialize(uint screenWidth, uint screenHeight) {
 
 	quad = ResourceLoader::importModel("resources/quad.obj");
 	sphereData = ResourceLoader::importModel("resources/sphere-hd.obj");
+	coneData = ResourceLoader::importModel("resources/cone.obj");
+
 	sphere = std::make_unique<Model<ModelData>>(*sphereData);
+	//sphereRadius = 0.45f; // sphere.obj
+	sphereRadius = 5.93f; // sphere-hd.obj
+
+	cone = std::make_unique<Model<ModelData>>(*coneData);
+	coneLength = 1.0f;
+	coneRadius = 1.0f;
+	coneDirection = glm::vec3(.0f, 1.0f, .0f);
 }
 
 void DeferredRenderer::preload(ResourcePack& pack) {
@@ -67,7 +76,7 @@ void DeferredRenderer::directionalLightPass(const Camera* camera) {
 	DeferredDirLightTechnique::shader->setUniform(dirFragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 	
 	Mesh& quadMesh = quad->getMeshes().front();
-	quadMesh.bind();
+	quadMesh.bind(); 
 	glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
 	quadMesh.unbind();
 
@@ -82,8 +91,8 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 	DeferredPointLightTechnique::setCameraViewMat(camera->getViewMatrix());
 	
 	if (buildLights) {
-		BaseLight whiteLight = {glm::vec3(0.0f,0.0f,1.0f), 0.1f, 1.0f };
-		BaseLight greenLight = {glm::vec3(0.0f,1.0f,0.0f), 0.1f, 1.0f };
+		BaseLight whiteLight = {glm::vec3(0.0f,0.0f,1.0f), 0.1f, 1.0f};
+		BaseLight greenLight = {glm::vec3(0.0f,1.0f,0.0f), 0.1f, 1.0f};
 		Attenuation att = { 1.0f, 0.15f, 0.042f };
 
 		pointLights.emplace_back(att, whiteLight,  glm::vec3(20, 2, 0));
@@ -111,23 +120,33 @@ void DeferredRenderer::lightingPass(const Camera* camera) {
 
 	Mesh& sphereMesh = sphereData->getMeshes().front();
 	sphereMesh.bind();
-	int i = 0;
-	for (auto& light : pointLights) {
-		singleLightVolumePass(light, i++);
-	}
+	int i = 0;                            
+	for (auto& light : pointLights) {     
+	    singlePointLightVolumePass(light, i++);
+	}                                     
+	//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
 	sphereMesh.unbind();
 
 	gbuffer->unbind();
 }
 
-void DeferredRenderer::singleLightVolumePass(const PointLight& light, const int index) {
+void DeferredRenderer::singlePointLightVolumePass(const PointLight& light, const int index) {
 	Mesh& sphereMesh = sphereData->getMeshes().front();
 	sphere->setPosition(light.position);
-	sphere->setScale(glm::vec3(light.calculatePointRadius() / 5.93f));
+	sphere->setScale(glm::vec3(light.calculatePointRadius() / sphereRadius));
 	DeferredPointLightTechnique::setModel(sphere->getModelMatrix());
 	DeferredPointLightTechnique::setPointLightIndex(index);
 	glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
 }
+
+/*void DeferredRenderer::singleSpotLightVolumePass(const SpotLight& light, const int index) {
+	Mesh& sphereMesh = sphereData->getMeshes().front();
+	sphere->setPosition(light.position);
+	sphere->setScale(glm::vec3(light.calculatePointRadius() / sphereRadius));
+	DeferredPointLightTechnique::setModel(sphere->getModelMatrix());
+	DeferredPointLightTechnique::setPointLightIndex(index);
+	glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr);
+}*/
 
 void DeferredRenderer::reloadShaders() {
 	gem::Shader<gem::deferred_point_frag> point; 

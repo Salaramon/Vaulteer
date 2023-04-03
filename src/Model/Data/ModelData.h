@@ -14,21 +14,22 @@
 #include "Model/Textures/Texture2DArray.h"
 #include "Model/Storage/VertexHash.h"
 #include "Model/Mesh.h"
+#include "Model/Storage/MaterialVertex.h"
 
 
 class ModelData {
 public:
-	struct ModelVertexHash : VertexHash<Vertex> {
+	struct ModelVertexHash : VertexHash<MaterialVertex> {
 		size_t hash_combine(size_t lhs, size_t rhs) const {
 			lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);
 			return lhs;
 		}
 
-		bool operator()(const Vertex& a, const Vertex& b) const override {
+		bool operator()(const MaterialVertex& a, const MaterialVertex& b) const override {
 			return a.aPos.x == b.aPos.x && a.aPos.y == b.aPos.y && a.aPos.z == b.aPos.z;
 		}
 
-		size_t operator()(const Vertex& k) const override {
+		size_t operator()(const MaterialVertex& k) const override {
 			return hash_combine(
 				hash_combine(std::hash<float>()(k.aPos.x), std::hash<float>()(k.aPos.y)),
 				std::hash<float>()(k.aPos.z));
@@ -85,7 +86,6 @@ private:
 	std::string modelPath;
 	GLint textureID{};
 
-	// populated on load (loadModel)
 	std::vector<Mesh> meshes;
 
 	// populated after texture packing (updateWithTextureUnits)

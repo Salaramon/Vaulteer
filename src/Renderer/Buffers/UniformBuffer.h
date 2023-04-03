@@ -7,7 +7,7 @@
 
 #include "Debug/Debug.h"
 
-class UniformBuffer : Buffer<BufferType::UniformBuffer> {
+class UniformBuffer : InternalUniformBuffer {
 public:
 	struct DrawHint {
 		inline static constexpr GLenum Dynamic = GL_DYNAMIC_DRAW; // modify repeatedly, use often
@@ -22,9 +22,6 @@ public:
 	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
 		
-		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const std::vector<T>&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
-			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
-		);
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -36,11 +33,6 @@ public:
 	static void insert(UniformBuffer& ubo, const T& data) {
 		size_t dataSize = sizeof(data);
 
-		// IF LNK1179 OCCUR EX.(https://zal.s-ul.eu/3lZYOnhU) it probably means debugging is done improper. A quick fix is to use static cast instead.
-		LOG::SPGL::debug<DY::OverloadSelector<void(UniformBuffer&, const T&)>::Get<&UniformBuffer::insert<T>>, UniformBuffer>(
-			std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
-		);
-		
 		assert(dataSize <= ubo.size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
@@ -74,8 +66,7 @@ public:
 		decltype(drawHint)> OR;
 	
 	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
-	inline static auto FB = DY::FunctionBinder(FR);
 
-	using LOG = _LOG<DY::No_CB, decltype(OB), decltype(FB), DY::No_VB>;
+	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
 
 };

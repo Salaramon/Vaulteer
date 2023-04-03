@@ -22,8 +22,9 @@ public:
 		inline static constexpr GLenum Fill = GL_FILL;
 	};
 
-	Model(Data& data);
-	Model(Data* data);
+	Model(Data& data, int instances = 1);
+	Model(Data* data, int instances = 1);
+
 	Model(Model&) = delete;
 	Model(Model&& model) noexcept;
 
@@ -89,40 +90,40 @@ Model<Data>::Model(Model&& model) noexcept :
 	polygonLineWidth(std::move(model.polygonLineWidth)) {}
 
 template<class Data>
-inline Model<Data>::Model(Data& data) :
-	OR(this,
-		DY::V(
-			&model,
-			&polygonFaces,
-			&polygonMode),
-		DY::N(
-			"model",
-			"polygonFaces",
-			"polygonMode")),
+Model<Data>::Model(Data& data, int instances) :
+	model(&data),
 
-	Object3D(),
-	model(&data)
-{
+	OR(this,
+	   DY::V(
+		   &model,
+		   &polygonFaces,
+		   &polygonMode),
+	   DY::N(
+		   "model",
+		   "polygonFaces",
+		   "polygonMode")) {
 	OB.add(OR);
+
+	if (instances > 1) {
+		data.getMeshes();
+	}
 
 	LOG::CTOR::debug(this, "Model data loaded into model from reference");
 }
 
 template<class Data>
-inline Model<Data>::Model(Data* data) : 
-	OR(this,
-		DY::V(
-			&model,
-			&polygonFaces,
-			&polygonMode),
-		DY::N(
-			"model",
-			"polygonFaces",
-			"polygonMode")),
+Model<Data>::Model(Data* data, int instances) :
+	model(data),
 
-	Object3D(),
-	model(data)
-{
+	OR(this,
+	   DY::V(
+		   &model,
+		   &polygonFaces,
+		   &polygonMode),
+	   DY::N(
+		   "model",
+		   "polygonFaces",
+		   "polygonMode")) {
 	OB.add(OR);
 
 	LOG::CTOR::debug(this, "Model data loaded into model from pointer");

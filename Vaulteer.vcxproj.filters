@@ -138,13 +138,10 @@
     <ClInclude Include="src\Model\Buffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Data\LineData.h">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClInclude>
     <ClInclude Include="src\Model\Data\ModelData.h">
       <Filter>Source Files\Model\Data</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\ElementBuffer.h">
+    <ClInclude Include="src\Model\IndexBuffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Material.h">
@@ -174,7 +171,7 @@
     <ClInclude Include="src\Model\Storage\Point.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Storage\Vertex.h">
+    <ClInclude Include="src\Model\Storage\MaterialVertex.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\VertexHash.h">
@@ -235,9 +232,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\DeferredRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\ForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
@@ -348,6 +342,10 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Storage\BufferLayout.h" />
+    <ClInclude Include="src\Model\Storage\Vertex.h" />
+    <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
+    <ClInclude Include="src\Model\Storage\Vertices.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -371,19 +369,13 @@
     <ClCompile Include="src\DebugLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\Data\LineData.cpp">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClCompile>
     <ClCompile Include="src\Model\Data\ModelData.cpp">
       <Filter>Source Files\Model\Data</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\ElementBuffer.cpp">
+    <ClCompile Include="src\Model\IndexBuffer.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Material.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Mesh.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp">
@@ -444,9 +436,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\DeferredRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ForwardRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Renderer.cpp">
@@ -562,9 +551,6 @@
     <None Include="resources\palm\palm.obj">
       <Filter>Resource Files\palm</Filter>
     </None>
-    <None Include="resources\plane.zip">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="resources\plane\plane_mesh.mtl">
       <Filter>Resource Files\plane</Filter>
     </None>
@@ -604,7 +590,7 @@
     <None Include="resources\shaders\deferred_directional_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\deferred_point_vertex.glsl">
+    <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\depth_map_frag.glsl">
@@ -694,12 +680,6 @@
     <None Include="resources\triangle.obj">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\vase\untitled.mtl">
-      <Filter>Resource Files\vase</Filter>
-    </None>
-    <None Include="resources\vase\untitled.obj">
-      <Filter>Resource Files\vase</Filter>
-    </None>
     <None Include="resources\water_caustics.tga">
       <Filter>Resource Files</Filter>
     </None>
@@ -737,9 +717,6 @@
     </Image>
     <Image Include="resources\plane\map.png">
       <Filter>Resource Files\plane</Filter>
-    </Image>
-    <Image Include="resources\vase\wooden-textured-background.jpg">
-      <Filter>Resource Files\vase</Filter>
     </Image>
   </ItemGroup>
 </Project>

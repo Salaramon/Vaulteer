@@ -41,7 +41,7 @@ constexpr const char* getShaderFile() {
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return Binder::file_names::cluster_tile_compute; }
 
-	assert(false, "No shader file found for input");
+	assert(false); // "No shader file found for input"
 	return "";
 }
 
@@ -73,8 +73,8 @@ constexpr const GLenum getShaderType() {
 	if constexpr (std::is_same_v<ShaderBinder, Binder::volume_frag>) { return GL_FRAGMENT_SHADER; }
 
 	if constexpr (std::is_same_v<ShaderBinder, Binder::cluster_tile_compute>) { return GL_COMPUTE_SHADER; }
-	
-	assert(false, "No shader type found for input");
+
+	assert(false); // "No shader type found for input"
 	return 0;
 }
 
@@ -122,7 +122,7 @@ public:
 	}
 
 	static void use() {
-		assert(shader, "tried to use an uninitialized shader!");
+		assert(shader); // "tried to use an uninitialized shader!"
 		shader->use();
 	}
 

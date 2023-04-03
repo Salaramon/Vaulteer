@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Model/VertexBuffer.h"
-#include "Model/ElementBuffer.h"
+#include "Model/IndexBuffer.h"
+#include "Model/Storage/MaterialVertex.h"
 
 #include "Model/Mesh.h"
 
@@ -10,19 +11,20 @@ public:
 	Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize);
 	~Batch();
 
-	bool add(const Mesh& mesh, glm::mat4 modelMat);
+	bool add(Mesh& mesh, glm::mat4 modelMat);
 
 	void clear();
 
-	GLint numVertices = 0;
-	GLint numIndices = 0;
+	size_t numVertices = 0;
+	size_t numIndices = 0;
 	GLint textureID;
 
 	void bind();
 	void unbind();
 
-	VertexBuffer<Vertex> vertexBuffer;
-	ElementBuffer indexBuffer;
+	VertexArray vertexArray;
+	VertexBuffer* vertexBuffer;
+	IndexBuffer* indexBuffer;
 
 private:
 	size_t vertexBufferSize;

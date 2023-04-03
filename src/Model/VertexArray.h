@@ -5,126 +5,148 @@
 
 #include <glad/glad.h>
 
-#include "Model/Storage/Vertex.h"
-#include "GLSLCPPBinder.h"
+#include "Model/IndexBuffer.h"
+#include "Model/VertexBuffer.h"
+#include "Model/Storage/BufferLayout.h"
 
-typedef std::vector<Vertex> Vertices;
-typedef std::vector<GLuint> Indices;
-
-template<class Store>
 class VertexArray {
 public:
-	VertexArray();
+	operator GLuint() const { return vao; }
 
-	VertexArray(VertexArray<Store>&& other) :
-		vao(other.vao) {
+	VertexArray() {
+		glCreateVertexArrays(1, &vao);
+	}
+
+	VertexArray(VertexArray&& other) noexcept :
+			vao(other.vao),
+			setUp(other.setUp),
+			vertexBuffers(std::move(other.vertexBuffers)),
+			indexBuffer(std::move(other.indexBuffer)) {
 		other.vao = 0;
 	}
 
-	~VertexArray();
-
-	operator GLuint() const {
-		return vao;
+	~VertexArray() {
+		glDeleteVertexArrays(1, &vao);
 	}
 
-	void bind() const;
-	void unbind() const;
+	void bind() const {
+		glBindVertexArray(vao);
+	}
 
-	/* Binding index for VBO -> binding -> VAO API. Implemented as just the VAO buffer ID */
-	GLuint bindIndex() const;
+	void unbind() const {
+		glBindVertexArray(0);
+	}
 
-	void setUpAttributes(LocationVector locInfo, LocationVector divisors, size_t structSize, std::string structName);
+	VertexBuffer* createVertexBuffer(const BufferLayout& bufferLayout) {
+		vertexBuffers.push_back(std::make_unique<VertexBuffer>(bufferLayout));
+		setUpAttributes(bufferLayout);
+		return vertexBuffers.back().get();
+	}
+
+	VertexBuffer* createVertexBuffer(const BufferLayout& bufferLayout, const void* data, size_t count) {
+		VertexBuffer* vb = createVertexBuffer(bufferLayout);
+		vb->insert(data, count);
+		return vb;
+	}
+
+	IndexBuffer* createIndexBuffer() {
+		this->indexBuffer = std::make_unique<IndexBuffer>(vao);
+		return indexBuffer.get();
+	}
+
+	IndexBuffer* createIndexBuffer(const std::vector<GLuint>& indices) {
+		IndexBuffer* ib = createIndexBuffer();
+		ib->insert(indices);
+		return ib;
+	}
+
+	VertexBuffer* getVertexBuffer(int index) {
+		return vertexBuffers.at(index).get();
+	}
+
+	IndexBuffer* getIndexBuffer() {
+		return indexBuffer.get();
+	}
 
 private:
-	void cleanup();
-	void initialize();
-
-	void setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs);
-
-	void bindDebugMessage(size_t location, std::string name, size_t size, size_t stride, size_t offset, std::string structName);
-
+	void setUpAttributes(const BufferLayout& format);
+	
 	GLuint vao;
 
 	bool setUp = false;
+	std::vector<std::unique_ptr<VertexBuffer>> vertexBuffers;
+	std::unique_ptr<IndexBuffer> indexBuffer;
+
+	/* Binding index for VBO -> binding -> VAO API.
+	 * We don't need anything but 0 (it's only used when referring to multiple buffers with one format) */
+	GLuint bindIndex() const {
+		return 0;
+	}
 };
 
-template <class Store>
-VertexArray<Store>::VertexArray() {
-	initialize();
-}
-
-template <class Store>
-VertexArray<Store>::~VertexArray() {
-	cleanup();
-}
-
-template <class Store>
-void VertexArray<Store>::bind() const {
-	glBindVertexArray(vao);
-}
-
-template <class Store>
-void VertexArray<Store>::unbind() const {
-	glBindVertexArray(0);
-}
-
-template <class Store>
-GLuint VertexArray<Store>::bindIndex() const {
-	return 0; // VAO - 1;
-}
-
-template <class Store>
-void VertexArray<Store>::initialize() {
-	glCreateVertexArrays(1, &vao);
-}
-
-template <class Store>
-void VertexArray<Store>::cleanup() {
-	glDeleteVertexArrays(1, &vao);
-}
-
-template <class Store>
-void VertexArray<Store>::setUpAttributes(LocationVector locInfo, LocationVector divisors, size_t structSize, std::string structName) {
+inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 	if (setUp)
 		return;
 
-	//Make a class that can be inherited into a Store class which then can be used to create vertex classes and the code below becomes more type safe.
-	const size_t maxSize = 16;
-	size_t offset = 0;
-	for (size_t i = 0; i < locInfo.size(); i++) {
-		if (locInfo[i].size > maxSize) {
+	// max size of single vertex attribute as defined by opengl - elements exceeding this size must be split up into more locations 
+	constexpr size_t maxSize = 16;
 
-			// TODO - this is an untested DSA implementation for instancing
+	int location = 0;
+	for (const VertexElement& element : format.getElements()) {
+		
+		std::cout << "current location " << location << std::endl;
+		std::cout << "element name " << element.name << std::endl;
+		std::cout << "element size " << element.size << std::endl;
 
-			size_t locNr = locInfo[i].size / maxSize;
-			for (size_t j = 0; j < locNr; j++) {
-				glEnableVertexArrayAttrib(vao, locInfo[i].loc + j);
-				glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / maxSize, GL_FLOAT, GL_FALSE, offset + (j * maxSize));
-				glVertexArrayAttribBinding(vao, locInfo[i].loc + j, bindIndex());
-				setVertexDivisors(locInfo[i].loc, j, divisors);
+		if (element.size > maxSize) {
+
+			int componentSize = element.size / element.getComponentCount();
+
+			std::cout << "component size " << componentSize << std::endl;
+
+			int comp = 0;
+			while (comp < element.getComponentCount()) {
+				std::cout << "  component loc " << location + comp << std::endl;
+				std::cout << "  component offset " << location + comp * componentSize << std::endl;
+				glEnableVertexArrayAttrib(vao, location + comp * componentSize);
+				glVertexArrayAttribFormat(vao, 
+					location + comp,
+					componentSize,
+					shaderDataTypeToOpenGLBaseType(element.type),
+					element.normalized,
+					element.offset + comp * componentSize
+				);
+				glVertexArrayAttribBinding(vao, location, bindIndex());
+
+				if (element.instance > 0)
+					glVertexArrayBindingDivisor(vao, bindIndex(), element.instance);
+				
+				std::cout << "  set comp " << comp << std::endl;
+				comp++;
 			}
+			location += comp;
 		}
 		else {
-			glEnableVertexArrayAttrib(vao, locInfo[i].loc);
-			glVertexArrayAttribFormat(vao, locInfo[i].loc, locInfo[i].size / sizeof(float), GL_FLOAT, GL_FALSE, offset);
-			glVertexArrayAttribBinding(vao, locInfo[i].loc, bindIndex());
-			setVertexDivisors(locInfo[i].loc, 0, divisors);
-		}
-		offset += locInfo[i].size;
-	}
-	setUp = true;
-	//Make ShaderBinder able to return the size of the vertex struct currently in use.
-	//MAYBE: Make Shader class take a parameter which defines what structure it should use.
-	//Make VertexAttribute take a template argument taking an attribute object type, which will be what it generates attributes for.
-}
+			std::cout << "element type " << static_cast<int>(element.type) << std::endl;
+			std::cout << "element offset " << element.offset << std::endl;
 
-template <class Store>
-void VertexArray<Store>::setVertexDivisors(size_t location, size_t subLoc, LocationVector locDivs) {
-	for (size_t i = 0; i < locDivs.size(); i++) {
-		if (locDivs[i].loc == location) {
-			glVertexArrayBindingDivisor(vao, bindIndex(), 1);
-			//glVertexAttribDivisor(location + subLoc, 1);
-			//debug("Attribute divisor set for location: " + std::to_string(location + subLoc) + "\n", "glVertexAttribDivisor");
+			glEnableVertexArrayAttrib(vao, location);
+			glVertexArrayAttribFormat(vao, 
+				location,
+				element.getComponentCount(),
+				shaderDataTypeToOpenGLBaseType(element.type),
+				element.normalized,
+				element.offset);
+			glVertexArrayAttribBinding(vao, location, bindIndex());	
+
+			if (element.instance > 0)
+				glVertexArrayBindingDivisor(vao, bindIndex(), element.instance);
+			
+			std::cout << "set location " << location << std::endl;
+
+			location++;
 		}
 	}
+
+	setUp = true;
 }

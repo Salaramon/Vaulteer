@@ -53,12 +53,14 @@ void WorldLayer::onAttach() {
 
  	opaqueScene.finalize();
 
+	/*
 	model2.setPosition(20, 2, 0);
 	model2.setScale(glm::vec3(0.5f));
 	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
 	model2.setPosition(0, 2, 20);
 	transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
-
+	
+ 	*/
 	transparentScene.finalize();
 
 	//Setup variables and function calls.

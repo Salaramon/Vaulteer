@@ -30,7 +30,16 @@ private:
 	inline static std::unique_ptr<GBuffer> gbuffer;
 	inline static std::unique_ptr<ModelData> quad;
 	inline static std::unique_ptr<ModelData> sphereData;
+	inline static std::unique_ptr<ModelData> coneData;
+
+	// sphere used to align affected light area with pointlight radius
+	inline static float sphereRadius;
 	inline static std::unique_ptr<Model<ModelData>> sphere;
+	
+	inline static float coneLength;
+	inline static float coneRadius;
+	inline static glm::vec3 coneDirection;
+	inline static std::unique_ptr<Model<ModelData>> cone;
 
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
@@ -55,7 +64,7 @@ public:
 	static void geometryPass(const Camera* camera);
 	static void directionalLightPass(const Camera* camera);
 	static void lightingPass(const Camera* camera);
-	static void singleLightVolumePass(const PointLight& light, const int index);
+	static void singlePointLightVolumePass(const PointLight& light, const int index);
 
 	template <class... DynamicSceneObjects, class... StaticSceneObjects>
 	static void render(DynamicScene<DynamicSceneObjects...>& dynamicScene, StaticScene<StaticSceneObjects...>& staticScene) {

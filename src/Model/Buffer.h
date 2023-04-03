@@ -5,33 +5,23 @@
 
 #include "Debug/Debug.h"
 
-struct BufferType {
-	inline static constexpr GLenum ArrayBuffer = GL_ARRAY_BUFFER;
-	inline static constexpr GLenum ElementBuffer = GL_ELEMENT_ARRAY_BUFFER;
-	inline static constexpr GLenum ShaderStorageBuffer = GL_SHADER_STORAGE_BUFFER;
-	inline static constexpr GLenum QueryBuffer = GL_QUERY_BUFFER;
-	inline static constexpr GLenum TextureBuffer = GL_TEXTURE_BUFFER;
-	inline static constexpr GLenum UniformBuffer = GL_UNIFORM_BUFFER;
-};
-
 template<GLenum BufferType>
 class Buffer {
 public:
-	Buffer() :
-		OR(this, DY::V(&buffer), DY::N("buffer"))
-	{
+	Buffer() : 
+		OR(this, DY::V(&buffer), DY::N("buffer")) {
 		OB.add(OR);
 		
 		initialize(BufferType);
 	}
 
-	Buffer(Buffer&& other) noexcept :
-		buffer(other.buffer) {
+
+	Buffer(Buffer&& other) noexcept : buffer(other.buffer) {
 		LOG::CTOR::debug(this, &other, std::format("moving buffer with id {}", buffer));
 		other.buffer = 0;
 	}
 
-	~Buffer() {
+	virtual ~Buffer() {
 		cleanup();
 	}
 
@@ -64,3 +54,10 @@ public:
 
 	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
+
+using ArrayBuffer = Buffer<GL_ARRAY_BUFFER>;
+using ElementArrayBuffer = Buffer<GL_ELEMENT_ARRAY_BUFFER>;
+using ShaderStorageBuffer = Buffer<GL_SHADER_STORAGE_BUFFER>;
+using QueryBuffer = Buffer<GL_QUERY_BUFFER>;
+using TextureBuffer = Buffer<GL_TEXTURE_BUFFER>;
+using InternalUniformBuffer = Buffer<GL_UNIFORM_BUFFER>;
