@@ -1,5 +1,5 @@
 //? #version 450 core 
-const int MAX_MATERIALS = %%[maxMaterials:int]; //! const int MAX_MATERIALS = 1;
+const int MAX_MATERIALS = %%[maxMaterials:int]; //! const int MAX_MATERIALS = 128;
 
 // material data
 struct Material {

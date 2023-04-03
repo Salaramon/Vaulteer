@@ -51,6 +51,9 @@ void DeferredRenderer::geometryPass(const Camera* camera) {
 	}
 
 	gbuffer->unbind();
+
+
+	DeferredPointLightTechnique::uploadMaterialData();
 }
 
 void DeferredRenderer::directionalLightPass(const Camera* camera) {
@@ -149,7 +152,7 @@ void DeferredRenderer::singlePointLightVolumePass(const PointLight& light, const
 }*/
 
 void DeferredRenderer::reloadShaders() {
-	gem::Shader<gem::deferred_point_frag> point; 
+	gem::Shader<gem::deferred_point_frag> point;
 	point.compile();
 	gem::Shader<gem::deferred_directional_frag> dir;
 	dir.compile();

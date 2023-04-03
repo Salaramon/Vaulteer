@@ -180,7 +180,7 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         /*vec3 reflectDir = reflect(lightDirection, fragNormal);
         float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
 
-        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, max(1.0, mat.shininess / 5.0));
+        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, max(1.0, mat.shininess / 5.0)); // todo: why 5.0?
 
         float shadowFactor = 1.0 - shadow;
         specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
@@ -245,7 +245,6 @@ void main() {
 
     vec3 diffuse = colorSample.rgb;
     params.specIntensity = colorSample.a;
-
 
     // --------------------------------------
 

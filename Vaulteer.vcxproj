@@ -116,12 +116,13 @@
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
-    <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceManager.h" />
     <ClInclude Include="src\Model\Resources\ResourcePack.h" />
-    <ClInclude Include="src\Model\Storage\Point.h" />
+    <ClInclude Include="src\Model\Storage\BufferLayout.h" />
+    <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Storage\MaterialVertex.h" />
+    <ClInclude Include="src\Model\Storage\Point.h" />
     <ClInclude Include="src\Model\Storage\Vertex.h" />
     <ClInclude Include="src\Model\Storage\VertexHash.h" />
     <ClInclude Include="src\Model\Storage\Vertices.h" />
@@ -180,7 +181,6 @@
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GEM\GEM.h" />
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
-    <ClInclude Include="src\Model\Storage\BufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
@@ -253,6 +253,8 @@
     <None Include="resources\backpack\source_attribution.txt" />
     <None Include="resources\backpack\teapot.mtl" />
     <None Include="resources\backpack\teapot.obj" />
+    <None Include="resources\cone.blend" />
+    <None Include="resources\cone.obj" />
     <None Include="resources\cube.obj" />
     <None Include="resources\palm\palm.mtl" />
     <None Include="resources\palm\palm.obj" />
@@ -266,10 +268,10 @@
     <None Include="resources\shaders\blending_vertex.glsl" />
     <None Include="resources\shaders\build\deferred_directional_frag.glsl" />
     <None Include="resources\shaders\build\deferred_point_frag.glsl" />
+    <None Include="resources\shaders\build\deferred_point_vertex.glsl" />
     <None Include="resources\shaders\build\geometry_vertex.glsl" />
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
-    <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
     <None Include="resources\shaders\forward_frag.glsl" />
@@ -279,6 +281,7 @@
     <None Include="resources\shaders\line_vertex.glsl" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />
+    <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem" />
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem" />
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem" />

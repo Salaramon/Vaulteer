@@ -28,9 +28,6 @@
     <Filter Include="Resource Files\shaders\preprocessor\fragments">
       <UniqueIdentifier>{45507947-B1C0-7BC0-7ADF-F548E60EB4C1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\vase">
-      <UniqueIdentifier>{FEF60BB7-6A58-E9C4-F3C5-2F775F262084}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{E9C7FDCE-D52A-8D73-7EB0-C5296AF258F6}</UniqueIdentifier>
     </Filter>
@@ -168,13 +165,25 @@
     <ClInclude Include="src\Model\Resources\ResourcePack.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Storage\Point.h">
+    <ClInclude Include="src\Model\Storage\BufferLayout.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\InstanceVertex.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\MaterialVertex.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Storage\Point.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\Vertex.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Storage\VertexHash.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\Vertices.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Textures\CubemapTexture.h">
@@ -342,10 +351,6 @@
     <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
       <Filter>Vendor Files\GLSLCPPBinder</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Storage\BufferLayout.h" />
-    <ClInclude Include="src\Model\Storage\Vertex.h" />
-    <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
-    <ClInclude Include="src\Model\Storage\Vertices.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -542,6 +547,12 @@
     <None Include="resources\backpack\teapot.obj">
       <Filter>Resource Files\backpack</Filter>
     </None>
+    <None Include="resources\cone.blend">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\cone.obj">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="resources\cube.obj">
       <Filter>Resource Files</Filter>
     </None>
@@ -581,6 +592,9 @@
     <None Include="resources\shaders\build\deferred_point_frag.glsl">
       <Filter>Resource Files\shaders\build</Filter>
     </None>
+    <None Include="resources\shaders\build\deferred_point_vertex.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
+    </None>
     <None Include="resources\shaders\build\geometry_vertex.glsl">
       <Filter>Resource Files\shaders\build</Filter>
     </None>
@@ -588,9 +602,6 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\deferred_directional_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\depth_map_frag.glsl">
@@ -618,6 +629,9 @@
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem">

@@ -14,7 +14,7 @@ public:
 	glm::vec2 aTexCoords;
 	glm::vec3 aTangent;
 	glm::vec3 aBitangent;
-	unsigned int aMaterialNumber;
+	int aMaterialNumber;
 
 	static BufferLayout& getFormat() {
 		return format;

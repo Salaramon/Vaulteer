@@ -128,12 +128,24 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		}
 		else {
 			glEnableVertexArrayAttrib(vao, location);
-			glVertexArrayAttribFormat(vao, 
-				location,
-				element.getComponentCount(),
-				shaderDataTypeToOpenGLBaseType(element.type),
-				element.normalized,
-				element.offset);
+
+			if (element.type == ShaderDataType::Int) {
+				glVertexArrayAttribIFormat(vao,
+					location,
+					element.getComponentCount(),
+					shaderDataTypeToOpenGLBaseType(element.type),
+					element.offset);
+			}
+			else {
+				glVertexArrayAttribFormat(vao, 
+					location,
+					element.getComponentCount(),
+					shaderDataTypeToOpenGLBaseType(element.type),
+					element.normalized,
+					element.offset);
+			}
+
+
 			glVertexArrayAttribBinding(vao, location, bindIndex());	
 
 			if (element.instance > 0)
