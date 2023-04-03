@@ -109,8 +109,6 @@ public:
 
 	void bind() {
 		vertexArray.bind();
-		vertexBuffer->bindVertexArray(vertexArray);
-		indexBuffer->bindVertexArray(vertexArray);
 		LOG::CLAS::debug<&Mesh::bind>(this, "Mesh was bound.");
 	}
 	void unbind() {

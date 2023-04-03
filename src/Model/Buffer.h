@@ -21,7 +21,7 @@ public:
 		other.buffer = 0;
 	}
 
-	virtual ~Buffer() {
+	~Buffer() {
 		cleanup();
 	}
 

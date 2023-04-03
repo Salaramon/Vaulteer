@@ -13,20 +13,25 @@ class VertexBuffer : public ArrayBuffer {
 public:
 	operator GLuint() const { return buffer; }
 
-	VertexBuffer(BufferLayout format) : format(format) {}
 
-	VertexBuffer(BufferLayout format, size_t bufferSize) : format(format) {
-		reserve(bufferSize);
+	VertexBuffer(GLuint vao, const BufferLayout& format) : format(format) {
+		bindVertexArray(vao);
 	}
 
-	VertexBuffer(VertexBuffer& other) noexcept = delete;
+	VertexBuffer(GLuint vao, const BufferLayout& format, size_t bufferSize) : format(format) {
+		bindVertexArray(vao);
+		reserve(bufferSize);
+	}
+	 
+	VertexBuffer(VertexBuffer& other) = delete;
 
-	VertexBuffer(VertexBuffer&& other) noexcept : Buffer(std::move(other)), format(std::move(other.format)) {
+	VertexBuffer(VertexBuffer&& other) noexcept : Buffer(std::move(other)), format(other.format) {
 		other.buffer = 0;
 	}
 
-	void bindVertexArray(GLuint vao) {
-		glVertexArrayVertexBuffer(vao, 0, buffer, 0, getFormat().getStride());
+
+	void bindVertexArray(GLuint vao, GLuint bindIndex = 0) {
+		glVertexArrayVertexBuffer(vao, bindIndex, buffer, 0, getFormat().getStride());
 	}
 
 	template<vertex_concept T>
@@ -56,5 +61,5 @@ public:
 	const BufferLayout& getFormat() const { return format; }
 
 private:
-	const BufferLayout format;
+	const BufferLayout& format;
 };

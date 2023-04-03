@@ -55,8 +55,6 @@ void Batch::clear() {
 
 void Batch::bind() {
 	vertexArray.bind();
-	vertexBuffer->bindVertexArray(vertexArray);
-	indexBuffer->bindVertexArray(vertexArray);
 }
 
 void Batch::unbind() {

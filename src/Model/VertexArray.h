@@ -38,7 +38,7 @@ public:
 	}
 
 	VertexBuffer* createVertexBuffer(const BufferLayout& bufferLayout) {
-		vertexBuffers.push_back(std::make_unique<VertexBuffer>(bufferLayout));
+		vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, bufferLayout));
 		setUpAttributes(bufferLayout);
 		return vertexBuffers.back().get();
 	}
@@ -127,9 +127,6 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 			location += comp;
 		}
 		else {
-			std::cout << "element type " << static_cast<int>(element.type) << std::endl;
-			std::cout << "element offset " << element.offset << std::endl;
-
 			glEnableVertexArrayAttrib(vao, location);
 			glVertexArrayAttribFormat(vao, 
 				location,
@@ -142,8 +139,6 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 			if (element.instance > 0)
 				glVertexArrayBindingDivisor(vao, bindIndex(), element.instance);
 			
-			std::cout << "set location " << location << std::endl;
-
 			location++;
 		}
 	}
