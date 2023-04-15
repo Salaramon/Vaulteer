@@ -1,12 +1,10 @@
 #pragma once
 
-#include <assimp/scene.h>
 #include <unordered_map>
+#include <string>
+#include <ranges>
 
 #include "Model/Textures/Texture2DArray.h"
-#include "Utils/TypeDefUtils.h"
-
-//using Material = std::unordered_map<aiTextureType, TextureResourceLocator>;
 
 class Material {
 public:
@@ -37,13 +35,48 @@ public:
 	bool blur;
 
 
-	Material();
+	Material() :
+		name("DefaultMaterial"), data(defaultMaterial) {}
 
-	Material(aiMaterial* mat, const std::string& objPath);
 
-	bool isTransparent() const;
 
-	void setMaterialIndex(unsigned int materialIndex);
+	Material(aiMaterial* mat, const std::string& objPath) {
+		aiString aiName;
+		mat->Get(AI_MATKEY_NAME, aiName);
+		name = std::string(aiName.C_Str());
+
+		if (name == "DefaultMaterial") {
+			data = defaultMaterial; // we override ASSIMP's default with our own
+			return;
+		}
+
+		mat->Get(AI_MATKEY_SHININESS, data.matShininess);
+		mat->Get(AI_MATKEY_OPACITY, data.matOpacity);
+
+		aiColor3D color;
+		mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
+		data.colorAmbient = aiCol_glmVec(color);
+		mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+		data.colorDiffuse = aiCol_glmVec(color);
+		mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
+		data.colorSpecular = aiCol_glmVec(color);
+		mat->Get(AI_MATKEY_COLOR_EMISSIVE, color);
+		mat->Get(AI_MATKEY_COLOR_REFLECTIVE, color);
+		mat->Get(AI_MATKEY_COLOR_TRANSPARENT, color);
+
+		createTextureLocators(mat, objPath);
+	}
+
+	bool isTransparent() const {
+		return data.matOpacity < 1.0f;
+	}
+
+	void setMaterialIndex(unsigned int materialIndex) {
+		this->materialIndex = materialIndex;
+		// update locators
+		for (auto& val : textureTypeLocators | std::views::values)
+			val.materialIndex = materialIndex;
+	}
 
 private:
 	inline static MaterialData defaultMaterial = {
@@ -54,7 +87,23 @@ private:
 		.matOpacity = 1.0f,
 	};
 
-	inline void createTextureLocators(const aiMaterial* mat, const std::string& objPath);
+	inline void createTextureLocators(const aiMaterial* mat, const std::string& objPath) {
+		size_t index = objPath.find_last_of('/');
+		std::string folderPath = index != std::string::npos ? objPath.substr(0, index) + "/" : ".";
 
-	glm::vec3 aiCol_glmVec(aiColor3D aiColor);
+		for (size_t i = static_cast<size_t>(aiTextureType_NONE); i < static_cast<size_t>(aiTextureType_UNKNOWN) + 1; i++) {
+			aiTextureType type = static_cast<aiTextureType>(i);
+
+			for (size_t j = 0; j < mat->GetTextureCount(type); j++) {
+				aiString string;
+				mat->GetTexture(type, j, &string);
+				TextureResourceLocator loc = { std::string(folderPath + string.C_Str()), type };
+				textureTypeLocators[type] = loc;
+			}
+		}
+	}
+
+	glm::vec3 aiCol_glmVec(aiColor3D aiColor) {
+		return { aiColor.r, aiColor.g, aiColor.b };
+	}
 };

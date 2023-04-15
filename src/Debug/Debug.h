@@ -6,6 +6,7 @@
 #include <functional>
 #include <glm/gtx/string_cast.hpp>
 #include <typeinfo>
+#include <utility>
 
 #include <DebugYourself.h>
 
@@ -15,10 +16,9 @@ namespace Tag {
 			constexpr char LoadingProcedure[] = "ShaderProgram_LoadingProcedure";
 		}
 	}
-	
 	namespace Debug {
-        constexpr char DirectOutput[] = "DirectOutput";
-    }
+		constexpr char DirectOutput[] = "DirectOutput";
+	}
 }
 
 
@@ -39,7 +39,7 @@ namespace A_Severity {
 
 namespace DebugUtils {
 	template<class T>
-	std::string arrayToString(T& arr, auto func ) {
+	std::string arrayToString(T& arr, auto func) {
 		std::string returnString = "[";
 		for (auto& e : arr) {
 			returnString += func(e) + ", ";
@@ -52,6 +52,7 @@ namespace DebugUtils {
 }
 
 
+
 template<class Enable = dy::State>
 struct Format;
 
@@ -60,7 +61,7 @@ template<>
 struct Format<dy::Enabled> {
 public:
 	template<class... Types>
-	static std::string std_format(const std::_Fmt_string<Types...> fmt, Types&&... types) { return std::format(fmt, std::forward<Types>(types)...); }
+	static std::string std_format(const std::format_string<Types...>& fmt, Types&&... types) { return std::format<Types...>(fmt, std::forward<Types>(types)...); }
 
 	template<class genType>
 	static std::string glm_to_string(const genType &x) { return glm::to_string(std::forward<const genType>(x)); }
@@ -104,31 +105,33 @@ public:
 	#define DEBUG_STATE false
 #endif
 
-using DY = dy::DebugYourself<DEBUG_STATE, Format<>>;
+using DY = dy::DebugYourself<true, Format<>>;
+
 
 struct TaggedDirectLogger : public DY::LoggingAction {
-    void operator()(
-        DY::SQLTypes::TEXT class_name,
-        DY::SQLTypes::TEXT object_name,
-        DY::SQLTypes::INTEGER object,
-        DY::SQLTypes::REAL objectTime,
-        DY::SQLTypes::TEXT function_name,
-        DY::SQLTypes::INTEGER function,
-        DY::SQLTypes::TEXT variable_name,
-        DY::SQLTypes::INTEGER variable,
-        DY::SQLTypes::INTEGER rank,
-        DY::SQLTypes::REAL time,
-        DY::SQLTypes::TEXT message,
-        std::vector<DY::SQLTypes::TEXT> tags) override {
+	void operator()(
+		DY::SQLTypes::TEXT class_name,
+		DY::SQLTypes::TEXT object_name,
+		DY::SQLTypes::INTEGER object,
+		DY::SQLTypes::REAL objectTime,
+		DY::SQLTypes::TEXT function_name,
+		DY::SQLTypes::INTEGER function,
+		DY::SQLTypes::TEXT variable_name,
+		DY::SQLTypes::INTEGER variable,
+		DY::SQLTypes::INTEGER rank,
+		DY::SQLTypes::REAL time,
+		DY::SQLTypes::TEXT message,
+		std::vector<DY::SQLTypes::TEXT> tags) override {
 
-        for (DY::SQLTypes::TEXT tag : tags) {
-            if (tag == Tag::Debug::DirectOutput) {
-                std::cout << message << "\n";
-            }
-        }
+		for (DY::SQLTypes::TEXT tag : tags) {
+			if (tag == Tag::Debug::DirectOutput) {
+				std::cout << message << "\n";
+			}
+		}
 
-    }
+	}
 };
+
 
 template<class C, class O, class F, class V>
 using DY_LINK = DY::Dependencies<C, O, F, V, DY::AlwaysTrue, TaggedDirectLogger>;
@@ -147,4 +150,3 @@ public:
 };
 
 using DIRLOG = _LOG<DY::No_CB, DY::No_OB, DY::No_FB, DY::No_VB>;
-

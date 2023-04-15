@@ -51,7 +51,8 @@ project "Vaulteer"
 		"%{wks.location}/vendor/rectpack2D/include",
 		"%{wks.location}/vendor/sqlite/include",
 		"%{wks.location}/vendor/stb_image",
-		"%{wks.location}/vendor/tomlplusplus-2.4.0/include"
+		"%{wks.location}/vendor/tomlplusplus-2.4.0/include",
+		"%{wks.location}/vendor/entt"
 	}
 
 	libdirs {

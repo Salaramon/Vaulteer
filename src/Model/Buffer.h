@@ -28,13 +28,13 @@ public:
 	void initialize(GLuint target) {
 		glCreateBuffers(1, &buffer);
 		glBindBuffer(target, buffer);
-		LOG::CLAS::debug<&Buffer<BufferType>::initialize>(this, &buffer, std::format("created buffer with id {}", buffer));
+		LOG::CLAS::debug<&Buffer<BufferType>::initialize>(this, &buffer, DY::std_format("created buffer with id {}", buffer));
 	}
 
 	void cleanup() {
 		glDeleteBuffers(1, &buffer);
 		buffer = 0;
-		LOG::CLAS::debug<&Buffer<BufferType>::cleanup>(this, &buffer, std::format("deleted buffer with id {}", buffer));
+		LOG::CLAS::debug<&Buffer<BufferType>::cleanup>(this, &buffer, DY::std_format("deleted buffer with id {}", buffer));
 	}
 
 protected:

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Renderer/ShaderProgram.h"
 #include "Renderer/Buffers/UniformBuffer.h"
 
 #include "VFX/LightTypes.h"
 
-class DeferredDirLightTechnique : public ShaderProgram<DeferredDirShader> {
+class DeferredDirLightTechnique {
 public:
 	using dirVertUnis = Binder::deferred_directional_vertex::uniforms;
 	using dirFragUnis = Binder::deferred_directional_frag::uniforms;

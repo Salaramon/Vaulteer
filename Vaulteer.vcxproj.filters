@@ -64,9 +64,6 @@
     <Filter Include="Source Files\Renderer\Buffers">
       <UniqueIdentifier>{2B000E6C-9718-F595-60C5-842FCC9C892F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Renderer\Tags">
-      <UniqueIdentifier>{EDA0D8FD-D9B0-84CE-426A-E9EC2E997367}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Renderer\Techniques">
       <UniqueIdentifier>{F72AE883-E37B-D3C5-0CE0-C187F88F662F}</UniqueIdentifier>
     </Filter>
@@ -156,6 +153,9 @@
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Resources\MeshLibrary.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Resources\ResourceLoader.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
@@ -243,10 +243,10 @@
     <ClInclude Include="src\Renderer\DeferredRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Renderer.h">
+    <ClInclude Include="src\Renderer\ForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\RendererPrerequisites.h">
+    <ClInclude Include="src\Renderer\Renderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Shader.h">
@@ -257,12 +257,6 @@
     </ClInclude>
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h">
       <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Opaque.h">
-      <Filter>Source Files\Renderer\Tags</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Tags\Transparent.h">
-      <Filter>Source Files\Renderer\Tags</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
@@ -294,17 +288,20 @@
     <ClInclude Include="src\Renderer\Techniques\Technique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\DynamicScene.h">
+    <ClInclude Include="src\Scene\Entity.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Object3D.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\Register.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\StaticScene.h">
-      <Filter>Source Files\Scene</Filter>
+    <ClInclude Include="src\SceneTypedefs.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
       <Filter>Source Files\Utils</Filter>
@@ -377,22 +374,16 @@
     <ClCompile Include="src\Model\Data\ModelData.cpp">
       <Filter>Source Files\Model\Data</Filter>
     </ClCompile>
+    <ClCompile Include="src\Model\ElementBuffer.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
     <ClCompile Include="src\Model\IndexBuffer.cpp">
       <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Material.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp">
       <Filter>Source Files\Model\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\ResourcePack.cpp">
       <Filter>Source Files\Model\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp">
@@ -449,9 +440,6 @@
     <ClCompile Include="src\Renderer\Shader.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\ShaderProgram.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -467,9 +455,6 @@
     <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClCompile>
@@ -481,12 +466,6 @@
     </ClCompile>
     <ClCompile Include="src\Renderer\Techniques\Technique.cpp">
       <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Object3D.cpp">
-      <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Scene.cpp">
-      <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\VFX\ShadowBuffer.cpp">
       <Filter>Source Files\VFX</Filter>

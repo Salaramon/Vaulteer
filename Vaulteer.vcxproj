@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -116,6 +116,7 @@
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
+    <ClInclude Include="src\Model\Resources\MeshLibrary.h" />
     <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceManager.h" />
     <ClInclude Include="src\Model\Resources\ResourcePack.h" />
@@ -146,12 +147,9 @@
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h" />
     <ClInclude Include="src\Renderer\DeferredRenderer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
-    <ClInclude Include="src\Renderer\RendererPrerequisites.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShaderProgram.h" />
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
-    <ClInclude Include="src\Renderer\Tags\Opaque.h" />
-    <ClInclude Include="src\Renderer\Tags\Transparent.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h" />
@@ -162,10 +160,11 @@
     <ClInclude Include="src\Renderer\Techniques\LineTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\Technique.h" />
-    <ClInclude Include="src\Scene\DynamicScene.h" />
+    <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
+    <ClInclude Include="src\Scene\Register.h" />
     <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\Scene\StaticScene.h" />
+    <ClInclude Include="src\SceneTypedefs.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />
@@ -192,11 +191,8 @@
     <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Model\Data\ModelData.cpp" />
     <ClCompile Include="src\Model\IndexBuffer.cpp" />
-    <ClCompile Include="src\Model\Material.cpp" />
-    <ClCompile Include="src\Model\Resources\MaterialLibrary.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
-    <ClCompile Include="src\Model\Resources\ResourcePack.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
     <ClCompile Include="src\Model\Textures\Texture.cpp" />
@@ -210,24 +206,18 @@
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp" />
-    <ClCompile Include="src\Renderer\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp" />
-    <ClCompile Include="src\Renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Renderer\ShaderProgram.cpp" />
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredGeometryTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp" />
     <ClCompile Include="src\Renderer\Techniques\Technique.cpp" />
-    <ClCompile Include="src\Scene\Object3D.cpp" />
-    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\VFX\ShadowBuffer.cpp" />
     <ClCompile Include="src\VFX\ShadowCascade.cpp" />
     <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp" />

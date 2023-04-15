@@ -3,7 +3,7 @@
 
 void Shader::use() {
 	glUseProgram(shaderProgramID);
-	LOG::CLAS::debug<&Shader::use>(this, &shaderProgramID, std::format("Shader program with id {} is currently active", shaderProgramID));
+	LOG::CLAS::debug<&Shader::use>(this, &shaderProgramID, DY::std_format("Shader program with id {} is currently active", shaderProgramID));
 }
 
 size_t Shader::getShaderID() {
@@ -61,19 +61,19 @@ void Shader::populateUniformCache() {
 		}
 	}
 
-	LOG::CLAS::debug<&Shader::populateUniformCache>(this, &uniformLocationCache, std::format("unifrom cache populated with {} uniforms", uniformLocationCache.size()));
+	LOG::CLAS::debug<&Shader::populateUniformCache>(this, &uniformLocationCache, DY::std_format("unifrom cache populated with {} uniforms", uniformLocationCache.size()));
 }
 
 
 void Shader::shaderProgram_addShader(GLuint id) {
 	glAttachShader(shaderProgramID, id);
-	LOG::CLAS::debug<&Shader::shaderProgram_addShader>(this, &shaderProgramID, std::format("shader with id {} is attached to program with id {}", id, shaderProgramID));
+	LOG::CLAS::debug<&Shader::shaderProgram_addShader>(this, &shaderProgramID, DY::std_format("shader with id {} is attached to program with id {}", id, shaderProgramID));
 }
 
 
 bool Shader::shaderProgram_link() {
 	glLinkProgram(shaderProgramID);
-	LOG::CLAS::debug<&Shader::shaderProgram_link>(this, &shaderProgramID, std::format("shader program with id {} is linked", shaderProgramID));
+	LOG::CLAS::debug<&Shader::shaderProgram_link>(this, &shaderProgramID, DY::std_format("shader program with id {} is linked", shaderProgramID));
 	return shaderProgram_catchError();
 }
 

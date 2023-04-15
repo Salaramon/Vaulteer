@@ -6,7 +6,6 @@
 
 #include "Renderer/DeferredRenderer.h"
 
-#include "Renderer/RendererPrerequisites.h"
 #include "Renderer/Buffers/AlphaBuffer.h"
 #include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/BlendingCompositeTechnique.h"
@@ -18,14 +17,15 @@
 
 #include "API/Camera.h"
 
-#include "Renderer/Tags/Transparent.h"
+#include "SceneTypedefs.h"
 
-class BlendingForwardRenderer : public RendererPrerequisites<DynamicScene<Camera>, StaticScene<TransparentModel>>, 
-	public BlendingTechnique, public BlendingCompositeTechnique {
+class BlendingForwardRenderer :
+	public BlendingTechnique, 
+	public BlendingCompositeTechnique {
 	using AlphaTexType = AlphaBuffer::AlphaBufferTextureType;
 
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
-	inline static std::unique_ptr<ModelData> quad;
+	inline static Mesh* quadMesh;
 
 public:
 	static void initialize(uint screenWidth, uint screenHeight);
@@ -34,24 +34,25 @@ public:
 	
 	static void reloadShaders();
 
-	template<class... Args1, class... Args2>
-	static void render(DynamicScene<Args1...>& dynamicScene, StaticScene<Args2...>& staticScene) {
-		auto cameraIteratorPair = dynamicScene.get<Camera>();
-		auto cameraBeginIt = cameraIteratorPair.first;
-		auto* camera = (*cameraBeginIt).get();
+	template<size_t SCENE_ID>
+	static void render(Scene<SCENE_ID>& scene) {
+		/*
+
+		auto camera = scene.view<A,ctiveCamera>();
 
 		OpenGL::enableBlending();
-		blendingPass(staticScene, camera);
+		blendingPass(scene, camera);
 
 		DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
 
 		compositePass(camera);
 		OpenGL::disableBlending();
+		*/
 	}
 
-	template<class... Args2>
-	static void blendingPass(StaticScene<Args2...>& staticScene, Camera* camera) {
-		BlendingTechnique::use();
+	template<size_t SCENE_ID>
+	static void blendingPass(Scene<SCENE_ID>& scene) {
+		//BlendingTechnique::use();
 
 		glDepthMask(GL_FALSE);
 		OpenGL::enableDepthTest();
@@ -78,11 +79,17 @@ public:
 			return result;*/
 		};
 
-		const auto modelDataIteratorPair = staticScene.get<TransparentModel>(staticSceneRestriction);
 
-		BlendingTechnique::setInverseViewMatrix(camera->getViewMatrix());
-		BlendingTechnique::setView(camera->getViewMatrix());
 
+		// TODO: following needs to be rewritten to new scene handling
+
+
+		//const auto modelDataIteratorPair = scene.get<TransparentModel>(staticSceneRestriction);
+
+		//BlendingTechnique::setInverseViewMatrix(camera->getViewMatrix());
+		//BlendingTechnique::setView(camera->getViewMatrix());
+
+		/*
 		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
 			auto& model = (*it).get()->model;
 			ModelData* modelData = model.getData();
@@ -99,10 +106,11 @@ public:
 		alphaBuffer->unbind();
 
 		glDepthMask(GL_TRUE);
+		*/
 	}
 
 	static void compositePass(Camera* camera) {
-		BlendingCompositeTechnique::use();
+		//BlendingCompositeTechnique::use();
 
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
@@ -116,10 +124,9 @@ public:
 		alphaBuffer->bindTextureUnit(AlphaTexType::Alpha);
 		BlendingCompositeTechnique::setTextureUnits(AlphaTexType::Accumulated, AlphaTexType::Alpha);
 
-		Mesh& quadMesh = quad->getMeshes().front();
-		quadMesh.bind();
-		glDrawElements(GL_TRIANGLES, quadMesh.indices.size(), GL_UNSIGNED_INT, nullptr);
-		quadMesh.unbind();
+		quadMesh->bind();
+		glDrawElements(GL_TRIANGLES, quadMesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+		quadMesh->unbind();
 
 		alphaBuffer->unbind();
 	}

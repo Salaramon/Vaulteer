@@ -3,99 +3,270 @@
 #include <memory>
 #include <tuple>
 #include <type_traits>
-
 #include <vector>
+#include <tuple>
+#include <functional>
+
+#include "entt.hpp"
+#include "Entity.h"
+#include "Register.h"
+#include "Data Structures/BoundingSphereHierarchy.h"
 
 #include "Debug/Debug.h"
 
-template<template<class> class Container, class... Stores>
-class Scene {
+#include <entt.hpp>
+
+
+
+template<class... Args>
+class ViewCollection {
 public:
-	template<class StoreType>
-	using Object = std::unique_ptr<StoreType>;
-	template<class StoreType>
-	using ObjectContainer = Container<Object<StoreType>>;
+	ViewCollection(Args... views) : viewTuple(views... ) {}
 
-	using ObjectContainerTuple = std::tuple<ObjectContainer<Stores>...>;
 
-	Scene() : OR(this, DY::V(&objectContainers), DY::N("objectContainers")) { 
-		OB.add(OR); 
-		LOG::CTOR::debug(this, DY::std_format("Scene created of type {}", DY::types_to_string<decltype(*this)>()));
+	template<class Function>
+	void each(Function function) {
+		(std::get<Args>(viewTuple).each(std::forward<Function>(function)), ...);
 	}
 
-	template<class StoreType>
-	typename Container<StoreType>::iterator begin() {
-		return std::get<ObjectContainer<StoreType>>(objectContainers.begin());
+private:
+	std::tuple<Args...> viewTuple;
+};
+
+template<class Tag, class... Rest>
+inline std::tuple<Rest...> removeTags1(std::tuple<Tag, Rest...> tuple) {
+	return std::tuple<Rest...>(std::forward<Rest>(std::get<Rest>(tuple))...);
+}
+
+template<class Tag1, class Tag2, class... Rest>
+inline std::tuple<Rest...> removeTags2(std::tuple<Tag1, Tag2, Rest...> tuple) {
+	return std::tuple<Rest...>(std::forward<Rest>(std::get<Rest>(tuple))...);
+}
+
+template<size_t VALUE>
+struct SceneTag : std::integral_constant<size_t, VALUE> {
+public:
+	static constexpr auto page_size = ENTT_PACKED_PAGE;
+};
+template<size_t VALUE>
+struct StoreTag : std::integral_constant<size_t, VALUE> {
+	static constexpr auto page_size = ENTT_PACKED_PAGE;
+};
+
+
+
+
+template<class T1, class T2>
+class BSHView {};
+
+template<class... Args1, class... Args2>
+class BSHView<std::tuple<Args1...>, std::tuple<Args2...>> {
+public:
+	BSHView(const entt::registry& registry, const BoundingSphereHierarchy<Entity>& bsh, std::function<bool(glm::vec4)> comparator) : registry(registry), bsh(bsh), comparator(comparator) {}
+
+	template<class Function>
+	void each(Function& function) {
+		auto [beginIt, endIt] = bsh.equal_range(comparator);
+		for (auto& it = beginIt; it != bsh.end(); it++) {
+			auto componentTuple = registry.group<std::tuple<Args1...>({}, { entt::exclude_t<Args2>... }).get(*it);
+			auto trimmedComponentTuple = removeTags2(componentTuple);
+			std::apply(function, trimmedComponentTuple);
+		}
+
 	}
 
-	template<class StoreType>
-	typename Container<StoreType>::iterator end() {
-		return std::get<ObjectContainer<StoreType>>(objectContainers.end());
+private:
+	BoundingSphereHierarchy<Entity>::iterator beginIt;
+	BoundingSphereHierarchy<Entity>::iterator endIt;
+
+	entt::registry& registry;
+	BoundingSphereHierarchy<Entity>& bsh;
+	std::function<bool(glm::vec4)> comparator;
+};
+
+template<class Function>
+static void invokeLambda(Function function) {
+
+}
+
+template<class T1, class T2>
+class DefaultView {};
+
+template<class T1, class T2, class... Args1, class... Args2>
+class DefaultView<std::tuple<T1, T2, Args1...>, std::tuple<Args2...>> {
+public:
+	DefaultView(const entt::basic_registry<uint64_t>& registry) : registry(registry) {}
+
+	template<class Function>
+	void each(Function function) {
+		auto view = registry.view<Args1...>(entt::exclude_t<Args2>...);
+		for (auto tuple : view.each()) {
+			auto trimmedComponentTuple = removeTags1(tuple);
+			function(std::get<const Args1&>(trimmedComponentTuple)...);
+			//std::invoke(std::forward<Function>(function), trimmedComponentTuple);
+		}
+		//view.each([function](T1, T2, Args1... args) { function(args...); });
 	}
 
-	template<class Store>
-	struct iterator {
-		using iterator_type = typename ObjectContainer<Store>::iterator;
-	public:
-		using difference_type = typename ObjectContainer<Store>::iterator::difference_type;
-		using value_type = typename ObjectContainer<Store>::iterator::value_type;
-		using pointer = typename ObjectContainer<Store>::iterator::pointer;
-		using reference = typename ObjectContainer<Store>::iterator::reference;
+private:
+	const entt::basic_registry<uint64_t>& registry;
+};
 
-		iterator(iterator_type it) : it(it) {}
-		iterator(const iterator<Store>& other) : it(other.it) {}
 
-		iterator<Store> operator++(int) {
-			it++;
-			return *this;
-		}
+template<size_t SCENE_ID>
+class Scene : public Register {
+public:
 
-		iterator<Store>& operator++() {
-			++it;
-			return *this;
-		}
-
-		iterator<Store> operator--(int) {
-			it--;
-			return *this;
-		}
-
-		iterator<Store>& operator--() {
-			--it;
-			return *this;
-		}
-
-		pointer operator->() {
-			return *it;
-		}
-
-		reference operator*() const {
-			return *it;
-		}
-
-		bool operator==(const iterator<Store>& other) const {
-			return it == other.it;
-		}
-
-		bool operator!=(const iterator<Store>& other) const {
-			return it != other.it;
-		}
-
-	private:
-		iterator_type it;
+	struct Flags {
+		inline static constexpr size_t DEFAULT = 0b0001;
+		inline static constexpr size_t BSH = 0b0010;
 	};
-	
-	template<class StoreType>
-	using StoreRangeIterator = std::pair<iterator<StoreType>, iterator<StoreType>>;
+
+	inline static uint64_t activeCamera = 0;
 
 
-protected:
-	//std::tupleContainer::iterator 
-	ObjectContainerTuple objectContainers;
+	template<size_t FLAG = Flags::DEFAULT>
+	void add(Entity& entity) {
+		registry.emplace<SceneTag<SCENE_ID>>(entity.entity_id);
+		registry.emplace<StoreTag<FLAG>>(entity.entity_id);
+	}
 
-public:
-	DY::ObjectRegister<Scene, decltype(objectContainers)> OR;
-	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
+	template<size_t FLAG = Flags::DEFAULT, auto Lambda>
+	void add(Entity& entity) {
+		registry.emplace<SceneTag<SCENE_ID>>(entity.entity_id);
+		registry.emplace<StoreTag<FLAG>>(entity.entity_id);
+		addToOptimizedStructure<FLAG, Lambda>(entity.entity_id);
+	}
 
-	using LOG = _LOG<DY::No_CB, decltype(OB), DY::No_FB, DY::No_VB>;
+
+
+	void remove(Entity entity) {
+		registry.remove<SceneTag<SCENE_ID>>(entity);
+	}
+
+	template<size_t FROM_SCENE, size_t TO_SCENE>
+	static void move(Entity entity, Scene<FROM_SCENE> from, Scene<TO_SCENE> to) {
+		from.remove(entity);
+		to.add(entity);
+	}
+
+	template<class Exclude>
+	using ExcludeComponent = entt::exclude_t<Exclude>;
+
+
+
+	template<class T1, class T2>
+	struct _1_ConcatenateTuples {};
+
+	template<class... Args1, class... Args2>
+	struct _1_ConcatenateTuples<std::tuple<Args1...>, std::tuple<Args2...>> {
+	public:
+		using type = std::tuple<Args1..., Args2...>;
+	};
+
+	template<class T, class... Args>
+	struct _0_ConcatenateTuples {
+		using type = _1_ConcatenateTuples<T, typename _0_ConcatenateTuples<Args...>::type>::type;
+	};
+
+	template<class T>
+	struct _0_ConcatenateTuples<T> {
+	public:
+		using type = T;
+	};
+
+	template<class... Args>
+	using ConcatenateTuples = _0_ConcatenateTuples<Args...>::type;
+
+
+
+	template<class T>
+	struct GetType {
+	public:
+		using Include = std::tuple<T>;
+		using Exclude = std::tuple<>;
+	};
+
+	template<class T>
+	struct GetType<ExcludeComponent<T>> {
+	public:
+		using Include = std::tuple<>;
+		using Exclude = std::tuple<ExcludeComponent<T>>;
+	};
+
+	template<class... Args>
+	struct ProcessComponentTypes {
+	public:
+		using IncludeTuple = ConcatenateTuples<typename GetType<Args>::Include...>;
+		using ExcludeTuple = ConcatenateTuples<typename GetType<Args>::Exclude...>;
+	};
+
+	template<class Tuple1, class Tuple2>
+	struct View {};
+
+	template<class... Args1, class... Args2>
+	struct View<std::tuple<Args1...>, std::tuple<Args2...>> {
+	public:
+		inline static auto view() {
+			return ViewCollection(
+				DefaultView<std::tuple<SceneTag<SCENE_ID>, StoreTag<Flags::DEFAULT>, Args1...>, std::tuple<Args2...>>(registry)
+			);
+		}
+
+		inline static auto view(std::function<bool(glm::vec4)> comparator) {
+			return ViewCollection(
+				DefaultView<std::tuple<SceneTag<SCENE_ID>, StoreTag<Flags::DEFAULT>, Args1...>, std::tuple<Args2...>>(registry),
+				BSHView<std::tuple<SceneTag<SCENE_ID>, StoreTag<Flags::BSH>, Args1...>, std::tuple<Args2...>>(registry, bsh, comparator)
+			);
+		}
+	};
+
+	template<class... Args>
+	using InvokeView = View<typename ProcessComponentTypes<Args...>::IncludeTuple, typename ProcessComponentTypes<Args...>::ExcludeTuple>;
+
+	template<class... Args>
+	auto view() {
+		return InvokeView<Args...>::view();
+	}
+
+	template<class... Args>
+	auto view(std::function<bool(glm::vec4)> comparator) {
+		return InvokeView<Args...>::view(comparator);
+	}
+
+
+	template<size_t FLAG, class... Types>
+	std::tuple<Types...> getFromStore(uint64_t entity) {
+		return removeTags2(registry.get<SceneTag<SCENE_ID>, StoreTag<FLAG>, Types...>(entity.entity_id));
+	}
+
+	template<class... Types>
+	std::tuple<Types...> get(uint64_t& entity) {
+		return removeTags1(registry.get<SceneTag<SCENE_ID>, Types...>(entity));
+	}
+
+private:
+
+	template<auto LambdaFunction, class LambdaFunctionType = decltype(LambdaFunction)>
+	struct Insert {};
+
+	template<auto LambdaFunction, class ReturnType, class... Params>
+	struct Insert<LambdaFunction, ReturnType(*)(Params...)> {
+	public:
+		static void insert(Entity& entity, BoundingSphereHierarchy<Entity>& bsh) {
+			bsh.insert(entity, LambdaFunction(registry.get<Params>(entity)...));
+		}
+	};
+
+
+	template<size_t FLAG, auto FUNC>
+	void addToOptimizedStructure(const Entity& entity) {
+		if constexpr (FLAG == Flags::BSH) {
+			if(registry.try_get<StoreTag<FLAG>>(entity) != nullptr) {
+				Insert<FUNC>::insert(entity, bsh);
+			}
+		}
+	}
+
+	BoundingSphereHierarchy<Entity> bsh;
 };

@@ -8,6 +8,8 @@
 #include "Model/VertexArray.h"
 
 #include "Model/Material.h"
+#include "Renderer/Shader.h"
+
 
 #include "Debug/Debug.h"
 
@@ -86,8 +88,6 @@ public:
 
 		vertexBuffer = vertexArray.createVertexBuffer(T::getFormat(), vertexContainer.data(), vertexContainer.size());
 		indexBuffer = vertexArray.createIndexBuffer(this->indices);
-
-		LOG::CTOR::debug(this, "Mesh was created");
 	}
 
 	Mesh(Mesh& other) = delete;
