@@ -12,7 +12,7 @@
 #include "Register.h"
 #include "Data Structures/BoundingSphereHierarchy.h"
 
-#include "Debug/Debug.h"
+
 
 #include <entt.hpp>
 

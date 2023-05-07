@@ -6,8 +6,6 @@
 
 
 int main() {
-	DY::enablePublish();
-	
 	//Vaulteer application("resourceFolder?");
 	ApplicationSpecification spec = { "Vaulteer window" };
 	Vaulteer application = Vaulteer(spec);
@@ -15,9 +13,7 @@ int main() {
 
 	while (gameFlags) {
 		application.init();
-		gameFlags = application.run();
+ 		gameFlags = application.run();
 	}
-	
-	DY::end();
 	return 0;
 }

@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Renderer/Techniques/ClusterTileTechnique.h"
-
 #include "Model/Model.h"
 #include "API/Camera.h"
 
-class ClusteredForwardRenderer : public ClusterTileTechnique
+class ClusteredForwardRenderer
 {
 public:
 	ClusteredForwardRenderer();

@@ -1,9 +1,7 @@
 #include "vpch.h"
 #include "Window.h"
 
-Window::Window(const std::string& title, unsigned const int width, unsigned const int height) : 
-		OR(this, DY::V(&window), DY::N("window")) {
-	OB.add(OR);
+Window::Window(const std::string& title, unsigned const int width, unsigned const int height) {
 	setup(title, width, height);
 	int init = !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 }
@@ -24,7 +22,6 @@ bool Window::isFocused() {
 }
 
 GLFWwindow* Window::getRawWindow() {
-	LOG::SPGL::debug<&Window::getRawWindow, Window>(&window, "raw GLFWwindow was returned");
 	return window;
 }
 
@@ -41,14 +38,12 @@ int Window::getWidth() {
 }
 
 bool Window::onWindowCloseEvent(const WindowCloseEvent& e) {
-	LOG::SPGL::debug<&onWindowCloseEvent, Window>(&window, "Window closed");
+	// todo why is this handled here if it doesn't do anything
 	return true;
 }
 
 bool Window::onWindowFocusEvent(const WindowFocusEvent& e) {
 	focused = e.focused;
-
-	LOG::SPGL::debug<&onWindowFocusEvent, Window>(&window, "Window was focused");
 	return true;
 }
 
@@ -65,20 +60,19 @@ bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
 		}
 	}
 
-	LOG::SPGL::debug<&onWindowResizeEvent, Window>(&window, "Window was resized");
+	std::cout << "Window was resized" << std::endl;
 	return true;
 }
 
 
-void Window::addResizeCallback(std::function<void(int, int)> callback) {
+void Window::addResizeCallback(const std::function<void(int, int)>& callback) {
 	resizeCallbacks.at(window).push_back(callback);
-	LOG::SPGL::debug<&Window::addResizeCallback, Window>( "Window resize callback added");
 }
 
 void Window::setup(const std::string& title, const int width, const int height) {
 	if (GLFWWindowCount++ == 0) {
 		int success = glfwInit();
-		assert(success, "GLFW could not be initialized!");
+		assert(success); // "GLFW could not be initialized!"
 	}
 
 	//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -86,7 +80,7 @@ void Window::setup(const std::string& title, const int width, const int height) 
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 	bool success = window != nullptr;
 
-	LOG::CLAS::debug<&Window::setup>(this, &window, DY::std_format("Window created with title {} and dimensions {}x{}", title, width, height));
+	std::cout << std::format("Window created with title {} and dimensions {}x{}", title, width, height) << std::endl;
 
 	glfwMakeContextCurrent(window);
 

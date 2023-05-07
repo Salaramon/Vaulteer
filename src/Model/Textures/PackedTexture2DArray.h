@@ -14,12 +14,4 @@ public:
 	PackedTexture2DArray(const std::vector<TextureResourceLocator>& locators, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
 	PackedTexture2DArray(TextureResourceLocator locator, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
 	PackedTexture2DArray(GLsizei width, GLsizei height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-
-	TextureUnit getUnit(const std::string& texturePath) const;
-
-protected:
-	void createPacked();
-	bool attemptPacking(std::vector<rect_type>& rectangles);
-	static int ceilPowerOfTwo(uint v);
-
 };

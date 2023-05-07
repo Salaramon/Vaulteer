@@ -21,4 +21,3 @@ private:
 	// this class is static only
 	ResourceManager() {}
 };
-

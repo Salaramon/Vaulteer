@@ -4,7 +4,6 @@
 
 #include "GLSLCPPBinder.h"
 
-#include "Debug/Debug.h"
 #include "Model/Buffer.h"
 
 class UniformBuffer : InternalUniformBuffer {
@@ -16,7 +15,7 @@ public:
 	};
 
 	UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint = DrawHint::Dynamic) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint) {
-		LOG::CTOR::debug<UniformBuffer>(this, DY::std_format("Creating UBO for {} (size {})", (std::string)bufferInfo.name, bufferInfo.size));
+		std::cout << std::format("Creating UBO for {} (size {})", (std::string)bufferInfo.name, bufferInfo.size) << std::endl;
 	}
 
 	UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(other)), binding(other.binding), size(other.size), drawHint(other.drawHint) {

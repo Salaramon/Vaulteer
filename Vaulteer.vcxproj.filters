@@ -46,9 +46,6 @@
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{E9BB0A61-D59F-CBB6-3E00-C6092A03B638}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Model\Data">
-      <UniqueIdentifier>{F20AF3EE-5E42-3B86-674C-9FA9D302627F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Model\Resources">
       <UniqueIdentifier>{9398F2B2-7F53-E25E-280B-5BA914A52CEF}</UniqueIdentifier>
     </Filter>
@@ -132,9 +129,6 @@
     <ClInclude Include="src\Model\Buffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Data\ModelData.h">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClInclude>
     <ClInclude Include="src\Model\IndexBuffer.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
@@ -153,7 +147,13 @@
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Resources\MaterialLoader.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Resources\MeshLibrary.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Resources\MeshLoader.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\ResourceLoader.h">
@@ -163,6 +163,9 @@
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\ResourcePack.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Resources\TextureLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\BufferLayout.h">
@@ -204,6 +207,9 @@
     <ClInclude Include="src\Model\Textures\TextureResourceLocator.h">
       <Filter>Source Files\Model\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Textures\TextureViewData.h">
+      <Filter>Source Files\Model\Textures</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\VertexArray.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
@@ -243,9 +249,6 @@
     <ClInclude Include="src\Renderer\DeferredRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\ForwardRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
@@ -264,9 +267,6 @@
     <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
@@ -276,16 +276,7 @@
     <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\LineTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\Technique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Entity.h">
@@ -371,17 +362,8 @@
     <ClCompile Include="src\DebugLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\Data\ModelData.cpp">
-      <Filter>Source Files\Model\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\ElementBuffer.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
     <ClCompile Include="src\Model\IndexBuffer.cpp">
       <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Resources\ResourceLoader.cpp">
-      <Filter>Source Files\Model\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp">
       <Filter>Source Files\Model\Resources</Filter>
@@ -413,9 +395,6 @@
     <ClCompile Include="src\Renderer\BatchManager.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClCompile>
@@ -425,13 +404,7 @@
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\UniformBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\DeferredRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Renderer.cpp">
@@ -443,30 +416,6 @@
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Techniques\Technique.cpp">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClCompile>
     <ClCompile Include="src\VFX\ShadowBuffer.cpp">
       <Filter>Source Files\VFX</Filter>
     </ClCompile>
@@ -476,19 +425,7 @@
     <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp">
       <Filter>Source Files\VFX</Filter>
     </ClCompile>
-    <ClCompile Include="src\VFX\ShadowCubeTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowMapTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowTechnique.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
     <ClCompile Include="src\Vaulteer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vpch.cpp">
@@ -687,9 +624,6 @@
     <Image Include="resources\backpack\ao.jpg">
       <Filter>Resource Files\backpack</Filter>
     </Image>
-    <Image Include="resources\backpack\box.png">
-      <Filter>Resource Files\backpack</Filter>
-    </Image>
     <Image Include="resources\backpack\diffuse.jpg">
       <Filter>Resource Files\backpack</Filter>
     </Image>
@@ -701,6 +635,9 @@
     </Image>
     <Image Include="resources\backpack\specular.jpg">
       <Filter>Resource Files\backpack</Filter>
+    </Image>
+    <Image Include="resources\box.png">
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\palm\leaflong.jpg">
       <Filter>Resource Files\palm</Filter>

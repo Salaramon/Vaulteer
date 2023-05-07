@@ -49,21 +49,22 @@ public:
 	static void initialize(uint screenWidth, uint screenHeight) {
 		gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
-		quad = ResourceLoader::importModel("resources/quad.obj");
-		sphereData = ResourceLoader::importModel("resources/sphere-hd.obj");
-		coneData = ResourceLoader::importModel("resources/cone.obj");
+		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
+		sphereMesh = ResourceLoader::importModel("resources/sphere-hd.obj")[0];
+		coneMesh = ResourceLoader::importModel("resources/cone.obj")[0];
 
-		sphere = std::make_unique<Model<ModelData>>(*sphereData);
+		//sphere = std::make_unique<Model<ModelData>>(*sphereData);
 		//sphereRadius = 0.45f; // sphere.obj
 		sphereRadius = 5.93f; // sphere-hd.obj
 
-		cone = std::make_unique<Model<ModelData>>(*coneData);
+		//cone = std::make_unique<Model<ModelData>>(*coneData);
 		coneLength = 1.0f;
 		coneRadius = 1.0f;
 		coneDirection = glm::vec3(.0f, 1.0f, .0f);
 	}
 
-	static void preload(ResourcePack& pack) {
+	template<size_t SCENE_ID>
+	static void preload(Scene<SCENE_ID>& scene, ResourcePack& pack) {
 		/*
 			These functions which push material data
 			should probably be a part of handled by a resource pack
@@ -71,11 +72,8 @@ public:
 			Or at some similar convention should be considered.
 		*/
 
-		/*
-		auto& modelVector = pack.getAllResources();
-		DeferredGeometryTechnique::uploadModelUnitTables(modelVector);
-		*/
-		
+		//auto& modelVector = pack.getAllResources();
+		BlendingTechnique::uploadModelUnitTables(scene.view<TextureView, PropertiesModel>());
 		DeferredPointLightTechnique::uploadMaterialData();
 	}
 
@@ -88,11 +86,9 @@ public:
 		gem::Shader<gem::deferred_directional_frag> dir;
 		dir.compile();
 
-		/*
-		DeferredGeometryTechnique::loadShader();
-		DeferredDirLightTechnique::loadShader();
-		DeferredPointLightTechnique::loadShader();
-		 */
+		//DeferredGeometryTechnique::loadShader();
+		//DeferredDirLightTechnique::loadShader();
+		//DeferredPointLightTechnique::loadShader();
 	}
 
 	static void rebuildBatch() {
@@ -118,7 +114,7 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		//DeferredGeometryTechnique::use();
+		DeferredGeometryTechnique::shader().use();
 
 		DeferredGeometryTechnique::uploadProjection(cameraUtility.projectionMatrix());
 		glm::mat4 viewMatrix = cameraUtility.viewMatrix();
@@ -150,7 +146,7 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		//DeferredDirLightTechnique::use();
+		DeferredDirLightTechnique::shader().use();
 		glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 
 	
@@ -171,11 +167,11 @@ public:
 			Will be replaced by a runtime binder functionality
 		*/
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		//DeferredDirLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+		DeferredDirLightTechnique::shader().setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		//DeferredDirLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+		DeferredDirLightTechnique::shader().setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		//DeferredDirLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+		DeferredDirLightTechnique::shader().setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -189,14 +185,13 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		//DeferredPointLightTechnique::use();
+		DeferredPointLightTechnique::shader().use();
 
 		glm::mat4 viewMatrix = cameraUtility.viewMatrix();
 
 		DeferredPointLightTechnique::setWorldCameraPos(*cameraUtility.position);
 		DeferredPointLightTechnique::setView(viewMatrix);
 		DeferredPointLightTechnique::setCameraViewMat(viewMatrix);
-		
 
 		if (buildLights) {
 			BaseLight whiteLight = { glm::vec3(1.0f), 0.1f, 1.0f };
@@ -213,11 +208,11 @@ public:
 		gbuffer->bindForReading();
 
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		//DeferredPointLightTechnique::shader->setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+		DeferredPointLightTechnique::shader().setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		//DeferredPointLightTechnique::shader->setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+		DeferredPointLightTechnique::shader().setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		//DeferredPointLightTechnique::shader->setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+		DeferredPointLightTechnique::shader().setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
 
 
 		sphereMesh->bind();
@@ -225,7 +220,7 @@ public:
 		for (auto& light : pointLights) {
 			singleLightVolumePass(light, i++);
 		}
-		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh.indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
+		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
 		sphereMesh->unbind();
 
 		gbuffer->unbind();
@@ -234,10 +229,11 @@ public:
 	static void singleLightVolumePass(const PointLight& light, const int index) {
 		Position3D position(light.position);
 		Rotation3D rotation(glm::vec3(1.f));
-		Properties3D properties(Properties3D{
+		Properties3D properties {
+			.scale = glm::vec3(light.calculatePointRadius() / sphereRadius),
 			.axisLockDirection = glm::vec3(1.f),
-			.isAxisLocked = false,
-			.scale = glm::vec3(light.calculatePointRadius() / 5.93f) });
+			.isAxisLocked = false
+		};
 
 		Object3DUtility object3DUtility(position, rotation, properties);
 

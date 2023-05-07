@@ -1,79 +1,71 @@
 #pragma once
 
-#include <array>
-#include <map>
-
-#include <assimp/postprocess.h>
-#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
 #include "Model/Mesh.h"
-#include "Model/Textures/Texture.h"
 #include "Model/Material.h"
-
+#include "Model/Resources/MeshLoader.h"
 
 class MeshLibrary {
 public:
-	// returns pointer to material, inserted or existing; material will have library index set
-	static Mesh* create(aiMesh* aiMesh, const std::string& objPath) {
-		Vertices vertices;
-		Indices indices;
-		std::vector<Texture> textures;
+	static std::vector<Mesh*> create(aiMesh* aiMesh, Material* mat, std::string& objPath) {
+		assert(false); // "Not implemented"
+	}
 
-		for (size_t i = 0; i < aiMesh->mNumVertices; i++) {
-			Vertex vertex;
-			vertex.aPos = ai_glmVec(aiMesh->mVertices[i]);
-			vertex.aNormal = aiMesh->HasNormals() ? ai_glmVec(aiMesh->mNormals[i]) : glm::vec3(0);
-			vertex.aTexCoords = aiMesh->HasTextureCoords(0) ? glm::vec2(aiMesh->mTextureCoords[0][i].x, aiMesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
+	// creates a set of meshes with the given path as key. existing keys will return already inserted set of meshes
+	static std::vector<Mesh*> create(const std::string& objPath, const aiScene* scene, std::vector<Material*> sceneMaterials) {
 
-			if (aiMesh->HasTangentsAndBitangents()) {
-				vertex.aTangent = ai_glmVec(aiMesh->mTangents[i]);
-				vertex.aBitangent = ai_glmVec(aiMesh->mBitangents[i]);
-			}
+		auto it = meshIndexByPath.find(objPath);
+		if (it != meshIndexByPath.end())
+			return view(meshLibrary[(*it).second]);
 
-			vertices.push_back(vertex);
+		std::vector<std::unique_ptr<Mesh>> meshes;
+		MeshLoader::loadFromScene(meshes, scene, sceneMaterials);
+
+		std::vector<Mesh*> retVec = view(meshes);
+		meshLibrary.push_back(std::move(meshes));
+
+		auto [meshByPath, inserted] = meshIndexByPath.emplace(objPath, numMeshes);
+		assert(inserted);
+
+		numMeshes++;
+
+		return retVec;
+	}
+
+	static std::vector<Mesh*> get(unsigned int index) {
+		assert(index < numMeshes);
+		return view(meshLibrary[index]);
+	}
+
+	static std::vector<Mesh*> get(const std::string& objPath) {
+		auto it = meshIndexByPath.find(objPath);
+		if (it != meshIndexByPath.end()) {
+			return get(meshIndexByPath[objPath]);
 		}
-
-
-		for (size_t i = 0; i < aiMesh->mNumFaces; i++) {
-			aiFace face = aiMesh->mFaces[i];
-			for (size_t j = 0; j < face.mNumIndices; j++) {
-				indices.push_back(face.mIndices[j]);
-			}
-		}
-
-		const auto& mesh = meshByName.emplace(objPath, std::make_unique<Mesh>(vertices, indices));
-		//meshKeysByIndex[meshByName.size()] = objPath;
-		return mesh.first->second.get();
-	}
-
-	static Mesh* get(unsigned int index) {
-		auto& name = meshKeysByIndex[index];
-		return meshByName.at(name).get();
-	}
-
-	static Mesh* get(const std::string& name) {
-		return meshByName.at(name).get();
-	}
-
-	static const std::map<std::string, std::unique_ptr<Mesh>>& getAllMaterials() {
-		return meshByName;
+		assert(false); // "Mesh with path does not exist in library."
+		return {};
 	}
 
 	static size_t size() {
-		return numMaterials;
+		return meshLibrary.size();
 	}
 
 private:
-	static glm::vec3 ai_glmVec(aiVector3D aiVec) {
-		return { aiVec.x, aiVec.y, aiVec.z };
+	static std::vector<Mesh*> view(const std::vector<std::unique_ptr<Mesh>>& vec) {
+		std::vector<Mesh*> ret;
+		for (auto& ptr : vec) {
+			ret.push_back(ptr.get());
+		}
+		return ret;
 	}
 
-	inline static std::vector<std::string> meshKeysByIndex;
-	inline static std::map<std::string, std::unique_ptr<Mesh>> meshByName;
 
-	inline static size_t numMaterials = 0;
-	
+	inline static std::vector<std::vector<std::unique_ptr<Mesh>>> meshLibrary;
+	inline static std::unordered_map<std::string, size_t> meshIndexByPath;
+
+	inline static size_t numMeshes = 0;
+
 	// this class is static only
 	MeshLibrary() = default;
 };

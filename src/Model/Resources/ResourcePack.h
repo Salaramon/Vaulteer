@@ -1,13 +1,12 @@
 #pragma once
 
-#include <algorithm>
 #include <unordered_map>
 #include <tuple>
 
-#include "Model/ModelResourceLocator.h"
 #include "Model/Resources/ResourceLoader.h"
-#include "Model/Textures/PackedTexture2DArray.h"
+#include "Model/Resources/TextureLibrary.h"
 #include "Model/Mesh.h"
+#include "Model/Textures/PackedTexture2DArray.h"
 
 class ResourcePack {
 public:
@@ -34,25 +33,25 @@ public:
 		}
 
 		// import all models
-		for (const auto& resource : modelLocatorsByName) {
-			meshes = ResourceLoader::importModel(resource.second);
+		for (const auto& locator : modelLocatorsByName | std::views::values) {
+			meshes = ResourceLoader::importModel(locator);
 		}
 
 		// find all locators
-		std::vector<TextureResourceLocator> allLocators;
-		for (const auto& materials : MaterialLibrary::getAllMaterials() | std::views::values) {
-			for (const TextureResourceLocator& locators : materials->textureTypeLocators | std::views::values) {
-				allLocators.push_back(locators);
-				std::cout << "making texture with resource: " << locators.path << std::endl;
+		std::vector<Material> materialsWithTextures;
+		for (const auto& material : MaterialLibrary::getAllMaterials()) {
+			if (material && !material->textureTypeLocators.empty()) {
+				materialsWithTextures.push_back(*material);
 			}
 		}
 
 		// create packed texture
 		// TODO: eats memory when loading backpack/models with large textures because it loads everything at once
-		textureLibrary = std::make_unique<PackedTexture2DArray>(allLocators);
+		textureLibrary = std::make_unique<Texture2DArray>();
 
 		// update all models' units
 		for (Mesh* mesh : meshes) {
+			//todo what to do with texture unit range?
 			//updateModelDataWithTextureUnits(*modelData, *textureLibrary);
 		}
 
@@ -61,19 +60,15 @@ public:
 
 	GLint getTextureLibraryId() const {
 		return textureLibrary->getTextureID();
-	};
+	}
 
-	std::vector<Mesh>* getModelByName(const std::string& modelName) {
-		/*
+	/*std::vector<Mesh> getModelByName(const std::string& modelName) {
 		auto search = resourcesByName.find(modelName);
 		if (search == resourcesByName.end()) {
 			assert(false, std::string("Resource with name not part of pack: " + modelName));
 		}
 		return search->second.get();
-		*/
-
-		return nullptr;
-	}
+	}*/
 
 
 private:
@@ -81,7 +76,9 @@ private:
 
 	bool finalized = false;
 
-	std::unique_ptr<PackedTexture2DArray> textureLibrary;
+	std::vector<int> loadedTextureIds;
+
+	std::unique_ptr<Texture2DArray> textureLibrary;
 
 	std::unordered_map<std::string, ModelResourceLocator> modelLocatorsByName;
 	std::vector<Mesh*> meshes;

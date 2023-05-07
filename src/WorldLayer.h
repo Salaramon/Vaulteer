@@ -15,19 +15,37 @@ public:
 	WorldLayer() : Layer("WorldLayer") {}
 	~WorldLayer() override = default;
 
+private:
+	Camera camera;
+	CameraController cameraController;
+	
+	Model modelA;
+	Model modelB;
+
+	//Scenes
+	inline static constexpr size_t scene_0 = 0;
+	Scene<scene_0> scene;
+
+	//StaticScene<Model<ModelData>> staticScene;
+	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
+	//StaticScene<TransparentModel> transparentScene;
+	
+	Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
+
+public:
 	void onAttach() override {
 		Window& window = Application::getWindow();
-
-		DeferredRenderer::initialize(window.getWidth(), window.getHeight());
-		BlendingForwardRenderer::initialize(window.getWidth(), window.getHeight());
+		
+		DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
+		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		//Setting up cameras in the scene.
 		
 		camera.enableAxisLock({ 0,1,0 });
 		camera.setRotation({ 0,0,0 });
-		camera.propertiesCamera.aspectRatio = (float)window.getHeight() / window.getWidth();
+		camera.propertiesCamera.aspectRatio = (double)Window::getHeight() / Window::getWidth();
 		camera.propertiesCamera.fov = 60;
-		camera.propertiesCamera.near = 0.1;
+		camera.propertiesCamera.near = 0.1f;
 		camera.propertiesCamera.far = 1000;
 
 		cameraController.setCamera(&camera);
@@ -44,12 +62,7 @@ public:
 
 		modelA.position = { 1,1,1 };
 		modelB.position = { 2,2,2 };
-
-		Vertices vertices;
-		Indices indices;
-		Mesh* mesh = new Mesh(vertices, indices);
-		modelA.meshes.push_back(mesh);
-
+		
 		scene.add(modelA);
 		scene.add(modelB);
 
@@ -106,30 +119,13 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		renderer.render(scene);
-	};
+	}
+
 	void onEvent(BaseEvent& e) override {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
 
-	};
-
-private:
-	Camera camera;
-	CameraController cameraController;
-	
-	Model modelA;
-	Model modelB;
-
-	//Scenes
-	inline static constexpr size_t scene_0 = 0;
-
-	Scene<scene_0> scene;
-	//StaticScene<Model<ModelData>> staticScene;
-	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
-	//StaticScene<TransparentModel> transparentScene;
-	
-	Renderer<DeferredRenderer, BlendingForwardRenderer> renderer;
-	//Renderer<BlendingForwardRenderer> transparentRenderer;
+	}
 };
 

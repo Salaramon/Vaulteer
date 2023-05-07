@@ -2,13 +2,12 @@
 
 #include <glm/glm.hpp>
 
-#include "Debug/Debug.h"
+
 
 #include "Scene/Entity.h"
 
 
-class Position3D : public glm::vec3 {
-public:
+struct Position3D : glm::vec3 {
 	Position3D() {}
 	template<class T1, class T2, class T3>
 	Position3D(T1 x, T2 y, T3 z) : glm::vec3(x,y,z) {}
@@ -24,9 +23,9 @@ public:
 
 class Properties3D {
 public:
+	glm::vec3 scale;
 	glm::vec3 axisLockDirection;
 	bool isAxisLocked;
-	glm::vec3 scale;
 };
 
 

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Renderer/Techniques/Technique.h"
+#include <glad/glad.h>
 
-class ShadowMapTechnique : public Technique {
+
+class ShadowMapTechnique {
 public:
-	using Technique::Technique;
-
-	void setDepthMap(GLuint depthMapTexId);
-
-private:
+	void setDepthMap(GLuint depthMapTexId) {
+		//setUniform(Binder::depth_map_frag::uniforms::depthMap, depthMapTexId);
+	}
 };

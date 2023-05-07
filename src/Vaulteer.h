@@ -10,6 +10,8 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/BlendingForwardRenderer.h"
 
+#include "Renderer/ShaderProgram.h"
+
 
 class Vaulteer : public Application {
 public:
@@ -19,5 +21,6 @@ public:
 	static void loadResources();
 
 	void setup() override;
+
 
 };

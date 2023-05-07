@@ -41,7 +41,7 @@ project "Vaulteer"
 	includedirs {
 		"%{wks.location}/src",
 		"%{wks.location}/vendor/ASSIMP/include",
-		"%{wks.location}/vendor/DebugYourself/include",
+		--"%{wks.location}/vendor/DebugYourself/include",
 		"%{wks.location}/vendor/GEM/include",
 		"%{wks.location}/vendor/GLAD/include",
 		"%{wks.location}/vendor/GLFW/include",
@@ -57,7 +57,7 @@ project "Vaulteer"
 
 	libdirs {
 		"%{wks.location}/vendor/ASSIMP/lib/%{cfg.buildcfg}",
-		"%{wks.location}/vendor/DebugYourself/lib/%{cfg.buildcfg}",
+		--"%{wks.location}/vendor/DebugYourself/lib/%{cfg.buildcfg}",
 		"%{wks.location}/vendor/GEM/lib/%{cfg.buildcfg}",
 		"%{wks.location}/vendor/sqlite/lib/",
 		"%{wks.location}/vendor/GLFW/lib/",

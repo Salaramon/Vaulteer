@@ -24,7 +24,7 @@ Texture2DArray::Texture2DArray(int width, int height, const std::vector<glm::vec
 }
 
 Texture2DArray::Texture2DArray(Texture2DArray&& other) noexcept
-	: Texture(other.width, other.height, other.mipmapEnabled), locators(other.locators), types(other.types), units(other.units) {
+	: Texture(other.width, other.height, other.mipmapEnabled), locators(other.locators), types(other.types) {
 	textureID = other.textureID;
 	numLayers = other.numLayers;
 
@@ -39,20 +39,17 @@ GLint Texture2DArray::getTextureID() const {
 	return textureID;
 }
 
-Texture2DArray::TextureUnit Texture2DArray::getUnit(const std::string& texturePath) const {
-	return units.at(texturePath);
-}
-
 
 void Texture2DArray::createUnpacked() {
 	std::vector<Image2D> images;
 	GLsizei maxW = 0, maxH = 0, maxComp = 0;
-	int loadCount = 0;
+	size_t loadCount = 0;
 
 	for (int i = 0; i < locators.size(); i++) {
 		GLsizei w, h, comp;
 		byte* data = stbi_load(locators[i].path.data(), &w, &h, &comp, 0);
-		images.push_back(Image2D(TextureUnit(this, 0, 0, w, h, i, locators[i].type), locators[i].path, data));
+		//images.push_back(Image2D(TextureView({0, 0, w, h}, i, locators[i].type), locators[i].path, data));
+		images.push_back(Image2D(locators[i]));
 		if (images[i].loaded()) {
 			loadCount++;
 			maxW = std::max(maxW, width);
@@ -76,7 +73,7 @@ void Texture2DArray::createUnpacked() {
 		if (img.loaded())
 			stbi_image_free(img.data);
 
-		units[img.path] = img.unit;
+		//views[img.path] = img.view;
 	}
 }
 
@@ -84,10 +81,11 @@ void Texture2DArray::createTextureArrayFromData(GLenum internalFormat, GLenum fo
 	glTextureStorage3D(textureID, 1, internalFormat, width, height, 1); // TODO layers
 	
 	for (const Image2D& img : images) {
-		glTextureSubImage3D(textureID, 0, img.unit.x, img.unit.y, img.unit.layer, img.unit.w, img.unit.h, 1, format, GL_UNSIGNED_BYTE, img.data);
+		auto& rect = img.view.rect;
+		glTextureSubImage3D(textureID, 0, rect.x, rect.y, img.view.layer, rect.w, rect.h, 1, format, GL_UNSIGNED_BYTE, img.data);
 		std::cout << "- init texture with locator: " << img.path << std::endl;
 		std::cout << "- size: " << sizeof(img.data) << std::endl;
-		std::cout << "- unit: " << img.unit.x << ":" << img.unit.y << ":" << img.unit.w << ":" << img.unit.h << std::endl;
+		std::cout << "- unit: " << rect.x << ":" << rect.y << ":" << rect.w << ":" << rect.h << std::endl;
 	}
 
 	if (mipmapEnabled)

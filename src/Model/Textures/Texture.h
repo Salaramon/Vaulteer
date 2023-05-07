@@ -5,19 +5,16 @@
 #include <glad/glad.h>
 #include <assimp/scene.h>
 
-// ReSharper disable once CppUnusedIncludeDirective
 #include "stb_image.h"
 
 #include "GLSLCPPBinder.h"
 #include "Renderer/Shader.h"
 
-#include "Debug/Debug.h"
-
 class Texture {
 public:
-	Texture();
-	Texture(bool mipmapEnabled);
-	Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true);
+	Texture() = default;
+	Texture(bool mipmapEnabled) : mipmapEnabled(mipmapEnabled) {}
+	Texture(GLsizei width, GLsizei height, bool mipmapEnabled = true) : width(width), height(height), mipmapEnabled(mipmapEnabled) {}
 
 	void setMinifyingFilter(GLenum filter) const;
 	void setMagnifyingFilter(GLenum filter) const;
@@ -33,25 +30,13 @@ protected:
 	void createTexture(GLenum type);
 	void cleanup() const;
     
-	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents);
-
-public:
-    inline static auto CR = DY::ClassRegister<
-        &setMinifyingFilter,
-        &setMagnifyingFilter,
-        &setAnisotropicFilter,
-        &createTexture,
-        &cleanup>();
-    inline static auto CB = DY::ClassBinder<decltype(CR)>();
-
-    DY::ObjectRegister<Texture,
-        decltype(textureID),
-        decltype(width),
-        decltype(height),
-        decltype(nrComponents),
-        decltype(mipmapEnabled),
-        decltype(uniformTextureTypes)> OR;
-    inline static auto OB = DY::ObjectBinder<decltype(OR)>();
-    
-    using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
+	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents) {
+	    switch (nrComponents) {
+	        case STBI_rgb_alpha:	return std::make_pair(GL_RGBA8, GL_RGBA);
+	        case STBI_rgb:			return std::make_pair(GL_RGB8, GL_RGB);
+	        case STBI_grey_alpha:	return std::make_pair(GL_RG8, GL_RG);
+	        default: assert(false); // "invalid format"
+	        case STBI_grey:			return std::make_pair(GL_R8, GL_RED);
+	    }
+	}
 };

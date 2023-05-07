@@ -8,7 +8,6 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "Debug/Debug.h"
 #include "Events/EventTypes.h"
 
 static size_t GLFWWindowCount = 0;
@@ -48,7 +47,7 @@ public:
 	static int getWidth();
 	static int getHeight();
 
-	static void addResizeCallback(std::function<void(int, int)> callback);
+	static void addResizeCallback(const std::function<void(int, int)>& callback);
 
 	//Displays a completed frame
 	static bool onUpdate();
@@ -90,25 +89,4 @@ protected:
 	//GLFW window variable
 	inline static GLFWwindow* window{};
 	inline static bool focused = true;
-
-public:
-	inline static auto CR = DY::ClassRegister<
-		&setup>(
-			"setup");
-
-	DY::ObjectRegister<Window, decltype(window)> OR;
-
-	inline static auto FR = DY::FunctionRegister<
-		&onWindowCloseEvent,
-		&onWindowFocusEvent,
-		&onWindowResizeEvent>(
-			"onWindowCloseEvent",
-			"onWindowFocusEvent",
-			"onWindowResizeEvent");
-
-	inline static auto CB = DY::ClassBinder(CR);
-	inline static auto FB = DY::FunctionBinder(FR);
-	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
-
-	using LOG = _LOG<decltype(CB), decltype(OB), decltype(FB), DY::No_VB>;
 };

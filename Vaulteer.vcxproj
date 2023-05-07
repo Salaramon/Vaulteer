@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -69,7 +69,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\DebugYourself\lib\Debug;vendor\GEM\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\GEM\lib\Debug;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\DebugYourself\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\GLSLCPPBinder;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -92,7 +92,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\DebugYourself\lib\Release;vendor\GEM\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\GEM\lib\Release;vendor\sqlite\lib;vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -104,35 +104,36 @@
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />
-    <ClInclude Include="src\Debug\Debug.h" />
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\EventTypes.h" />
     <ClInclude Include="src\Model\Buffer.h" />
-    <ClInclude Include="src\Model\Data\ModelData.h" />
     <ClInclude Include="src\Model\IndexBuffer.h" />
     <ClInclude Include="src\Model\Material.h" />
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
+    <ClInclude Include="src\Model\Resources\MaterialLoader.h" />
     <ClInclude Include="src\Model\Resources\MeshLibrary.h" />
+    <ClInclude Include="src\Model\Resources\MeshLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceLoader.h" />
     <ClInclude Include="src\Model\Resources\ResourceManager.h" />
     <ClInclude Include="src\Model\Resources\ResourcePack.h" />
+    <ClInclude Include="src\Model\Resources\TextureLibrary.h" />
     <ClInclude Include="src\Model\Storage\BufferLayout.h" />
     <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Storage\MaterialVertex.h" />
     <ClInclude Include="src\Model\Storage\Point.h" />
     <ClInclude Include="src\Model\Storage\Vertex.h" />
     <ClInclude Include="src\Model\Storage\VertexHash.h" />
-    <ClInclude Include="src\Model\Storage\Vertices.h" />
     <ClInclude Include="src\Model\Textures\CubemapTexture.h" />
     <ClInclude Include="src\Model\Textures\PackedTexture2DArray.h" />
     <ClInclude Include="src\Model\Textures\Texture.h" />
     <ClInclude Include="src\Model\Textures\Texture2D.h" />
     <ClInclude Include="src\Model\Textures\Texture2DArray.h" />
     <ClInclude Include="src\Model\Textures\TextureResourceLocator.h" />
+    <ClInclude Include="src\Model\Textures\TextureViewData.h" />
     <ClInclude Include="src\Model\VertexArray.h" />
     <ClInclude Include="src\Model\VertexBuffer.h" />
     <ClInclude Include="src\OpenGL.h" />
@@ -152,14 +153,10 @@
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\ClusterTileTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DepthMapTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\LineTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\Technique.h" />
     <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Register.h" />
@@ -183,15 +180,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
-    <ClCompile Include="src\API\Camera.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
     <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
     <ClCompile Include="src\DebugLayer.cpp" />
-    <ClCompile Include="src\Model\Data\ModelData.cpp" />
     <ClCompile Include="src\Model\IndexBuffer.cpp" />
-    <ClCompile Include="src\Model\Resources\ResourceLoader.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
@@ -202,7 +196,6 @@
     <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\Renderer\Batch.cpp" />
     <ClCompile Include="src\Renderer\BatchManager.cpp" />
-    <ClCompile Include="src\Renderer\BlendingForwardRenderer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp" />
@@ -210,22 +203,10 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\BlendingCompositeTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\BlendingTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\ClusterTileTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredDirLightTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DeferredPointLightTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\DepthMapTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\LineTechnique.cpp" />
-    <ClCompile Include="src\Renderer\Techniques\Technique.cpp" />
     <ClCompile Include="src\VFX\ShadowBuffer.cpp" />
     <ClCompile Include="src\VFX\ShadowCascade.cpp" />
     <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp" />
-    <ClCompile Include="src\VFX\ShadowCubeTechnique.cpp" />
-    <ClCompile Include="src\VFX\ShadowMapTechnique.cpp" />
-    <ClCompile Include="src\VFX\ShadowTechnique.cpp" />
     <ClCompile Include="src\Vaulteer.cpp" />
-    <ClCompile Include="src\WorldLayer.cpp" />
     <ClCompile Include="src\vpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -298,11 +279,11 @@
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg" />
     <Image Include="resources\backpack\ao.jpg" />
-    <Image Include="resources\backpack\box.png" />
     <Image Include="resources\backpack\diffuse.jpg" />
     <Image Include="resources\backpack\normal.png" />
     <Image Include="resources\backpack\roughness.jpg" />
     <Image Include="resources\backpack\specular.jpg" />
+    <Image Include="resources\box.png" />
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />

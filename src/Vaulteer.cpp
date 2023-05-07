@@ -22,6 +22,7 @@ void Vaulteer::initShaders() {
 	gem::Shader<gem::geometry_vertex> gvert;
 	gvert.compile();
 
+	/*
 	ShaderProgram<BlendingShader>::loadShader();
 	ShaderProgram<BlendingCompositeShader>::loadShader();
 	ShaderProgram<LineShader>::loadShader();
@@ -29,6 +30,7 @@ void Vaulteer::initShaders() {
 	ShaderProgram<DeferredPointShader>::loadShader();
 	ShaderProgram<GeometryShader>::loadShader();
 	ShaderProgram<VolumeShader>::loadShader();
+	*/
 }
 
 void Vaulteer::loadResources() {

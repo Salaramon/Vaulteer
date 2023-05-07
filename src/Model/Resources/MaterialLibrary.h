@@ -2,56 +2,68 @@
 
 #include <array>
 
-#include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "MaterialLoader.h"
 #include "Model/Material.h"
+
 
 constexpr size_t max_material_count = 128;
 
 class MaterialLibrary {
 public:
 	// returns pointer to material, inserted or existing; material will have library index set
-	static Material* create(aiMaterial* aiMaterial, const std::string& objPath) {
-		
-		std::unique_ptr<Material> matPtr = std::make_unique<Material>(aiMaterial, objPath);
-		auto [it, inserted] = materialsByName.try_emplace(matPtr->name, std::move(matPtr));
+	static Material* create(aiMaterial* aiMat, const std::string& objPath) {
 
-		if (inserted) {
-			//materialIndexUsed[numMaterials] = true;
-			//materialKeysByIndex[numMaterials] = matPtr->name;
-			//matPtr->setMaterialIndex(numMaterials++);
-		}
-		else {
+		auto it = materialIndexByName.find(objPath);
+		if (it != materialIndexByName.end()) {
 			std::cout << std::format("Material name conflict <{}> for resource {}, material not inserted",
-				aiMaterial->GetName().C_Str(), objPath) << std::endl;
+				aiMat->GetName().C_Str(), objPath) << std::endl;
+			return materialLibrary[(*it).second].get();
 		}
-		return matPtr.get();
+		
+		auto mat = std::make_unique<Material>(MaterialLoader::load(aiMat, objPath));
+		mat->setMaterialIndex(numMaterials);
+
+		Material* matPtr = mat.get();
+		materialLibrary.push_back(std::move(mat));
+		materialIndexByName[matPtr->name] = numMaterials++;
+		
+		return matPtr;
 	}
 
 	static Material* get(unsigned int index) {
-		auto& name = materialKeysByIndex[index];
-		return materialsByName.at(name).get();
+		return materialLibrary[index].get();
 	}
 
 	static Material* get(const std::string& name) {
-		return materialsByName.at(name).get();
+		return get(materialIndexByName.at(name));
 	}
 
-	static const std::map<std::string, std::unique_ptr<Material>>& getAllMaterials() {
-		return materialsByName;
+	static std::vector<Material*> getAllMaterials() {
+		std::vector<Material*> materials;
+		for (auto& mat : materialLibrary) {
+			materials.push_back(mat.get());
+		}
+		return materials;
+	}
+
+	static std::array<Material::MaterialData, max_material_count> getMaterialData() {
+		std::array<Material::MaterialData, max_material_count> materials;
+		for (auto& mat : materialLibrary) {
+			materials[mat->materialIndex] = mat.get()->data;
+		}
+		return materials;
 	}
 
 	static size_t size() {
 		return numMaterials;
 	}
-
+	 
 private:
-
-	inline static std::array<bool, max_material_count> materialIndexUsed;
-	inline static std::array<std::string, max_material_count> materialKeysByIndex;
-	inline static std::map<std::string, std::unique_ptr<Material>> materialsByName;
+	inline static std::unordered_map<std::string, size_t> materialIndexByName;
+	inline static std::vector<std::unique_ptr<Material>> materialLibrary;
 
 	inline static size_t numMaterials = 0;
 	

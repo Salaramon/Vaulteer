@@ -10,11 +10,6 @@
 #include "Renderer/Techniques/BlendingTechnique.h"
 #include "Renderer/Techniques/BlendingCompositeTechnique.h"
 
-#include "Scene/StaticScene.h"
-#include "Scene/DynamicScene.h"
-
-#include "Model/Data/ModelData.h"
-
 #include "API/Camera.h"
 
 #include "SceneTypedefs.h"
@@ -26,19 +21,26 @@ class BlendingForwardRenderer :
 
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
 	inline static Mesh* quadMesh;
-
+		
 public:
-	static void initialize(uint screenWidth, uint screenHeight);
+	static void initialize(uint screenWidth, uint screenHeight) {
+		alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
+	}
 
-	static void rebuildAlphaBuffer(int width, int height);
+	static void rebuildAlphaBuffer(int width, int height) {
+		alphaBuffer.reset();
+		alphaBuffer = std::make_unique<AlphaBuffer>(width, height);
+	}
 	
-	static void reloadShaders();
+	static void reloadShaders() {
+		//BlendingTechnique::loadShader();
+		//BlendingCompositeTechnique::loadShader();
+	}
 
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
 		/*
-
-		auto camera = scene.view<A,ctiveCamera>();
+		auto camera = scene.view<ActiveCamera>();
 
 		OpenGL::enableBlending();
 		blendingPass(scene, camera);
@@ -52,7 +54,7 @@ public:
 
 	template<size_t SCENE_ID>
 	static void blendingPass(Scene<SCENE_ID>& scene) {
-		//BlendingTechnique::use();
+		BlendingTechnique::shader().use();
 
 		glDepthMask(GL_FALSE);
 		OpenGL::enableDepthTest();
@@ -110,7 +112,7 @@ public:
 	}
 
 	static void compositePass(Camera* camera) {
-		//BlendingCompositeTechnique::use();
+		BlendingCompositeTechnique::shader().use();
 
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 

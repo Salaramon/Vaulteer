@@ -11,8 +11,6 @@
 #include "Renderer/Buffers/AlphaBuffer.h"
 #include "Renderer/Techniques/ShadowVolumeTechnique.h"
 
-#include "Model/Data/ModelData.h"
-
 #include "API/Camera.h"
 
 
@@ -43,7 +41,7 @@ public:
 
 	template<size_t SCENE_ID>
 	static void blendingPass(Scene<SCENE_ID>& scene, Camera* camera) {
-		ShadowVolumeTechnique::use();
+		ShadowVolumeTechnique::shader.use();
 
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {

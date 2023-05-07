@@ -1,9 +1,8 @@
 #include "vpch.h"
 #include "Renderer/Shader.h"
 
-void Shader::use() {
+void Shader::use() const {
 	glUseProgram(shaderProgramID);
-	LOG::CLAS::debug<&Shader::use>(this, &shaderProgramID, DY::std_format("Shader program with id {} is currently active", shaderProgramID));
 }
 
 size_t Shader::getShaderID() {
@@ -22,7 +21,7 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 }
 
 void Shader::loadShader(std::string path, GLenum type) {
-	LOG::CLAS::debug<&Shader::loadShader>(this, std::format("Loading shader \"{}\", of type {}", path, type));
+	std::cout << std::format("Loading shader \"{}\", of type {}", path, type) << std::endl;
 	std::string shaderCode = file_to_string(path);
 	const char* rawCode = shaderCode.c_str();
 
@@ -32,7 +31,7 @@ void Shader::loadShader(std::string path, GLenum type) {
 	std::string filename = path.substr(path.find_last_of('/') + 1);
 	shaderFileNames.push_back(filename);
 
-	LOG::CLAS::debug<&Shader::loadShader>(this, std::format("Shader created with id {} from {}", id, filename));
+	std::cout << std::format("Shader created with id {} from {}", id, filename) << std::endl;
 
 	shader_compile(id, filename, &rawCode);
 	shaderProgram_addShader(id);
@@ -60,20 +59,16 @@ void Shader::populateUniformCache() {
 			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderLocation>(uniformLocation));
 		}
 	}
-
-	LOG::CLAS::debug<&Shader::populateUniformCache>(this, &uniformLocationCache, DY::std_format("unifrom cache populated with {} uniforms", uniformLocationCache.size()));
 }
 
 
 void Shader::shaderProgram_addShader(GLuint id) {
 	glAttachShader(shaderProgramID, id);
-	LOG::CLAS::debug<&Shader::shaderProgram_addShader>(this, &shaderProgramID, DY::std_format("shader with id {} is attached to program with id {}", id, shaderProgramID));
 }
 
 
 bool Shader::shaderProgram_link() {
 	glLinkProgram(shaderProgramID);
-	LOG::CLAS::debug<&Shader::shaderProgram_link>(this, &shaderProgramID, DY::std_format("shader program with id {} is linked", shaderProgramID));
 	return shaderProgram_catchError();
 }
 
@@ -82,7 +77,7 @@ bool Shader::shader_compile(GLuint id, std::string& filename, const char** code)
 	glShaderSource(id, 1, code, NULL);
 	glCompileShader(id);
 
-	LOG::CLAS::debug<&Shader::shader_compile>(this, std::format("shader {} is compiled", filename));
+	std::cout << std::format("shader {} is compiled", filename) << std::endl;
 
 	return shader_catchError(id, filename);
 }
@@ -126,11 +121,7 @@ std::string Shader::file_to_string(std::string& path) {
 		return stream.str();
 	}
 	catch (std::ifstream::failure& e) {
-#ifdef DEBUG_ENABLED
-		LOG::CLAS::debug<&Shader::file_to_string>(this, std::format("Error reading file:\n\t{}", path));
-#else
 		std::cout << std::format("Error reading file:\n\t{}", path) << std::endl;
-#endif
 		//Return empty string upon error.
 		return "";
 	}
@@ -148,9 +139,5 @@ void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSi
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
 
-#ifdef DEBUG_ENABLED
-	LOG::CLAS::debug<&Shader::getErrorMessage<T>>(this, std::vector<DY::SQLTypes::TEXT>({Tag::Debug::DirectOutput}), std::format("{}\n\t{}\n", errorMessageAppend, log.data()));
-#else
 	std::cout << std::format("{}\n\t{}\n", errorMessagePrepend, log.data()) << std::endl;
-#endif
 }

@@ -11,9 +11,6 @@
 #include "Renderer/Shader.h"
 
 
-#include "Debug/Debug.h"
-
-
 class VertexContainer {
 public:
 	template<vertex_concept T>
@@ -80,11 +77,7 @@ public:
 	Mesh(std::vector<T> vertices, std::vector<GLuint>& indices, Material* material) :
 		vertexContainer(vertices),
 		indices(indices),
-		material(material),
-
-		OR(this,
-		   DY::V(&this->vertexContainer, &this->indices, &this->vertexArray, &this->material),
-		   DY::N("vertices", "indices", "vertexBuffer", "indexBuffer", "material")) {
+		material(material) {
 
 		vertexBuffer = vertexArray.createVertexBuffer(T::getFormat(), vertexContainer.data(), vertexContainer.size());
 		indexBuffer = vertexArray.createIndexBuffer(this->indices);
@@ -98,22 +91,15 @@ public:
 		material(other.material),
 		vertexArray(std::move(other.vertexArray)),
 		vertexBuffer(other.vertexBuffer),
-		indexBuffer(other.indexBuffer) {
+		indexBuffer(other.indexBuffer) {}
 
-		LOG::CTOR::debug(this, "Mesh was moved");
-	}
-
-	~Mesh() {
-		LOG::CTOR::debug(this, "Mesh was destroyed");
-	}
+	~Mesh() {}
 
 	void bind() {
 		vertexArray.bind();
-		LOG::CLAS::debug<&Mesh::bind>(this, "Mesh was bound.");
 	}
 	void unbind() {
 		vertexArray.unbind();
-		LOG::CLAS::debug<&Mesh::unbind>(this, "Mesh was unbound.");
 	}
 
 	void updateBuffer() {
@@ -133,20 +119,6 @@ public:
 	VertexArray vertexArray;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
-
-	inline static auto CR = DY::ClassRegister<
-		&bind,
-		&unbind>();
-	inline static auto CB = DY::ClassBinder<decltype(CR)>();
-
-	DY::ObjectRegister<Mesh,
-		decltype(vertexContainer),
-		decltype(indices),
-		decltype(vertexArray),
-		decltype(material)> OR;
-	inline static auto OB = DY::ObjectBinder<decltype(OR)>();
-
-	using LOG = _LOG<decltype(CB), decltype(OB), DY::No_FB, DY::No_VB>;
 };
 
 

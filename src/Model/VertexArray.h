@@ -108,6 +108,9 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 			while (comp < element.getComponentCount()) {
 				std::cout << "  component loc " << location + comp << std::endl;
 				std::cout << "  component offset " << location + comp * componentSize << std::endl;
+
+				// TODO: consider type (ints won't work here)
+
 				glEnableVertexArrayAttrib(vao, location + comp * componentSize);
 				glVertexArrayAttribFormat(vao, 
 					location + comp,
@@ -128,6 +131,8 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		}
 		else {
 			glEnableVertexArrayAttrib(vao, location);
+
+			// TODO: better type check
 
 			if (element.type == ShaderDataType::Int) {
 				glVertexArrayAttribIFormat(vao,

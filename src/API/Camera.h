@@ -8,8 +8,6 @@
 #include <array>
 #include <utility>
 
-#include "Debug/Debug.h"
-
 #include "Scene/Object3D.h"
 
 

@@ -1,11 +1,11 @@
 #pragma once
 #include <memory>
 
-// ReSharper disable once CppUnusedIncludeDirective
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "MeshLoader.h"
 #include "Model/ModelResourceLocator.h"
 #include "Model/Resources/MaterialLibrary.h"
 #include "Model/Resources/MeshLibrary.h"
@@ -26,9 +26,6 @@ public:
 	}
 
 	static std::vector<Mesh*> importModel(const std::string& objPath, int importFlags = blank_import_flags) {
-		std::vector<Material*> sceneMaterials;
-		std::vector<Mesh*> meshes;
-
 		// default flags
 		if (importFlags == blank_import_flags)
 			importFlags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace;
@@ -42,42 +39,23 @@ public:
 			assert(false);
 		}
 
-
-		for (int i = 0; i < scene->mNumMaterials; i++) {
+		// aggregate scene materials, used to populate mesh vertices with material index data
+		std::vector<Material*> sceneMaterials;
+		for (uint i = 0; i < scene->mNumMaterials; i++) {
 			aiMaterial* aiMaterial = scene->mMaterials[i];
-			sceneMaterials.emplace_back(MaterialLibrary::create(aiMaterial, objPath));
+			sceneMaterials.push_back(MaterialLibrary::create(aiMaterial, objPath));
 		}
 
-		// maybe we want to use a MeshLibrary at some point so ModelData doesn't own its meshes; it can be used here
-
-		if (scene) {
-			processNode(meshes, sceneMaterials, scene, scene->mRootNode, objPath);
-		}
-
-		numModels++;
+		auto meshes = MeshLibrary::create(objPath, scene, sceneMaterials);
+		if (!meshes.empty())
+			numModels++;
 
 		return meshes;
-	};
-
-private:
-	//void processNode(std::vector<Mesh>& meshes, std::vector<Material>& materials, const aiScene* scene, aiNode* node);
-	static void processNode(std::vector<Mesh*>& meshes, std::vector<Material*>& sceneMaterials, const aiScene* scene, const aiNode* node, const std::string& objPath) {
-		for (size_t i = 0; i < node->mNumMeshes; i++) {
-			aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
-
-			meshes.emplace_back(MeshLibrary::create(aiMesh, objPath));
-		}
-
-		for (size_t i = 0; i < node->mNumChildren; i++) {
-			processNode(meshes, sceneMaterials, scene, node->mChildren[i], objPath);
-		}
 	}
 
-
+private:
 	inline static int numModels = 0;
 
 	// this class is static only
 	ResourceLoader() = default;
-
-	
 };
