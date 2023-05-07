@@ -32,12 +32,21 @@ public:
 class Object3D : public Entity {
 public:
 	Object3D() :
-		position(add<Position3D>(0.f, 0.f, 0.f)),
-		rotation(add<Rotation3D>(glm::vec3(0.f))),
-		properties3D(add<Properties3D>(Properties3D{
+		position(&add<Position3D>(0.f, 0.f, 0.f)),
+		rotation(&add<Rotation3D>(glm::vec3(0.f))),
+		properties3D(&add<Properties3D>(Properties3D{
 		.axisLockDirection = {0.f, 1.f, 0.f},
 		.isAxisLocked = false}))
 	{}
+
+	Object3D(Object3D&& other) : Entity(std::move(other)),
+			position(other.position),
+			rotation(other.rotation),
+			properties3D(other.properties3D) {
+		other.position = nullptr;
+		other.rotation = nullptr;
+		other.properties3D = nullptr;
+	}
 
 	~Object3D() {
 		this->remove<Position3D, Rotation3D, Properties3D>();
@@ -45,7 +54,7 @@ public:
 
 
 	void setPosition(glm::vec3 position) {
-		position = position;
+		*this->position = position;
 	}
 
 	void setPosition(float x, float y, float z) {
@@ -53,22 +62,22 @@ public:
 	}
 
 	void setRotation(const glm::vec3 direction) {
-		if (properties3D.isAxisLocked) {
-			rotation = glm::quatLookAt(direction, properties3D.axisLockDirection);
+		if (properties3D->isAxisLocked) {
+			*rotation = glm::quatLookAt(direction, properties3D->axisLockDirection);
 		}
 		else {
-			rotation = glm::quat(direction);
+			*rotation = glm::quat(direction);
 		}
 	}
 
 	void setRotation(const glm::quat quaternion) {
-		if (properties3D.isAxisLocked) {
-			glm::quat qF = rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(rotation);
+		if (properties3D->isAxisLocked) {
+			glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
 			glm::vec3 result({ qF.x, qF.y, qF.z });
 			setRotation(result);
 		}
 		else {
-			rotation = quaternion;
+			*rotation = quaternion;
 		}
 	}
 
@@ -77,7 +86,7 @@ public:
 	}
 
 	void move(glm::vec3 direction) {
-		position += direction;
+		*this->position += direction;
 	}
 
 	void move(float x, float y, float z) {
@@ -86,7 +95,7 @@ public:
 
 	void rotate(glm::vec3 direction) {
 		glm::quat toMove(direction);
-		rotation *= toMove;
+		*this->rotation *= toMove;
 	}
 
 	void rotate(float x, float y, float z) {
@@ -94,20 +103,20 @@ public:
 	}
 
 	void setLockAxis(glm::vec3 direction) {
-		properties3D.axisLockDirection = direction;
+		properties3D->axisLockDirection = direction;
 	}
 
 	void enableAxisLock(glm::vec3 direction) {
-		properties3D.isAxisLocked = true;
+		properties3D->isAxisLocked = true;
 	}
 
 	void disableAxisLock(glm::vec3 direction) {
-		properties3D.isAxisLocked = false;
+		properties3D->isAxisLocked = false;
 	}
 
-	Position3D& position;
-	Rotation3D& rotation;
-	Properties3D& properties3D;
+	Position3D* position;
+	Rotation3D* rotation;
+	Properties3D* properties3D;
 };
 
 
@@ -122,10 +131,10 @@ Supplies the functions:
 template<class... TupleArgs>
 class Object3DUtility : Entity::Restricter<TupleArgs...> {
 public:
-	Object3DUtility(Object3D& object3d) :
-		position(&object3d.position),
-		rotation(&object3d.rotation),
-		properties3D(&object3d.properties3D)
+	Object3DUtility(const Object3D& object3d) :
+		position(object3d.position),
+		rotation(object3d.rotation),
+		properties3D(object3d.properties3D)
 	{}
 
 	Object3DUtility(TupleArgs... args) :

@@ -18,9 +18,8 @@ public:
 private:
 	Camera camera;
 	CameraController cameraController;
-	
-	Model modelA;
-	Model modelB;
+
+	std::vector<Model> loadedModels;
 
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
@@ -30,14 +29,15 @@ private:
 	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
 	//StaticScene<TransparentModel> transparentScene;
 	
-	Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
+	Renderer<DeferredRenderer> renderer; // render my nuts
+	//Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
 
 public:
 	void onAttach() override {
 		Window& window = Application::getWindow();
-		
+
 		DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
-		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+		//BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		//Setting up cameras in the scene.
 		
@@ -59,15 +59,20 @@ public:
 		};
 
 		Window::addResizeCallback(setAspectRatio);
-
-		modelA.position = { 1,1,1 };
-		modelB.position = { 2,2,2 };
 		
-		scene.add(modelA);
-		scene.add(modelB);
+		ResourcePack& pack = ResourceManager::getPack(0);
 
+		Model palm = Model(pack.getMeshes("palm"));
+		Model crate = Model(pack.getMeshes("crate"));
+		loadedModels.push_back(std::move(palm));
+		loadedModels.push_back(std::move(crate));
 
-		//ResourcePack& pack = ResourceManager::getPack(0);
+		*loadedModels[0].position = glm::vec3(1);
+		*loadedModels[1].position = glm::vec3(2);
+		
+		scene.add(loadedModels[0]);
+		scene.add(loadedModels[1]);
+
 		//auto model1 = Model(pack.getModelByName("palm"));
 		//auto model2 = Model(pack.getModelByName("crate"));
 
@@ -112,7 +117,7 @@ public:
 		*/
 
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
-	};
+	}
 
 	void onUpdate(float timestep) override {
 		cameraController.onUpdate(timestep);

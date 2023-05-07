@@ -220,7 +220,7 @@ public:
 		for (auto& light : pointLights) {
 			singleLightVolumePass(light, i++);
 		}
-		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
+		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
 		sphereMesh->unbind();
 
 		gbuffer->unbind();
@@ -264,6 +264,8 @@ public:
 				}
 				
 			});
+
+			buildBatch = false;
 		}
 
 		

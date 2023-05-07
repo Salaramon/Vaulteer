@@ -18,11 +18,15 @@ public:
 	}
 
 	void add(const ModelResourceLocator& modelLocator) {
-		modelLocatorsByName[modelLocator.name] = modelLocator;
+		modelLocators.push_back(modelLocator);
 	}
-	void addAll(const std::vector<ModelResourceLocator>& modelLocators) {
-		for (auto& modelLocator : modelLocators)
-			add(modelLocator);
+
+	void addAll(const std::vector<ModelResourceLocator>& locators) {
+		modelLocators = locators;
+	}
+
+	std::vector<Mesh*>& getMeshes(const std::string& name) {
+		return meshesByModelName.at(name);
 	}
 
 	/// Imports all added models
@@ -33,8 +37,8 @@ public:
 		}
 
 		// import all models
-		for (const auto& locator : modelLocatorsByName | std::views::values) {
-			meshes = ResourceLoader::importModel(locator);
+		for (const auto& locator : modelLocators) {
+			meshesByModelName[locator.name] = ResourceLoader::importModel(locator);
 		}
 
 		// find all locators
@@ -50,7 +54,7 @@ public:
 		textureLibrary = std::make_unique<Texture2DArray>();
 
 		// update all models' units
-		for (Mesh* mesh : meshes) {
+		for (std::vector<Mesh*> meshList : meshesByModelName | std::views::values) {
 			//todo what to do with texture unit range?
 			//updateModelDataWithTextureUnits(*modelData, *textureLibrary);
 		}
@@ -80,6 +84,6 @@ private:
 
 	std::unique_ptr<Texture2DArray> textureLibrary;
 
-	std::unordered_map<std::string, ModelResourceLocator> modelLocatorsByName;
-	std::vector<Mesh*> meshes;
+	std::vector<ModelResourceLocator> modelLocators;
+	std::unordered_map<std::string, std::vector<Mesh*>> meshesByModelName;
 };

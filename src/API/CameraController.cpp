@@ -15,7 +15,7 @@ void CameraController::setCamera(Camera* camera) {
 void CameraController::onUpdate(float timestep) {
 	
 	Object3DUtility object3DUtility(camera->position, camera->rotation, camera->properties3D);
-	glm::vec3 worldUp = camera->properties3D.axisLockDirection;
+	glm::vec3 worldUp = camera->properties3D->axisLockDirection;
 	
 	if (Event::isDown(KeyboardKey::SPACE)) {
 		camera->move(worldUp * timestep * speed);
@@ -24,16 +24,16 @@ void CameraController::onUpdate(float timestep) {
 		camera->move(-worldUp * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::W)) {
-		camera->move(object3DUtility.frontVector() * timestep * speed);
+		//camera->move(object3DUtility.frontVector() * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::S)) {
-		camera->move(-object3DUtility.frontVector() * timestep * speed);
+		//camera->move(-object3DUtility.frontVector() * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::A)) {
-		camera->move(object3DUtility.rightVector() * timestep * speed);
+		//camera->move(object3DUtility.rightVector() * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::D)) {
-		camera->move(-object3DUtility.rightVector() * timestep * speed);
+		//camera->move(-object3DUtility.rightVector() * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::E)) {
 		camera->rotate(0, 0, timestep * (speed / sens));

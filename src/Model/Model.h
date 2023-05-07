@@ -3,9 +3,7 @@
 #
 
 #include <glm/glm.hpp>
-#include <assimp/scene.h>
 
-#include "Renderer/Shader.h"
 #include "Scene/Object3D.h"
 #include "Model/Mesh.h"
 #include "Textures/Texture2DArray.h"
@@ -33,30 +31,52 @@ struct Meshes : std::vector<Mesh*> {
 
 class Model : public Object3D {
 public:
-
 	Model() :
-		meshes(this->add<Meshes>()),
-		propertiesModel(this->add<PropertiesModel>(PropertiesModel{
-			.boundingSphere = boundingSphere(),
-			.faces = Faces::FRONT,
-			.textureID = 0
-		})),
-		textureView(this->add<TextureView>())
-	{}
+			meshes(&this->add<Meshes>()),
+			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
+				.boundingSphere = boundingSphere(),
+				.faces = Faces::FRONT,
+				.textureID = 0
+			})),
+			textureView(&this->add<TextureView>()) {}
 
-	Meshes& meshes;
-	PropertiesModel& propertiesModel;
-	TextureView& textureView;
+	Model(std::vector<Mesh*>& meshes) :
+			meshes(&this->add<Meshes>(meshes)),
+			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
+				.boundingSphere = boundingSphere(),
+				.faces = Faces::FRONT,
+				.textureID = 0
+			})),
+			textureView(&this->add<TextureView>()) {}
+
+	Model(Model& other) = delete;
+
+	Model(Model&& other) noexcept :
+			Object3D(std::move(other)),
+			meshes(other.meshes),
+			propertiesModel(other.propertiesModel),
+			textureView(other.textureView) {
+		other.meshes = nullptr;
+		other.propertiesModel = nullptr;
+		other.textureView = nullptr;
+	}
+
+	~Model() {
+		this->remove<Meshes, PropertiesModel, TextureView>();
+	}
+
+	Meshes* meshes;
+	PropertiesModel* propertiesModel;
+	TextureView* textureView;
 
 	void setPolygonFaces(Faces faces) {
-		propertiesModel.faces = faces;
+		propertiesModel->faces = faces;
 	}
 	
 private:
-
 	glm::vec4 boundingSphere() {
 		std::vector<Seb::Point<double>> points;
-		for (Mesh* mesh : meshes) {
+		for (Mesh* mesh : *meshes) {
 			for (const MaterialVertex& vertex : mesh->getCopiedData<MaterialVertex>()) {
 				std::vector<double> converter({ vertex.aPos.x, vertex.aPos.y, vertex.aPos.z });
 				points.emplace_back(3, converter.begin());
@@ -71,9 +91,9 @@ private:
 
 			boundingSphere = glm::vec4(it[0], it[1], it[2], ball.radius());
 
-			boundingSphere.x += position.x;
-			boundingSphere.y += position.y;
-			boundingSphere.z += position.z;
+			boundingSphere.x += position->x;
+			boundingSphere.y += position->y;
+			boundingSphere.z += position->z;
 		}
 
 		return boundingSphere;
@@ -85,9 +105,9 @@ template<class... TupleArgs>
 class ModelUtility : public Object3DUtility<TupleArgs...>, public Entity::Restricter<TupleArgs...> {
 public:
 	ModelUtility(const Model& model) : Object3DUtility<TupleArgs...>(model),
-		meshes(&model.meshes),
-		propertiesModel(&model.propertiesModel),
-		modelUnitTable(&model.textureView)
+		meshes(model.meshes),
+		propertiesModel(model.propertiesModel),
+		modelUnitTable(model.textureView)
 	{}
 
 	ModelUtility(TupleArgs... args) : Object3DUtility<TupleArgs...>(args...),
