@@ -32,7 +32,7 @@ public:
 		return s;
 	}
 	static Shader& blendingCompositeShader() { 
-		static Shader s = Shader(files::blending_composite_vertex, GL_VERTEX_SHADER, files::blending_composite_vertex, GL_FRAGMENT_SHADER);
+		static Shader s = Shader(files::blending_composite_vertex, GL_VERTEX_SHADER, files::blending_composite_frag, GL_FRAGMENT_SHADER);
 		return s;
 	}
 	static Shader& geometryShader() { 

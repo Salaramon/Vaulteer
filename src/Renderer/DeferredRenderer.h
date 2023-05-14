@@ -91,33 +91,54 @@ public:
 		//DeferredPointLightTechnique::loadShader();
 	}
 
-	static void rebuildBatch() {
-		buildBatch = true;
+	template<size_t SCENE_ID>
+	static void render(Scene<SCENE_ID>& scene) {
+		auto camera = scene.getActiveCamera();
+
+		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
+		
+		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D>();
+
+		if (buildBatch) {
+			modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
+				
+				BatchManager::setTextureID(batchManager, propertiesModel.textureID); //This should be taken from its own component in the future.
+
+				for (Mesh* mesh : meshes) {
+					BatchManager::addToBatch(batchManager, *mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
+				}
+				
+			});
+			buildBatch = false;
+		}
+
+		
+		OpenGL::enableDepthTest();
+
+		geometryPass(camera);
+
+		OpenGL::disableDepthTest();
+		OpenGL::enableBlending();
+		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
+
+		directionalLightPass(camera);
+
+		OpenGL::enableCullFace(OpenGL::FRONT);
+
+		lightingPass(camera);
+
+		OpenGL::disableBlending();
+		OpenGL::disableCullFace();
 	}
 
-	static void rebuildGBuffer(int width, int height) {
-		gbuffer.reset();
-		gbuffer = std::make_unique<GBuffer>(width, height);
-	}
-
-	static void copyGBufferDepth(GLint fbo) {
-		gbuffer->bindForReading();
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-
-		GLuint width = gbuffer->width, height = gbuffer->height;
-		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	template<class... Args>
-	static void geometryPass(const CameraUtility<Args...>& cameraUtility) {
+	static void geometryPass(const CameraReference& camera) {
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
 		DeferredGeometryTechnique::shader().use();
 
-		DeferredGeometryTechnique::uploadProjection(cameraUtility.projectionMatrix());
-		glm::mat4 viewMatrix = cameraUtility.viewMatrix();
+		DeferredGeometryTechnique::uploadProjection(camera.projectionMatrix());
+		glm::mat4 viewMatrix = camera.viewMatrix();
 
 		GLint texUnit = 0;
 		DeferredGeometryTechnique::setTextureUnit(texUnit);
@@ -141,8 +162,7 @@ public:
 		gbuffer->unbind();
 	}
 
-	template<class... Args>
-	static void directionalLightPass(const CameraUtility<Args...>& cameraUtility) {
+	static void directionalLightPass(const CameraReference& camera) {
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
@@ -150,8 +170,8 @@ public:
 		glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 
 	
-		DeferredDirLightTechnique::setWorldCameraPos(*cameraUtility.position);
-		DeferredDirLightTechnique::setCameraViewMat(cameraUtility.viewMatrix());
+		DeferredDirLightTechnique::setWorldCameraPos(*camera.position);
+		DeferredDirLightTechnique::setCameraViewMat(camera.viewMatrix());
 
 		if (buildLights) {
 			std::vector<DirectionalLight> dirLights = {
@@ -180,16 +200,15 @@ public:
 		gbuffer->unbind();
 	}
 
-	template<class... Args>
-	static void lightingPass(const CameraUtility<Args...>& cameraUtility) {
+	static void lightingPass(const CameraReference& camera) {
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
 		DeferredPointLightTechnique::shader().use();
 
-		glm::mat4 viewMatrix = cameraUtility.viewMatrix();
+		glm::mat4 viewMatrix = camera.viewMatrix();
 
-		DeferredPointLightTechnique::setWorldCameraPos(*cameraUtility.position);
+		DeferredPointLightTechnique::setWorldCameraPos(*camera.position);
 		DeferredPointLightTechnique::setView(viewMatrix);
 		DeferredPointLightTechnique::setCameraViewMat(viewMatrix);
 
@@ -235,56 +254,29 @@ public:
 			.isAxisLocked = false
 		};
 
-		Object3DUtility object3DUtility(position, rotation, properties);
-
-		DeferredPointLightTechnique::setModel(object3DUtility.modelMatrix());
+		DeferredPointLightTechnique::setModel(Model::modelMatrix(position, rotation, properties));
 		DeferredPointLightTechnique::setPointLightIndex(index);
 		glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
 	}
 
-	template<size_t SCENE_ID>
-	static void render(Scene<SCENE_ID>& scene) {
+	// Utility functions
 
-		auto cameraTuple = scene.get<PropertiesCamera, Properties3D, Position3D, Rotation3D>(scene.activeCamera);
-		CameraUtility cameraUtility(cameraTuple);
+	static void rebuildBatch() {
+		buildBatch = true;
+	}
 
-		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
-		
-		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, Position3D, Rotation3D>();
+	static void rebuildGBuffer(int width, int height) {
+		gbuffer.reset();
+		gbuffer = std::make_unique<GBuffer>(width, height);
+	}
 
-		if (buildBatch) {
-			modelView.each([](const PropertiesModel& propertiesModel, const Properties3D& properties3D, const Meshes& meshes, const Position3D& position3D, const Rotation3D& rotation3D) {
-				
-				BatchManager::setTextureID(batchManager, propertiesModel.textureID); //This should be taken from its own component in the future.
+	static void copyGBufferDepth(GLint fbo) {
+		gbuffer->bindForReading();
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 
-				ModelUtility modelUtility(properties3D, rotation3D, position3D);
-				
-				for (Mesh* mesh : meshes) {
-					BatchManager::addToBatch(batchManager, *mesh, modelUtility.modelMatrix());
-				}
-				
-			});
-
-			buildBatch = false;
-		}
-
-		
-		OpenGL::enableDepthTest();
-
-		geometryPass(cameraUtility);
-
-		OpenGL::disableDepthTest();
-		OpenGL::enableBlending();
-		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
-
-		directionalLightPass(cameraUtility);
-
-		OpenGL::enableCullFace(OpenGL::FRONT);
-
-		lightingPass(cameraUtility);
-
-		OpenGL::disableBlending();
-		OpenGL::disableCullFace();
+		GLuint width = gbuffer->width, height = gbuffer->height;
+		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 };

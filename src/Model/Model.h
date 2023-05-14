@@ -99,31 +99,3 @@ private:
 		return boundingSphere;
 	}
 };
-
-
-template<class... TupleArgs>
-class ModelUtility : public Object3DUtility<TupleArgs...>, public Entity::Restricter<TupleArgs...> {
-public:
-	ModelUtility(const Model& model) : Object3DUtility<TupleArgs...>(model),
-		meshes(model.meshes),
-		propertiesModel(model.propertiesModel),
-		modelUnitTable(model.textureView)
-	{}
-
-	ModelUtility(TupleArgs... args) : Object3DUtility<TupleArgs...>(args...),
-		meshes(Entity::tryGet<Meshes>(std::tie(args...))),
-		propertiesModel(Entity::tryGet<PropertiesModel>(std::tie(args...))),
-		modelUnitTable(Entity::tryGet<TextureView>(std::tie(args...)))
-	{}
-
-	ModelUtility(std::tuple<TupleArgs...> tuple) : Object3DUtility<TupleArgs...>(tuple),
-		meshes(Entity::tryGet<Meshes>(tuple)),
-		propertiesModel(Entity::tryGet<PropertiesModel>(tuple)),
-		modelUnitTable(Entity::tryGet<TextureView>(tuple))
-	{}
-
-
-	const Meshes* const meshes;
-	const PropertiesModel* const propertiesModel;
-	const TextureView* const modelUnitTable;
-};

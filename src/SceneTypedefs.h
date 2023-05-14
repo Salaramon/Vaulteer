@@ -5,4 +5,3 @@
 #include "API/Camera.h"
 
 
-using ActiveCamera = Reference<Camera>;

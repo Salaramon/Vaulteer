@@ -25,6 +25,8 @@ class BlendingForwardRenderer :
 public:
 	static void initialize(uint screenWidth, uint screenHeight) {
 		alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
+
+		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 	}
 
 	static void rebuildAlphaBuffer(int width, int height) {
@@ -39,32 +41,35 @@ public:
 
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
-		/*
-		auto camera = scene.view<ActiveCamera>();
+		{
+			glDepthMask(GL_FALSE);
+			OpenGL::enableDepthTest();
+			OpenGL::enableBlending();
 
-		OpenGL::enableBlending();
-		blendingPass(scene, camera);
+			blendingPass(scene);
+			
+			glDepthMask(GL_TRUE);
+		}
 
-		DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
+		{
+			DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
 
-		compositePass(camera);
-		OpenGL::disableBlending();
-		*/
+			compositePass();
+
+			OpenGL::disableBlending();
+		}
 	}
 
 	template<size_t SCENE_ID>
 	static void blendingPass(Scene<SCENE_ID>& scene) {
 		BlendingTechnique::shader().use();
+		
+		auto camera = scene.getActiveCamera();
 
-		glDepthMask(GL_FALSE);
-		OpenGL::enableDepthTest();
 		OpenGL::setBlendMode(AlphaTexType::Accumulated, GLBlendModes::One, GLBlendModes::One);
 		OpenGL::setBlendMode(AlphaTexType::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
 		glBlendEquation(GL_FUNC_ADD);
-
-		alphaBuffer->clear();
-		alphaBuffer->bindForWriting();
-
+		
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {
 			return true;
@@ -81,37 +86,29 @@ public:
 			return result;*/
 		};
 
+		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, Position3D, Rotation3D>();
 
 
-		// TODO: following needs to be rewritten to new scene handling
+		BlendingTechnique::setInverseViewMatrix(camera.viewMatrix());
+		BlendingTechnique::setView(camera.viewMatrix());
+		
+		alphaBuffer->clear();
+		alphaBuffer->bindForWriting();
+		
+		modelView.each([](const PropertiesModel&, const Properties3D& properties3D, const Meshes& meshes, const Position3D& position3D, const Rotation3D& rotation3D) {
+			BlendingTechnique::setModel(Model::modelMatrix(position3D, rotation3D, properties3D));
 
-
-		//const auto modelDataIteratorPair = scene.get<TransparentModel>(staticSceneRestriction);
-
-		//BlendingTechnique::setInverseViewMatrix(camera->getViewMatrix());
-		//BlendingTechnique::setView(camera->getViewMatrix());
-
-		/*
-		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
-			auto& model = (*it).get()->model;
-			ModelData* modelData = model.getData();
-			BlendingTechnique::setModel(model.getModelMatrix());
-
-			std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-
-			for (Mesh& mesh : modelDataMeshes) {
-				mesh.bind();
-				glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
-				mesh.unbind();
+			for (auto mesh : meshes) {
+				mesh->bind();
+				glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+				mesh->unbind();
 			}
-		}
-		alphaBuffer->unbind();
+		});
 
-		glDepthMask(GL_TRUE);
-		*/
+		alphaBuffer->unbind();
 	}
 
-	static void compositePass(Camera* camera) {
+	static void compositePass() {
 		BlendingCompositeTechnique::shader().use();
 
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);

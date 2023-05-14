@@ -8,10 +8,9 @@
 #include <functional>
 
 #include "entt.hpp"
-#include "Entity.h"
-#include "Register.h"
 #include "Data Structures/BoundingSphereHierarchy.h"
 
+#include "API/Camera.h"
 
 
 #include <entt.hpp>
@@ -123,6 +122,10 @@ public:
 	};
 
 	inline static uint64_t activeCamera = 0;
+
+	CameraReference getActiveCamera() {
+		return CameraReference(this->get<PropertiesCamera, Position3D, Rotation3D, Properties3D>(activeCamera));
+	}
 
 
 	template<size_t FLAG = Flags::DEFAULT>

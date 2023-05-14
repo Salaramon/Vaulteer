@@ -14,20 +14,6 @@
 #include "Register.h"
 
 
-template<class Component>
-struct Reference {
-public:
-	Reference(Component& component) : component(&component) {
-
-	}
-
-	Component const* get() {
-		return component;
-	}
-
-private:
-	Component* const component;
-};
 
 class Entity : public Register {
 public:
@@ -85,18 +71,6 @@ public:
 	template<class Type, class... Args>
 	Type& add(Args&&... initializerValues) {
 		return registry.emplace<Type>(entity_id, std::forward<Args>(initializerValues)...);
-	}
-
-	template<class Component, class Type>
-	void removeReference(decltype(registry)& registry) {
-		registry.remove<Reference<Type>>(entity_id);
-		registry.on_destroy<Component>().template disconnect<&removeReference<Reference<Type>, Component>>(entity_id);
-	}
-
-	template<class Component, class Type>
-	void addReference(Type& subComponent) {
-		add<Reference<Type>>(Reference<Type>(subComponent));
-		registry.on_destroy<Component>().template connect<&removeReference<Component, Type>>(entity_id);
 	}
 
 	template<typename Type, typename... Func>

@@ -29,7 +29,7 @@ private:
 	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
 	//StaticScene<TransparentModel> transparentScene;
 	
-	Renderer<DeferredRenderer> renderer; // render my nuts
+	Renderer<BlendingForwardRenderer> renderer; // render todo
 	//Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
 
 public:
@@ -37,7 +37,7 @@ public:
 		Window& window = Application::getWindow();
 
 		DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
-		//BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		//Setting up cameras in the scene.
 		

@@ -31,6 +31,10 @@ public:
 
 class Object3D : public Entity {
 public:
+	Position3D* position;
+	Rotation3D* rotation;
+	Properties3D* properties3D;
+
 	Object3D() :
 		position(&add<Position3D>(0.f, 0.f, 0.f)),
 		rotation(&add<Rotation3D>(glm::vec3(0.f))),
@@ -112,90 +116,44 @@ public:
 
 	void disableAxisLock(glm::vec3 direction) {
 		properties3D->isAxisLocked = false;
-	}
+	} 
 
-	Position3D* position;
-	Rotation3D* rotation;
-	Properties3D* properties3D;
-};
+	// calculation methods
 
-
-/*
-Supplies the functions:
-	viewMatrix
-	modelMatrix
-	frontVector
-	rightVector
-	upVector
-*/
-template<class... TupleArgs>
-class Object3DUtility : Entity::Restricter<TupleArgs...> {
-public:
-	Object3DUtility(const Object3D& object3d) :
-		position(object3d.position),
-		rotation(object3d.rotation),
-		properties3D(object3d.properties3D)
-	{}
-
-	Object3DUtility(TupleArgs... args) :
-		position(Entity::tryGet<Position3D>(std::tie(args...))),
-		rotation(Entity::tryGet<Rotation3D>(std::tie(args...))),
-		properties3D(Entity::tryGet<Properties3D>(std::tie(args...)))
-	{}
-
-	Object3DUtility(std::tuple<TupleArgs...> tuple) :
-		position(Entity::tryGet<Position3D>(tuple)),
-		rotation(Entity::tryGet<Rotation3D>(tuple)),
-		properties3D(Entity::tryGet<Properties3D>(tuple))
-	{}
-
-	//Require components: Position3D, Rotation3D
-	template<class T = glm::mat4>
-	Object3DUtility::EnableWith<T, Position3D, Rotation3D, Properties3D> viewMatrix() const {
-		glm::quat orientationConjugate = glm::conjugate(*rotation);
+	static glm::mat4 viewMatrix(const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
+		glm::quat orientationConjugate = glm::conjugate(rotation);
 		glm::mat4 mat4FromQuat = glm::mat4_cast(orientationConjugate);
-		glm::mat4 translation = glm::translate(glm::mat4(1.0), -(*position));
-		glm::mat4 scaled = glm::scale(translation, properties3D->scale);
+		glm::mat4 translation = glm::translate(glm::mat4(1.0), -(position));
+		glm::mat4 scaled = glm::scale(translation, properties3D.scale);
 
-		glm::mat4 result = translation * scaled * mat4FromQuat;
-
-		return result;
-	};
-
-	template<class T = glm::mat4>
-	Object3DUtility::EnableWith<T, Position3D, Rotation3D, Properties3D> modelMatrix() const {
-		return (
-			glm::translate(glm::mat4(1.0f), *position) *
-			glm::scale(glm::mat4(1.0f), properties3D->scale) *
-			glm::mat4_cast(*rotation)
-			);
+		return translation * scaled * mat4FromQuat;
 	}
 
-	template<class T = glm::vec3>
-	Object3DUtility::EnableWith<T, Rotation3D> frontVector() const {
-		glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
+	static glm::mat4 modelMatrix(const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
+		return
+			glm::translate(glm::mat4(1.0f), position) *
+			glm::scale(glm::mat4(1.0f), properties3D.scale) *
+			glm::mat4_cast(rotation);
+	}
+
+	static glm::vec3 frontVector(const Rotation3D& rotation) {
+		glm::quat qF = rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(rotation);
 		glm::vec3 result({ qF.x, qF.y, qF.z });
 
 		return result;
-	};
+	}
 
-	template<class T = glm::vec3>
-	Object3DUtility::EnableWith<T, Rotation3D> rightVector() const {
-		glm::quat qF = *rotation * glm::quat(0, -1, 0, 0) * glm::conjugate(*rotation);
+	static glm::vec3 rightVector(const Rotation3D& rotation) {
+		glm::quat qF = rotation * glm::quat(0, -1, 0, 0) * glm::conjugate(rotation);
 		glm::vec3 result({ qF.x, qF.y, qF.z });
 
 		return result;
-	};
-	template<class T = glm::vec3>
-	Object3DUtility::EnableWith<T, Rotation3D> upVector() const {
-		glm::quat qF = *rotation * glm::quat(0, 0, -1, 0) * glm::conjugate(*rotation);
+	}
+
+	static glm::vec3 upVector(const Rotation3D& rotation) {
+		glm::quat qF = rotation * glm::quat(0, 0, -1, 0) * glm::conjugate(rotation);
 		glm::vec3 result({ qF.x, qF.y, qF.z });
 
 		return result;
-	};
-
-
-	const Position3D* const position;
-	const Rotation3D* const rotation;
-	const Properties3D* const properties3D;
+	}
 };
