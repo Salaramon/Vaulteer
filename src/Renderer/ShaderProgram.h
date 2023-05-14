@@ -36,7 +36,7 @@ public:
 		return s;
 	}
 	static Shader& geometryShader() { 
-		static Shader s = Shader(files::deferred_point_vertex, GL_VERTEX_SHADER, files::deferred_point_frag, GL_FRAGMENT_SHADER);
+		static Shader s = Shader(files::geometry_vertex, GL_VERTEX_SHADER, files::geometry_frag, GL_FRAGMENT_SHADER);
 		return s;
 	}
 	static Shader& deferredPointShader() { 
