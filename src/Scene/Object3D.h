@@ -40,7 +40,7 @@ public:
 
 	Object3D() :
 		position(&add<Position3D>(0.f, 0.f, 0.f)),
-		rotation(&add<Rotation3D>(glm::quat(0.f, 0.f, 0.f, -1.0f))),
+		rotation(&add<Rotation3D>(glm::vec3(.0f))),
 		properties3D(&add<Properties3D>(Properties3D{
 			.scale = glm::vec3(1.0),
 			.axisLockDirection = {0.f, 1.f, 0.f},
@@ -80,14 +80,9 @@ public:
 	}
 
 	void setRotation(const glm::quat quaternion) {
-		if (properties3D->isAxisLocked) {
-			glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
-			glm::vec3 result({ qF.x, qF.y, qF.z });
-			setRotation(result);
-		}
-		else {
-			*rotation = quaternion;
-		}
+		glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
+		glm::vec3 result({ qF.x, qF.y, qF.z });
+		setRotation(result);
 	}
 
 	void setRotation(float yaw, float pitch, float roll) {
@@ -104,7 +99,19 @@ public:
 
 	void rotate(glm::vec3 direction) {
 		glm::quat toMove(direction);
-		*this->rotation *= glm::conjugate(toMove);
+		*this->rotation *= toMove;
+
+		if (properties3D->isAxisLocked) {
+			glm::vec3 result = Object3D::frontVector(*rotation);
+
+			*rotation = glm::quatLookAt(result, properties3D->axisLockDirection);
+		}
+	}
+
+	void rotate(const glm::quat quaternion) {
+		glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
+		glm::vec3 result({ qF.x, qF.y, qF.z });
+		rotate(result);
 	}
 
 	void rotate(float x, float y, float z) {
@@ -115,9 +122,8 @@ public:
 		properties3D->axisLockDirection = direction;
 	}
 
-	void enableAxisLock(glm::vec3 direction) {
+	void enableAxisLock() {
 		properties3D->isAxisLocked = true;
-		setLockAxis(direction);
 	}
 
 	void disableAxisLock() {
@@ -126,15 +132,13 @@ public:
 
 	// calculation methods
 
-	static glm::mat4 viewMatrix(const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
-		//return glm::lookAt(position - frontVector(rotation), position, -upVector(rotation));
+	static glm::mat4 viewMatrix(const Position3D& position, const Rotation3D& rotation) {
 
 		glm::quat orientationConjugate = glm::conjugate(rotation);
 		glm::mat4 mat4FromQuat = glm::mat4_cast(orientationConjugate);
 		glm::mat4 translation = glm::translate(glm::mat4(1.0), -(position));
-		glm::mat4 scaled = glm::scale(translation, properties3D.scale);
 
-		return translation * scaled * mat4FromQuat;
+		return mat4FromQuat * translation;
 	}
 
 	static glm::mat4 modelMatrix(const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {

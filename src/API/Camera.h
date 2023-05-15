@@ -94,7 +94,7 @@ public:
 		propertiesCamera(&std::get<0>(tuple)), position(&std::get<1>(tuple)), rotation(&std::get<2>(tuple)), properties3D(&std::get<3>(tuple)) {}
 
 	glm::mat4 viewMatrix() const {
-		return Object3D::viewMatrix(*position, *rotation, *properties3D);
+		return Object3D::viewMatrix(*position, *rotation);
 	}
 
 	glm::mat4 projectionMatrix() const {

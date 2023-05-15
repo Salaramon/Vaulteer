@@ -40,9 +40,10 @@ public:
 
 		//Setting up cameras in the scene.
 		
-		//camera.enableAxisLock({ 0,1,0 });
-		camera.setRotation({ 0,0,0 });
-		camera.propertiesCamera.aspectRatio = (double)Window::getHeight() / Window::getWidth();
+		camera.enableAxisLock();
+		camera.setLockAxis({0,0,1});
+		camera.setRotation({ 0,0,1 });
+		camera.propertiesCamera.aspectRatio = (double)Window::getWidth()/Window::getHeight();
 		camera.propertiesCamera.fov = 60;
 		camera.propertiesCamera.near = 0.1f;
 		camera.propertiesCamera.far = 1000;

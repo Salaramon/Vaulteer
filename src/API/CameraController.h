@@ -20,7 +20,7 @@ private:
 
 	bool dirty = false;
 
-	float sens = 0.155f;
+	float sens = 0.02f;
 	float speed = 20.0f;
 };
 

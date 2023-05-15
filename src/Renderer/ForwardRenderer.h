@@ -42,8 +42,7 @@ public:
 
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
-			//auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
-			auto modelMat = glm::mat4(1.0);
+			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
 			shader().setUniform(Binder::forward_vertex::uniforms::model, 1, GL_FALSE, modelMat);
 			shader().setUniform(Binder::forward_vertex::uniforms::normal, 1, GL_FALSE, glm::inverse(modelMat));

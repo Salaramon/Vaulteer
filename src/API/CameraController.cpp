@@ -35,10 +35,10 @@ void CameraController::onUpdate(float timestep) {
 		camera->move(-Camera::rightVector(*camera->rotation) * timestep * speed);
 	}
 	if (Event::isDown(KeyboardKey::E)) {
-		camera->rotate(0, 0, timestep * (speed / sens));
+		camera->rotate(0, 0, timestep * speed/2);
 	}
 	if (Event::isDown(KeyboardKey::Q)) {
-		camera->rotate(0, 0, timestep * -(speed / sens));
+		camera->rotate(0, 0, timestep * -speed/2);
 	}
 
 	// Instead of using this concept of applying rotation when transformation values are set,
@@ -53,7 +53,7 @@ void CameraController::onUpdate(float timestep) {
 }
 
 bool CameraController::onMouseMoveEvent(MouseMoveEvent& e) {
-	camera->rotate(e.motion.delta.y * sens / 1.35f, e.motion.delta.x * sens, 0);
+	camera->rotate(-e.motion.delta.y * sens, -e.motion.delta.x * sens, 0);
 	return true;
 }
 
