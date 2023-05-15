@@ -57,7 +57,7 @@ void Texture2D::createSingleImageTexture() {
 
     std::cout << std::format("Loaded file gave width: {}, height: {}, component: {}", w, h, comp) << std::endl;
 
-    auto [inFormat, exFormat] = getFormatsFromComponents(comp);
+    auto [inFormat, exFormat] = Image2D::getFormatsFromChannels(comp);
 	createTextureFromData(inFormat, exFormat, data);
 
 	if (data)

@@ -6,42 +6,63 @@
 
 class Texture2DArray : public Texture {
 public:
-	Texture2DArray(const std::vector<TextureResourceLocator>& locators, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-	Texture2DArray(TextureResourceLocator locator, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-	Texture2DArray(int width, int height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-
-	Texture2DArray(int width, int height, const std::vector<glm::vec4>& colors);
-
-	template <class... Args>
-		requires (std::conjunction_v<std::is_same<glm::vec4, Args>...>)
-	Texture2DArray(GLsizei width, GLsizei height, glm::vec4 first, Args ...args);
-
-	Texture2DArray(Texture2DArray&& other) noexcept;
-	~Texture2DArray();
-
-	GLint getTextureID() const;
-
-	Texture2DArray() {
-		createTexture(GL_TEXTURE_2D_ARRAY);
-	}
-protected:
-
-	void createUnpacked();
-
-	void createTextureArrayFromData(GLenum internalFormat, GLenum format, const std::vector<Image2D>& images) const;
-
-	void setWrap(GLenum x, GLenum y) const;
-
-	void createGeneratedTexture(const std::vector<glm::vec4>& colors);
-
 	GLsizei numLayers = 1;
 
 	std::vector<TextureResourceLocator> locators;
 	std::vector<aiTextureType> types;
-};
+	
+	Texture2DArray(int width, int height, int layers = 1, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE)
+			: Texture(width, height, mipmapEnabled), numLayers(layers) {
 
-template <class ...Args>
-	requires (std::conjunction_v<std::is_same<glm::vec4, Args>...>)
-Texture2DArray::Texture2DArray(GLsizei width, GLsizei height, glm::vec4 first, Args ...args) : Texture(width, height) {
-	createGeneratedTexture({first, args...});
+		createTexture(GL_TEXTURE_2D_ARRAY);
+		setWrap(repeatX, repeatY);
+	}
+
+	Texture2DArray(Texture2DArray&& other) noexcept
+			: Texture(other.width, other.height, other.mipmapEnabled), locators(other.locators), types(other.types) {
+		textureID = other.textureID;
+		numLayers = other.numLayers;
+
+		other.textureID = 0;
+	}
+
+	void initialize(std::vector<Image2D>& images) const {
+		// make sure we use the largest channel type
+		int maxChannels = 0;
+		for (Image2D& img : images) {
+			maxChannels = std::max(maxChannels, img.channels);
+		}
+
+		GLenum inFormat = Image2D::getFormatsFromChannels(maxChannels).first;
+		glTextureStorage3D(textureID, 1, inFormat, width, height, numLayers);
+
+		for (Image2D& img : images) {
+			assert(img.load());
+
+			auto& rect = img.view.rect;
+			glTextureSubImage3D(textureID, 0, rect.x, rect.y, img.view.layer, rect.w, rect.h, 1, img.dataFormat, GL_UNSIGNED_BYTE, img.data);
+			std::cout << "- init texture with locator: " << img.path << std::endl;
+			std::cout << "- size: " << sizeof(img.data) << std::endl;
+			std::cout << "- unit: " << rect.x << ":" << rect.y << ":" << rect.w << ":" << rect.h <<  " :: layer: " << img.view.layer << std::endl;
+			
+			assert(img.free());
+		}
+		
+		if (mipmapEnabled)
+			glGenerateTextureMipmap(textureID);
+	}
+
+	~Texture2DArray() {
+		cleanup();
+	}
+
+	GLint getTextureID() const {
+		return textureID;
+	}
+
+protected:
+	void setWrap(GLenum x, GLenum y) const {
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, x);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, y);
+	}
 };

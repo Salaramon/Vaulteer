@@ -183,7 +183,6 @@ private:
 	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;
 public:
 	struct UniformFunctor {
-	public:
 		UniformFunctor(Shader* shader) :
 			shader(shader) {}
 

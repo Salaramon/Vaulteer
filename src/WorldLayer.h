@@ -35,14 +35,14 @@ public:
 	void onAttach() override {
 		Window& window = Application::getWindow();
 
-		DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
-		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+		//DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
+		//BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		//Setting up cameras in the scene.
 		
 		camera.enableAxisLock();
-		camera.setLockAxis({0,0,1});
-		camera.setRotation({ 0,0,1 });
+		camera.setLockAxis({0,1,0});
+
 		camera.propertiesCamera.aspectRatio = (double)Window::getWidth()/Window::getHeight();
 		camera.propertiesCamera.fov = 60;
 		camera.propertiesCamera.near = 0.1f;
@@ -61,14 +61,15 @@ public:
  		Window::addResizeCallback(setAspectRatio);
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
+		ForwardRenderer::initialize(pack);
 
 		Model palm = Model(pack.getMeshes("palm"));
 		Model crate = Model(pack.getMeshes("crate"));
 		loadedModels.push_back(std::move(palm));
 		loadedModels.push_back(std::move(crate));
 
-		*loadedModels[0].position = glm::vec3(1);
-		*loadedModels[1].position = glm::vec3(2);
+		*loadedModels[0].position = glm::vec3(0, 0, -5);
+		*loadedModels[1].position = glm::vec3(5, 0, 0);
 		
 		scene.add(loadedModels[0]);
 		scene.add(loadedModels[1]);

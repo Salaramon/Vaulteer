@@ -29,14 +29,4 @@ public:
 protected:
 	void createTexture(GLenum type);
 	void cleanup() const;
-    
-	static std::pair<GLint, GLint> getFormatsFromComponents(int nrComponents) {
-	    switch (nrComponents) {
-	        case STBI_rgb_alpha:	return std::make_pair(GL_RGBA8, GL_RGBA);
-	        case STBI_rgb:			return std::make_pair(GL_RGB8, GL_RGB);
-	        case STBI_grey_alpha:	return std::make_pair(GL_RG8, GL_RG);
-	        default: assert(false); // "invalid format"
-	        case STBI_grey:			return std::make_pair(GL_R8, GL_RED);
-	    }
-	}
 };

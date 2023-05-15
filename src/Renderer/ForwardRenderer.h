@@ -12,11 +12,17 @@
 
 class ForwardRenderer {
 
+	inline static GLint textureID;
+
 	static Shader& shader() {
 		return ShaderProgram::forwardShader();
 	}
 
 public:
+	static void initialize(const ResourcePack& pack) {
+		textureID = pack.getTextureID();
+	}
+
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
 		shader().use();
@@ -32,13 +38,13 @@ public:
 		static UniformBuffer cameraUBO = UniformBuffer(Binder::forward_vertex::buffers::Camera);
 		UniformBuffer::insert(cameraUBO, projectionMat);
 		
-		GLint textureId = 0;
-		shader().setUniform(Binder::forward_frag::uniforms::textureLib, textureId);
+		glBindTextureUnit(0, textureID);
+		shader().setUniform(Binder::forward_frag::uniforms::textureLib, 0);
 
 		shader().setUniform(Binder::forward_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(viewMat));
 
 		shader().setUniform(Binder::forward_frag::uniforms::cameraPos, 1, *camera.position);
-		shader().setUniform(Binder::forward_frag::uniforms::lightPos, 1, glm::vec3(1.0));
+		shader().setUniform(Binder::forward_frag::uniforms::lightPos, 1, glm::vec3(0.0));
 
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {

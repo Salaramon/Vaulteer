@@ -81,20 +81,25 @@ struct TextureData {
 };
 
 
-// file backed image data
+// file backed image data. container used in texture load process in TextureLibrary
 class Image2D {
 public:
 	TextureView view;
 	std::string path;
+
 	int width = -1, height = -1, channels = -1;
 	byte* data = nullptr;
+	GLenum internalFormat, dataFormat;
 
 	Image2D(const TextureResourceLocator& locator) {
-		bool error = stbi_info(locator.path.data(), &width, &height, &channels);
-		assert(!error);
+		bool ok = stbi_info(locator.path.data(), &width, &height, &channels);
+		assert(ok);
 
 		path = locator.path;
 		view = TextureView({0, 0, width, height}, 0, locator.type);
+		auto [inFormat, exFormat] = getFormatsFromChannels(channels);
+		internalFormat = inFormat;
+		dataFormat = exFormat;
 	}
 
 	bool load() {
@@ -102,7 +107,26 @@ public:
 		return loaded();
 	}
 
+	bool free() {
+		if (!data)
+			return false;
+
+		stbi_image_free(data);
+		return true;
+	}
+
 	bool loaded() const {
 		return data;
+	}
+
+	// internals
+	static std::pair<GLenum, GLenum> getFormatsFromChannels(int nrComponents) {
+	    switch (nrComponents) {
+        case STBI_rgb:			return std::make_pair(GL_RGB8, GL_RGB);
+        case STBI_grey_alpha:	return std::make_pair(GL_RG8, GL_RG);
+        case STBI_grey:			return std::make_pair(GL_R8, GL_RED);
+        default: assert(false); // "invalid format"
+		case STBI_rgb_alpha:	return std::make_pair(GL_RGBA8, GL_RGBA);
+	    }
 	}
 };

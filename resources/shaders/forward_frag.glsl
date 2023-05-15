@@ -58,9 +58,6 @@ vec3 getTexUnitCoords(vec3 texCoords, int materialNumber, int unitIndex) {
 */
 
 void main() {
-    FragColor = vec4(1.0);
-    return;
-
     vec3 fragPosition = (inverseViewMat * vec4(fs_in.fragPosition, 1.0)).xyz;
     //vec3 fragNormal = fs_in.fragNormal;
 

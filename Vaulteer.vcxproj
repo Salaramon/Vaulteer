@@ -128,7 +128,6 @@
     <ClInclude Include="src\Model\Storage\Vertex.h" />
     <ClInclude Include="src\Model\Storage\VertexHash.h" />
     <ClInclude Include="src\Model\Textures\CubemapTexture.h" />
-    <ClInclude Include="src\Model\Textures\PackedTexture2DArray.h" />
     <ClInclude Include="src\Model\Textures\Texture.h" />
     <ClInclude Include="src\Model\Textures\Texture2D.h" />
     <ClInclude Include="src\Model\Textures\Texture2DArray.h" />
@@ -189,10 +188,8 @@
     <ClCompile Include="src\Model\IndexBuffer.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
-    <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp" />
     <ClCompile Include="src\Model\Textures\Texture.cpp" />
     <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
-    <ClCompile Include="src\Model\Textures\Texture2DArray.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\Renderer\Batch.cpp" />

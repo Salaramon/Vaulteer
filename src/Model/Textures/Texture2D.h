@@ -2,6 +2,7 @@
 
 #include "Texture.h"
 #include "TextureResourceLocator.h"
+#include "TextureViewData.h"
 #include "Utils/TypeDefUtils.h"
 
 class Texture2D : public Texture {

@@ -3,104 +3,122 @@
 #include "Model/Material.h"
 #include "Model/Textures/TextureViewData.h"
 
+constexpr size_t max_texture_view_count = 128;
+
+constexpr int pack_max_texture_side_size = 8192;
+constexpr int pack_discard_step = 1;
+
 class TextureLibrary {
-	inline static size_t numTextures = 0;
-	inline static size_t numTextureViews = 0;
+	inline static int numTextures = 0;
+	inline static int numTextureViews = 0;
 
 	inline static std::unordered_map<std::string, size_t> viewIndexByTexturePath;
 
 	inline static std::vector<TextureView> views;
 	inline static std::vector<TextureData> textureData;
 	
-	
 	inline static bool packingErrorReported = false;
 
+	inline static std::vector<std::unique_ptr<Texture2DArray>> textureLibrary;
+
+	static Texture2DArray* initializeTextureArray(int w, int h, int layers) {
+		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(w, h, layers)).get();
+	}
+
 public:
-	static void storeTextures(const std::vector<Material>& materials) {
+	static Texture2DArray* storeTextures(const std::vector<Material>& materials) {
 		std::vector<Image2D> images;
+		int maxW = 0, maxH = 0;
+
 		for (const Material& mat : materials) {
 			int dataTextureViewId = numTextureViews;
 			auto& data = textureData.emplace_back(dataTextureViewId);
 
 			for (auto& locator : mat.textureTypeLocators | std::views::values) {
 				auto& image = images.emplace_back(locator);
+
+				image.view.textureViewId = numTextureViews;
 				viewIndexByTexturePath[locator.path] = numTextureViews++;
+
 				data.putView(image.view);
+				views.push_back(image.view);
+
+				maxW = std::max(maxW, image.width);
+				maxH = std::max(maxH, image.height);
 			}
 		}
+
+		auto [width, height] = pack2D(images);
+
+		// todo how does calling this function multiple times work? everything stored here will have global IDs, but a new texture will be made each call
+
+		auto ptr = initializeTextureArray(width, height, 1);
+		ptr->initialize(images);
+		return ptr;
 	}
 
-	static std::vector<TextureView>& getAllViews() {
-		return views;
+	static TextureView& getView(unsigned int index) {
+		return views[index];
+	}
+
+	static TextureView& getView(const std::string& name) {
+		return getView(viewIndexByTexturePath.at(name));
+	}
+
+	static std::array<TextureView, max_texture_view_count> getTextureViewData() {
+		std::array<TextureView, max_texture_view_count> data;
+		for (auto& view : views) {
+			data[view.textureViewId] = view;
+		}
+		return data;
+	}
+
+	static std::array<TextureData, max_texture_view_count> getTextureData() {
+		std::array<TextureData, max_texture_view_count> data;
+		int i = 0;
+		for (auto& texture : textureData) {
+			data[i++] = texture;
+		}
+		return data;
 	}
 
 private:
-	/*
-	static void pack() {
- 		std::vector<Image2D> images;
-
-		int maxComp = 0;
-		size_t loadCount = 0;
-
-		for (int i = 0; i < locators.size(); i++) {
-			GLsizei w, h, comp;
-			byte* data = stbi_load(locators[i].path.data(), &w, &h, &comp, 0);
-			images.push_back(Image2D(TextureView({0, 0, w, h}, 0, locators[i].type), locators[i].path, data));
-
-			if (images[i].loaded()) {
-				loadCount++;
-				maxComp = std::max(comp, maxComp);
-			}
-			else std::cout << "Failed to load texture: \n\t" << locators[i].path << "\n" << std::endl;
-		}
-
-		// attempt packing
-
+	// attempt packing with rectpack2D
+	static std::pair<int,int> pack2D(std::vector<Image2D>& images) {
 		std::vector<rect_type> rectangles;
 
 		for (const Image2D& img : images) {
-			rectangles.push_back(img.view);
+			rectangles.push_back(img.view.rect);
 		}
 
-		packingErrorReported = attemptPacking(rectangles);
-		width = ceilPowerOfTwo(width);
-		height = ceilPowerOfTwo(height);
+		auto result = attemptPacking(rectangles);
+		int width = ceilPowerOfTwo(result.width);
+		int height = ceilPowerOfTwo(result.height);
 
-		assert(!errorReported); // "Packing returned error." // TODO find repeat strategy
+		// TODO find repeat strategy
+		assert(!result.errorReported); // "Packing returned error."
 
-		// overwrite full sized units with packed data
+		// overwrite views with packed data
 		for (size_t i = 0; i < rectangles.size(); i++) {
 			images[i].view = TextureView(images[i].view, rectangles[i]);
 		}
 
-		// finish texture data aggregation
-		nrComponents = maxComp;
-
-		if (loadCount == locators.size() && !packingErrorReported) {
-			auto [inFormat, exFormat] = getFormatsFromComponents(nrComponents);
-			createTextureArrayFromData(inFormat, exFormat, images);
-		}
-		else
-			std::cout << "Texture data not stored: \t" << std::to_string(textureID) << "\n -"
-				<< (packingErrorReported ? "packing error reported" : "no packing error") << std::endl;
-
-		for (Image2D& img : images) {
-			if (img.loaded())
-				stbi_image_free(img.data);
-
-			views[img.path] = img.view;
-		}
+		return { width, height };
 	}
+
+	struct PackResult {
+		bool errorReported;
+		int width, height;
+	};
 	 
-	bool attemptPacking(std::vector<rect_type>& rectangles) {
+	static PackResult attemptPacking(std::vector<rect_type>& rectangles) {
 		packingErrorReported = false;
 
-		auto reportSuccessful = [this](rect_type&) {
+		auto reportSuccessful = [](rect_type&) {
 			return rectpack2D::callback_result::CONTINUE_PACKING;
 		};
 
-		auto reportUnsuccessful = [this](rect_type&) {
-			std::cout << "Packing unsuccessful for texture " << getTextureID() << std::endl;
+		auto reportUnsuccessful = [](rect_type&) {
 			packingErrorReported = true;
 			return rectpack2D::callback_result::ABORT_PACKING;
 		};
@@ -116,17 +134,13 @@ private:
 				runtimeFlippingMode
 			));
 
-		width = resultSize.w;
-		height = resultSize.h;
-
-		return packingErrorReported;
+		return PackResult(packingErrorReported, resultSize.w, resultSize.h);
 	}
 
-	int ceilPowerOfTwo(uint v) {
+	static int ceilPowerOfTwo(uint v) {
 		v--;
 		for (int i = 1; i <= 16; i *= 2)
 			v |= v >> i;
 		return ++v;
 	}
-	 */
 };

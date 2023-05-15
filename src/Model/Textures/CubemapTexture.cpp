@@ -1,6 +1,7 @@
 #include "vpch.h"
 #include "Model/Textures/CubemapTexture.h"
 
+
 CubemapTexture::CubemapTexture(std::array<std::string, 6> const& paths, bool mipmapEnabled,
                                GLenum repeatX, GLenum repeatY, GLenum repeatZ) {
     //debug("Loading cubemap: " + paths[0] + "\n");
@@ -38,7 +39,7 @@ void CubemapTexture::createTextureFromFiles(std::array<std::string, 6> const& pa
     }
 
     if (loadCount == 6) {
-        auto [inFormat, exFormat] = getFormatsFromComponents(comp);
+        auto [inFormat, exFormat] = Image2D::getFormatsFromChannels(comp);
         nrComponents = comp;
         createCubeTexture(inFormat, exFormat, faces);
     }

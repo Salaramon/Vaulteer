@@ -1,6 +1,7 @@
 #pragma once
 #include "Model/Textures/Texture.h"
 
+#include "TextureViewData.h"
 #include "Utils/TypeDefUtils.h"
 
 class CubemapTexture : protected Texture {

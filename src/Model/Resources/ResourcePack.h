@@ -6,10 +6,19 @@
 #include "Model/Resources/ResourceLoader.h"
 #include "Model/Resources/TextureLibrary.h"
 #include "Model/Mesh.h"
-#include "Model/Textures/PackedTexture2DArray.h"
 
 class ResourcePack {
 public:
+	using ResourceData = std::tuple<Mesh, Material>;
+
+	bool finalized = false;
+
+	Texture2DArray* texture;
+
+	std::vector<ModelResourceLocator> modelLocators;
+	std::unordered_map<std::string, std::vector<Mesh*>> meshesByModelName;
+
+
 	ResourcePack() {
 		std::cout << "Resource pack created." << std::endl;
 	}
@@ -50,8 +59,7 @@ public:
 		}
 
 		// create packed texture
-		// TODO: eats memory when loading backpack/models with large textures because it loads everything at once
-		textureLibrary = std::make_unique<Texture2DArray>();
+		texture = TextureLibrary::storeTextures(materialsWithTextures);
 
 		// update all models' units
 		for (std::vector<Mesh*> meshList : meshesByModelName | std::views::values) {
@@ -62,8 +70,10 @@ public:
 		finalized = true;
 	}
 
-	GLint getTextureLibraryId() const {
-		return textureLibrary->getTextureID();
+	GLint getTextureID() const {
+		if (!texture)
+			return 0;
+		return texture->getTextureID();
 	}
 
 	/*std::vector<Mesh> getModelByName(const std::string& modelName) {
@@ -74,16 +84,4 @@ public:
 		return search->second.get();
 	}*/
 
-
-private:
-	using ResourceData = std::tuple<Mesh, Material>;
-
-	bool finalized = false;
-
-	std::vector<int> loadedTextureIds;
-
-	std::unique_ptr<Texture2DArray> textureLibrary;
-
-	std::vector<ModelResourceLocator> modelLocators;
-	std::unordered_map<std::string, std::vector<Mesh*>> meshesByModelName;
 };
