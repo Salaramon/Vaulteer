@@ -65,5 +65,4 @@ void main() {
     gPosition = fs_in.fragPosition;
     gNormal = vec4(normal, float(fs_in.materialNumber));
     gColor = vec4(texture(textureLib, diffuseCoords).rgb, specular);
-    gColor = vec4(1.0);
 }

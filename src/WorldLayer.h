@@ -3,8 +3,7 @@
 #include "API/CameraController.h"
 
 #include "Renderer/Renderer.h"
-#include "Renderer/BlendingForwardRenderer.h"
-#include "Renderer/DeferredRenderer.h"
+#include "Renderer/ForwardRenderer.h"
 
 #include "API/Application.h"
 #include "Model/Resources/ResourceManager.h"
@@ -29,7 +28,7 @@ private:
 	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
 	//StaticScene<TransparentModel> transparentScene;
 	
-	Renderer<BlendingForwardRenderer> renderer; // render todo
+	Renderer<ForwardRenderer> renderer; // render todo
 	//Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
 
 public:
@@ -41,7 +40,7 @@ public:
 
 		//Setting up cameras in the scene.
 		
-		camera.enableAxisLock({ 0,1,0 });
+		//camera.enableAxisLock({ 0,1,0 });
 		camera.setRotation({ 0,0,0 });
 		camera.propertiesCamera.aspectRatio = (double)Window::getHeight() / Window::getWidth();
 		camera.propertiesCamera.fov = 60;
@@ -58,7 +57,7 @@ public:
 			camera.propertiesCamera.aspectRatio = (float)h / w;
 		};
 
-		Window::addResizeCallback(setAspectRatio);
+ 		Window::addResizeCallback(setAspectRatio);
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
 

@@ -12,7 +12,7 @@ public:
 
 	static void setModel(const glm::dmat4& model) {
 		shader().setUniform(Binder::blending_vertex::uniforms::model, 1, GL_FALSE, model);
-		setNormal(model);
+		setNormal(glm::inverse(model));
 	}
 
 	static void setView(const glm::dmat4& view) {
@@ -20,11 +20,11 @@ public:
 	}
 
 	static void setNormal(const glm::mat4& normal) {
-		shader().setUniform(Binder::blending_vertex::uniforms::normal, 1, GL_FALSE, glm::inverse(normal));
+		shader().setUniform(Binder::blending_vertex::uniforms::normal, 1, GL_FALSE, normal);
 	}
 
 	static void setInverseViewMatrix(const glm::mat4& view) {
-		shader().setUniform(Binder::blending_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(view));
+		shader().setUniform(Binder::blending_frag::uniforms::inverseViewMat, 1, GL_FALSE, view);
 	}
 
 	static void setTextureUnit(const GLint& texture) {

@@ -53,7 +53,7 @@ void CameraController::onUpdate(float timestep) {
 }
 
 bool CameraController::onMouseMoveEvent(MouseMoveEvent& e) {
-	camera->rotate(e.motion.delta.x * sens / 1.35f, e.motion.delta.y * sens, 0);
+	camera->rotate(e.motion.delta.y * sens / 1.35f, e.motion.delta.x * sens, 0);
 	return true;
 }
 

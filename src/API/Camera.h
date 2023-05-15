@@ -44,10 +44,10 @@ public:
 
 	Camera() :
 		propertiesCamera(this->add<PropertiesCamera>(PropertiesCamera{
-			.aspectRatio = 0.f,
+			.aspectRatio = 1.0f,
 			.fov = 45.f,
-			.near = 1000.f,
-			.far = 0.1f }))
+			.near = 0.1f,
+			.far = 1000.f }))
 	{}
 
 	~Camera() {
@@ -82,10 +82,10 @@ using CameraTuple = std::tuple<PropertiesCamera, Position3D, Rotation3D, Propert
 
 class CameraReference {
 public:
-	const PropertiesCamera* const propertiesCamera;
-	const Position3D* const position;
-	const Rotation3D* const rotation;
-	const Properties3D* const properties3D;
+	const PropertiesCamera* propertiesCamera;
+	const Position3D* position;
+	const Rotation3D* rotation;
+	const Properties3D* properties3D;
 
 	CameraReference(const Camera& camera) :
 		propertiesCamera(&camera.propertiesCamera), position(camera.position), rotation(camera.rotation), properties3D(camera.properties3D) {}

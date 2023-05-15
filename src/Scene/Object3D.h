@@ -17,6 +17,9 @@ struct Position3D : glm::vec3 {
 
 class Rotation3D : public glm::quat {
 public:
+	Rotation3D(glm::quat q) : qua<float, glm::qualifier::packed_highp>(q) {
+	}
+
 	using glm::quat::qua;
 	using glm::quat::operator=;
 };
@@ -37,10 +40,12 @@ public:
 
 	Object3D() :
 		position(&add<Position3D>(0.f, 0.f, 0.f)),
-		rotation(&add<Rotation3D>(glm::vec3(0.f))),
+		rotation(&add<Rotation3D>(glm::quat(0.f, 0.f, 0.f, -1.0f))),
 		properties3D(&add<Properties3D>(Properties3D{
-		.axisLockDirection = {0.f, 1.f, 0.f},
-		.isAxisLocked = false}))
+			.scale = glm::vec3(1.0),
+			.axisLockDirection = {0.f, 1.f, 0.f},
+			.isAxisLocked = false
+		}))
 	{}
 
 	Object3D(Object3D&& other) : Entity(std::move(other)),
@@ -99,7 +104,7 @@ public:
 
 	void rotate(glm::vec3 direction) {
 		glm::quat toMove(direction);
-		*this->rotation *= toMove;
+		*this->rotation *= glm::conjugate(toMove);
 	}
 
 	void rotate(float x, float y, float z) {
@@ -112,15 +117,18 @@ public:
 
 	void enableAxisLock(glm::vec3 direction) {
 		properties3D->isAxisLocked = true;
+		setLockAxis(direction);
 	}
 
-	void disableAxisLock(glm::vec3 direction) {
+	void disableAxisLock() {
 		properties3D->isAxisLocked = false;
 	} 
 
 	// calculation methods
 
 	static glm::mat4 viewMatrix(const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
+		//return glm::lookAt(position - frontVector(rotation), position, -upVector(rotation));
+
 		glm::quat orientationConjugate = glm::conjugate(rotation);
 		glm::mat4 mat4FromQuat = glm::mat4_cast(orientationConjugate);
 		glm::mat4 translation = glm::translate(glm::mat4(1.0), -(position));

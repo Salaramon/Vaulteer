@@ -13,7 +13,8 @@ out VS_OUT {
     flat int materialNumber;
 } vs_out;
 
-uniform mat4 modelView;
+uniform mat4 model;
+uniform mat4 view;
 uniform mat4 normal;
 
 layout (std140, binding = 0) uniform Camera {
@@ -21,10 +22,10 @@ layout (std140, binding = 0) uniform Camera {
 };
 
 void main() {   
-    vs_out.fragPosition = (modelView * vec4(aPos, 1.0)).xyz;
+    vs_out.fragPosition = (view * model * vec4(aPos, 1.0)).xyz;
     vs_out.fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
     vs_out.TexCoords = aTexCoords;
     vs_out.materialNumber = aMaterialNumber;
        
-    gl_Position = projection * modelView * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

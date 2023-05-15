@@ -147,6 +147,7 @@
     <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h" />
     <ClInclude Include="src\Renderer\DeferredRenderer.h" />
+    <ClInclude Include="src\Renderer\ForwardRenderer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShaderProgram.h" />

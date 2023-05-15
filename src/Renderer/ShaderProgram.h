@@ -27,6 +27,11 @@ public:
 	#define files Binder::file_names
 
 
+	static Shader& forwardShader() { 
+		static Shader s = Shader(files::forward_vertex, GL_VERTEX_SHADER, files::forward_frag, GL_FRAGMENT_SHADER);
+		return s;
+	}
+
 	static Shader& blendingShader() { 
 		static Shader s = Shader(files::blending_vertex, GL_VERTEX_SHADER, files::blending_frag, GL_FRAGMENT_SHADER);
 		return s;

@@ -52,6 +52,7 @@ public:
 		}
 
 		{
+			// TODO: put this in gbuffer or something
 			DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
 
 			compositePass();
@@ -89,7 +90,7 @@ public:
 		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, Position3D, Rotation3D>();
 
 
-		BlendingTechnique::setInverseViewMatrix(camera.viewMatrix());
+		BlendingTechnique::setInverseViewMatrix(glm::inverse(camera.viewMatrix()));
 		BlendingTechnique::setView(camera.viewMatrix());
 		
 		alphaBuffer->clear();

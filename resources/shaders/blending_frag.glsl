@@ -61,7 +61,6 @@ void main() {
     BFMaterial mat = materialTable[fs_in.materialNumber];
 
     vec3 lightColor = vec3(1.0);
-
     vec3 ambient = vec3(0.1);
     
      // diffuse
