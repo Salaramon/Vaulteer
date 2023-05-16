@@ -24,7 +24,13 @@ public:
 	}
 
 	static void loadShaders() {
-		shader = std::make_unique<Shader>("resources/shaders/forward_vertex.glsl", GL_VERTEX_SHADER, "resources/shaders/forward_frag.glsl", GL_FRAGMENT_SHADER);
+		gem::Shader<gem::forward_frag> ff;
+		ff.compile();
+
+		shader = std::make_unique<Shader>(
+			"resources/shaders/forward_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/build/forward_frag.glsl", GL_FRAGMENT_SHADER
+		);
 	}
 
 	template<size_t SCENE_ID>

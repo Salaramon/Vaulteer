@@ -243,7 +243,7 @@
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
-    <None Include="resources\shaders\forward_frag.glsl" />
+    <None Include="resources\shaders\preprocessor\forward_frag.gem" />
     <None Include="resources\shaders\forward_vertex.glsl" />
     <None Include="resources\shaders\geometry_frag.glsl" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
