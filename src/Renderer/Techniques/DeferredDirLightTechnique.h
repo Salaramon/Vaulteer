@@ -25,31 +25,5 @@ public:
 	    shader().setUniform(dirFragUnis::fogColor, 1, color);
 	}
 
-
-	// uniform buffer upload
-	// TODO should be handled elsewhere that can guarantee their state or else they're copied between a bunch of techniques
-
-	static void uploadMaterialData() {
-		auto& materialData = getUBMaterialData();
-		UniformBuffer::insert(materialData, MaterialLibrary::getMaterialData());
-	}
-
-	static void uploadDirectionalLightData(const std::vector<DirectionalLight>& lightVector) {
-		auto& dirLightBuffer = getUBDirectionalLightData();
-		UniformBuffer::insert(dirLightBuffer, lightVector);
-	}
-
-
-
-	static UniformBuffer& getUBMaterialData() {
-		static auto materialData = UniformBuffer(Binder::deferred_directional_frag::buffers::MaterialData);
-		return materialData;
-	}
-
-	static UniformBuffer& getUBDirectionalLightData() {
-		static auto dirLightData = UniformBuffer(Binder::deferred_directional_frag::buffers::DirectionalLightData);
-		return dirLightData;
-	}
-
 };
 

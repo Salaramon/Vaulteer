@@ -27,28 +27,6 @@ public:
 	static void setTextureUnit(const GLint& texture) {
 		shader().setUniform(Binder::geometry_frag::uniforms::textureLib, texture);
 	}
-	
-	// uniform buffer upload
-	// TODO should be handled elsewhere that can guarantee their state or else they're copied between a bunch of techniques
-
-	static void uploadProjection(const glm::mat4& projection) {
-		auto& camera = getUBCamera();
-		UniformBuffer::insert(camera, projection);
-	}
-
-	static void uploadModelUnitTables(const ViewCollection<TextureView, PropertiesModel>& modelUnitTableView) {
-		assert(false); // do the to do thing you monkey
-	}
-
-	static UniformBuffer& getUBCamera() {
-		static UniformBuffer camera = UniformBuffer(Binder::geometry_vertex::buffers::Camera);
-		return camera;
-	}
-
-	static UniformBuffer& getUBModelUnitTables() {
-		static UniformBuffer modelUnitTables = UniformBuffer(Binder::geometry_frag::buffers::ModelUnitTables);
-		return modelUnitTables;
-	}
 
 };
 

@@ -36,39 +36,5 @@ public:
 		//setInverseViewMat(glm::inverse(view));
 	}
 
-	static void uploadMaterialData() {
-		auto& materialData = getUBMaterialData();
-		UniformBuffer::insert(materialData, MaterialLibrary::getMaterialData());
-	}
-
-	static void uploadSpotLightData(const std::vector<SpotLight>& lightVector) {
-		auto& spotLightBuffer = getUBSpotLightData();
-		UniformBuffer::insert(spotLightBuffer, lightVector);
-	}
-
-	static void uploadPointLightData(const std::vector<PointLight>& lightVector) {
-		auto& pointLightBuffer = getUBPointLightData();
-		UniformBuffer::insert(pointLightBuffer, lightVector);
-	}
-
-	static void setFogColor(const glm::vec3& color) {
-		shader().setUniform(fragUnis::fogColor, 1, color);
-	}
-
-	static UniformBuffer& getUBMaterialData() {
-		static UniformBuffer materialData = UniformBuffer(Binder::deferred_point_frag::buffers::MaterialData);
-		return materialData;
-	}
-
-	static UniformBuffer& getUBSpotLightData() {
-		static UniformBuffer spotLightData = UniformBuffer(Binder::deferred_point_frag::buffers::SpotLightData);
-		return spotLightData;
-	}
-
-	static UniformBuffer& getUBPointLightData() {
-		static UniformBuffer pointLightData = UniformBuffer(Binder::deferred_point_frag::buffers::PointLightData);
-		return pointLightData;
-	}
-
 };
 

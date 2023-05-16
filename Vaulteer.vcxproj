@@ -157,6 +157,7 @@
     <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
+    <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h" />
     <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Register.h" />
@@ -222,7 +223,6 @@
     <None Include="resources\backpack\source_attribution.txt" />
     <None Include="resources\backpack\teapot.mtl" />
     <None Include="resources\backpack\teapot.obj" />
-    <None Include="resources\cone.blend" />
     <None Include="resources\cone.obj" />
     <None Include="resources\cube.obj" />
     <None Include="resources\palm\palm.mtl" />
@@ -246,8 +246,6 @@
     <None Include="resources\shaders\forward_frag.glsl" />
     <None Include="resources\shaders\forward_vertex.glsl" />
     <None Include="resources\shaders\geometry_frag.glsl" />
-    <None Include="resources\shaders\line_frag.glsl" />
-    <None Include="resources\shaders\line_vertex.glsl" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem" />

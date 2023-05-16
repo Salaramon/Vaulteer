@@ -1,11 +1,13 @@
 #include "vpch.h"
 #include "Renderer/Shader.h"
 
+#include "Techniques/UniformBufferTechnique.h"
+
 void Shader::use() const {
 	glUseProgram(shaderProgramID);
 }
 
-size_t Shader::getShaderID() {
+GLuint Shader::getProgramID() {
 	return shaderProgramID;
 }
 
@@ -22,7 +24,7 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 
 void Shader::loadShader(std::string path, GLenum type) {
 	std::cout << std::format("Loading shader \"{}\", of type {}", path, type) << std::endl;
-	std::string shaderCode = file_to_string(path);
+	std::string shaderCode = readFile(path);
 	const char* rawCode = shaderCode.c_str();
 
 	GLuint id = glCreateShader(type);
@@ -33,9 +35,10 @@ void Shader::loadShader(std::string path, GLenum type) {
 
 	std::cout << std::format("Shader created with id {} from {}", id, filename) << std::endl;
 
-	shader_compile(id, filename, &rawCode);
-	shaderProgram_addShader(id);
+	compileShader(id, filename, &rawCode);
+	glAttachShader(shaderProgramID, id);
 }
+
 
 void Shader::populateUniformCache() {
 	uniformLocationCache.clear();
@@ -45,73 +48,85 @@ void Shader::populateUniformCache() {
 
 	if (uniformCount != 0) {
 		GLint max_name_len = 0;
-		GLsizei length = 0;
+		GLsizei nameLength = 0;
 		GLsizei count = 0;
 		GLenum type = GL_NONE;
 		glGetProgramiv(shaderProgramID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_len);
 
 		auto uniformName = std::make_unique<char[]>(max_name_len);
 		for (GLint i = 0; i < uniformCount; i++) {
-			glGetActiveUniform(shaderProgramID, i, max_name_len, &length, &count, &type, uniformName.get());
+			glGetActiveUniform(shaderProgramID, i, max_name_len, &nameLength, &count, &type, uniformName.get());
 
 			GLint uniformLocation = glGetUniformLocation(shaderProgramID, uniformName.get());
+			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderIndex>(uniformLocation));
+		}
+	}
 
-			uniformLocationCache.emplace(uniformName.get(), static_cast<ShaderLocation>(uniformLocation));
+
+	GLint uniformBufferCount = 0;
+	glGetProgramiv(shaderProgramID, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBufferCount);
+
+	if (uniformBufferCount != 0) {
+		GLint max_name_len = 0;
+		GLsizei nameLength = 0;
+		GLsizei dataLength = 0;
+		glGetProgramiv(shaderProgramID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
+		
+		auto uniformName = std::make_unique<char[]>(max_name_len);
+		for (GLint i = 0; i < uniformBufferCount; i++) {
+			glGetActiveUniformBlockName(shaderProgramID, i, max_name_len, &nameLength, uniformName.get());
+			glGetActiveUniformBlockiv(shaderProgramID, i, GL_UNIFORM_BLOCK_DATA_SIZE, &dataLength);
+
+			auto binding = glGetUniformBlockIndex(shaderProgramID, uniformName.get());
+			UniformBufferTechnique::put(shaderProgramID, uniformName.get(), {uniformName.get(), binding, dataLength});
 		}
 	}
 }
 
 
-void Shader::shaderProgram_addShader(GLuint id) {
-	glAttachShader(shaderProgramID, id);
-}
-
-
-bool Shader::shaderProgram_link() {
+bool Shader::linkProgram() {
 	glLinkProgram(shaderProgramID);
-	return shaderProgram_catchError();
+	return !catchProgramLinkError();
 }
 
 
-bool Shader::shader_compile(GLuint id, std::string& filename, const char** code) {
-	glShaderSource(id, 1, code, NULL);
+bool Shader::compileShader(GLuint id, const std::string& filename, const char** code) {
+	glShaderSource(id, 1, code, nullptr);
 	glCompileShader(id);
 
-	std::cout << std::format("shader {} is compiled", filename) << std::endl;
-
-	return shader_catchError(id, filename);
+	return !catchCompileError(id, filename);
 }
 
 
-bool Shader::shaderProgram_catchError() {
+bool Shader::catchProgramLinkError() {
 	//Scope is needed for bind for some reason depite also giving it pointer to the class.
 	auto getProgramInfo = std::bind(&Shader::getDebugInfo<decltype(glGetProgramiv)>, this, glGetProgramiv, shaderProgramID, std::placeholders::_1);
 
 	if (!getProgramInfo(GL_LINK_STATUS)) {
-		getErrorMessage(glGetProgramInfoLog, shaderProgramID, getProgramInfo(GL_INFO_LOG_LENGTH), std::format("Error: Could not link shader program {}", getShaderDesc()));
+		auto error = getErrorMessage(glGetProgramInfoLog, shaderProgramID, getProgramInfo(GL_INFO_LOG_LENGTH));
+		std::cout << std::format("Error: Could not link shader program {}:\n\t{}", getShaderDesc(), error) << std::endl;
 		return true;
 	}
-
 	return false;
 }
 
-bool Shader::shader_catchError(GLuint id, std::string& filename) {
+bool Shader::catchCompileError(GLuint id, const std::string& filename) {
 	//glGetShaderiv wapped in an lambda to make it parameters less verbose.
 	auto getShaderInfo = std::bind(&Shader::getDebugInfo<decltype(glGetShaderiv)>, this, glGetShaderiv, id, std::placeholders::_1);
 
 	if (!getShaderInfo(GL_COMPILE_STATUS)) {
-		getErrorMessage(glGetShaderInfoLog, id, getShaderInfo(GL_INFO_LOG_LENGTH), std::format("Error: Could not compile shader {}:", filename));
+		auto error = getErrorMessage(glGetShaderInfoLog, id, getShaderInfo(GL_INFO_LOG_LENGTH));
+		std::cout << std::format("Error: could not compile shader {}:\n\t{}", filename, error) << std::endl;
 		return true;
 	}
 
 	return false;
 }
 
-std::string Shader::file_to_string(std::string& path) {
+std::string Shader::readFile(std::string& path) {
 	std::ifstream file;
 	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-	//Converting file to string format.
 	try {
 		std::stringstream stream;
 
@@ -135,9 +150,9 @@ int Shader::getDebugInfo(T openGLFunctioniv, unsigned int id, GLenum pname) {
 }
 
 template<class T>
-void Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessagePrepend) {
+std::string Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize) {
 	std::vector<char> log(logSize);
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
 
-	std::cout << std::format("{}\n\t{}\n", errorMessagePrepend, log.data()) << std::endl;
+	return { log.data(), log.size() };
 }

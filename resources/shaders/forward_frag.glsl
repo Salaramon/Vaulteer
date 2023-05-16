@@ -81,5 +81,5 @@ void main() {
     vec3 diffuseCoords = vec3(fs_in.TexCoords, 0);
     vec3 result = (ambient + diffuse + specular) * texture(textureLib, diffuseCoords).rgb;
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result + vec3(0,0,0), 1.0);
 }

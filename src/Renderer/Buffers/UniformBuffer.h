@@ -14,37 +14,30 @@ public:
 		inline static constexpr GLenum Stream  = GL_STREAM_DRAW; // modify once, use rarely
 	};
 
-	UniformBuffer(const Binder::UniformBufferInfo& bufferInfo, GLenum hint = DrawHint::Dynamic) : binding(bufferInfo.binding), size(bufferInfo.size), drawHint(hint) {
-		std::cout << std::format("Creating UBO for {} (size {})", (std::string)bufferInfo.name, bufferInfo.size) << std::endl;
-	}
+	UniformBuffer(const GLuint binding, GLsizei size, GLenum hint = DrawHint::Dynamic) : binding(binding), size(size), drawHint(hint) {}
 
 	UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(other)), binding(other.binding), size(other.size), drawHint(other.drawHint) {
 		other.buffer = 0;
 	}
 
 	template<class T>
-	static void insert(UniformBuffer& ubo, const std::vector<T>& data) {
+	void insert(const std::vector<T>& data) {
 		size_t dataSize = data.size() * sizeof(data[0]);
 		
-		assert(dataSize <= ubo.size);
+		assert(dataSize <= size);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
-		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), data.data(), ubo.drawHint);
-	
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
+		glNamedBufferData(buffer, std::min(size, dataSize), data.data(), drawHint);
 	}
 
 	template<class T>
-	static void insert(UniformBuffer& ubo, const T& data) {
+	void insert(const T& data) {
 		size_t dataSize = sizeof(data);
 
-		assert(dataSize <= ubo.size);
+		assert(dataSize <= size);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, ubo.binding, ubo.buffer);
-		glNamedBufferData(ubo.buffer, std::min(ubo.size, dataSize), &data, ubo.drawHint);
-		
-		//LOG::SPGL::debug<static_cast<void(*)(UniformBuffer&, const T&)>(&UniformBuffer::insert<T>), UniformBuffer>(
-		//	std::format("Inserting {} bytes into UBO {}", dataSize, ubo.buffer)
-		//);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
+		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
 	}
 
 	UniformBuffer(UniformBuffer& other) = delete;

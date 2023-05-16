@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Renderer/Buffers/UniformBuffer.h"
-
 class BlendingCompositeTechnique {
 	using fragUnis = Binder::blending_composite_frag::uniforms;
 

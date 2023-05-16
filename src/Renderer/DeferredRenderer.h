@@ -14,6 +14,7 @@
 #include "API/Camera.h"
 #include "Renderer/Buffers/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
+#include "Techniques/UniformBufferTechnique.h"
 
 
 class DeferredRenderer : 
@@ -61,20 +62,6 @@ public:
 		coneLength = 1.0f;
 		coneRadius = 1.0f;
 		coneDirection = glm::vec3(.0f, 1.0f, .0f);
-	}
-
-	template<size_t SCENE_ID>
-	static void preload(Scene<SCENE_ID>& scene, ResourcePack& pack) {
-		/*
-			These functions which push material data
-			should probably be a part of handled by a resource pack
-			through the use of a use() function.
-			Or at some similar convention should be considered.
-		*/
-
-		//auto& modelVector = pack.getAllResources();
-		BlendingTechnique::uploadModelUnitTables(scene.view<TextureView, PropertiesModel>());
-		DeferredPointLightTechnique::uploadMaterialData();
 	}
 
 	static void reloadShaders() {
@@ -137,7 +124,6 @@ public:
 		*/
 		DeferredGeometryTechnique::shader().use();
 
-		DeferredGeometryTechnique::uploadProjection(camera.projectionMatrix());
 		glm::mat4 viewMatrix = camera.viewMatrix();
 
 		GLint texUnit = 0;
@@ -178,7 +164,7 @@ public:
 				{{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}
 			}; // TODO get from scene :3
 
-			DeferredDirLightTechnique::uploadDirectionalLightData(dirLights);
+			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
 		}
 
 		gbuffer->bindForReading();
@@ -219,7 +205,7 @@ public:
 			pointLights.emplace_back(att, whiteLight, glm::vec3(20, 2, 0));
 			pointLights.emplace_back(att, whiteLight, glm::vec3(0, 2, 20));
 
-			DeferredPointLightTechnique::uploadPointLightData(pointLights);
+			UniformBufferTechnique::uploadPointLightData(pointLights);
 
 			buildLights = false;
 		}

@@ -35,10 +35,17 @@ public:
 	void onAttach() override {
 		Window& window = Application::getWindow();
 
+		auto setAspectRatio = [this](int w, int h) {
+			camera.propertiesCamera.aspectRatio = (float)h / w;
+		};
+ 		Window::addResizeCallback(setAspectRatio);
+		
+		ResourcePack& pack = ResourceManager::getPack(0);
+		ForwardRenderer::initialize(pack);
+
 		//DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
 		//BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
-		//Setting up cameras in the scene.
 		
 		camera.enableAxisLock();
 		camera.setLockAxis({0,1,0});
@@ -54,14 +61,6 @@ public:
 
 		scene.add(camera);
 
-		auto setAspectRatio = [this](int w, int h) {
-			camera.propertiesCamera.aspectRatio = (float)h / w;
-		};
-
- 		Window::addResizeCallback(setAspectRatio);
-		
-		ResourcePack& pack = ResourceManager::getPack(0);
-		ForwardRenderer::initialize(pack);
 
 		Model palm = Model(pack.getMeshes("palm"));
 		Model crate = Model(pack.getMeshes("crate"));
@@ -73,16 +72,6 @@ public:
 		
 		scene.add(loadedModels[0]);
 		scene.add(loadedModels[1]);
-
-		//auto model1 = Model(pack.getModelByName("palm"));
-		//auto model2 = Model(pack.getModelByName("crate"));
-
-		//DeferredRenderer::preload(pack);
-
-		//Add models to scene layers(s)
-		//std::vector<Object3D*> objects;
-
-		//std::vector<OpaqueModel> opaqueModels;
 
 		//Generate trees how about you kill yourself
 		/*
@@ -127,11 +116,19 @@ public:
 		renderer.render(scene);
 	}
 
+	bool onKeyboardButtonEvent(KeyboardButtonEvent& e) {
+		if (e.button.key == KeyboardKey::T && e.button.action == KeyAction::PRESS) {
+			renderer.reloadShaders();
+			return true;
+		}
+		return false;
+	}
+
 	void onEvent(BaseEvent& e) override {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
-
+		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 	}
 };
 

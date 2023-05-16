@@ -37,9 +37,6 @@
     <Filter Include="Source Files\Data Structures">
       <UniqueIdentifier>{D681CBD9-C23C-BB85-6BF4-33D0578E0516}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Debug">
-      <UniqueIdentifier>{1F5D6260-0B41-23B6-74A1-1D0960A40D38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Events">
       <UniqueIdentifier>{AD533870-19B5-157E-A222-5C300E834C3D}</UniqueIdentifier>
     </Filter>
@@ -114,9 +111,6 @@
     <ClInclude Include="src\Data Structures\PolyTree.h">
       <Filter>Source Files\Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\Debug.h">
-      <Filter>Source Files\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="src\DebugLayer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -186,13 +180,7 @@
     <ClInclude Include="src\Model\Storage\VertexHash.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Storage\Vertices.h">
-      <Filter>Source Files\Model\Storage</Filter>
-    </ClInclude>
     <ClInclude Include="src\Model\Textures\CubemapTexture.h">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Textures\PackedTexture2DArray.h">
       <Filter>Source Files\Model\Textures</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Textures\Texture.h">
@@ -249,6 +237,9 @@
     <ClInclude Include="src\Renderer\DeferredRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\ForwardRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
@@ -277,6 +268,9 @@
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h">
+      <Filter>Source Files\Renderer\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Entity.h">
@@ -344,9 +338,6 @@
     <ClCompile Include="src\API\Application.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
-    <ClCompile Include="src\API\Camera.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
     <ClCompile Include="src\API\CameraController.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
@@ -371,16 +362,10 @@
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\Textures\PackedTexture2DArray.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
     <ClCompile Include="src\Model\Textures\Texture.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Textures\Texture2D.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\Texture2DArray.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
     <ClCompile Include="src\OpenGL.cpp">
@@ -463,9 +448,6 @@
     <None Include="resources\backpack\teapot.obj">
       <Filter>Resource Files\backpack</Filter>
     </None>
-    <None Include="resources\cone.blend">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="resources\cone.obj">
       <Filter>Resource Files</Filter>
     </None>
@@ -533,12 +515,6 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\geometry_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\line_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\line_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem">

@@ -14,6 +14,8 @@
 
 class Shader {
 public:
+	// Parameter utility
+
 	template<class... Args>
 	struct Parameter_Reader {};
 
@@ -39,17 +41,13 @@ public:
 		GLenum type;
 	};
 
-	//=============================================================================================================================================//
+
+	Shader() : shaderProgramID(-1), setUniform(this) {}
 
 
-		/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-			|		  CONSTRUCTORS 			|
-			|_______________________________|	*/
-
-	//Loads vertex and fragment shaders on creation.
+	// Arguments are read in alternating std::string path, GLenum type
 	template<class ...Infos>
-	Shader(Infos ...infos) :
-		setUniform(this) {
+	Shader(Infos ...infos) : setUniform(this) {
 
 		shaderProgramID = glCreateProgram();
 		
@@ -57,19 +55,21 @@ public:
 
 		Parameter_Reader<Infos...> reader(this, infos...);
 
-		if (!shaderProgram_link())
+		bool ok = linkProgram();
+		if (ok)
 			populateUniformCache();
-	};
+		else __debugbreak();
+	}
 
 	Shader(const Shader& other) = delete;
 
-	Shader(Shader&& other) :
-		uniformLocationCache(other.uniformLocationCache),
-		setUniform(this) {
+	Shader(Shader&& other) noexcept :
+			shaderProgramID(other.shaderProgramID),
+			shaderIDs(std::move(other.shaderIDs)),
+			uniformLocationCache(std::move(other.uniformLocationCache)),
+			setUniform(this) {
 
-		shaderProgramID = other.shaderProgramID;
-		shaderIDs = other.shaderIDs;
-		other.shaderProgramID = 0;
+		other.shaderProgramID = -1;
 		other.shaderIDs.clear(); 
 	}
 
@@ -77,87 +77,50 @@ public:
 		for (GLuint id : shaderIDs) {
 			glDeleteShader(id);
 		}
-
 		std::cout << std::format("Shader program destroyed with id: {}", shaderProgramID) << std::endl;
 		glDeleteProgram(shaderProgramID);
 	}
 
-
-	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-		|		 CLASS FUNCTIONS 		|
-		|_______________________________|	*/
-
+	// API
 
 	void loadShader(std::string path, GLenum type);
-
 	void populateUniformCache();
-
-
-	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-		|		WRAPPER FUNCTIONS 		|
-		|_______________________________|	*/
 
 	//Runs the shader program.
 	void use() const;
 
-	size_t getShaderID();
+	GLuint getProgramID();
 
+	//Returns all shader files delimited with ';'
 	std::string getShaderDesc();
 	std::vector<std::string>& getShaderFileNames();
 
 private:
-
-	//=============================================================================================================================================//
-
-		/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-			|		WRAPPER STRUCTURES 		|
-			|_______________________________|	*/
-
-
 	GLuint shaderProgramID;
 
 	std::vector<GLuint> shaderIDs;
 	std::vector<std::string> shaderFileNames;
 
 
-	//=============================================================================================================================================//
-
-		/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-			|		 CLASS FUNCTIONS 		|
-			|_______________________________|	*/
-
-
-
-		/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-			|		WRAPPER FUNCTIONS 		|
-			|_______________________________|	*/
-
-	//Attatches shader to the shader program.
-	void shaderProgram_addShader(GLuint id);
-
 	//Assembles the shader program.
-	//Returns true on error.
-	bool shaderProgram_link();
+	//Returns true on successful link.
+	bool linkProgram();
 
 	//Compiles shader
-	//Returns true on error.
-	bool shader_compile(GLuint id, std::string& filename, const char** code);
+	//Returns true on successful compile.
+	bool compileShader(GLuint id, const std::string& filename, const char** code);
 
-	//Checks for shader program error.
-	//Returns true on error.
-	bool shaderProgram_catchError();
+	//Checks and logs eventual program link errors.
+	bool catchProgramLinkError();
 
-	//Checks for shader error.
-	//Returns true if an error occured in the shader.
-	bool shader_catchError(GLuint id, std::string& filename);
+	//Checks and logs eventual shader compile errors.
+	bool catchCompileError(GLuint id, const std::string& filename);
 
-	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-		|		UTILITY FUNCTIONS 		|
-		|_______________________________|	*/
+
 
 	//Takes file contents and converts it to string.
 	//Returns contents of a file in string format.
-	std::string file_to_string(std::string& path);
+	std::string readFile(std::string& path);
 
 	//Wraps OpenGL int vector(iv) functions. !!(Warning: May be incomplete!)
 	//Returns an integer representing parameters pertaining to OpenGL's object status.
@@ -166,21 +129,20 @@ private:
 
 	//Wraps OpenGL info log functions. !!(Warning: May be incomplete!)
 	template<class T>
-	void getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize, std::string errorMessagePrepend);
+	std::string getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize);
 
-	//=============================================================================================================================================//
 
-		/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-			|			VARIABLES			|
-			|_______________________________|	*/
+	// uniform data API related
 
-	// shader is required for setting default values on lookup where uniforms get optimized away
-	struct ShaderLocation {
+
+	// struct is required for setting default values on lookup where uniforms get optimized away
+	struct ShaderIndex {
 		GLint loc = -1;
 		operator GLint() const { return loc; }
 	};
 
-	std::unordered_map<std::string, ShaderLocation> uniformLocationCache;
+	std::unordered_map<std::string, ShaderIndex> uniformLocationCache;
+
 public:
 	struct UniformFunctor {
 		UniformFunctor(Shader* shader) :
@@ -288,7 +250,6 @@ public:
 	private:
 		Shader* shader;
 	};
-
 
 	UniformFunctor setUniform;
 };
