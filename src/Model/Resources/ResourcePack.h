@@ -51,14 +51,14 @@ public:
 		}
 
 		// find all locators
-		std::vector<Material> materialsWithTextures;
+		std::vector<Material*> materialsWithTextures;
 		for (const auto& material : MaterialLibrary::getAllMaterials()) {
 			if (material && !material->textureTypeLocators.empty()) {
-				materialsWithTextures.push_back(*material);
+				materialsWithTextures.push_back(material);
 			}
 		}
 
-		// create packed texture
+		// store textures -- and update textureId in materials
 		texture = TextureLibrary::storeTextures(materialsWithTextures);
 
 		// update all models' units

@@ -4,8 +4,6 @@
 
 #include "OpenGL.h"
 
-#include "Renderer/Techniques/BlendingTechnique.h"
-
 #include "API/Camera.h"
 
 #include "SceneTypedefs.h"
@@ -25,6 +23,7 @@ public:
 
 	static void loadShaders() {
 		gem::Shader<gem::forward_frag> ff;
+		ff.setforward_frag_materialData(128);
 		ff.compile();
 
 		shader = std::make_unique<Shader>(
@@ -42,24 +41,22 @@ public:
 
 		auto viewMat = camera.viewMatrix();
 		auto projectionMat = camera.projectionMatrix();
-		shader->setUniform(Binder::forward_vertex::uniforms::view, 1, GL_FALSE, viewMat);
+		shader->setUniform("view", viewMat);
 
-		UniformBufferTechnique::uploadCameraProjection(projectionMat);
-		
 		glBindTextureUnit(0, textureID);
-		shader->setUniform(Binder::forward_frag::uniforms::textureLib, 0);
+		shader->setUniform("textureLib", 0);
 
-		shader->setUniform(Binder::forward_frag::uniforms::inverseViewMat, 1, GL_FALSE, glm::inverse(viewMat));
+		shader->setUniform("inverseViewMat", glm::inverse(viewMat));
 
-		shader->setUniform(Binder::forward_frag::uniforms::cameraPos, 1, *camera.position);
-		shader->setUniform(Binder::forward_frag::uniforms::lightPos, 1, glm::vec3(0.0));
+		shader->setUniform("cameraPos", *camera.position);
+		shader->setUniform("lightPos", glm::vec3(0.0));
 
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
-			shader->setUniform(Binder::forward_vertex::uniforms::model, 1, GL_FALSE, modelMat);
-			shader->setUniform(Binder::forward_vertex::uniforms::normal, 1, GL_FALSE, glm::inverse(modelMat));
+			shader->setUniform("model", modelMat);
+			shader->setUniform("normal", glm::inverse(modelMat));
 
 			for (auto mesh : meshes) {
 				mesh->bind();

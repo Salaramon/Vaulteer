@@ -8,7 +8,6 @@ struct PointLight {
     Attenuation att;
     vec3 position;
     float radius;
-    //mat4 instanceMat;
 };
 
 struct UBPointLight {
@@ -20,10 +19,9 @@ struct UBPointLight {
     float aQuadratic;
     vec3 position;
     float radius;
-    //mat4 instanceMat;
 };
 
-layout(shared, binding = 4) uniform PointLightData {
+layout(shared, binding = 5) uniform PointLightData {
     uniform UBPointLight pointLightTable[MAX_POINT_LIGHTS];
 };
 
@@ -38,6 +36,5 @@ PointLight getPointLight(int pointLightIndex) {
     l.att.aQuadratic = ubl.aQuadratic;
     l.position = ubl.position;
     l.radius = ubl.radius;
-    //l.instanceMat = ubl.instanceMat;
     return l;
 }

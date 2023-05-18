@@ -149,14 +149,7 @@
     <ClInclude Include="src\Renderer\ForwardRenderer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
-    <ClInclude Include="src\Renderer\ShaderProgram.h" />
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
-    <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h" />
-    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h" />
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h" />
     <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
@@ -185,7 +178,6 @@
     <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
-    <ClCompile Include="src\DebugLayer.cpp" />
     <ClCompile Include="src\Model\IndexBuffer.cpp" />
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
@@ -243,6 +235,7 @@
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
+    <None Include="resources\shaders\preprocessor\fragments\textureData.gem" />
     <None Include="resources\shaders\preprocessor\forward_frag.gem" />
     <None Include="resources\shaders\forward_vertex.glsl" />
     <None Include="resources\shaders\geometry_frag.glsl" />
@@ -252,7 +245,7 @@
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem" />
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem" />
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem" />
-    <None Include="resources\shaders\preprocessor\fragments\materialTable.gem" />
+    <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\spotLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem" />

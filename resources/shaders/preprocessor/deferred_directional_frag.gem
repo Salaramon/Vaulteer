@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 // imports
 ##[fragments/dirLightData] //! #include "fragments/dirLightData.gem"
-##[fragments/materialTable] //! #include "fragments/materialTable.gem"
+##[fragments/materialData] //! #include "fragments/materialData.gem"
 
 
 // constants
@@ -39,7 +39,7 @@ uniform float cascadeFarPlanes[NUM_CASCADES];
 // uniforms
 
 uniform vec3 worldCameraPos;
-uniform mat4 cameraViewMat;
+uniform mat4 view;
 
 uniform vec3 fogColor;
 
@@ -145,7 +145,7 @@ void main() {
 
     // ------------- aggregation ------------
 
-    params.fragPosition = vec4(inverse(cameraViewMat) * vec4(positionSample, 1.0)).xyz;
+    params.fragPosition = vec4(inverse(view) * vec4(positionSample, 1.0)).xyz;
     
     params.fragNormal = normalSample.xyz;
     params.materialIndex = int(normalSample.w);
@@ -155,7 +155,7 @@ void main() {
 
     // --------------------------------------
  
-    float fragDepth = abs((cameraViewMat * vec4(params.fragPosition, 1.0)).z);
+    float fragDepth = abs((view * vec4(params.fragPosition, 1.0)).z);
 
     // shadow calc
     

@@ -246,29 +246,8 @@
     <ClInclude Include="src\Renderer\Shader.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\ShaderProgram.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h">
       <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\BlendingCompositeTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\BlendingTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredDirLightTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredGeometryTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\DeferredPointLightTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Techniques\ShadowVolumeTechnique.h">
-      <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
@@ -349,9 +328,6 @@
     </ClCompile>
     <ClCompile Include="src\Data Structures\PolyTree.cpp">
       <Filter>Source Files\Data Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DebugLayer.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\IndexBuffer.cpp">
       <Filter>Source Files\Model</Filter>
@@ -508,9 +484,6 @@
     <None Include="resources\shaders\depth_map_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\forward_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\forward_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -533,9 +506,6 @@
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem">
-      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
-    </None>
-    <None Include="resources\shaders\preprocessor\fragments\materialTable.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem">
@@ -592,6 +562,9 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\fragments\textureData.gem" />
+    <None Include="resources\shaders\preprocessor\forward_frag.gem" />
+    <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

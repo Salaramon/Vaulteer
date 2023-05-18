@@ -5,31 +5,7 @@
 #include "DebugLayer.h"
 
 Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
-	initShaders();
 	loadResources();
-}
-
-void Vaulteer::initShaders() {
-	gem::Shader<gem::deferred_point_vertex> dpvert;
-	dpvert.compile();
-	gem::Shader<gem::deferred_point_frag> dpfrag;
-	dpfrag.setdeferred_point_frag_materialTable(128);
-	dpfrag.setdeferred_point_frag_pointLightData(2);
-	dpfrag.compile();
-	gem::Shader<gem::deferred_directional_frag> dir;
-	dir.setdeferred_directional_frag_materialTable(128);
-	dir.compile();
-	gem::Shader<gem::geometry_vertex> gvert;
-	gvert.compile();
-	gem::Shader<gem::forward_frag> ff;
-	ff.compile();
-
-	ShaderProgram::blendingShader();
-	ShaderProgram::blendingCompositeShader();
-	ShaderProgram::deferredDirShader();
-	ShaderProgram::deferredPointShader();
-	ShaderProgram::geometryShader();
-	ShaderProgram::shadowVolumeShader();
 }
 
 void Vaulteer::loadResources() {
@@ -51,6 +27,7 @@ void Vaulteer::setup() {
 	
 	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 
-	layerStack.pushLayer(new WorldLayer());
-	layerStack.pushLayer(new DebugLayer());
+	auto world = new WorldLayer();
+	layerStack.pushLayer(world);
+	layerStack.pushLayer(new DebugLayer(world));
 }

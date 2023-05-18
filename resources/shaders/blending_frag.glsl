@@ -18,7 +18,7 @@ uniform mat4 inverseViewMat;
 uniform vec3 cameraPos;
 uniform vec3 lightPos;
 
-struct BFModelUnitData {
+struct TextureView {
     int xDelta; 
     int yDelta;
     int wDelta;
@@ -26,8 +26,8 @@ struct BFModelUnitData {
     int layerDelta;
 };
 
-layout(shared, binding = 1) uniform ModelUnitTables {
-    uniform BFModelUnitData unitTable[384];
+layout(shared, binding = 1) uniform TextureViewData {
+    uniform TextureView textureViewTable[384];
 };
 
 const int diffuse_unit_index = 0;
@@ -44,14 +44,14 @@ struct BFMaterial {
     vec2 pad; // for alignment to 16
 };
 
-layout(shared, binding = 2) uniform MaterialData {
+layout(shared, binding = 3) uniform MaterialData {
     uniform BFMaterial materialTable[128];
 };
 
 vec3 getTexUnitCoords(vec3 texCoords, int materialNumber, int unitIndex) {
-    return vec3(texCoords.x + float(unitTable[materialNumber * 3 + unitIndex].xDelta) / textureSize(textureLib,0).x, 
-                texCoords.y + float(unitTable[materialNumber * 3 + unitIndex].yDelta) / textureSize(textureLib,0).y,
-                texCoords.z + unitTable[materialNumber * 3 + unitIndex].layerDelta); 
+    return vec3(texCoords.x + float(textureViewTable[materialNumber * 3 + unitIndex].xDelta) / textureSize(textureLib,0).x, 
+                texCoords.y + float(textureViewTable[materialNumber * 3 + unitIndex].yDelta) / textureSize(textureLib,0).y,
+                texCoords.z + textureViewTable[materialNumber * 3 + unitIndex].layerDelta); 
 }
 
 void main() {
@@ -70,7 +70,7 @@ void main() {
     vec3 diffuse = diff * lightColor;
     
     // specular
-    vec2 specularDelta = vec2(unitTable[fs_in.materialNumber * 3 + specular_unit_index].xDelta, unitTable[fs_in.materialNumber * 3 + specular_unit_index].yDelta);
+    vec2 specularDelta = vec2(textureViewTable[fs_in.materialNumber * 3 + specular_unit_index].xDelta, textureViewTable[fs_in.materialNumber * 3 + specular_unit_index].yDelta);
     float specularStrength;
     if (specularDelta != vec2(0.0)){ // specular map exists?
         vec3 specularCoords = getTexUnitCoords(vec3(fs_in.TexCoords, 0), fs_in.materialNumber, specular_unit_index);

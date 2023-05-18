@@ -3,7 +3,7 @@
 #include "Model/Material.h"
 #include "Model/Textures/TextureViewData.h"
 
-constexpr size_t max_texture_view_count = 128;
+constexpr size_t max_texture_count = 128;
 
 constexpr int pack_max_texture_side_size = 8192;
 constexpr int pack_discard_step = 1;
@@ -26,21 +26,31 @@ class TextureLibrary {
 	}
 
 public:
-	static Texture2DArray* storeTextures(const std::vector<Material>& materials) {
+	static Texture2DArray* storeTextures(const std::vector<Material*>& materials) {
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
 
-		for (const Material& mat : materials) {
-			int dataTextureViewId = numTextureViews;
+		for (Material* mat : materials) {
+			// create textureData
+			int dataTextureViewId = numTextures++;
 			auto& data = textureData.emplace_back(dataTextureViewId);
+			mat->setTextureId(dataTextureViewId);
 
-			for (auto& locator : mat.textureTypeLocators | std::views::values) {
+			//for (auto& locator : mat->textureTypeLocators | std::views::values) {
+			for (auto& type : Material::validTextureTypes) {
+				auto& locator = mat->textureTypeLocators[type];
+				if (locator.type == aiTextureType_NONE) {
+					numTextureViews++;
+					continue;
+				}
+
+				// create textureViews for individual file in material
 				auto& image = images.emplace_back(locator);
 
 				image.view.textureViewId = numTextureViews;
-				viewIndexByTexturePath[locator.path] = numTextureViews++;
+				data.textureViewId = numTextureViews;
 
-				data.putView(image.view);
+				viewIndexByTexturePath[locator.path] = numTextureViews++;
 				views.push_back(image.view);
 
 				maxW = std::max(maxW, image.width);
@@ -65,16 +75,16 @@ public:
 		return getView(viewIndexByTexturePath.at(name));
 	}
 
-	static std::array<TextureView, max_texture_view_count> getTextureViewData() {
-		std::array<TextureView, max_texture_view_count> data;
-		for (auto& view : views) {
-			data[view.textureViewId] = view;
+	static std::array<TextureViewData, max_texture_count * 3> getTextureViewData() {
+		std::array<TextureViewData, max_texture_count * 3> data;
+ 		for (auto& view : views) {
+			data[view.textureViewId] = TextureViewData(view);
 		}
 		return data;
 	}
 
-	static std::array<TextureData, max_texture_view_count> getTextureData() {
-		std::array<TextureData, max_texture_view_count> data;
+	static std::array<TextureData, max_texture_count> getTextureData() {
+		std::array<TextureData, max_texture_count> data;
 		int i = 0;
 		for (auto& texture : textureData) {
 			data[i++] = texture;
@@ -100,7 +110,9 @@ private:
 
 		// overwrite views with packed data
 		for (size_t i = 0; i < rectangles.size(); i++) {
-			images[i].view = TextureView(images[i].view, rectangles[i]);
+			auto packed = TextureView(views[i], rectangles[i]);
+			images[i].view = packed;
+			views[i] = packed;
 		}
 
 		return { width, height };

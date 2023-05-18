@@ -20,6 +20,13 @@ public:
 	
 	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
+	inline static std::array<aiTextureType, 3> validTextureTypes {
+		aiTextureType_DIFFUSE,
+		aiTextureType_SPECULAR,
+		aiTextureType_HEIGHT,
+	};
+
+
 	// flags
 	bool twoSided = false;
 	bool doDepthTest = true;
@@ -50,6 +57,10 @@ public:
 		return textureTypeLocators.at(type);
 	}
 
+
+	void setTextureId(GLint textureId) {
+		this->data.textureId = textureId;
+	}
 
 	void setMaterialIndex(unsigned int index) {
 		this->materialIndex = index;

@@ -23,7 +23,7 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 }
 
 void Shader::loadShader(std::string path, GLenum type) {
-	std::cout << std::format("Loading shader \"{}\", of type {}", path, type) << std::endl;
+	std::cout << std::format("Loading shader \"{}\", of type {}", path, (type == GL_FRAGMENT_SHADER ? "fragment" : "vertex")) << std::endl;
 	std::string shaderCode = readFile(path);
 	const char* rawCode = shaderCode.c_str();
 
@@ -70,14 +70,16 @@ void Shader::populateUniformCache() {
 		GLint max_name_len = 0;
 		GLsizei nameLength = 0;
 		GLsizei dataLength = 0;
+		GLint binding = 0;
+
 		glGetProgramiv(shaderProgramID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_name_len);
 		
 		auto uniformName = std::make_unique<char[]>(max_name_len);
 		for (GLint i = 0; i < uniformBufferCount; i++) {
 			glGetActiveUniformBlockName(shaderProgramID, i, max_name_len, &nameLength, uniformName.get());
 			glGetActiveUniformBlockiv(shaderProgramID, i, GL_UNIFORM_BLOCK_DATA_SIZE, &dataLength);
+			glGetActiveUniformBlockiv(shaderProgramID, i, GL_UNIFORM_BLOCK_BINDING, &binding);
 
-			auto binding = glGetUniformBlockIndex(shaderProgramID, uniformName.get());
 			UniformBufferTechnique::put(shaderProgramID, uniformName.get(), {uniformName.get(), binding, dataLength});
 		}
 	}

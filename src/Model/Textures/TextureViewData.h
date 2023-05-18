@@ -16,49 +16,40 @@ using rect_type = rectpack2D::output_rect_t<spaces_type>;
 /// Defining bounds of a subtexture in a texture collection. Includes texture type for filtering.
 /// </summary>
 struct TextureView {
-	int textureViewId = -1;
+	int textureViewId;
 	rect_type rect;
 	int layer;
 	aiTextureType type;
-
-	// Uniform buffer representation
-	struct TextureViewData {
-		int xDelta, yDelta, wDelta, hDelta, layerDelta;
-		TextureViewData() : xDelta(0), yDelta(0), wDelta(0), hDelta(0), layerDelta(1) {}
-		TextureViewData(const TextureView& u) : xDelta(u.rect.x), yDelta(u.rect.y), wDelta(u.rect.w), hDelta(u.rect.h), layerDelta(u.layer) {}
-	};
 
 	TextureView() :
 		rect(0, 0, 0, 0),
 		layer(0),
 		type(aiTextureType_NONE) {}
 
-	TextureView(const TextureView& unit, rect_type rect) :
-		rect(rect),
-		layer(unit.layer),
-		type(unit.type) {}
-
 	TextureView(rect_type rect, int layer, aiTextureType type) :
+		textureViewId(-1),
 		rect(rect),
 		layer(layer),
 		type(type) {}
-	
-	TextureView minus(const TextureView& other) {
-		return {
-			{rect.x - other.rect.x,
-			rect.y - other.rect.y,
-			rect.w - other.rect.w,
-			rect.h - other.rect.h},
-			layer - other.layer,
-			type
-		};
-	}
+
+	TextureView(const TextureView& view, rect_type rect) :
+		textureViewId(view.textureViewId),
+		rect(rect),
+		layer(view.layer),
+		type(view.type) {}
 };
 
-// Uniform buffer representation
+// TextureView uniform buffer representation
+struct TextureViewData {
+	int xDelta, yDelta, wDelta, hDelta, layerDelta;
+	TextureViewData() : xDelta(0), yDelta(0), wDelta(0), hDelta(0), layerDelta(1) {}
+	TextureViewData(const TextureView& u) : xDelta(u.rect.x), yDelta(u.rect.y), wDelta(u.rect.w), hDelta(u.rect.h), layerDelta(u.layer) {}
+};
+
+// Texture uniform buffer representation
 struct TextureData {
 	int textureViewId = 0;
-	int viewFlags = 0;
+	float pad = 0.5;
 
 	// scrolling texture?
 	// float scrollX;
@@ -66,18 +57,6 @@ struct TextureData {
 
 	TextureData() = default;
 	TextureData(int textureViewId) : textureViewId(textureViewId) {}
-
-	void putView(const TextureView& view) {
-		switch (view.type) {
-		case aiTextureType_DIFFUSE: viewFlags |= 1 << 0;
-			break;
-		case aiTextureType_SPECULAR: viewFlags |= 1 << 1;
-			break;
-		case aiTextureType_HEIGHT: viewFlags |= 1 << 2;
-			break;
-		default: ;
-		}
-	}
 };
 
 

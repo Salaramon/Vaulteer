@@ -6,15 +6,32 @@
 
 #include "Model/Buffer.h"
 
+
+struct UniformBlock {
+	std::string name;
+	GLint binding;
+	GLsizei size;
+
+	GLuint programSource;
+};
+
 class UniformBuffer : InternalUniformBuffer {
 public:
+	const std::string name;
+	const size_t binding;
+	const GLsizei size;
+
+	const GLenum drawHint;
+
+
 	struct DrawHint {
 		inline static constexpr GLenum Dynamic = GL_DYNAMIC_DRAW; // modify repeatedly, use often
 		inline static constexpr GLenum Static  = GL_STATIC_DRAW; // modify once, use often
 		inline static constexpr GLenum Stream  = GL_STREAM_DRAW; // modify once, use rarely
 	};
 
-	UniformBuffer(const GLuint binding, GLsizei size, GLenum hint = DrawHint::Dynamic) : binding(binding), size(size), drawHint(hint) {}
+
+	UniformBuffer(const UniformBlock& block, GLenum hint = DrawHint::Dynamic) : name(block.name), binding(block.binding), size(block.size), drawHint(hint) {}
 
 	UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(other)), binding(other.binding), size(other.size), drawHint(other.drawHint) {
 		other.buffer = 0;
@@ -22,7 +39,7 @@ public:
 
 	template<class T>
 	void insert(const std::vector<T>& data) {
-		size_t dataSize = data.size() * sizeof(data[0]);
+		GLsizei dataSize = data.size() * sizeof(data[0]);
 		
 		assert(dataSize <= size);
 
@@ -32,7 +49,7 @@ public:
 
 	template<class T>
 	void insert(const T& data) {
-		size_t dataSize = sizeof(data);
+		GLsizei dataSize = sizeof(data);
 
 		assert(dataSize <= size);
 
@@ -43,12 +60,6 @@ public:
 	UniformBuffer(UniformBuffer& other) = delete;
 	UniformBuffer(const UniformBuffer& other) = delete;
 	UniformBuffer(const UniformBuffer&& other) = delete;
-
-private:
-	const size_t binding;
-	const size_t size;
-
-	const GLenum drawHint;
 
 };
 

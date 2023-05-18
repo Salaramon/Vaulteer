@@ -10,14 +10,11 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/BlendingForwardRenderer.h"
 
-#include "Renderer/ShaderProgram.h"
-
 
 class Vaulteer : public Application {
 public:
 	Vaulteer(const ApplicationSpecification& spec);
 
-	static void initShaders();
 	static void loadResources();
 
 	void setup() override;

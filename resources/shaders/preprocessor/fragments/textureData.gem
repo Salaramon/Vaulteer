@@ -1,0 +1,27 @@
+//? #version 450 core 
+
+struct TextureView {
+    int xDelta; 
+    int yDelta;
+    int wDelta;
+    int hDelta;
+    int layerDelta;
+};
+
+layout(shared, binding = 1) uniform TextureViewData {
+    uniform TextureView textureViewTable[128 * 3];
+};
+
+
+struct Texture {
+	int textureViewId;
+	float pad;
+};
+
+layout(shared, binding = 2) uniform TextureData {
+    uniform Texture textureTable[128];
+};
+
+const int diffuse_unit_index = 0;
+const int specular_unit_index = 1;
+const int normals_unit_index = 2;

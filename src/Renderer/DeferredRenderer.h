@@ -2,11 +2,6 @@
 
 #include <GEM.h>
 
-#include "Renderer/Techniques/DeferredGeometryTechnique.h"
-#include "Renderer/Techniques/DeferredPointLightTechnique.h"
-#include "Renderer/Techniques/DeferredDirLightTechnique.h"
-#include "Renderer/Techniques/BlendingTechnique.h"
-
 #include "OpenGL.h"
 
 #include "Renderer/BatchManager.h"
@@ -16,10 +11,10 @@
 #include "Model/Resources/ResourcePack.h"
 #include "Techniques/UniformBufferTechnique.h"
 
+#include "Scene/Scene.h"
 
-class DeferredRenderer : 
-	public DeferredGeometryTechnique, 
-	public DeferredPointLightTechnique {
+
+class DeferredRenderer {
 private:
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
@@ -45,6 +40,10 @@ private:
 
 	// TODO
 	inline static std::vector<PointLight> pointLights;
+	
+	inline static std::unique_ptr<Shader> geometryShader;
+	inline static std::unique_ptr<Shader> pointShader;
+	inline static std::unique_ptr<Shader> dirShader;
 
 public:
 	static void initialize(uint screenWidth, uint screenHeight) {
@@ -62,20 +61,38 @@ public:
 		coneLength = 1.0f;
 		coneRadius = 1.0f;
 		coneDirection = glm::vec3(.0f, 1.0f, .0f);
+
+		loadShaders();
 	}
 
-	static void reloadShaders() {
-		/*
-			Will be replaced by a runtime binder functionality
-		*/
-		gem::Shader<gem::deferred_point_frag> point;
-		point.compile();
-		gem::Shader<gem::deferred_directional_frag> dir;
-		dir.compile();
+	static void loadShaders() {
+		constexpr int maxMaterials = 128;
 
-		//DeferredGeometryTechnique::loadShader();
-		//DeferredDirLightTechnique::loadShader();
-		//DeferredPointLightTechnique::loadShader();
+		gem::Shader<gem::geometry_vertex> gvert;
+		gvert.compile();
+		geometryShader = std::make_unique<Shader>(
+			"resources/shaders/build/geometry_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/geometry_frag.glsl", GL_FRAGMENT_SHADER
+		);
+
+		gem::Shader<gem::deferred_point_vertex> dpvert;
+		dpvert.compile();
+		gem::Shader<gem::deferred_point_frag> dpfrag;
+		dpfrag.setdeferred_point_frag_materialData(maxMaterials);
+		dpfrag.setdeferred_point_frag_pointLightData(2); // TODO load from scene somehow
+		dpfrag.compile();
+		pointShader = std::make_unique<Shader>(
+			"resources/shaders/build/deferred_point_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/build/deferred_point_frag.glsl", GL_FRAGMENT_SHADER
+		);
+		
+		gem::Shader<gem::deferred_directional_frag> dir;
+		dir.setdeferred_directional_frag_materialData(maxMaterials);
+		dir.compile();
+		dirShader = std::make_unique<Shader>(
+			"resources/shaders/deferred_directional_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/build/deferred_directional_frag.glsl", GL_FRAGMENT_SHADER
+		);
 	}
 
 	template<size_t SCENE_ID>
@@ -122,17 +139,20 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		DeferredGeometryTechnique::shader().use();
+		geometryShader->use();
 
 		glm::mat4 viewMatrix = camera.viewMatrix();
 
 		GLint texUnit = 0;
-		DeferredGeometryTechnique::setTextureUnit(texUnit);
+		geometryShader->setUniform("textureLib", texUnit);
 
 		gbuffer->clear();
 		gbuffer->bindForWriting();
 
-		DeferredGeometryTechnique::setModelView(glm::mat4(1.0), viewMatrix);
+		//TODO clean up model?
+		geometryShader->setUniform("modelView", viewMatrix); // disregard model since everything is batched
+		geometryShader->setUniform("model", glm::mat4(1.0));
+		geometryShader->setUniform("normal", glm::mat4(1.0));
 
 		for (Batch& batch : BatchManager::getBatches(batchManager)) {
 			batch.bind();
@@ -152,12 +172,12 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		DeferredDirLightTechnique::shader().use();
+		dirShader->use();
 		glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 
 	
-		DeferredDirLightTechnique::setWorldCameraPos(*camera.position);
-		DeferredDirLightTechnique::setCameraViewMat(camera.viewMatrix());
+		dirShader->setUniform("worldCameraPos", *camera.position);
+		dirShader->setUniform("view", camera.viewMatrix());  // TODO removed cameraViewMat in frag, see if this works for both vert/frag shaders
 
 		if (buildLights) {
 			std::vector<DirectionalLight> dirLights = {
@@ -173,11 +193,11 @@ public:
 			Will be replaced by a runtime binder functionality
 		*/
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		DeferredDirLightTechnique::shader().setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+		dirShader->setUniform("gPosition", GBuffer::GBufferTextureType::Position);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		DeferredDirLightTechnique::shader().setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+		dirShader->setUniform("gNormal", GBuffer::GBufferTextureType::Normal_Material);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		DeferredDirLightTechnique::shader().setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+		dirShader->setUniform("gColor", GBuffer::GBufferTextureType::Color_Specular);
 
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
@@ -190,13 +210,12 @@ public:
 		/*
 			Will be replaced by a runtime binder functionality
 		*/
-		DeferredPointLightTechnique::shader().use();
+		pointShader->use();
 
 		glm::mat4 viewMatrix = camera.viewMatrix();
 
-		DeferredPointLightTechnique::setWorldCameraPos(*camera.position);
-		DeferredPointLightTechnique::setView(viewMatrix);
-		DeferredPointLightTechnique::setCameraViewMat(viewMatrix);
+		pointShader->setUniform("worldCameraPos", *camera.position);
+		pointShader->setUniform("view", camera.viewMatrix()); // TODO removed cameraViewMat in frag, see if this works for both vert/frag shaders
 
 		if (buildLights) {
 			BaseLight whiteLight = { glm::vec3(1.0f), 0.1f, 1.0f };
@@ -206,18 +225,17 @@ public:
 			pointLights.emplace_back(att, whiteLight, glm::vec3(0, 2, 20));
 
 			UniformBufferTechnique::uploadPointLightData(pointLights);
-
 			buildLights = false;
 		}
 
 		gbuffer->bindForReading();
 
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		DeferredPointLightTechnique::shader().setUniform(fragUnis::gPosition, GBuffer::GBufferTextureType::Position);
+		pointShader->setUniform("gPosition", GBuffer::GBufferTextureType::Position);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		DeferredPointLightTechnique::shader().setUniform(fragUnis::gNormal, GBuffer::GBufferTextureType::Normal_Material);
+		pointShader->setUniform("gNormal", GBuffer::GBufferTextureType::Normal_Material);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		DeferredPointLightTechnique::shader().setUniform(fragUnis::gColor, GBuffer::GBufferTextureType::Color_Specular);
+		pointShader->setUniform("gColor", GBuffer::GBufferTextureType::Color_Specular);
 
 
 		sphereMesh->bind();
@@ -240,8 +258,8 @@ public:
 			.isAxisLocked = false
 		};
 
-		DeferredPointLightTechnique::setModel(Model::modelMatrix(position, rotation, properties));
-		DeferredPointLightTechnique::setPointLightIndex(index);
+		pointShader->setUniform("model", Model::modelMatrix(position, rotation, properties));
+		pointShader->setUniform("pointLightIndex", index);
 		glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
 	}
 

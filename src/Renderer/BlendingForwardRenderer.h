@@ -5,38 +5,45 @@
 #include "OpenGL.h"
 
 #include "Renderer/DeferredRenderer.h"
-
 #include "Renderer/Buffers/AlphaBuffer.h"
-#include "Renderer/Techniques/BlendingTechnique.h"
-#include "Renderer/Techniques/BlendingCompositeTechnique.h"
 
 #include "API/Camera.h"
-
 #include "SceneTypedefs.h"
+#include "Scene/Scene.h"
 
-class BlendingForwardRenderer :
-	public BlendingTechnique, 
-	public BlendingCompositeTechnique {
+
+class BlendingForwardRenderer  {
 	using AlphaTexType = AlphaBuffer::AlphaBufferTextureType;
 
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
 	inline static Mesh* quadMesh;
+	
+	inline static std::unique_ptr<Shader> blendingShader;
+	inline static std::unique_ptr<Shader> compositeShader;
 		
 public:
 	static void initialize(uint screenWidth, uint screenHeight) {
 		alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
+
+		loadShaders();
+	}
+
+	static void loadShaders() {
+		blendingShader = std::make_unique<Shader>(
+			"resources/shaders/blending_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/blending_frag.glsl", GL_FRAGMENT_SHADER
+		);
+		compositeShader = std::make_unique<Shader>(
+			"resources/shaders/blending_composite_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/blending_composite_frag.glsl", GL_FRAGMENT_SHADER
+		);
 	}
 
 	static void rebuildAlphaBuffer(int width, int height) {
 		alphaBuffer.reset();
 		alphaBuffer = std::make_unique<AlphaBuffer>(width, height);
-	}
-	
-	static void reloadShaders() {
-		//BlendingTechnique::loadShader();
-		//BlendingCompositeTechnique::loadShader();
 	}
 
 	template<size_t SCENE_ID>
@@ -63,7 +70,7 @@ public:
 
 	template<size_t SCENE_ID>
 	static void blendingPass(Scene<SCENE_ID>& scene) {
-		BlendingTechnique::shader().use();
+		blendingShader->use();
 		
 		auto camera = scene.getActiveCamera();
 
@@ -89,15 +96,16 @@ public:
 
 		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, Position3D, Rotation3D>();
 
+		blendingShader->setUniform("inverseViewMat", glm::inverse(camera.viewMatrix())); // glsl inverse is not the same as glm inverse...
+		blendingShader->setUniform("view", camera.viewMatrix());
 
-		BlendingTechnique::setInverseViewMatrix(glm::inverse(camera.viewMatrix()));
-		BlendingTechnique::setView(camera.viewMatrix());
+		blendingShader->setUniform("textureLib", 0);
 		
 		alphaBuffer->clear();
 		alphaBuffer->bindForWriting();
 		
 		modelView.each([](const PropertiesModel&, const Properties3D& properties3D, const Meshes& meshes, const Position3D& position3D, const Rotation3D& rotation3D) {
-			BlendingTechnique::setModel(Model::modelMatrix(position3D, rotation3D, properties3D));
+			blendingShader->setUniform("model", Model::modelMatrix(position3D, rotation3D, properties3D));
 
 			for (auto mesh : meshes) {
 				mesh->bind();
@@ -110,7 +118,7 @@ public:
 	}
 
 	static void compositePass() {
-		BlendingCompositeTechnique::shader().use();
+		compositeShader->use();
 
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
@@ -120,9 +128,8 @@ public:
 
 		alphaBuffer->bindForReading();
 
-		alphaBuffer->bindTextureUnit(AlphaTexType::Accumulated);
-		alphaBuffer->bindTextureUnit(AlphaTexType::Alpha);
-		BlendingCompositeTechnique::setTextureUnits(AlphaTexType::Accumulated, AlphaTexType::Alpha);
+		compositeShader->setUniform("accum", AlphaTexType::Accumulated);
+		compositeShader->setUniform("reveal", AlphaTexType::Alpha);
 
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, quadMesh->indices.size(), GL_UNSIGNED_INT, nullptr);

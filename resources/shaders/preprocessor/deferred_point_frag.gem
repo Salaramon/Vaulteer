@@ -5,7 +5,7 @@ out vec4 FragColor;
 
 // imports
 ##[fragments/pointLightData] //! #include "fragments/pointLightData.gem"
-##[fragments/materialTable] //! #include "fragments/materialTable.gem"
+##[fragments/materialData] //! #include "fragments/materialData.gem"
 
 
 // constants
@@ -52,7 +52,7 @@ uniform float cubeMapFarPlanes[1];
 // uniforms
 
 uniform vec3 worldCameraPos;
-uniform mat4 cameraViewMat;
+uniform mat4 view;
 
 
 uniform vec3 fogColor;
@@ -238,7 +238,7 @@ void main() {
 
     // ------------- aggregation ------------
 
-    params.fragPosition = vec4(inverse(cameraViewMat) * vec4(positionSample, 1.0)).xyz;
+    params.fragPosition = vec4(inverse(view) * vec4(positionSample, 1.0)).xyz;
     
     params.fragNormal = normalSample.xyz;
     params.materialIndex = int(normalSample.w);
@@ -248,7 +248,7 @@ void main() {
 
     // --------------------------------------
 
-    /*Material mat = materialTable[1];
+    /*Material mat = materialData[1];
 
     switch (int(gl_FragCoord.y)) {
         case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
@@ -278,7 +278,7 @@ void main() {
     //FragColor = vec4(diffuse, 1.0);
     //return;
  
-    float fragDepth = abs((cameraViewMat * vec4(params.fragPosition, 1.0)).z);
+    float fragDepth = abs((view * vec4(params.fragPosition, 1.0)).z);
 
     // shadow calc
     

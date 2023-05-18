@@ -13,7 +13,6 @@
 
 
 class Shader {
-public:
 	// Parameter utility
 
 	template<class... Args>
@@ -29,7 +28,6 @@ public:
 
 	template<class TPath, class TType>
 	struct Parameter_Reader<TPath, TType> {
-	public:
 		Parameter_Reader(Shader* shader, TPath path, TType type) {
 			shader->loadShader(path, type);
 		}
@@ -40,23 +38,21 @@ public:
 		std::string path;
 		GLenum type;
 	};
-
-
+	
+public:
 	Shader() : shaderProgramID(-1), setUniform(this) {}
 
 
-	// Arguments are read in alternating std::string path, GLenum type
+	// Arguments are read in alternating fashion: std::string path, GLenum type
 	template<class ...Infos>
 	Shader(Infos ...infos) : setUniform(this) {
-
 		shaderProgramID = glCreateProgram();
-		
 		std::cout << std::format("Shader program created with id: {}", shaderProgramID) << std::endl;
 
+		// load shaders
 		Parameter_Reader<Infos...> reader(this, infos...);
 
-		bool ok = linkProgram();
-		if (ok)
+		if (bool ok = linkProgram())
 			populateUniformCache();
 		else __debugbreak();
 	}
@@ -83,17 +79,14 @@ public:
 
 	// API
 
-	void loadShader(std::string path, GLenum type);
-	void populateUniformCache();
-
-	//Runs the shader program.
 	void use() const;
 
 	GLuint getProgramID();
 
+	std::vector<std::string>& getShaderFileNames();
+
 	//Returns all shader files delimited with ';'
 	std::string getShaderDesc();
-	std::vector<std::string>& getShaderFileNames();
 
 private:
 	GLuint shaderProgramID;
@@ -101,6 +94,10 @@ private:
 	std::vector<GLuint> shaderIDs;
 	std::vector<std::string> shaderFileNames;
 
+	//Create and compile GL shader
+	void loadShader(std::string path, GLenum type);
+	//Load uniforms and UBOs from GL query API
+	void populateUniformCache();
 
 	//Assembles the shader program.
 	//Returns true on successful link.
@@ -134,7 +131,6 @@ private:
 
 	// uniform data API related
 
-
 	// struct is required for setting default values on lookup where uniforms get optimized away
 	struct ShaderIndex {
 		GLint loc = -1;
@@ -148,104 +144,104 @@ public:
 		UniformFunctor(Shader* shader) :
 			shader(shader) {}
 
-		void operator()(Binder::UniformInfo uniform, GLfloat value1) const {
-			glUniform1f(shader->uniformLocationCache[uniform.name], value1);
-			}
-		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2) const {
-			glUniform2f(shader->uniformLocationCache[uniform.name], value1, value2);
+		void operator()(const char* uniform, GLfloat value1) const {
+			glUniform1f(shader->uniformLocationCache[uniform], value1);
 		}
-		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3) const {
-			glUniform3f(shader->uniformLocationCache[uniform.name], value1, value2, value3);
+		void operator()(const char* uniform, GLfloat value1, GLfloat value2) const {
+			glUniform2f(shader->uniformLocationCache[uniform], value1, value2);
 		}
-		void operator()(Binder::UniformInfo uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) const {
-			glUniform4f(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
+		void operator()(const char* uniform, GLfloat value1, GLfloat value2, GLfloat value3) const {
+			glUniform3f(shader->uniformLocationCache[uniform], value1, value2, value3);
 		}
-		void operator()(Binder::UniformInfo uniform, GLint value1) const {
-			glUniform1i(shader->uniformLocationCache[uniform.name], value1);
+		void operator()(const char* uniform, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4) const {
+			glUniform4f(shader->uniformLocationCache[uniform], value1, value2, value3, value4);
 		}
-		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2) const {
-			glUniform2i(shader->uniformLocationCache[uniform.name], value1, value2);
+		void operator()(const char* uniform, GLint value1) const {
+			glUniform1i(shader->uniformLocationCache[uniform], value1);
 		}
-		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3) const {
-			glUniform3i(shader->uniformLocationCache[uniform.name], value1, value2, value3);
+		void operator()(const char* uniform, GLint value1, GLint value2) const {
+			glUniform2i(shader->uniformLocationCache[uniform], value1, value2);
 		}
-		void operator()(Binder::UniformInfo uniform, GLint value1, GLint value2, GLint value3, GLint value4) const {
-			glUniform4i(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
+		void operator()(const char* uniform, GLint value1, GLint value2, GLint value3) const {
+			glUniform3i(shader->uniformLocationCache[uniform], value1, value2, value3);
 		}
-		void operator()(Binder::UniformInfo uniform, GLuint value1) const {
-			glUniform1ui(shader->uniformLocationCache[uniform.name], value1);
+		void operator()(const char* uniform, GLint value1, GLint value2, GLint value3, GLint value4) const {
+			glUniform4i(shader->uniformLocationCache[uniform], value1, value2, value3, value4);
 		}
-		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2) const {
-			glUniform2ui(shader->uniformLocationCache[uniform.name], value1, value2);
+		void operator()(const char* uniform, GLuint value1) const {
+			glUniform1ui(shader->uniformLocationCache[uniform], value1);
 		}
-		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3) const {
-			glUniform3ui(shader->uniformLocationCache[uniform.name], value1, value2, value3);
+		void operator()(const char* uniform, GLuint value1, GLuint value2) const {
+			glUniform2ui(shader->uniformLocationCache[uniform], value1, value2);
 		}
-		void operator()(Binder::UniformInfo uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) const {
-			glUniform4ui(shader->uniformLocationCache[uniform.name], value1, value2, value3, value4);
+		void operator()(const char* uniform, GLuint value1, GLuint value2, GLuint value3) const {
+			glUniform3ui(shader->uniformLocationCache[uniform], value1, value2, value3);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec1& value) const {
-			glUniform1fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, GLuint value1, GLuint value2, GLuint value3, GLuint value4) const {
+			glUniform4ui(shader->uniformLocationCache[uniform], value1, value2, value3, value4);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec2& value) const {
-			glUniform2fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::vec1& value, GLsizei count = 1) const {
+			glUniform1fv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec3& value) const {
-			glUniform3fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::vec2& value, GLsizei count = 1) const {
+			glUniform2fv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::vec4& value) const {
-			glUniform4fv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::vec3& value, GLsizei count = 1) const {
+			glUniform3fv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec1& value) const {
-			glUniform1iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::vec4& value, GLsizei count = 1) const {
+			glUniform4fv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec2& value) const {
-			glUniform2iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::ivec1& value, GLsizei count = 1) const {
+			glUniform1iv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec3& value) const {
-			glUniform3iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::ivec2& value, GLsizei count = 1) const {
+			glUniform2iv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::ivec4& value) const {
-			glUniform4iv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::ivec3& value, GLsizei count = 1) const {
+			glUniform3iv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec1& value) const {
-			glUniform1uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::ivec4& value, GLsizei count = 1) const {
+			glUniform4iv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec2& value) const {
-			glUniform2uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::uvec1& value, GLsizei count = 1) const {
+			glUniform1uiv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec3& value) const {
-			glUniform3uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::uvec2& value, GLsizei count = 1) const {
+			glUniform2uiv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, const glm::uvec4& value) const {
-			glUniform4uiv(shader->uniformLocationCache[uniform.name], count, &value[0]);
+		void operator()(const char* uniform, const glm::uvec3& value, GLsizei count = 1) const {
+			glUniform3uiv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2& value) const {
-			glUniformMatrix2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::uvec4& value, GLsizei count = 1) const {
+			glUniform4uiv(shader->uniformLocationCache[uniform], count, &value[0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3& value) const {
-			glUniformMatrix3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat2& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix2fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4& value) const {
-			glUniformMatrix4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat3& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix3fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x3& value) const {
-			glUniformMatrix2x3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat4& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix4fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3x2& value) const {
-			glUniformMatrix3x2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat2x3& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix2x3fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat2x4& value) const {
-			glUniformMatrix2x4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat3x2& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix3x2fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4x2& value) const {
-			glUniformMatrix4x2fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat2x4& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix2x4fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat3x4& value) const {
-			glUniformMatrix3x4fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat4x2& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix4x2fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
-		void operator()(Binder::UniformInfo uniform, GLsizei count, GLboolean transpose, const glm::mat4x3& value) const {
-			glUniformMatrix4x3fv(shader->uniformLocationCache[uniform.name], count, transpose, &value[0][0]);
+		void operator()(const char* uniform, const glm::mat3x4& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix3x4fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
+		}
+		void operator()(const char* uniform, const glm::mat4x3& value, GLboolean transpose = GL_FALSE, GLsizei count = 1) const {
+			glUniformMatrix4x3fv(shader->uniformLocationCache[uniform], count, transpose, &value[0][0]);
 		}
 	private:
 		Shader* shader;

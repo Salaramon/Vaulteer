@@ -8,9 +8,10 @@ struct Material {
     vec4 colorSpecular;
     float shininess;
     float opacity;
-    vec2 pad; // for alignment to 16
+    int textureId;
+    int pad; // for alignment to 16
 };
 
-layout(shared, binding = 2) uniform MaterialData {
+layout(shared, binding = 3) uniform MaterialData {
     uniform Material materialTable[MAX_MATERIALS];
 };

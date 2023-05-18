@@ -9,20 +9,29 @@
 #include "Renderer/DeferredRenderer.h"
 
 #include "Renderer/Buffers/AlphaBuffer.h"
-#include "Renderer/Techniques/ShadowVolumeTechnique.h"
 
 #include "API/Camera.h"
+#include "Scene/Scene.h"
 
 
-class ShadowVolumeRenderer :
-	public ShadowVolumeTechnique {
+class ShadowVolumeRenderer {
 	inline static std::unique_ptr<FrameBuffer> frameBuffer;
 	inline static Mesh* quad;
 
+	inline static std::unique_ptr<Shader> shader;
+
 public:
-	static void initialize(uint screenWidth, uint screenHeight);
+	static void initialize() {
+		shader = std::make_unique<Shader>(
+			"resources/shaders/volume_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/volume_geom.glsl", GL_GEOMETRY_SHADER,
+			"resources/shaders/volume_frag.glsl", GL_FRAGMENT_SHADER
+		);
+	}
 	
-	static void reloadShaders();
+	static void reloadShaders() {
+		
+	}
 
 	template<auto SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
@@ -31,7 +40,6 @@ public:
 		auto* camera = (*cameraBeginIt).get();
 
 		blendingPass(scene, camera);
-
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		//drawShadowVolumes();
@@ -41,7 +49,7 @@ public:
 
 	template<size_t SCENE_ID>
 	static void blendingPass(Scene<SCENE_ID>& scene, Camera* camera) {
-		ShadowVolumeTechnique::shader.use();
+		shader->use();
 
 		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
 		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {

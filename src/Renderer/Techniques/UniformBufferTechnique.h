@@ -12,30 +12,56 @@
 
 class UniformBufferTechnique {
 public:
-	struct UniformBlock {
-		std::string name;
-		GLuint binding;
-		GLsizei size;
-
-		GLuint programSource;
-	};
-
-	inline static std::unordered_map<std::string, UniformBlock> uniformBufferCache;
+	inline static std::unordered_map<std::string, UniformBlock> uniformBlockCache;
 	inline static std::unordered_map<GLuint, UniformBlock*> conflicts;
 
-	inline static std::vector<std::unique_ptr<UniformBuffer>> buffers;
+	inline static std::unordered_map<GLint, std::unique_ptr<UniformBuffer>> buffers;
 
 	static GLuint binding(const std::string& name) {
-		auto it = uniformBufferCache.find(name);
-		if (it != uniformBufferCache.end()) {
+		auto it = uniformBlockCache.find(name);
+		if (it != uniformBlockCache.end()) {
 			return it->second.binding;
 		}
 		return -1;
 	}
 
 	static void put(const GLuint shaderProgram, const std::string& name, const UniformBlock& block) {
-		auto it = uniformBufferCache.find(name);
-		if (it != uniformBufferCache.end()) {
+		if (discoverConflicts(shaderProgram, name, block))
+			return;
+
+		uniformBlockCache.emplace(name, block);
+		buffers.emplace(block.binding, std::make_unique<UniformBuffer>(block));
+	}
+
+	
+	static void uploadCameraProjection(const glm::mat4& projection) {
+		buffers.at(binding("Camera"))->insert(projection);
+	}
+	
+	static void uploadMaterialData() {
+		buffers.at(binding("MaterialData"))->insert(MaterialLibrary::getMaterialData());
+ 	}
+
+	static void uploadTextureData() {
+		buffers.at(binding("TextureData"))->insert(TextureLibrary::getTextureData());
+	}
+
+	static void uploadTextureViewData() {
+		buffers.at(binding("TextureViewData"))->insert(TextureLibrary::getTextureViewData());
+ 	}
+	
+	static void uploadDirectionalLightData(const std::vector<DirectionalLight>& dirLights) {
+		buffers.at(binding("DirectionalLightData"))->insert(dirLights);
+	}
+	
+	static void uploadPointLightData(const std::vector<PointLight>& pointLights) {
+		buffers.at(binding("PointLightData"))->insert(pointLights);
+	}
+
+
+	static bool discoverConflicts(const GLuint shaderProgram, const std::string& name, const UniformBlock& block) {
+		auto it = uniformBlockCache.find(name);
+		if (it != uniformBlockCache.end()) {
 			if (block.binding != it->second.binding) {
 				conflicts[block.binding] = &it->second;
 
@@ -46,36 +72,22 @@ public:
 				) << std::endl;
 				__debugbreak();
 			}
-			return;
+			return true;
 		}
+		auto bufIt = buffers.find(block.binding);
+		if (bufIt != buffers.end() && block.name.compare(buffers[block.binding]->name) != 0) {
+			auto conflicting = buffers[block.binding].get();
 
-		uniformBufferCache.emplace(name, block);
-		buffers.emplace_back(std::make_unique<UniformBuffer>(block.binding, block.size));
-	}
+			std::cout << std::format("conflict in UBO definitions - {} (binding {}) already bound for {} (binding {}), currently reading program {}",
+				block.name, block.binding,
+				conflicting->name, conflicting->binding,
+				shaderProgram
+			) << std::endl;
+			__debugbreak();
 
-	
-	static void uploadCameraProjection(const glm::mat4& projection) {
-		buffers.at(binding("Camera"))->insert(projection);
-	}
-	
-	static void uploadMaterialData() {
-		buffers.at(binding("MaterialData"))->insert(MaterialLibrary::getMaterialData());
-	}
-
-	static void uploadTextureData() {
-		buffers.at(binding("TextureData"))->insert(TextureLibrary::getTextureData());
-	}
-
-	static void uploadTextureViewData() {
-		buffers.at(binding("TextureViewData"))->insert(TextureLibrary::getTextureViewData());
-	}
-	
-	static void uploadDirectionalLightData(const std::vector<DirectionalLight>& dirLights) {
-		buffers.at(binding("DirectionalLightData"))->insert(dirLights);
-	}
-	
-	static void uploadPointLightData(const std::vector<PointLight>& pointLights) {
-		buffers.at(binding("PointLightData"))->insert(pointLights);
+			return true;
+		}
+		return false;
 	}
 
 };

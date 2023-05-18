@@ -27,7 +27,7 @@ struct UBSpotLight {
     mat4 lightSpaceMatrix;
 };
 
-layout(shared, binding = 5) uniform SpotLightData {
+layout(shared, binding = 6) uniform SpotLightData {
     uniform UBSpotLight spotLightTable[MAX_SPOT_LIGHTS];
 };
 

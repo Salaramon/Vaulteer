@@ -9,7 +9,7 @@ layout(location = 5) in int aMaterialNumber;
 out VS_OUT {
     vec3 fragPosition;
     vec3 fragNormal;
-    vec2 TexCoords;
+    vec2 texCoords;
     flat int materialNumber;
 } vs_out;
 
@@ -24,7 +24,7 @@ layout (std140, binding = 0) uniform Camera {
 void main() {   
     vs_out.fragPosition = (view * model * vec4(aPos, 1.0)).xyz;
     vs_out.fragNormal = (normal * vec4(aNormal, 0.0)).xyz;
-    vs_out.TexCoords = aTexCoords;
+    vs_out.texCoords = aTexCoords;
     vs_out.materialNumber = aMaterialNumber;
        
     gl_Position = projection * view * model * vec4(aPos, 1.0);

@@ -16,7 +16,7 @@ in VS_OUT {
 } fs_in;
 
 
-struct TextureViewData {
+struct TextureView {
     int xDelta;
     int yDelta;
     int wDelta;
@@ -24,8 +24,8 @@ struct TextureViewData {
     int layerDelta;
 };
 
-layout(shared, binding = 1) uniform TextureViewTables {
-    uniform TextureViewData viewTable[384];
+layout(shared, binding = 1) uniform TextureViewData {
+    uniform TextureView viewTable[384];
 };
 
 

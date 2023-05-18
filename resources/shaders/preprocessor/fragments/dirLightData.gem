@@ -13,7 +13,7 @@ struct UBDirectionalLight {
     vec3 direction;
 };
 
-layout(shared, binding = 3) uniform DirectionalLightData {
+layout(shared, binding = 4) uniform DirectionalLightData {
     uniform UBDirectionalLight directionalLight;
 };
 

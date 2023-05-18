@@ -13,8 +13,8 @@ class WorldLayer : public Layer {
 public:
 	WorldLayer() : Layer("WorldLayer") {}
 	~WorldLayer() override = default;
-
-private:
+	
+public:
 	Camera camera;
 	CameraController cameraController;
 
@@ -27,9 +27,8 @@ private:
 	//StaticScene<Model<ModelData>> staticScene;
 	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
 	//StaticScene<TransparentModel> transparentScene;
-	
-	Renderer<ForwardRenderer> renderer; // render todo
-	//Renderer<DeferredRenderer, BlendingForwardRenderer> renderer; // render my nuts
+
+	Renderer<ForwardRenderer> renderer; // render todo revert back to usual pipeline once fixed
 
 public:
 	void onAttach() override {
@@ -106,6 +105,11 @@ public:
 		transparentScene.finalize();
 		*/
 
+		
+		UniformBufferTechnique::uploadMaterialData();
+		UniformBufferTechnique::uploadTextureData();
+ 		UniformBufferTechnique::uploadTextureViewData();
+
 		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
 	}
 
@@ -116,19 +120,10 @@ public:
 		renderer.render(scene);
 	}
 
-	bool onKeyboardButtonEvent(KeyboardButtonEvent& e) {
-		if (e.button.key == KeyboardKey::T && e.button.action == KeyAction::PRESS) {
-			renderer.reloadShaders();
-			return true;
-		}
-		return false;
-	}
-
 	void onEvent(BaseEvent& e) override {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
-		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 	}
 };
 
