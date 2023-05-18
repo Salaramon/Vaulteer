@@ -35,7 +35,7 @@ public:
 		Window& window = Application::getWindow();
 
 		auto setAspectRatio = [this](int w, int h) {
-			camera.propertiesCamera.aspectRatio = (float)h / w;
+			camera.propertiesCamera.aspectRatio = (float)w / h;
 		};
  		Window::addResizeCallback(setAspectRatio);
 		
@@ -61,6 +61,7 @@ public:
 		scene.add(camera);
 
 
+		// TODO model.atPosition() or something
 		Model palm = Model(pack.getMeshes("palm"));
 		Model crate = Model(pack.getMeshes("crate"));
 		loadedModels.push_back(std::move(palm));
