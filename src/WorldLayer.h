@@ -35,6 +35,7 @@ public:
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
 
+		//ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
@@ -57,6 +58,8 @@ public:
 		Model& crate1 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+
+		//palm.add<Transparent>();
 
 		palm.setPosition(glm::vec3(0, 0, -5));
 		crate1.setPosition(glm::vec3(5, 0, 0));

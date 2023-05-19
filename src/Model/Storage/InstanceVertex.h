@@ -3,11 +3,11 @@
 #include "Vertex.h"
 #include "BufferLayout.h"
 
+#include <glm/glm.hpp>
+
 class InstanceVertex : Vertex {
 public:
-	InstanceVertex(glm::mat4 instanceMat = glm::mat4(1.0)) : InstanceVertex(glm::vec3(0.0), instanceMat) {}
-
-	InstanceVertex(glm::vec3 point, glm::mat4 instanceMat = glm::mat4(1.0)) : aInstanceMat(instanceMat) {}
+	InstanceVertex(glm::mat4 instanceMat = glm::mat4(1.0)) : aInstanceMat(instanceMat) {}
 
 	glm::mat4 aInstanceMat;
 

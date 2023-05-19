@@ -138,14 +138,14 @@ enum class MouseKey {
 };
 
 enum class KeyAction {
-	RELEASE = 0,
-	PRESS = 1,
-	REPEAT = 2,
+	RELEASE,
+	PRESS,
+	REPEAT,
 };
 
 enum class KeyState {
-	UP = 0,
-	DOWN = 1
+	UP, 
+	DOWN, 
 };
 
 

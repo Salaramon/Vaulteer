@@ -93,8 +93,7 @@ public:
 	CameraReference(const CameraTuple& tuple) :
 		propertiesCamera(&std::get<0>(tuple)), position(&std::get<1>(tuple)), rotation(&std::get<2>(tuple)), properties3D(&std::get<3>(tuple)) {}
 
-	CameraReference(const CameraReference& other) :
-		propertiesCamera(other.propertiesCamera), position(other.position), rotation(other.rotation), properties3D(other.properties3D) {}
+	CameraReference(const CameraReference& other) = default;
 
 	glm::mat4 viewMatrix() const {
 		return Object3D::viewMatrix(*position, *rotation);

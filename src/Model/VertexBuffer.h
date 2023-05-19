@@ -6,9 +6,6 @@
 #include "Model/Storage/Vertex.h"
 #include "Model/Storage/BufferLayout.h"
 
-template<class T>
-concept vertex_concept = std::is_base_of_v<Vertex, T>;
-
 class VertexBuffer : public ArrayBuffer {
 public:
 	operator GLuint() const { return buffer; }
@@ -34,13 +31,15 @@ public:
 		glVertexArrayVertexBuffer(vao, bindIndex, buffer, 0, getFormat().getStride());
 	}
 
-	template<vertex_concept T>
+	template<class T>
 	void insert(const std::vector<T>& vertices) const {
+		static_assert(std::is_base_of_v<Vertex, T>, "Cannot insert non-vertex type into vertex buffer.");
 		glNamedBufferData(buffer, vertices.size() * format.getStride(), vertices.data(), GL_STATIC_DRAW);
 	}
 	
-	template<vertex_concept T>
+	template<class T>
 	void insertPartial(size_t position, const std::vector<T>& vertices) const {
+		static_assert(std::is_base_of_v<Vertex, T>, "Cannot insert non-vertex type into vertex buffer.");
 		glNamedBufferSubData(buffer, position * format.getStride(), vertices.size() * format.getStride(), vertices.data());
 	}
 

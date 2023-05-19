@@ -33,11 +33,11 @@ void Application::init() {
 	};
 	window->addResizeCallback(rebuildGBufferFn);
 
+	// Do any implementation specific setup here
 	setup();
 }
 
 size_t Application::run() {
-
 	while (isRunning) {
 		Event::poll();
 
@@ -51,6 +51,8 @@ size_t Application::run() {
 
 		isRunning = window->onUpdate();
 	}
+
+	// to note: this method can return anything else to reinitalize window and game state
 	return 0;
 }
 

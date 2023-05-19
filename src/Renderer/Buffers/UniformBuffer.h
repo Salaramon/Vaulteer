@@ -55,6 +55,16 @@ public:
 		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
 	}
 
+	template<class T>
+	void insertAt(const T& data, int index) {
+		GLsizei dataSize = sizeof(data);
+
+		assert(index * dataSize + dataSize <= size);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
+		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
+	}
+
 	UniformBuffer(UniformBuffer& other) = delete;
 	UniformBuffer(const UniformBuffer& other) = delete;
 	UniformBuffer(const UniformBuffer&& other) = delete;

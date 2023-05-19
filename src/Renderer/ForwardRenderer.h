@@ -14,8 +14,8 @@ class ForwardRenderer {
 	inline static std::unique_ptr<Shader> shader;
 
 public:
-	static void initialize(const ResourcePack& pack) {
-		textureID = pack.getTextureID();
+	static void initialize(const GLint textureId) {
+		ForwardRenderer::textureID = textureId;
 		loadShaders();
 	}
 

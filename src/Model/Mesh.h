@@ -14,7 +14,7 @@
 class VertexContainer {
 public:
 	template<vertex_concept T>
-	VertexContainer(T t) : vertexType(typeid(T)), format(T::getFormat()) {}
+	VertexContainer(T) : vertexType(typeid(T)), format(T::getFormat()) {}
 
 	template<vertex_concept T>
 	VertexContainer(std::vector<T> vertices) : vertexType(typeid(T)), format(T::getFormat()) {
@@ -73,11 +73,12 @@ private:
 
 class Mesh {
 public:
-	template<vertex_concept T>
+	template<class T>
 	Mesh(std::vector<T> vertices, std::vector<GLuint>& indices, Material* material) :
 		vertexContainer(vertices),
 		indices(indices),
 		material(material) {
+		static_assert(std::is_base_of_v<Vertex, T>, "Cannot create mesh of non-vertices.");
 
 		vertexBuffer = vertexArray.createVertexBuffer(T::getFormat(), vertexContainer.data(), vertexContainer.size());
 		indexBuffer = vertexArray.createIndexBuffer(this->indices);
@@ -93,7 +94,7 @@ public:
 		vertexBuffer(other.vertexBuffer),
 		indexBuffer(other.indexBuffer) {}
 
-	~Mesh() {}
+	~Mesh() = default;
 
 	void bind() {
 		vertexArray.bind();
@@ -106,8 +107,9 @@ public:
 		vertexBuffer->insert(vertexContainer.data(), vertexContainer.size());
 	}
 
-	template<vertex_concept T>
+	template<class T>
 	std::vector<T> getCopiedData() {
+		static_assert(std::is_base_of_v<Vertex, T>, "Cannot copy out vertices to non-vertex type.");
 		T* arr = (T*) vertexContainer.data();
 		return std::vector<T>(arr, arr + vertexContainer.size());
 	}

@@ -6,7 +6,6 @@
 
 
 int main() {
-	//Vaulteer application("resourceFolder?");
 	ApplicationSpecification spec = { "Vaulteer window" };
 	Vaulteer application = Vaulteer(spec);
 	size_t gameFlags = 1;
