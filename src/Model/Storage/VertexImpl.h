@@ -22,10 +22,6 @@ public:
 	static BufferLayout& getFormat() {
 		return format;
 	}
-
-	static BufferLayout& getNonInstancedFormat() {
-		return nonInstancedFormat;
-	}
 	
 private:
 	inline static BufferLayout format = {
@@ -35,16 +31,6 @@ private:
 		{ "aTangent", ShaderDataType::Float3 },
 		{ "aBitangent", ShaderDataType::Float3 },
 		{ "aMaterialNumber", ShaderDataType::Int, 1 } // instanced
-	};
-
-	// used by batch
-	inline static BufferLayout nonInstancedFormat = {
-		{ "aPos", ShaderDataType::Float3 },
-		{ "aNormal", ShaderDataType::Float3 },
-		{ "aTexCoords", ShaderDataType::Float2 },
-		{ "aTangent", ShaderDataType::Float3 },
-		{ "aBitangent", ShaderDataType::Float3 },
-		{ "aMaterialNumber", ShaderDataType::Int }
 	};
 };
 

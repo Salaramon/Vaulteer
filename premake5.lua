@@ -34,33 +34,33 @@ project "Vaulteer"
 		"src/**",
 		"resources/**",
 		"vendor/GEM/GEM.h",
-		"vendor/GLSLCPPBinder/GLSLCPPBinder.h",
 		"vendor/GLAD/src/**.c",
+	}
+
+	removefiles { 
+		"resources/shaders/build/**"
 	}
 
 	includedirs {
 		"%{wks.location}/src",
 		"%{wks.location}/vendor/ASSIMP/include",
-		--"%{wks.location}/vendor/DebugYourself/include",
+		"%{wks.location}/vendor/entt",
 		"%{wks.location}/vendor/GEM/include",
 		"%{wks.location}/vendor/GLAD/include",
 		"%{wks.location}/vendor/GLFW/include",
 		"%{wks.location}/vendor/GLM/include",
-		"%{wks.location}/vendor/GLSLCPPBinder",
 		"%{wks.location}/vendor/miniball/include",
 		"%{wks.location}/vendor/rectpack2D/include",
 		"%{wks.location}/vendor/sqlite/include",
 		"%{wks.location}/vendor/stb_image",
 		"%{wks.location}/vendor/tomlplusplus-2.4.0/include",
-		"%{wks.location}/vendor/entt"
 	}
 
 	libdirs {
 		"%{wks.location}/vendor/ASSIMP/lib/%{cfg.buildcfg}",
-		--"%{wks.location}/vendor/DebugYourself/lib/%{cfg.buildcfg}",
 		"%{wks.location}/vendor/GEM/lib/%{cfg.buildcfg}",
-		"%{wks.location}/vendor/sqlite/lib/",
 		"%{wks.location}/vendor/GLFW/lib/",
+		"%{wks.location}/vendor/sqlite/lib/",
 	}
 
 	links {

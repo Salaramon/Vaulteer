@@ -19,9 +19,6 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{B95BBC0E-A555-E560-8EC2-7B717A5B4BCD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\shaders\build">
-      <UniqueIdentifier>{B84EFC34-A409-ECE0-4DC1-642B395B3671}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\shaders\preprocessor">
       <UniqueIdentifier>{6F6F1739-DB28-82E3-6488-9CBDD0403853}</UniqueIdentifier>
     </Filter>
@@ -81,9 +78,6 @@
     </Filter>
     <Filter Include="Vendor Files\GLAD\src">
       <UniqueIdentifier>{C41C54DF-3089-0FDA-F97C-A73765A83142}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor Files\GLSLCPPBinder">
-      <UniqueIdentifier>{3E7F7E7C-2A8F-2A4D-9348-8F6B7F7719E6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +171,13 @@
     <ClInclude Include="src\Model\Storage\Vertex.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Storage\VertexContainer.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Storage\VertexHash.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\VertexImpl.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Textures\CubemapTexture.h">
@@ -309,9 +309,6 @@
     <ClInclude Include="vendor\GEM\GEM.h">
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h">
-      <Filter>Vendor Files\GLSLCPPBinder</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -349,9 +346,6 @@
     </ClCompile>
     <ClCompile Include="src\Program.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Batch.cpp">
-      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\BatchManager.cpp">
       <Filter>Source Files\Renderer</Filter>
@@ -459,24 +453,6 @@
     </None>
     <None Include="resources\shaders\blending_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="resources\shaders\build\deferred_directional_frag.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
-    </None>
-    <None Include="resources\shaders\build\deferred_point_frag.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
-    </None>
-    <None Include="resources\shaders\build\deferred_point_vertex.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
-    </None>
-    <None Include="resources\shaders\build\forward_frag.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
-    </None>
-    <None Include="resources\shaders\build\geometry_frag.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
-    </None>
-    <None Include="resources\shaders\build\geometry_vertex.glsl">
-      <Filter>Resource Files\shaders\build</Filter>
     </None>
     <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
