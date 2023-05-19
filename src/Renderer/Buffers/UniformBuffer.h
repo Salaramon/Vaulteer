@@ -43,7 +43,7 @@ public:
 		
 		assert(dataSize <= size);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
+ 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
 		glNamedBufferData(buffer, std::min(size, dataSize), data.data(), drawHint);
 	}
 

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <GEM.h>
+#include <glad/glad.h>
+#include <glfw3.h>
+#include <glm/glm.hpp>
 
 #include "OpenGL.h"
 
@@ -45,19 +48,20 @@ private:
 	inline static std::unique_ptr<Shader> pointShader;
 	inline static std::unique_ptr<Shader> dirShader;
 
+	inline static GLint textureLibraryId;
+
 public:
-	static void initialize(uint screenWidth, uint screenHeight) {
+	static void initialize(GLint textureId, uint screenWidth, uint screenHeight) {
+		textureLibraryId = textureId;
 		gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 		sphereMesh = ResourceLoader::importModel("resources/sphere-hd.obj")[0];
 		coneMesh = ResourceLoader::importModel("resources/cone.obj")[0];
 
-		//sphere = std::make_unique<Model<ModelData>>(*sphereData);
 		//sphereRadius = 0.45f; // sphere.obj
 		sphereRadius = 5.93f; // sphere-hd.obj
 
-		//cone = std::make_unique<Model<ModelData>>(*coneData);
 		coneLength = 1.0f;
 		coneRadius = 1.0f;
 		coneDirection = glm::vec3(.0f, 1.0f, .0f);
@@ -70,9 +74,12 @@ public:
 
 		gem::Shader<gem::geometry_vertex> gvert;
 		gvert.compile();
+		gem::Shader<gem::geometry_frag> gf;
+		gf.setgeometry_frag_materialData(maxMaterials);
+		gf.compile();
 		geometryShader = std::make_unique<Shader>(
 			"resources/shaders/build/geometry_vertex.glsl", GL_VERTEX_SHADER, 
-			"resources/shaders/geometry_frag.glsl", GL_FRAGMENT_SHADER
+			"resources/shaders/build/geometry_frag.glsl", GL_FRAGMENT_SHADER
 		);
 
 		gem::Shader<gem::deferred_point_vertex> dpvert;
@@ -124,33 +131,27 @@ public:
 		OpenGL::disableDepthTest();
 		OpenGL::enableBlending();
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
-
+		
 		directionalLightPass(camera);
-
 		OpenGL::enableCullFace(OpenGL::FRONT);
-
+		
 		lightingPass(camera);
-
+		
 		OpenGL::disableBlending();
 		OpenGL::disableCullFace();
 	}
 
 	static void geometryPass(const CameraReference& camera) {
-		/*
-			Will be replaced by a runtime binder functionality
-		*/
 		geometryShader->use();
-
-		glm::mat4 viewMatrix = camera.viewMatrix();
-
+		
 		GLint texUnit = 0;
+		glBindTextureUnit(texUnit, textureLibraryId);
 		geometryShader->setUniform("textureLib", texUnit);
 
 		gbuffer->clear();
 		gbuffer->bindForWriting();
 
-		//TODO clean up model?
-		geometryShader->setUniform("modelView", viewMatrix); // disregard model since everything is batched
+		geometryShader->setUniform("modelView", camera.viewMatrix()); // disregard model since everything is batched
 		geometryShader->setUniform("model", glm::mat4(1.0));
 		geometryShader->setUniform("normal", glm::mat4(1.0));
 
@@ -169,29 +170,29 @@ public:
 	}
 
 	static void directionalLightPass(const CameraReference& camera) {
-		/*
-			Will be replaced by a runtime binder functionality
-		*/
 		dirShader->use();
-		glm::vec3 lightDir = glm::normalize(glm::vec3(sinf(glfwGetTime()), -1.0f, cosf(glfwGetTime())));
 
-	
 		dirShader->setUniform("worldCameraPos", *camera.position);
-		dirShader->setUniform("view", camera.viewMatrix());  // TODO removed cameraViewMat in frag, see if this works for both vert/frag shaders
+		dirShader->setUniform("view", camera.viewMatrix());
+
+		/*auto pos = camera.position;
+		auto rot = camera.rotation;
+		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);*/
 
 		if (buildLights) {
 			std::vector<DirectionalLight> dirLights = {
-				{{glm::vec3(1.0f), 0.03f, 1.0f}, lightDir}
+				{{glm::vec3(1.0, 0.0, 0.0), 0.03f, 1.0f}, glm::vec3(0.0, -1.0, 0.0)}
 			}; // TODO get from scene :3
 
 			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
 		}
+		
+		/*auto pos2 = camera.position;
+		auto rot2 = camera.rotation;
+		auto view2 = Object3D::viewMatrix(*camera.position, *camera.rotation);*/
 
 		gbuffer->bindForReading();
 
-		/*
-			Will be replaced by a runtime binder functionality
-		*/
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
 		dirShader->setUniform("gPosition", GBuffer::GBufferTextureType::Position);
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
@@ -207,22 +208,20 @@ public:
 	}
 
 	static void lightingPass(const CameraReference& camera) {
-		/*
-			Will be replaced by a runtime binder functionality
-		*/
 		pointShader->use();
 
-		glm::mat4 viewMatrix = camera.viewMatrix();
+		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);
 
 		pointShader->setUniform("worldCameraPos", *camera.position);
-		pointShader->setUniform("view", camera.viewMatrix()); // TODO removed cameraViewMat in frag, see if this works for both vert/frag shaders
+		pointShader->setUniform("view", view);
 
 		if (buildLights) {
-			BaseLight whiteLight = { glm::vec3(1.0f), 0.1f, 1.0f };
+			BaseLight greenLight = { glm::vec3(0,1,0), 0.1f, 1.0f };
+			BaseLight blueLight = { glm::vec3(0,0,1), 0.1f, 1.0f };
 			Attenuation att = { 1.0f, 0.15f, 0.042f };
 
-			pointLights.emplace_back(att, whiteLight, glm::vec3(20, 2, 0));
-			pointLights.emplace_back(att, whiteLight, glm::vec3(0, 2, 20));
+			pointLights.emplace_back(att, greenLight, glm::vec3(20, 2, 0));
+			pointLights.emplace_back(att, blueLight, glm::vec3(0, 2, 20));
 
 			UniformBufferTechnique::uploadPointLightData(pointLights);
 			buildLights = false;
@@ -241,26 +240,14 @@ public:
 		sphereMesh->bind();
 		int i = 0;
 		for (auto& light : pointLights) {
-			singleLightVolumePass(light, i++);
+			pointShader->setUniform("model", Model::modelMatrix(light.position, glm::vec3(0.f), glm::vec3(light.calculatePointRadius() / sphereRadius)));
+			pointShader->setUniform("pointLightIndex", i++);
+			glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
 		}
 		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
 		sphereMesh->unbind();
 
 		gbuffer->unbind();
-	}
-
-	static void singleLightVolumePass(const PointLight& light, const int index) {
-		Position3D position(light.position);
-		Rotation3D rotation(glm::vec3(1.f));
-		Properties3D properties {
-			.scale = glm::vec3(light.calculatePointRadius() / sphereRadius),
-			.axisLockDirection = glm::vec3(1.f),
-			.isAxisLocked = false
-		};
-
-		pointShader->setUniform("model", Model::modelMatrix(position, rotation, properties));
-		pointShader->setUniform("pointLightIndex", index);
-		glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
 	}
 
 	// Utility functions

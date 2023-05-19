@@ -14,16 +14,16 @@ struct SpotLight {
 };
 
 struct UBSpotLight {
-    vec3 color;
-    float ambientIntensity;
+    vec4 color;
+    //float ambientIntensity;
     float diffuseIntensity;
     float aConstant;
     float aLinear;
     float aQuadratic;
-    vec3 position;
-    float radius;
-    vec3 direction;
-    float angle;
+    vec4 position;
+    //float radius;
+    vec4 direction;
+    //float angle;
     mat4 lightSpaceMatrix;
 };
 
@@ -34,15 +34,16 @@ layout(shared, binding = 6) uniform SpotLightData {
 SpotLight getSpotLight(int spotLightIndex) {
     UBSpotLight ubl = spotLightTable[spotLightIndex];
     SpotLight l;
-    l.light.color = ubl.color;
-    l.light.ambientIntensity = ubl.ambientIntensity;
+    l.light.color = ubl.color.xyz;
+    l.light.ambientIntensity = ubl.color.w;
     l.light.diffuseIntensity = ubl.diffuseIntensity;
     l.att.aConstant = ubl.aConstant;
     l.att.aLinear = ubl.aLinear;
     l.att.aQuadratic = ubl.aQuadratic;
-    l.position = ubl.position;
-    l.radius = ubl.radius;
-    l.direction = ubl.direction;
-    l.angle = ubl.angle;
+    l.position = ubl.position.xyz;
+    l.radius = ubl.position.w;
+    l.direction = ubl.direction.xyz;
+    l.angle = ubl.direction.w;
+    l.lightSpaceMatrix = ubl.lightSpaceMatrix;
     return l;
 }

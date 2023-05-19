@@ -281,26 +281,6 @@ void main() {
     float fragDepth = abs((view * vec4(params.fragPosition, 1.0)).z);
 
     // shadow calc
-    
-    /*int cascadeIndex = 0;
-    for (int i = 0; i < NUM_CASCADES; i++) {
-        if (fragDepth < cascadeFarPlanes[i]) {
-            cascadeIndex = i;
-            break;
-        }
-        cascadeIndex = NUM_CASCADES; 
-    }
-
-    float dirLightShadow = cascadeIndex > -1 ? 
-            calcShadow(fragPosition, fragNormal, lightSpaceMatrices[cascadeIndex], getShadowMap(cascadeIndex), directionalLight.direction, cascadeFarPlanes[cascadeIndex]) :
-            0.0; 
-
-    float dirLightShadowFactor = (1.0 - dirLightShadow / 1.5);*/
-
-    float dirLightShadow = 0.0;
-    float dirLightShadowFactor = 1.0;
-
-    // light calc
 
     float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
     

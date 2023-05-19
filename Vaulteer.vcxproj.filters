@@ -469,6 +469,12 @@
     <None Include="resources\shaders\build\deferred_point_vertex.glsl">
       <Filter>Resource Files\shaders\build</Filter>
     </None>
+    <None Include="resources\shaders\build\forward_frag.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
+    </None>
+    <None Include="resources\shaders\build\geometry_frag.glsl">
+      <Filter>Resource Files\shaders\build</Filter>
+    </None>
     <None Include="resources\shaders\build\geometry_vertex.glsl">
       <Filter>Resource Files\shaders\build</Filter>
     </None>
@@ -487,9 +493,6 @@
     <None Include="resources\shaders\forward_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\geometry_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
@@ -502,10 +505,16 @@
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\forward_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\fragments\materialData.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem">
@@ -514,8 +523,14 @@
     <None Include="resources\shaders\preprocessor\fragments\spotLightData.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\fragments\textureData.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
     <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\geometry_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\geometry_vertex.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
@@ -562,9 +577,6 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\shaders\preprocessor\fragments\textureData.gem" />
-    <None Include="resources\shaders\preprocessor\forward_frag.gem" />
-    <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

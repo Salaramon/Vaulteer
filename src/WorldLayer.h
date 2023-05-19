@@ -14,23 +14,17 @@ public:
 	WorldLayer() : Layer("WorldLayer") {}
 	~WorldLayer() override = default;
 	
-public:
 	Camera camera;
 	CameraController cameraController;
 
-	std::vector<Model> loadedModels;
+	std::vector<std::unique_ptr<Model>> loadedModels;
 
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
 	Scene<scene_0> scene;
 
-	//StaticScene<Model<ModelData>> staticScene;
-	//StaticScene<OpaqueModel, Model<LineData>> opaqueScene;
-	//StaticScene<TransparentModel> transparentScene;
+	Renderer<DeferredRenderer> renderer; // render todo revert back to usual pipeline once fixed
 
-	Renderer<ForwardRenderer> renderer; // render todo revert back to usual pipeline once fixed
-
-public:
 	void onAttach() override {
 		Window& window = Application::getWindow();
 
@@ -40,10 +34,9 @@ public:
  		Window::addResizeCallback(setAspectRatio);
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
-		ForwardRenderer::initialize(pack);
 
-		//DeferredRenderer::initialize(Window::getWidth(), Window::getHeight());
-		//BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		
 		camera.enableAxisLock();
@@ -56,22 +49,29 @@ public:
 
 		cameraController.setCamera(&camera);
 
-		scene.activeCamera = camera.entity_id;
-
+		scene.activeCamera = &camera;
 		scene.add(camera);
 
 
-		// TODO model.atPosition() or something
-		Model palm = Model(pack.getMeshes("palm"));
-		Model crate = Model(pack.getMeshes("crate"));
-		loadedModels.push_back(std::move(palm));
-		loadedModels.push_back(std::move(crate));
+		Model& palm = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+		Model& crate1 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
-		*loadedModels[0].position = glm::vec3(0, 0, -5);
-		*loadedModels[1].position = glm::vec3(5, 0, 0);
-		
-		scene.add(loadedModels[0]);
-		scene.add(loadedModels[1]);
+		palm.setPosition(glm::vec3(0, 0, -5));
+		crate1.setPosition(glm::vec3(5, 0, 0));
+
+		crate2.setPosition(glm::vec3(20, 2, 0));
+		crate2.setScale(glm::vec3(0.3f));
+		crate3.setPosition(glm::vec3(0, 2, 20));
+		crate3.setScale(glm::vec3(0.3f));
+
+		crate2.setRotation(M_PI_4,M_PI_4 / 3 * 2,M_PI_4);
+
+		// should this not be done automatically on construction?
+		for (auto& model : loadedModels) {
+			scene.add(*model);
+		}
 
 		//Generate trees how about you kill yourself
 		/*
@@ -81,13 +81,14 @@ public:
 				float r = randf(1.0, 25.0);
 				float x = sin(randf(0.f, M_2_PI)) * r;
 				float y = cos(randf(0.f, M_2_PI)) * r;
-
-				model1.setPosition(8 * i + x, ((float)(rand() % 8)/8), 8 * j + y);
-				model1.setRotation((float) (rand() % 360) / M_PI, glm::vec3(0, 1, 0));
+				
+				Model& model = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+				model.setPosition({8 * i + x, ((float)(rand() % 8)/8), 8 * j + y});
+				model.setRotation((float) (rand() % 360) / M_PI, glm::vec3(0, 1, 0));
 				opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
 			}
 		}
-		*/
+		 */
 		/*
 		model2.setPosition(0, 0, 0);
 		model2.setScale(glm::vec3(5.0f));

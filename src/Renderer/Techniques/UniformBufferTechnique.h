@@ -17,7 +17,7 @@ public:
 
 	inline static std::unordered_map<GLint, std::unique_ptr<UniformBuffer>> buffers;
 
-	static GLuint binding(const std::string& name) {
+	static GLint binding(const std::string& name) {
 		auto it = uniformBlockCache.find(name);
 		if (it != uniformBlockCache.end()) {
 			return it->second.binding;
@@ -55,7 +55,7 @@ public:
 	}
 	
 	static void uploadPointLightData(const std::vector<PointLight>& pointLights) {
-		buffers.at(binding("PointLightData"))->insert(pointLights);
+ 		buffers.at(binding("PointLightData"))->insert(pointLights);
 	}
 
 

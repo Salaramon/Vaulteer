@@ -121,10 +121,10 @@ public:
 		inline static constexpr size_t BSH = 0b0010;
 	};
 
-	inline static uint64_t activeCamera = 0;
+	Camera* activeCamera = nullptr;
 
 	CameraReference getActiveCamera() {
-		return CameraReference(this->get<PropertiesCamera, Position3D, Rotation3D, Properties3D>(activeCamera));
+		return std::move(CameraReference(*activeCamera));
 	}
 
 

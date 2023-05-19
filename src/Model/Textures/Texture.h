@@ -25,7 +25,6 @@ public:
 	GLint nrComponents = -1;
 	bool mipmapEnabled = false;
 
-	inline static std::unordered_map<aiTextureType, Binder::UniformInfo> uniformTextureTypes;
 protected:
 	void createTexture(GLenum type);
 	void cleanup() const;

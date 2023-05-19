@@ -11,14 +11,14 @@ struct PointLight {
 };
 
 struct UBPointLight {
-    vec3 color;
-    float ambientIntensity;
+    vec4 color;
+    // float ambientIntensity; // packed in color
     float diffuseIntensity;
     float aConstant;
     float aLinear;
     float aQuadratic;
-    vec3 position;
-    float radius;
+    vec4 position;
+    // float radius; // packed in position
 };
 
 layout(shared, binding = 5) uniform PointLightData {
@@ -28,13 +28,13 @@ layout(shared, binding = 5) uniform PointLightData {
 PointLight getPointLight(int pointLightIndex) {
     UBPointLight ubl = pointLightTable[pointLightIndex];
     PointLight l;
-    l.light.color = ubl.color;
-    l.light.ambientIntensity = ubl.ambientIntensity;
+    l.light.color = ubl.color.xyz;
+    l.light.ambientIntensity = ubl.color.w;
     l.light.diffuseIntensity = ubl.diffuseIntensity;
     l.att.aConstant = ubl.aConstant;
     l.att.aLinear = ubl.aLinear;
     l.att.aQuadratic = ubl.aQuadratic;
-    l.position = ubl.position;
-    l.radius = ubl.radius;
+    l.position = ubl.position.xyz;
+    l.radius = ubl.position.w;
     return l;
 }

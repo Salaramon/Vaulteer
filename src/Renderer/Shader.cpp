@@ -126,6 +126,7 @@ bool Shader::catchCompileError(GLuint id, const std::string& filename) {
 }
 
 std::string Shader::readFile(std::string& path) {
+	// TODO read without exceptions...
 	std::ifstream file;
 	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -139,6 +140,7 @@ std::string Shader::readFile(std::string& path) {
 	}
 	catch (std::ifstream::failure& e) {
 		std::cout << std::format("Error reading file:\n\t{}", path) << std::endl;
+		__debugbreak();
 		//Return empty string upon error.
 		return "";
 	}

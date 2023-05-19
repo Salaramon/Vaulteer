@@ -2,12 +2,10 @@
 
 #include <glm/glm.hpp>
 
-#include "OpenGL.h"
-
 #include "API/Camera.h"
 
-#include "SceneTypedefs.h"
-#include "Techniques/UniformBufferTechnique.h"
+#include "Scene/Scene.h"
+#include "Model/Resources/ResourcePack.h"
 
 class ForwardRenderer {
 

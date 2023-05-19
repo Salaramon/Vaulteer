@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Utils/TypeDefUtils.h"
+
 struct Attenuation {
 	float constant;
 	float linear;
@@ -34,9 +36,6 @@ struct DirectionalLight {
 };
 
 struct PointLight {
-	// radius of light volume rendering sphere asset
-	inline static float volumeSphereRadius = 0.45f;
-
 	BaseLight light;
 	Attenuation attenuation;
 	glm::vec3 position;
@@ -45,7 +44,6 @@ struct PointLight {
 
 	PointLight(Attenuation a, BaseLight l, glm::vec3 position) : light(l), attenuation(a), position(position) {
 		radius = calculatePointRadius();
-		//instanceMat = glm::translate(glm::scale(glm::mat4(1.0), glm::vec3(radius / volumeSphereRadius)), position);
 	}
 
 	float calculatePointRadius() const {

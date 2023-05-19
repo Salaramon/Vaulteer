@@ -170,7 +170,6 @@
     <ClInclude Include="src\WorldLayer.h" />
     <ClInclude Include="src\vpch.h" />
     <ClInclude Include="vendor\GEM\GEM.h" />
-    <ClInclude Include="vendor\GLSLCPPBinder\GLSLCPPBinder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
@@ -230,25 +229,27 @@
     <None Include="resources\shaders\build\deferred_directional_frag.glsl" />
     <None Include="resources\shaders\build\deferred_point_frag.glsl" />
     <None Include="resources\shaders\build\deferred_point_vertex.glsl" />
+    <None Include="resources\shaders\build\forward_frag.glsl" />
+    <None Include="resources\shaders\build\geometry_frag.glsl" />
     <None Include="resources\shaders\build\geometry_vertex.glsl" />
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
-    <None Include="resources\shaders\preprocessor\fragments\textureData.gem" />
-    <None Include="resources\shaders\preprocessor\forward_frag.gem" />
     <None Include="resources\shaders\forward_vertex.glsl" />
-    <None Include="resources\shaders\geometry_frag.glsl" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem" />
+    <None Include="resources\shaders\preprocessor\forward_frag.gem" />
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem" />
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\spotLightData.gem" />
+    <None Include="resources\shaders\preprocessor\fragments\textureData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem" />
+    <None Include="resources\shaders\preprocessor\geometry_frag.gem" />
     <None Include="resources\shaders\preprocessor\geometry_vertex.gem" />
     <None Include="resources\shaders\shadow_cube_frag.glsl" />
     <None Include="resources\shaders\shadow_cube_geometry.glsl" />
