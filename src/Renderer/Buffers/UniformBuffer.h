@@ -2,8 +2,6 @@
 
 #include <any>
 
-#include "GLSLCPPBinder.h"
-
 #include "Model/Buffer.h"
 
 

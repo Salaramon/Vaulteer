@@ -7,7 +7,6 @@
 
 #include "stb_image.h"
 
-#include "GLSLCPPBinder.h"
 #include "Renderer/Shader.h"
 
 class Texture {
