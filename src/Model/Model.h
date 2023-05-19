@@ -3,14 +3,14 @@
 #
 
 #include <glm/glm.hpp>
-
-#include "Scene/Object3D.h"
-#include "Model/Mesh.h"
-#include "Textures/Texture2DArray.h"
-
 #include <Seb.h> 
 
-#include "Storage/MaterialVertex.h"
+#include "Model/Mesh.h"
+#include "Textures/Texture2DArray.h"
+#include "Scene/Object3D.h"
+#include "Storage/VertexImpl.h"
+#include "Resources/MaterialLibrary.h"
+
 
 enum class Faces {
 	FRONT = GL_FRONT,
@@ -28,6 +28,13 @@ struct Meshes : std::vector<Mesh*> {
 	using std::vector<Mesh*>::operator=;
 	using std::vector<Mesh*>::vector;
 };
+
+
+//struct Opaque {}; // not needed (yet)
+struct Transparent {
+	bool transparent = true;
+};
+
 
 class Model : public Object3D {
 public:
@@ -47,7 +54,10 @@ public:
 				.faces = Faces::FRONT,
 				.textureID = 0
 			})),
-			textureView(&this->add<TextureView>()) {}
+			textureView(&this->add<TextureView>()) {
+
+		addRenderComponents();
+	}
 
 	Model(Model& other) = delete;
 
@@ -72,12 +82,27 @@ public:
 	void setPolygonFaces(Faces faces) {
 		propertiesModel->faces = faces;
 	}
+
+	void setMaterial(int materialNumber) {
+		for (auto* mesh : *meshes) {
+			mesh->overrideMaterial(MaterialLibrary::get(materialNumber));
+		}
+	}
+
+	void addRenderComponents() {
+		for (auto* mesh : *meshes) {
+			if (mesh->material->isTransparent()) {
+				this->add<Transparent>();
+				break;
+			}
+		}
+	}
 	
 private:
 	glm::vec4 boundingSphere() {
 		std::vector<Seb::Point<double>> points;
 		for (Mesh* mesh : *meshes) {
-			for (const MaterialVertex& vertex : mesh->getCopiedData<MaterialVertex>()) {
+			for (const VertexImpl& vertex : mesh->getCopiedData<VertexImpl>()) {
 				std::vector<double> converter({ vertex.aPos.x, vertex.aPos.y, vertex.aPos.z });
 				points.emplace_back(3, converter.begin());
 			}

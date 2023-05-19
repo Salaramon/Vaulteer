@@ -80,20 +80,19 @@ struct VertexElement {
 
 class BufferLayout {
 public:
-	BufferLayout() {}
+	BufferLayout() = default;
 
 	BufferLayout(std::initializer_list<VertexElement> layout) : layout(layout) {
 		updateOffsetsAndStride();
 	}
 
-	size_t getStride() const {
-		return stride;
-	}
+	BufferLayout(BufferLayout& other) = default;
 
 	const std::vector<VertexElement>& getElements() const {
 		return layout;
 	}
-
+	
+	size_t stride = 0;
 private:
 	void updateOffsetsAndStride() {
 		size_t offset = 0;
@@ -101,12 +100,13 @@ private:
 		for (auto& element : layout) {
 			element.offset = offset;
 			offset += element.size;
-			strideTotal += element.size;
+			
+			if (element.instance == 0) // instanced elements are part of their own VB and are skipped
+				strideTotal += element.size;
 		}
 		this->stride = strideTotal;
 	}
 
 	// total size of layout
 	std::vector<VertexElement> layout;
-	size_t stride = 0;
 };

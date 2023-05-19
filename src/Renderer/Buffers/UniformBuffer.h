@@ -57,6 +57,7 @@ public:
 
 	template<class T>
 	void insertAt(const T& data, int index) {
+		// TODO this is not finished
 		GLsizei dataSize = sizeof(data);
 
 		assert(index * dataSize + dataSize <= size);

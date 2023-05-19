@@ -8,26 +8,78 @@
 
 class Batch {
 public:
-	Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize);
-	~Batch();
+	VertexArray vertexArray;
+	std::vector<VertexBuffer*> vertexBuffers;
+	IndexBuffer* indexBuffer;
 
-	bool add(Mesh& mesh, glm::mat4 modelMat);
-
-	void clear();
+	GLint textureID;
+	
+	size_t vertexBufferSize;
+	size_t indexBufferSize;
 
 	size_t numVertices = 0;
 	size_t numIndices = 0;
-	GLint textureID;
 
-	void bind();
-	void unbind();
+	Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize) :
+		textureID(textureID), vertexBufferSize(vertexBufferSize), indexBufferSize(indexBufferSize) {
 
-	VertexArray vertexArray;
-	VertexBuffer* vertexBuffer;
-	IndexBuffer* indexBuffer;
+		vertexBuffers = vertexArray.createVertexBuffers(MaterialVertex::getFormat());
+		vertexBuffers[0]->reserve(vertexBufferSize);
+		indexBuffer = vertexArray.createIndexBuffer();
+		indexBuffer->reserve(indexBufferSize);
 
-private:
-	size_t vertexBufferSize;
-	size_t indexBufferSize;
+		std::cout << "Batch created with size " << vertexBufferSize << "/" << indexBufferSize << "." << std::endl;
+	}
+
+	~Batch() {
+		std::cout << "Batch destroyed." << std::endl;
+	}
+
+	bool add(Mesh& mesh, glm::mat4 modelMat) {
+		if (vertexBufferSize - numVertices < mesh.vertexContainer.size() || 
+			indexBufferSize - numIndices < mesh.indices.size()) {
+			return false;
+		}
+
+		std::vector<MaterialVertex> vertices;
+		std::vector<VertexImpl> meshVertices = mesh.getCopiedData<VertexImpl>();
+
+		for (int i = 0; i < mesh.vertexContainer.size(); i++) {
+			auto* vertex = mesh.getVertex<VertexImpl>(i);
+			// transform from mesh space to batch space
+			glm::vec4 pos4 = (modelMat * glm::vec4(vertex->aPos, 1.0));
+			glm::vec3 pos = glm::vec3(pos4.x, pos4.y, pos4.z);
+			glm::vec4 norm4 = (glm::inverse(glm::transpose(modelMat)) * glm::vec4(vertex->aNormal, 1.0));
+			glm::vec3 norm = glm::normalize(glm::vec3(norm4.x, norm4.y, norm4.z));
+			vertices.emplace_back(*vertex, pos, norm, mesh.material->materialIndex);
+		}
+
+		std::vector<GLuint> indices = mesh.indices;
+		for (unsigned int& indice : indices) {
+			indice += numVertices;
+		}
+
+		vertexBuffers[0]->insertPartial(numVertices, vertices);
+		numVertices += vertices.size();
+
+		indexBuffer->insertPartial(numIndices, indices);
+		numIndices += indices.size();
+
+		return true;
+	}
+
+	void clear() {
+		vertexBuffers[0]->reserve(numVertices);
+		indexBuffer->reserve(numIndices);
+		numVertices = 0;
+		numIndices = 0;
+	}
+
+	void bind() {
+		vertexArray.bind();
+	}
+	void unbind() {
+		vertexArray.unbind();
+	}
 };
 

@@ -111,11 +111,14 @@ public:
 		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D>();
 
 		if (buildBatch) {
+			batchManager.batches.clear();
+
 			modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
-				
+
 				BatchManager::setTextureID(batchManager, propertiesModel.textureID); //This should be taken from its own component in the future.
 
 				for (Mesh* mesh : meshes) {
+					// todo why static?
 					BatchManager::addToBatch(batchManager, *mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
 				}
 				

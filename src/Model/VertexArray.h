@@ -8,6 +8,7 @@
 #include "Model/IndexBuffer.h"
 #include "Model/VertexBuffer.h"
 #include "Model/Storage/BufferLayout.h"
+#include "Utils/TypeDefUtils.h"
 
 class VertexArray {
 public:
@@ -37,16 +38,14 @@ public:
 		glBindVertexArray(0);
 	}
 
-	VertexBuffer* createVertexBuffer(const BufferLayout& bufferLayout) {
-		vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, bufferLayout));
+	std::vector<VertexBuffer*> createVertexBuffers(const BufferLayout& bufferLayout) {
 		setUpAttributes(bufferLayout);
-		return vertexBuffers.back().get();
-	}
 
-	VertexBuffer* createVertexBuffer(const BufferLayout& bufferLayout, const void* data, size_t count) {
-		VertexBuffer* vb = createVertexBuffer(bufferLayout);
-		vb->insert(data, count);
-		return vb;
+		std::vector<VertexBuffer*> buffers;
+		for (auto& buf : vertexBuffers) {
+			buffers.push_back(buf.get());
+		}
+		return buffers;
 	}
 
 	IndexBuffer* createIndexBuffer() {
@@ -76,40 +75,71 @@ private:
 	bool setUp = false;
 	std::vector<std::unique_ptr<VertexBuffer>> vertexBuffers;
 	std::unique_ptr<IndexBuffer> indexBuffer;
-
-	/* Binding index for VBO -> binding -> VAO API.
-	 * We don't need anything but 0 (it's only used when referring to multiple buffers with one format) */
-	GLuint bindIndex() const {
-		return 0;
-	}
 };
 
 inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 	if (setUp)
 		return;
 
-	// max size of single vertex attribute as defined by opengl - elements exceeding this size must be split up into more locations 
-	constexpr size_t maxSize = 16;
+	vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, format.stride));
+	std::cout << "- created initial vertexbuffer: stride " << format.stride << std::endl;
 
+	int mainLocation = 0;
 	int location = 0;
+
 	for (const VertexElement& element : format.getElements()) {
+		uint offset;
+		uint bindIndex = 0;
+
+		if (element.instance > 0) {
+			bindIndex = vertexBuffers.size();
+			vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, element.size, bindIndex));
+			std::cout << "- created sub-vertexbuffer " << bindIndex << ": stride " << element.size << std::endl;
+			offset = 0;
+		} else {
+			offset = element.offset;
+		}
 		
 		std::cout << "current location " << location << std::endl;
 		std::cout << "element name " << element.name << std::endl;
 		std::cout << "element size " << element.size << std::endl;
+		std::cout << "element offset " << offset << std::endl;
+		std::cout << "element bind " << bindIndex << std::endl;
 
-		if (element.size > maxSize) {
+		glEnableVertexArrayAttrib(vao, location);
 
-			int componentSize = element.size / element.getComponentCount();
+		std::cout << "element comp count " << element.getComponentCount() << std::endl;
 
-			std::cout << "component size " << componentSize << std::endl;
-
-			int comp = 0;
+		switch (element.type) {
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+			glVertexArrayAttribIFormat(vao,
+				location,
+				element.getComponentCount(),
+				shaderDataTypeToOpenGLBaseType(element.type),
+				offset);
+			break;
+		case ShaderDataType::Float:
+		case ShaderDataType::Float2:
+		case ShaderDataType::Float3:
+		case ShaderDataType::Float4:
+			glVertexArrayAttribFormat(vao, 
+				location,
+				element.getComponentCount(),
+				shaderDataTypeToOpenGLBaseType(element.type),
+				element.normalized,
+				offset);
+			break;
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+			
+			// TODO : implement split again
+			/*int comp = 0;
 			while (comp < element.getComponentCount()) {
 				std::cout << "  component loc " << location + comp << std::endl;
 				std::cout << "  component offset " << location + comp * componentSize << std::endl;
-
-				// TODO: consider type (ints won't work here)
 
 				glEnableVertexArrayAttrib(vao, location + comp * componentSize);
 				glVertexArrayAttribFormat(vao, 
@@ -127,37 +157,19 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 				std::cout << "  set comp " << comp << std::endl;
 				comp++;
 			}
-			location += comp;
+			location += comp;*/
+		case ShaderDataType::Bool:
+		default:
+			assert(false); // implement as needed
+			break;
 		}
-		else {
-			glEnableVertexArrayAttrib(vao, location);
 
-			// TODO: better type check
+		glVertexArrayAttribBinding(vao, location, bindIndex);
 
-			if (element.type == ShaderDataType::Int) {
-				glVertexArrayAttribIFormat(vao,
-					location,
-					element.getComponentCount(),
-					shaderDataTypeToOpenGLBaseType(element.type),
-					element.offset);
-			}
-			else {
-				glVertexArrayAttribFormat(vao, 
-					location,
-					element.getComponentCount(),
-					shaderDataTypeToOpenGLBaseType(element.type),
-					element.normalized,
-					element.offset);
-			}
-
-
-			glVertexArrayAttribBinding(vao, location, bindIndex());	
-
-			if (element.instance > 0)
-				glVertexArrayBindingDivisor(vao, bindIndex(), element.instance);
-			
-			location++;
-		}
+		if (element.instance > 0)
+			glVertexArrayBindingDivisor(vao, bindIndex, element.instance);
+		
+		location++;
 	}
 
 	setUp = true;

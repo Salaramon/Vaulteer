@@ -9,79 +9,23 @@
 
 #include "Model/Material.h"
 #include "Renderer/Shader.h"
-
-
-class VertexContainer {
-public:
-	template<vertex_concept T>
-	VertexContainer(T) : vertexType(typeid(T)), format(T::getFormat()) {}
-
-	template<vertex_concept T>
-	VertexContainer(std::vector<T> vertices) : vertexType(typeid(T)), format(T::getFormat()) {
-		for (T vertex : vertices)
-			this->add<T>(vertex);
-	}
-
-	template<vertex_concept T>
-	void add(T& t) {
-		std::array<uint8_t, sizeof(T)> bytes{};
-		auto beginObject = reinterpret_cast<uint8_t*>(std::addressof(t));
-		memcpy_s(bytes.data(), bytes.size(), beginObject, bytes.size());
-
-		vertexData.insert(vertexData.end(), std::begin(bytes), std::end(bytes));
-		vertexCount++;
-	}
-
-	template<vertex_concept T>
-	T* at(size_t index) {
-		assert(index < vertexCount);
-		return reinterpret_cast<T*>(vertexData.data() + index * stride());
-	}
-	
-	template<vertex_concept T>
-	void set(size_t index, T& t) {
-		assert(index < vertexCount);
-		T* ptr = reinterpret_cast<T*>(vertexData.data() + index * stride());
-		memcpy_s(ptr, stride(), &t, stride());
-	}
-
-	
-    const BufferLayout& getFormat() const {
-        return format;
-    }
-	
-    size_t size() const {
-        return vertexCount;
-    }
-
-    size_t stride() const {
-        return format.getStride();
-    }
-	
-    void* data() {
-        return vertexData.data();
-    }
-
-private:
-	std::vector<uint8_t> vertexData;
-	size_t vertexCount = 0;
-
-	std::type_index vertexType;
-	BufferLayout& format;
-};
+#include "Storage/VertexImpl.h"
 
 
 class Mesh {
 public:
 	template<class T>
 	Mesh(std::vector<T> vertices, std::vector<GLuint>& indices, Material* material) :
-		vertexContainer(vertices),
+		vertexContainer(vertices, material->materialIndex),
 		indices(indices),
 		material(material) {
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot create mesh of non-vertices.");
 
-		vertexBuffer = vertexArray.createVertexBuffer(T::getFormat(), vertexContainer.data(), vertexContainer.size());
+		vertexBuffers = vertexArray.createVertexBuffers(T::getFormat());
 		indexBuffer = vertexArray.createIndexBuffer(this->indices);
+
+		insertVertices();
+		insertMaterial();
 	}
 
 	Mesh(Mesh& other) = delete;
@@ -91,7 +35,7 @@ public:
 		indices(std::move(other.indices)),
 		material(other.material),
 		vertexArray(std::move(other.vertexArray)),
-		vertexBuffer(other.vertexBuffer),
+		vertexBuffers(other.vertexBuffers),
 		indexBuffer(other.indexBuffer) {}
 
 	~Mesh() = default;
@@ -103,23 +47,38 @@ public:
 		vertexArray.unbind();
 	}
 
-	void updateBuffer() {
-		vertexBuffer->insert(vertexContainer.data(), vertexContainer.size());
-	}
-
 	template<class T>
 	std::vector<T> getCopiedData() {
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot copy out vertices to non-vertex type.");
 		T* arr = (T*) vertexContainer.data();
 		return std::vector<T>(arr, arr + vertexContainer.size());
 	}
+	
+	template<class T>
+	T* getVertex(int index) {
+		static_assert(std::is_base_of_v<Vertex, T>, "Cannot copy out vertices to non-vertex type.");
+		return vertexContainer.container.at<T>(index);
+	}
 
-	VertexContainer vertexContainer;
+	void overrideMaterial(Material* material) {
+		this->material = material;
+		insertMaterial();
+	}
+
+
+	void insertVertices() {
+		vertexBuffers[0]->insert(vertexContainer.data(), vertexContainer.size());
+	}
+	void insertMaterial() {
+		vertexBuffers[1]->insert(&material->materialIndex, 1, GL_DYNAMIC_DRAW);
+	}
+
+	MaterialInstance vertexContainer;
 	std::vector<GLuint> indices;
 	Material* material;
 
 	VertexArray vertexArray;
-	VertexBuffer* vertexBuffer;
+	std::vector<VertexBuffer*> vertexBuffers;
 	IndexBuffer* indexBuffer;
 };
 

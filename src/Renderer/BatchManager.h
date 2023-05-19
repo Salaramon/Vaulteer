@@ -4,7 +4,7 @@
 
 class BatchManager {
 public:
-	constexpr static inline size_t default_vertex_buffer_size = 4000000 / sizeof(MaterialVertex);
+	constexpr static inline size_t default_vertex_buffer_size = 4000000 / sizeof(VertexImpl);
 	constexpr static inline size_t default_index_buffer_size = 1000000 / sizeof(GLuint);
 
 	BatchManager() = default;
@@ -15,8 +15,8 @@ public:
 
 	static std::vector<std::reference_wrapper<Batch>> getBatches(const BatchManager& manager);
 
-private:
 	std::vector<std::unique_ptr<Batch>> batches;
 
+private:
 	GLint textureID = 0;
 };

@@ -23,7 +23,10 @@ public:
 	inline static constexpr size_t scene_0 = 0;
 	Scene<scene_0> scene;
 
-	Renderer<DeferredRenderer> renderer; // render todo revert back to usual pipeline once fixed
+	Renderer<ForwardRenderer> renderer; // render todo revert back to usual pipeline once fixed
+
+	int frameCount = 0;
+	int materialOverride = 1;
 
 	void onAttach() override {
 		Window& window = Application::getWindow();
@@ -35,7 +38,7 @@ public:
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
 
-		//ForwardRenderer::initialize(pack.getTextureID());
+		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
 
@@ -121,8 +124,16 @@ public:
 	void onUpdate(float timestep) override {
 		cameraController.onUpdate(timestep);
 
+		if (frameCount % 60 == 0) {
+			materialOverride++;
+			loadedModels[1]->setMaterial(materialOverride % 3 + 2);
+			DeferredRenderer::rebuildBatch();
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		renderer.render(scene);
+
+		frameCount++;
 	}
 
 	void onEvent(BaseEvent& e) override {

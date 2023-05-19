@@ -47,7 +47,7 @@ public:
 		shader->setUniform("inverseViewMat", glm::inverse(viewMat));
 
 		shader->setUniform("cameraPos", *camera.position);
-		shader->setUniform("lightPos", glm::vec3(0.0));
+		shader->setUniform("lightPos", glm::vec3(5.0));
 
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {

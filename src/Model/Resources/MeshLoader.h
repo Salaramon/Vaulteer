@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 
 #include "Model/Mesh.h"
-#include "Model/Storage/MaterialVertex.h"
+#include "Model/Storage/VertexImpl.h"
 #include "Model/Textures/Texture.h"
 
 class MeshLoader {
@@ -36,12 +36,12 @@ private:
 	
 	static std::unique_ptr<Mesh> processMesh(const aiMesh* aiMesh, Material* mat) {
 		
-		std::vector<MaterialVertex> vertices;
+		std::vector<VertexImpl> vertices;
 		std::vector<GLuint> indices;
 		std::vector<Texture> textures;
 
 		for (size_t i = 0; i < aiMesh->mNumVertices; i++) {
-			MaterialVertex vertex = generateVertex(aiMesh, mat, i);
+			VertexImpl vertex = generateVertex(aiMesh, i);
 			vertices.push_back(vertex);
 		}
 
@@ -55,8 +55,8 @@ private:
 		return std::make_unique<Mesh>( vertices, indices, mat );
 	}
 
-	static MaterialVertex generateVertex(const aiMesh* aiMesh, const Material* mat, size_t i) {
-		MaterialVertex vertex;
+	static VertexImpl generateVertex(const aiMesh* aiMesh, size_t i) {
+		VertexImpl vertex;
 		vertex.aPos = ai_glmVec(aiMesh->mVertices[i]);
 		vertex.aNormal = aiMesh->HasNormals() ? ai_glmVec(aiMesh->mNormals[i]) : glm::vec3(0);
 		vertex.aTexCoords = aiMesh->HasTextureCoords(0) ? glm::vec2(aiMesh->mTextureCoords[0][i].x, aiMesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
@@ -66,7 +66,7 @@ private:
 			vertex.aBitangent = ai_glmVec(aiMesh->mBitangents[i]);
 		}
 
-		vertex.aMaterialNumber = mat->materialIndex;
+		//vertex.aMaterialNumber = mat->materialIndex;
 		return vertex;
 	}
 

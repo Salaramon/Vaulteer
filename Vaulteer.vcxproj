@@ -124,8 +124,10 @@
     <ClInclude Include="src\Model\Storage\BufferLayout.h" />
     <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Storage\MaterialVertex.h" />
+    <ClInclude Include="src\Model\Storage\VertexImpl.h" />
     <ClInclude Include="src\Model\Storage\Point.h" />
     <ClInclude Include="src\Model\Storage\Vertex.h" />
+    <ClInclude Include="src\Model\Storage\VertexContainer.h" />
     <ClInclude Include="src\Model\Storage\VertexHash.h" />
     <ClInclude Include="src\Model\Textures\CubemapTexture.h" />
     <ClInclude Include="src\Model\Textures\Texture.h" />
@@ -184,7 +186,6 @@
     <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\Program.cpp" />
-    <ClCompile Include="src\Renderer\Batch.cpp" />
     <ClCompile Include="src\Renderer\BatchManager.cpp" />
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
