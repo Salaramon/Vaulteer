@@ -13,16 +13,19 @@
 
 
 class BlendingForwardRenderer  {
-	using AlphaTexType = AlphaBuffer::AlphaBufferTextureType;
+	using AlphaBufferTex = AlphaBuffer::AlphaBufferTextureType;
 
 	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
 	inline static Mesh* quadMesh;
+
+	inline static GLint textureId;
 	
 	inline static std::unique_ptr<Shader> blendingShader;
 	inline static std::unique_ptr<Shader> compositeShader;
-		
+
 public:
-	static void initialize(uint screenWidth, uint screenHeight) {
+	static void initialize(const GLint textureId, uint screenWidth, uint screenHeight) {
+		BlendingForwardRenderer::textureId = textureId;
 		alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
@@ -31,9 +34,13 @@ public:
 	}
 
 	static void loadShaders() {
+		gem::Shader<gem::blending_frag> bf;
+		bf.setblending_frag_materialData(128);
+		bf.compile();
+
 		blendingShader = std::make_unique<Shader>(
 			"resources/shaders/blending_vertex.glsl", GL_VERTEX_SHADER,
-			"resources/shaders/blending_frag.glsl", GL_FRAGMENT_SHADER
+			"resources/shaders/build/blending_frag.glsl", GL_FRAGMENT_SHADER
 		);
 		compositeShader = std::make_unique<Shader>(
 			"resources/shaders/blending_composite_vertex.glsl", GL_VERTEX_SHADER,
@@ -52,6 +59,10 @@ public:
 			glDepthMask(GL_FALSE);
 			OpenGL::enableDepthTest();
 			OpenGL::enableBlending();
+
+			OpenGL::setBlendMode(AlphaBufferTex::Accumulated, GLBlendModes::One, GLBlendModes::One);
+			OpenGL::setBlendMode(AlphaBufferTex::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
+			glBlendEquation(GL_FUNC_ADD);
 
 			blendingPass(scene);
 			
@@ -73,39 +84,26 @@ public:
 		blendingShader->use();
 		
 		auto camera = scene.getActiveCamera();
+		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Transparent>();
 
-		OpenGL::setBlendMode(AlphaTexType::Accumulated, GLBlendModes::One, GLBlendModes::One);
-		OpenGL::setBlendMode(AlphaTexType::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
-		glBlendEquation(GL_FUNC_ADD);
-		
-		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
-		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {
-			return true;
-			/*Camera::Frustum frustum = camera->getFrustum();
+		auto viewMat = camera.viewMatrix();
+		blendingShader->setUniform("view", viewMat);
+		blendingShader->setUniform("inverseViewMat", glm::inverse(viewMat)); // glsl inverse is not the same as glm inverse...
 
-			glm::vec3 cameraPosition = camera->getPosition();
-
-			float cameraInfluenceRadius = 50;
-			glm::vec3 spherePoint = glm::vec3(sphere);
-
-			float dist = glm::distance(cameraPosition, spherePoint);
-			float radSum = cameraInfluenceRadius + sphere.w;
-			bool result = dist < radSum;
-			return result;*/
-		};
-
-		auto modelView = scene.view<PropertiesModel, Properties3D, Meshes, Position3D, Rotation3D>();
-
-		blendingShader->setUniform("inverseViewMat", glm::inverse(camera.viewMatrix())); // glsl inverse is not the same as glm inverse...
-		blendingShader->setUniform("view", camera.viewMatrix());
-
+		glBindTextureUnit(0, textureId);
 		blendingShader->setUniform("textureLib", 0);
+
+		blendingShader->setUniform("cameraPos", *camera.position);
+		blendingShader->setUniform("lightPos", glm::vec3(5.0));
 		
 		alphaBuffer->clear();
 		alphaBuffer->bindForWriting();
 		
-		modelView.each([](const PropertiesModel&, const Properties3D& properties3D, const Meshes& meshes, const Position3D& position3D, const Rotation3D& rotation3D) {
-			blendingShader->setUniform("model", Model::modelMatrix(position3D, rotation3D, properties3D));
+		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, const Transparent&) {
+			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
+
+			blendingShader->setUniform("model", modelMat);
+			blendingShader->setUniform("normal", glm::transpose(glm::inverse(modelMat)));
 
 			for (auto mesh : meshes) {
 				mesh->bind();
@@ -127,9 +125,11 @@ public:
 		DeferredRenderer::copyGBufferDepth(0); // copy to backbuffer FBO
 
 		alphaBuffer->bindForReading();
-
-		compositeShader->setUniform("accum", AlphaTexType::Accumulated);
-		compositeShader->setUniform("reveal", AlphaTexType::Alpha);
+		
+		alphaBuffer->bindTextureUnit(AlphaBufferTex::Accumulated);
+		alphaBuffer->bindTextureUnit(AlphaBufferTex::Alpha);
+		compositeShader->setUniform("accum", AlphaBufferTex::Accumulated);
+		compositeShader->setUniform("reveal", AlphaBufferTex::Alpha);
 
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, quadMesh->indices.size(), GL_UNSIGNED_INT, nullptr);

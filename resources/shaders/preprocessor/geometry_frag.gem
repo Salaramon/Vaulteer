@@ -11,7 +11,6 @@ in VS_OUT {
     vec3 fragNormal;
     vec2 texCoords;
     flat int materialNumber;
-
     mat3 tbnMat;
 } fs_in;
 
@@ -19,14 +18,6 @@ in VS_OUT {
 ##[fragments/textureData] //! #include "fragments/textureData.gem"
 
 uniform sampler2DArray textureLib;
-
-
-vec3 getTexUnitCoords(vec3 texCoords, TextureView view, int unitIndex) {
-    vec2 texWH = textureSize(textureLib, 0).xy;
-    return vec3(texCoords.x * (float(view.wDelta) / texWH.x) + float(view.xDelta) / texWH.x, 
-                texCoords.y * (float(view.hDelta) / texWH.y) + float(view.yDelta) / texWH.y,
-                texCoords.z + view.layerDelta); 
-}
 
 void main() {
     Material mat = materialTable[fs_in.materialNumber];
@@ -36,11 +27,11 @@ void main() {
     TextureView specularView = textureViewTable[tex.textureViewId + specular_unit_index];
 
     vec3 texCoords = vec3(fs_in.texCoords, 0);
-    vec3 diffuseCoords = getTexUnitCoords(texCoords, diffuseView, diffuse_unit_index);
+    vec3 diffuseCoords = getTexUnitCoords(textureLib, texCoords, diffuseView, diffuse_unit_index);
 
     vec3 normal;
     if (vec2(normalsView.wDelta, normalsView.hDelta) != vec2(0.0)) { // normal map exists?
-        vec3 normalCoords = getTexUnitCoords(texCoords, normalsView, normals_unit_index);
+        vec3 normalCoords = getTexUnitCoords(textureLib, texCoords, normalsView, normals_unit_index);
         normal = normalize(fs_in.tbnMat * vec3(texture(textureLib, normalCoords).rgb * 2.0 - 1.0));
     }
     else
@@ -48,7 +39,7 @@ void main() {
 
     float specular;
     if (vec2(specularView.wDelta, specularView.hDelta) != vec2(0.0)){ // specular map exists?
-        vec3 specularCoords = getTexUnitCoords(texCoords, specularView, specular_unit_index);
+        vec3 specularCoords = getTexUnitCoords(textureLib, texCoords, specularView, specular_unit_index);
         specular = texture(textureLib, specularCoords).r;
     }
     else 

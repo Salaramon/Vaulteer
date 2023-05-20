@@ -30,7 +30,9 @@ struct Meshes : std::vector<Mesh*> {
 };
 
 
-//struct Opaque {}; // not needed (yet)
+struct Opaque {
+	bool transparent = false;
+};
 struct Transparent {
 	bool transparent = true;
 };
@@ -56,7 +58,7 @@ public:
 			})),
 			textureView(&this->add<TextureView>()) {
 
-		addRenderComponents();
+		//addRenderComponents();
 	}
 
 	Model(Model& other) = delete;

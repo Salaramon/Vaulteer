@@ -25,8 +25,6 @@ void Vaulteer::setup() {
 	//glEnable(GL_LINE_SMOOTH);
 	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
-	glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
-
 	auto world = new WorldLayer();
 	layerStack.pushLayer(world);
 	layerStack.pushLayer(new DebugLayer(world));

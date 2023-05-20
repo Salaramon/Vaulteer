@@ -25,3 +25,11 @@ layout(shared, binding = 2) uniform TextureData {
 const int diffuse_unit_index = 0;
 const int specular_unit_index = 1;
 const int normals_unit_index = 2;
+
+
+vec3 getTexUnitCoords(sampler2DArray textureLib, vec3 texCoords, TextureView view, int unitIndex) {
+    vec2 texWH = textureSize(textureLib, 0).xy;
+    return vec3(texCoords.x * (float(view.wDelta) / texWH.x) + float(view.xDelta) / texWH.x, 
+                texCoords.y * (float(view.hDelta) / texWH.y) + float(view.yDelta) / texWH.y,
+                texCoords.z + view.layerDelta); 
+}

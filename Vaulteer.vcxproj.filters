@@ -347,9 +347,6 @@
     <ClCompile Include="src\Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\BatchManager.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClCompile>
@@ -448,9 +445,6 @@
     <None Include="resources\shaders\blending_composite_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\blending_frag.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\blending_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -468,6 +462,9 @@
     </None>
     <None Include="resources\shaders\forward_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\blending_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>

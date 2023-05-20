@@ -38,13 +38,11 @@ public:
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D>();
 
 		auto viewMat = camera.viewMatrix();
-		auto projectionMat = camera.projectionMatrix();
 		shader->setUniform("view", viewMat);
+		shader->setUniform("inverseViewMat", glm::inverse(viewMat));
 
 		glBindTextureUnit(0, textureID);
 		shader->setUniform("textureLib", 0);
-
-		shader->setUniform("inverseViewMat", glm::inverse(viewMat));
 
 		shader->setUniform("cameraPos", *camera.position);
 		shader->setUniform("lightPos", glm::vec3(5.0));
@@ -54,7 +52,7 @@ public:
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
 			shader->setUniform("model", modelMat);
-			shader->setUniform("normal", glm::inverse(modelMat));
+			shader->setUniform("normal", glm::transpose(glm::inverse(modelMat)));
 
 			for (auto mesh : meshes) {
 				mesh->bind();

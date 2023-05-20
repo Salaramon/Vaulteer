@@ -100,15 +100,15 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 			offset = element.offset;
 		}
 		
-		std::cout << "current location " << location << std::endl;
+		/*std::cout << "current location " << location << std::endl;
 		std::cout << "element name " << element.name << std::endl;
 		std::cout << "element size " << element.size << std::endl;
 		std::cout << "element offset " << offset << std::endl;
 		std::cout << "element bind " << bindIndex << std::endl;
+		std::cout << "element comp count " << element.getComponentCount() << std::endl;*/
 
 		glEnableVertexArrayAttrib(vao, location);
 
-		std::cout << "element comp count " << element.getComponentCount() << std::endl;
 
 		switch (element.type) {
 		case ShaderDataType::Int:

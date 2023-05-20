@@ -23,7 +23,8 @@ public:
 	inline static constexpr size_t scene_0 = 0;
 	Scene<scene_0> scene;
 
-	Renderer<DeferredRenderer> renderer; // render todo revert back to usual pipeline once fixed
+	Renderer<DeferredRenderer, BlendingForwardRenderer> renderer;
+	//Renderer<ForwardRenderer> renderer;
 
 	void onAttach() override {
 		Window& window = Application::getWindow();
@@ -37,7 +38,7 @@ public:
 
 		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
-		BlendingForwardRenderer::initialize(Window::getWidth(), Window::getHeight());
+		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 
 		
 		camera.enableAxisLock();
@@ -59,7 +60,10 @@ public:
 		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
-		//palm.add<Transparent>();
+		palm.add<Transparent>();
+		crate1.add<Opaque>();
+		crate2.add<Opaque>();
+		crate3.add<Opaque>();
 
 		palm.setPosition(glm::vec3(0, 0, -5));
 		crate1.setPosition(glm::vec3(5, 0, 0));
@@ -115,7 +119,7 @@ public:
 		UniformBufferTechnique::uploadTextureData();
  		UniformBufferTechnique::uploadTextureViewData();
 
-		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
+		glClearColor(0.001f, 0.001f, 0.001f, 1.0f);
 	}
 
 	void onUpdate(float timestep) override {

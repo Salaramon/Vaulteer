@@ -66,8 +66,8 @@ public:
 	template<class Function>
 	void each(Function& function) {
 		auto [beginIt, endIt] = bsh.equal_range(comparator);
-		for (auto& it = beginIt; it != bsh.end(); it++) {
-			auto componentTuple = registry.group<std::tuple<Args1...>({}, { entt::exclude_t<Args2>... }).get(*it);
+		for (auto& it = beginIt; it != bsh.end(comparator); it++) {
+			auto componentTuple = registry.group<std::tuple<Args1...>>({}, { entt::exclude_t<Args2>()... }).get(*it);
 			auto trimmedComponentTuple = removeTags2(componentTuple);
 			std::apply(function, trimmedComponentTuple);
 		}
@@ -98,7 +98,7 @@ public:
 
 	template<class Function>
 	void each(Function function) {
-		auto view = registry.view<Args1...>(entt::exclude_t<Args2>...);
+		auto view = registry.view<Args1...>(entt::exclude_t<Args2>()...);
 		for (auto tuple : view.each()) {
 			auto trimmedComponentTuple = removeTags1(tuple);
 			function(std::get<const Args1&>(trimmedComponentTuple)...);
