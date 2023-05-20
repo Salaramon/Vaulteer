@@ -112,6 +112,10 @@ private:
 };
 
 
+template<class Exclude>
+using ExcludeComponent = entt::exclude_t<Exclude>;
+
+
 template<size_t SCENE_ID>
 class Scene : public Register {
 public:
@@ -152,9 +156,6 @@ public:
 		from.remove(entity);
 		to.add(entity);
 	}
-
-	template<class Exclude>
-	using ExcludeComponent = entt::exclude_t<Exclude>;
 
 
 

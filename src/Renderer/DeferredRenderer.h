@@ -108,20 +108,17 @@ public:
 
 		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
 		
-		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D>();
+		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, ExcludeComponent<Transparent>>();
 
 		if (buildBatch) {
 			batchManager.batches.clear();
 
 			modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
-
-				BatchManager::setTextureID(batchManager, propertiesModel.textureID); //This should be taken from its own component in the future.
+				batchManager.setTextureID(propertiesModel.textureID); //This should be taken from its own component in the future.
 
 				for (Mesh* mesh : meshes) {
-					// todo why static?
-					BatchManager::addToBatch(batchManager, *mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
+					batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
 				}
-				
 			});
 			buildBatch = false;
 		}
@@ -158,15 +155,15 @@ public:
 		geometryShader->setUniform("model", glm::mat4(1.0));
 		geometryShader->setUniform("normal", glm::mat4(1.0));
 
-		for (Batch& batch : BatchManager::getBatches(batchManager)) {
-			batch.bind();
-			if (GLint texID = batch.textureID; currentlyBoundTexture != texID) {
+		for (Batch* batch : batchManager.getBatches()) {
+			batch->bind();
+			if (GLint texID = batch->textureID; currentlyBoundTexture != texID) {
 				glBindTextureUnit(texUnit, texID);
 				currentlyBoundTexture = texID;
 			}
 
-			glDrawElements(GL_TRIANGLES, batch.numIndices, GL_UNSIGNED_INT, nullptr);
-			batch.unbind();
+			glDrawElements(GL_TRIANGLES, batch->numIndices, GL_UNSIGNED_INT, nullptr);
+			batch->unbind();
 		}
 
 		gbuffer->unbind();

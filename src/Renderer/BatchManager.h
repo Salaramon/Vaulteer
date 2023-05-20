@@ -9,11 +9,36 @@ public:
 
 	BatchManager() = default;
 
-	static void setTextureID(BatchManager& manager, GLint textureID);
+	void setTextureID(GLint textureID) {
+		this->textureID = textureID;
+	}
 
-	static void addToBatch(BatchManager& manager, Mesh& mesh, glm::mat4 modelMat);
+	void clear() {
+		batches.clear();
+	}
 
-	static std::vector<std::reference_wrapper<Batch>> getBatches(const BatchManager& manager);
+	void createBatch(size_t vbSize = default_vertex_buffer_size, size_t ibSize = default_index_buffer_size) {
+		batches.push_back(std::make_unique<Batch>(textureID, vbSize, ibSize));
+	}
+
+	void addToBatch(Mesh& mesh, glm::mat4 modelMat) {
+		if (batches.empty()) {
+			createBatch();
+		}
+
+		if (Batch* batch = batches.back().get(); !batch->add(mesh, modelMat)) {
+			createBatch();
+			batches.back()->add(mesh, modelMat);
+		}
+	}
+
+	std::vector<Batch*> getBatches() {
+		std::vector<Batch*> batchViews;
+		for (auto& batch : batches) {
+			batchViews.push_back(batch.get());
+		}
+		return batchViews;
+	}
 
 	std::vector<std::unique_ptr<Batch>> batches;
 

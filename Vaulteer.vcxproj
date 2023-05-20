@@ -186,7 +186,6 @@
     <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\Program.cpp" />
-    <ClCompile Include="src\Renderer\BatchManager.cpp" />
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp" />

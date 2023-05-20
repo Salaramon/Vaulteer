@@ -23,10 +23,7 @@ public:
 	inline static constexpr size_t scene_0 = 0;
 	Scene<scene_0> scene;
 
-	Renderer<ForwardRenderer> renderer; // render todo revert back to usual pipeline once fixed
-
-	int frameCount = 0;
-	int materialOverride = 1;
+	Renderer<DeferredRenderer> renderer; // render todo revert back to usual pipeline once fixed
 
 	void onAttach() override {
 		Window& window = Application::getWindow();
@@ -124,16 +121,8 @@ public:
 	void onUpdate(float timestep) override {
 		cameraController.onUpdate(timestep);
 
-		if (frameCount % 60 == 0) {
-			materialOverride++;
-			loadedModels[1]->setMaterial(materialOverride % 3 + 2);
-			DeferredRenderer::rebuildBatch();
-		}
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		renderer.render(scene);
-
-		frameCount++;
 	}
 
 	void onEvent(BaseEvent& e) override {
