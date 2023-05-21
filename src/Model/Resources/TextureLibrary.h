@@ -9,6 +9,7 @@ constexpr int pack_max_texture_side_size = 8192;
 constexpr int pack_discard_step = 1;
 
 class TextureLibrary {
+public:
 	inline static int numTextures = 0;
 	inline static int numTextureViews = 0;
 
@@ -25,10 +26,24 @@ class TextureLibrary {
 		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(w, h, layers)).get();
 	}
 
-public:
-	static Texture2DArray* storeTextures(const std::vector<Material*>& materials) {
+	static Texture2DArray* storeMaterialTextures(const std::vector<Material*>& materials) {
+
+		/*
+		 * TODO: always assumes 3 texture types based on what's implemented (see: Material::validTextureTypes)
+		 * Could be done better by dynamically allocating space for n types based on what textures are read here. ASSIMP supports many types of textures.
+		 */
+
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
+
+		std::vector<uint32_t> whitePixel = { 0xFFFFFFFF };
+		Image2D& pixelImg = images.emplace_back(whitePixel, 1, 1);
+		pixelImg.view.textureViewId = numTextureViews;
+		textureData.emplace_back(numTextures++);
+
+		views.push_back(pixelImg.view);
+		viewIndexByTexturePath["white1x1"] = numTextureViews;
+		numTextureViews += 3;
 
 		for (Material* mat : materials) {
 			// create textureData
@@ -36,7 +51,6 @@ public:
 			auto& data = textureData.emplace_back(dataTextureViewId);
 			mat->setTextureId(dataTextureViewId);
 
-			//for (auto& locator : mat->textureTypeLocators | std::views::values) {
 			for (auto& type : Material::validTextureTypes) {
 				auto& locator = mat->textureTypeLocators[type];
 				if (locator.type == aiTextureType_NONE) {
@@ -62,9 +76,9 @@ public:
 
 		// todo how does calling this function multiple times work? everything stored here will have global IDs, but a new texture will be made each call
 
-		auto ptr = initializeTextureArray(width, height, 1);
-		ptr->initialize(images);
-		return ptr;
+		auto texture = initializeTextureArray(width, height, 1);
+		texture->initialize(images);
+		return texture;
 	}
 
 	static TextureView& getView(unsigned int index) {

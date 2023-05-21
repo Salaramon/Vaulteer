@@ -59,13 +59,7 @@ public:
 		}
 
 		// store textures -- and update textureId in materials
-		texture = TextureLibrary::storeTextures(materialsWithTextures);
-
-		// update all models' units
-		for (std::vector<Mesh*> meshList : meshesByModelName | std::views::values) {
-			//todo what to do with texture unit range?
-			//updateModelDataWithTextureUnits(*modelData, *textureLibrary);
-		}
+		texture = TextureLibrary::storeMaterialTextures(materialsWithTextures);
 
 		finalized = true;
 	}

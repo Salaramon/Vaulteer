@@ -13,14 +13,36 @@ constexpr size_t max_material_count = 128;
 
 class MaterialLibrary {
 public:
+	static Material* get(unsigned int index) {
+		return materialLibrary[index].get();
+	}
+
+	static Material* get(const std::string& name) {
+		return get(materialIndexByName.at(name));
+	}
+
+	static Material* create(Material::MaterialData& data, const std::string& name) {
+		if (Material* exists = find(name)) {
+			std::cout << std::format("Material name conflict <{}>, material not inserted", name) << std::endl;
+			return exists;
+		}
+
+		auto mat = std::make_unique<Material>(name, data);
+		mat->setMaterialIndex(numMaterials);
+
+		Material* matPtr = mat.get();
+		materialLibrary.push_back(std::move(mat));
+		materialIndexByName[matPtr->name] = numMaterials++;
+		
+		return matPtr;
+	}
+
 	// returns pointer to material, inserted or existing; material will have library index set
 	static Material* create(aiMaterial* aiMat, const std::string& objPath) {
-
-		auto it = materialIndexByName.find(objPath);
-		if (it != materialIndexByName.end()) {
+		if (Material* exists = find(aiMat->GetName().C_Str())) {
 			std::cout << std::format("Material name conflict <{}> for resource {}, material not inserted",
 				aiMat->GetName().C_Str(), objPath) << std::endl;
-			return materialLibrary[(*it).second].get();
+			return exists;
 		}
 		
 		auto mat = std::make_unique<Material>(MaterialLoader::load(aiMat, objPath));
@@ -31,14 +53,6 @@ public:
 		materialIndexByName[matPtr->name] = numMaterials++;
 		
 		return matPtr;
-	}
-
-	static Material* get(unsigned int index) {
-		return materialLibrary[index].get();
-	}
-
-	static Material* get(const std::string& name) {
-		return get(materialIndexByName.at(name));
 	}
 
 	static std::vector<Material*> getAllMaterials() {
@@ -59,6 +73,14 @@ public:
 
 	static size_t size() {
 		return numMaterials;
+	}
+
+	static Material* find(const std::string& name) {
+		auto it = materialIndexByName.find(name);
+		if (it != materialIndexByName.end()) {
+			return materialLibrary[(*it).second].get();
+		}
+		return nullptr;
 	}
 	 
 private:

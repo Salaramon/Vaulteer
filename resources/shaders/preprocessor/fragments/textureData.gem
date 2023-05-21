@@ -15,7 +15,6 @@ layout(shared, binding = 1) uniform TextureViewData {
 
 struct Texture {
 	int textureViewId;
-	float pad;
 };
 
 layout(shared, binding = 2) uniform TextureData {

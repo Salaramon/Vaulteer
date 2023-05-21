@@ -2,8 +2,7 @@
 
 #include <assimp/material.h>
 #include <rectpack2D/finders_interface.h>
-
-#include "OpenGL.h"
+#include <glm/glm.hpp>
 
 #include "Model/Textures/TextureResourceLocator.h"
 #include "Utils/TypeDefUtils.h"
@@ -49,7 +48,6 @@ struct TextureViewData {
 // Texture uniform buffer representation
 struct TextureData {
 	int textureViewId = 0;
-	float pad = 0.5;
 
 	// scrolling texture?
 	// float scrollX;
@@ -60,17 +58,18 @@ struct TextureData {
 };
 
 
-// file backed image data. container used in texture load process in TextureLibrary
-class Image2D {
-public:
+// image data. container used in texture load process in Texture classes
+struct Image2D {
 	TextureView view;
+
+	bool fileBacked;
 	std::string path;
 
 	int width = -1, height = -1, channels = -1;
 	byte* data = nullptr;
 	GLenum internalFormat, dataFormat;
 
-	Image2D(const TextureResourceLocator& locator) {
+	Image2D(const TextureResourceLocator& locator) : fileBacked(true) {
 		bool ok = stbi_info(locator.path.data(), &width, &height, &channels);
 		assert(ok);
 
@@ -80,8 +79,21 @@ public:
 		internalFormat = inFormat;
 		dataFormat = exFormat;
 	}
+	
+	Image2D(const std::vector<uint32_t>& pixels, int width, int height) : fileBacked(false), width(width), height(height) {
+		channels = STBI_rgb_alpha;
+		internalFormat = GL_RGBA8;
+		dataFormat = GL_RGBA;
+		view = TextureView({0, 0, width, height}, 0, aiTextureType_DIFFUSE);
+		
+		data = static_cast<byte*>(std::malloc(sizeof(uint32_t) * pixels.size()));
+		std::memcpy(data, pixels.data(), sizeof(uint32_t) * pixels.size());
+	}
 
 	bool load() {
+		if (!fileBacked)
+			return true;
+
 		data = stbi_load(path.data(), &width, &height, &channels, 0);
 		return loaded();
 	}
@@ -90,7 +102,11 @@ public:
 		if (!data)
 			return false;
 
-		stbi_image_free(data);
+		if (fileBacked)
+			stbi_image_free(data);
+		else
+			std::free(data);
+		
 		return true;
 	}
 

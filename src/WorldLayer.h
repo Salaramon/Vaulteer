@@ -60,8 +60,18 @@ public:
 		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
-		palm.add<Transparent>();
-		crate1.add<Transparent>();
+		
+		Material::MaterialData& data = palm.meshes->at(1)->material->data;
+
+		palm.setMaterial(MaterialLibrary::get(0));
+
+		/*
+		Material::MaterialData transparent = data;
+		transparent.matOpacity = 0.1f;
+		palm.setMaterial(MaterialLibrary::create(transparent, "palm0_transparent"), 0);
+		palm.addRenderComponents();
+		*/
+		
 
 		palm.setPosition(glm::vec3(0, 0, -5));
 		crate1.setPosition(glm::vec3(5, 0, 0));

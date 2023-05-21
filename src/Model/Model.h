@@ -85,10 +85,14 @@ public:
 		propertiesModel->faces = faces;
 	}
 
-	void setMaterial(int materialNumber) {
+	void setMaterial(Material* mat) {
 		for (auto* mesh : *meshes) {
-			mesh->overrideMaterial(MaterialLibrary::get(materialNumber));
+			mesh->overrideMaterial(mat);
 		}
+	}
+
+	void setMaterial(Material* mat, int meshIndex) {
+		meshes->at(meshIndex)->overrideMaterial(mat);
 	}
 
 	void addRenderComponents() {
