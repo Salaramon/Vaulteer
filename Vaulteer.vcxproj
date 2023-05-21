@@ -224,12 +224,12 @@
     <None Include="resources\quad.obj" />
     <None Include="resources\shaders\blending_composite_frag.glsl" />
     <None Include="resources\shaders\blending_composite_vertex.glsl" />
-    <None Include="resources\shaders\blending_vertex.glsl" />
+    <None Include="resources\shaders\preprocessor\blending_vertex.gem" />
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
-    <None Include="resources\shaders\forward_vertex.glsl" />
+    <None Include="resources\shaders\preprocessor\forward_vertex.gem" />
     <None Include="resources\shaders\preprocessor\blending_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />

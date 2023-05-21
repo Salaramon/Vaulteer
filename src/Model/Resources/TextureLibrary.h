@@ -36,7 +36,7 @@ public:
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
 
-		std::vector<uint32_t> whitePixel = { 0xFFFFFFFF };
+		std::vector<uint32_t> whitePixel = { 0x00000000 };
 		Image2D& pixelImg = images.emplace_back(whitePixel, 1, 1);
 		pixelImg.view.textureViewId = numTextureViews;
 		textureData.emplace_back(numTextures++);

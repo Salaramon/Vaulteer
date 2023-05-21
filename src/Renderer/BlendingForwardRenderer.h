@@ -34,12 +34,15 @@ public:
 	}
 
 	static void loadShaders() {
+		gem::Shader<gem::blending_vertex> bv;
+		bv.setblending_vertex_materialData(max_material_count);
+		bv.compile();
 		gem::Shader<gem::blending_frag> bf;
-		bf.setblending_frag_materialData(128);
+		bf.setblending_frag_materialData(max_material_count);
 		bf.compile();
 
 		blendingShader = std::make_unique<Shader>(
-			"resources/shaders/blending_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/build/blending_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/build/blending_frag.glsl", GL_FRAGMENT_SHADER
 		);
 		compositeShader = std::make_unique<Shader>(

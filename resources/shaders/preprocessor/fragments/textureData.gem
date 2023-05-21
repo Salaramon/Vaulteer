@@ -26,9 +26,17 @@ const int specular_unit_index = 1;
 const int normals_unit_index = 2;
 
 
-vec3 getTexUnitCoords(sampler2DArray textureLib, vec3 texCoords, TextureView view, int unitIndex) {
+vec3 getTexUnitCoords(sampler2DArray textureLib, vec3 texCoords, TextureView view) {
     vec2 texWH = textureSize(textureLib, 0).xy;
-    return vec3(texCoords.x * (float(view.wDelta) / texWH.x) + float(view.xDelta) / texWH.x, 
-                texCoords.y * (float(view.hDelta) / texWH.y) + float(view.yDelta) / texWH.y,
+    return vec3(texCoords.x * (float(view.wDelta) / texWH.x) + float(view.xDelta) / texWH.x,// - 1/texWH.x, 
+                texCoords.y * (float(view.hDelta) / texWH.y) + float(view.yDelta) / texWH.y,// - 1/texWH.x,
                 texCoords.z + view.layerDelta); 
+
+    // (0.0:1.0) * (512 / 512) + 0 / 512 = (0.0:1.0)
+    // (0.0:1.0) * (128 / 512) + 0 / 512 = (0.0:0.25)
+
+    // (0.0:1.0) * (1 / 512) + 320 / 512 = (0.625 : 0.627)
+    // (0.0:1.0) * (1 / 512) + 128 / 512 = (0.25 : 0.252)
+
+    // (0.0:1.0) * (320 / 512) + 128 / 512 = (0.25.0:0.875)
 }

@@ -19,7 +19,6 @@ float max3(vec3 v) {
 }
 
 void main() {
-
     ivec2 coords = ivec2(gl_FragCoord.xy);
     float revealage = texelFetch(reveal, coords, 0).r;
 

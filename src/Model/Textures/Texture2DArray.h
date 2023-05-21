@@ -16,6 +16,9 @@ public:
 
 		createTexture(GL_TEXTURE_2D_ARRAY);
 		setWrap(repeatX, repeatY);
+		
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	Texture2DArray(Texture2DArray&& other) noexcept

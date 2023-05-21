@@ -9,7 +9,7 @@ void OpenGL::initialize() {
 	
 	enableDepthTest();
 	enableStencilTest();
-	enableSRGB();
+	//enableSRGB();
 	enableDebugOutput(SYNC);
 	enableDirectDebugMessageing();
 }

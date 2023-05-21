@@ -90,13 +90,13 @@ float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D sh
 vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float shadow) {
     Material mat = materialTable[p.materialIndex];
 
-    vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
-    vec4 diffuseColor = vec4(0.0);
-    vec4 specularColor = vec4(0.0);
+    float ambient = light.ambientIntensity;
+    float diffuse = 0.0;
+    float specular = 0.0;
 
     float diffuseFactor = dot(p.fragNormal, -lightDirection);
     if (diffuseFactor > 0.0) {
-        diffuseColor = vec4(light.color * diffuseFactor * light.diffuseIntensity, 1.0);
+        diffuse = diffuseFactor * light.diffuseIntensity;
 
         float kEnergyConservation = (8.0 + mat.shininess) / (8.0 * 3.14159265);
         vec3 viewDir = normalize(worldCameraPos - p.fragPosition);
@@ -112,16 +112,12 @@ vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float
         specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
 
         float shadowFactor = 1.0 - shadow;
-        specularColor = vec4(light.color * specularFactor * shadowFactor, 1.0);
+        specular = specularFactor * shadowFactor;
 
-        //specularColor = vec4(specularFactor, 0.0, 0.0, 1.0); // specfactor is weird when material shininess is 0
+        //specular = vec4(specularFactor, 0.0, 0.0, 1.0); // specfactor is weird when material shininess is 0
     }
 
-    float adjustFactor = max(ambientColor.r + diffuseColor.r + specularColor.r, ambientColor.g + diffuseColor.g + specularColor.g);
-          adjustFactor = max(ambientColor.b + diffuseColor.b + specularColor.b, adjustFactor);
-          adjustFactor = max(adjustFactor, 1.0);
-
-    return (ambientColor + diffuseColor + specularColor) * adjustFactor;
+    return vec4((ambient + diffuse + specular) * light.color, 1.0);
 }
 
 vec4 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow) {

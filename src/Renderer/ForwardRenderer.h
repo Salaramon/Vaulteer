@@ -20,12 +20,15 @@ public:
 	}
 
 	static void loadShaders() {
+		gem::Shader<gem::forward_vertex> fv;
+		fv.setforward_vertex_materialData(max_material_count);
+		fv.compile();
 		gem::Shader<gem::forward_frag> ff;
-		ff.setforward_frag_materialData(128);
+		ff.setforward_frag_materialData(max_material_count);
 		ff.compile();
 
 		shader = std::make_unique<Shader>(
-			"resources/shaders/forward_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/build/forward_vertex.glsl", GL_VERTEX_SHADER, 
 			"resources/shaders/build/forward_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
@@ -52,7 +55,14 @@ public:
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
 			shader->setUniform("model", modelMat);
-			shader->setUniform("normal", glm::transpose(glm::inverse(modelMat)));
+
+			glm::mat4 normalMat;
+			if (properties3D.scale == glm::vec3(1.0))
+				normalMat = modelMat;
+			else
+				normalMat = glm::transpose(glm::inverse(modelMat));
+
+			shader->setUniform("normal", normalMat);
 
 			for (auto mesh : meshes) {
 				mesh->bind();

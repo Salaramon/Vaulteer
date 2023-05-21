@@ -70,12 +70,13 @@ public:
 	}
 
 	static void loadShaders() {
-		constexpr int maxMaterials = 128;
+		constexpr int maxPointLights = 128;
 
 		gem::Shader<gem::geometry_vertex> gvert;
+		gvert.setgeometry_vertex_materialData(max_material_count);
 		gvert.compile();
 		gem::Shader<gem::geometry_frag> gf;
-		gf.setgeometry_frag_materialData(maxMaterials);
+		gf.setgeometry_frag_materialData(max_material_count);
 		gf.compile();
 		geometryShader = std::make_unique<Shader>(
 			"resources/shaders/build/geometry_vertex.glsl", GL_VERTEX_SHADER, 
@@ -85,8 +86,8 @@ public:
 		gem::Shader<gem::deferred_point_vertex> dpvert;
 		dpvert.compile();
 		gem::Shader<gem::deferred_point_frag> dpfrag;
-		dpfrag.setdeferred_point_frag_materialData(maxMaterials);
-		dpfrag.setdeferred_point_frag_pointLightData(2); // TODO load from scene somehow
+		dpfrag.setdeferred_point_frag_materialData(max_material_count);
+		dpfrag.setdeferred_point_frag_pointLightData(maxPointLights); // TODO load from scene somehow
 		dpfrag.compile();
 		pointShader = std::make_unique<Shader>(
 			"resources/shaders/build/deferred_point_vertex.glsl", GL_VERTEX_SHADER, 
@@ -94,7 +95,7 @@ public:
 		);
 		
 		gem::Shader<gem::deferred_directional_frag> dir;
-		dir.setdeferred_directional_frag_materialData(maxMaterials);
+		dir.setdeferred_directional_frag_materialData(max_material_count);
 		dir.compile();
 		dirShader = std::make_unique<Shader>(
 			"resources/shaders/deferred_directional_vertex.glsl", GL_VERTEX_SHADER, 
