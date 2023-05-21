@@ -59,7 +59,7 @@ template<class T1, class T2>
 class BSHView {};
 
 template<class... Args1, class... Args2>
-class BSHView<std::tuple<Args1...>, std::tuple<Args2...>> {
+class BSHView<std::tuple<Args1...>, std::tuple<entt::exclude_t<Args2>...>> {
 public:
 	BSHView(const entt::registry& registry, const BoundingSphereHierarchy<Entity>& bsh, std::function<bool(glm::vec4)> comparator) : registry(registry), bsh(bsh), comparator(comparator) {}
 
@@ -92,7 +92,7 @@ template<class T1, class T2>
 class DefaultView {};
 
 template<class T1, class T2, class... Args1, class... Args2>
-class DefaultView<std::tuple<T1, T2, Args1...>, std::tuple<Args2...>> {
+class DefaultView<std::tuple<T1, T2, Args1...>, std::tuple<entt::exclude_t<Args2>...>> {
 public:
 	DefaultView(const entt::basic_registry<uint64_t>& registry) : registry(registry) {}
 

@@ -61,9 +61,7 @@ public:
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
 		palm.add<Transparent>();
-		crate1.add<Opaque>();
-		crate2.add<Opaque>();
-		crate3.add<Opaque>();
+		crate1.add<Transparent>();
 
 		palm.setPosition(glm::vec3(0, 0, -5));
 		crate1.setPosition(glm::vec3(5, 0, 0));

@@ -108,7 +108,7 @@ public:
 
 		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
 		
-		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, Opaque>();
+		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, ExcludeComponent<Transparent>>();
 
 		if (buildBatch) {
 			batchManager.batches.clear();
@@ -116,8 +116,7 @@ public:
 			modelView.each([](
 				const PropertiesModel& propertiesModel, 
 				const Meshes& meshes, 
-				const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D,
-				const Opaque& opaque) {
+				const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
 				batchManager.setTextureID(propertiesModel.textureID); //This should be taken from its own component in the future.
 
 				for (Mesh* mesh : meshes) {
