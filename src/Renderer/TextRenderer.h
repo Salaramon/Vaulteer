@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "Model/VertexArray.h"
 #include "Model/Storage/QuadVertex.h"
 #include "Techniques/UniformBufferTechnique.h"
@@ -13,16 +15,19 @@ public:
 	inline static VertexBuffer* vertexBuffer;
 	inline static IndexBuffer* indexBuffer;
 
-	inline static std::vector<QuadVertex> vertices;
-	inline static std::vector<GLuint> indices;
-
 	inline static glm::mat4 projection;
 
 	inline static std::unique_ptr<Shader> shader;
-	inline static uint numQuads;
 
 	inline static Font* font;
 	inline static glm::vec2 screenMiddle;
+
+	inline static constexpr uint maxQuads = 1000;
+	inline static std::array<QuadVertex, maxQuads * 4> vertices;
+	inline static std::array<GLuint, maxQuads * 6> indices;
+
+	inline static uint numQuads = 0;
+	inline static uint numVertices = 0, numIndices = 0;
 
 	static void initialize(uint screenWidth, uint screenHeight) {
 		buildScreenProjection(screenWidth, screenHeight);
@@ -30,6 +35,9 @@ public:
 		vertexArray = std::make_unique<VertexArray>();
 		vertexBuffer = vertexArray->createVertexBuffers(QuadVertex::getFormat()).at(0);
 		indexBuffer = vertexArray->createIndexBuffer();
+
+		vertexBuffer->reserve(maxQuads * 4);
+		indexBuffer->reserve(maxQuads * 6);
 
 		font = FontLibrary::loadFont({"Georgia", "resources/fonts/georgia/msdf.json", "resources/fonts/georgia/msdf.png"});
 
@@ -50,57 +58,57 @@ public:
 	static void render(Scene<SCENE_ID>& scene) {
 		shader->use();
 
-		OpenGL::disableDepthTest();
-		OpenGL::enableBlending();
+		OpenGL::depthTest(false);
+		OpenGL::blending(true);
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 
 		glBindTextureUnit(0, font->mapTexture->textureID);
 		shader->setUniform("msdf", 0);
 
-		buildSomeText();
-
 		vertexArray->bind();
-		glDrawElements(GL_TRIANGLES, numQuads * 6, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
 		vertexArray->unbind();
-
-		OpenGL::disableBlending();
-		OpenGL::enableDepthTest();
+		
+		OpenGL::blending(false);
+		OpenGL::depthTest(true);
 	}
 
+	static void clearScene() {
+		numQuads = 0;
+		numVertices = 0;
+		numIndices = 0;
+	}
 
+	static void submitText(std::string content, glm::vec2 position = screenMiddle, float scale = 1.0) {
 
-	static void buildSomeText() {
-		std::string content;
-		for (int i = 0; i < 1000; i++) {
-			content += rand() % 128 + 32;
-			if ((i - 40) % 100 == 0) content += '\n';
-		}
+		uint index = numQuads;
+		auto [lineSize, quads] = FontLibrary::stringToQuads(font, content, position, scale);
+		numQuads += quads.size();
 
-		vertices.clear();
-		indices.clear();
-
-		auto [lineSize, quads] = FontLibrary::stringToQuads(font, content, screenMiddle, 1.0);
-		numQuads = quads.size();
-		
-		int i = 0;
+		int offset = 0;
 		for (auto& quad : quads) {
+			/* eventual quad transforms here
 			quad.x -= lineSize.x / 2;
 			quad.y -= lineSize.y / 2;
+			*/
 
-			auto v = quad.vertices();
-			vertices.insert(vertices.end(), std::begin(v), std::end(v));
+			std::array<QuadVertex, 4> v = quad.vertices();
+			std::copy(std::begin(v), std::end(v), vertices.begin() + numVertices);
+			numVertices += 4;
 
-			std::array<uint, 6> quadInd = quad.indices();
-			for (int j = 0; j < 6; j++) {
-				quadInd[j] += 4 * i;
-			}
-
-			indices.insert(indices.end(), std::begin(quadInd), std::end(quadInd));
-			i++;
+			std::array<uint, 6> in = quad.indices();
+			indices[numIndices + 0] = (offset + index) * 4 + 0;
+			indices[numIndices + 1] = (offset + index) * 4 + 1;
+			indices[numIndices + 2] = (offset + index) * 4 + 2;
+			indices[numIndices + 3] = (offset + index) * 4 + 2;
+			indices[numIndices + 4] = (offset + index) * 4 + 3;
+			indices[numIndices + 5] = (offset + index) * 4 + 0;
+			numIndices += 6;
+			offset++;
 		}
 
-  		vertexBuffer->insert(vertices.data(), vertices.size());
-		indexBuffer->insert(indices.data(), indices.size());
+		vertexBuffer->insertPartial(index * 4, &vertices[index*4], offset * 4);
+		indexBuffer->insertPartial(index * 6, &indices[index*6], offset * 6);
 	}
 
 

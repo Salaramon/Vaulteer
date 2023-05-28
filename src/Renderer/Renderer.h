@@ -13,7 +13,6 @@ class Renderer {
 public:
 	template<size_t SCENE_ID>
 	void render(Scene<SCENE_ID>& scene) {
-
 		UniformBufferTechnique::uploadCameraProjection(scene.getActiveCamera().projectionMatrix());
 
 		(Renderers::render(scene), ...);

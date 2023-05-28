@@ -59,9 +59,9 @@ public:
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
 		{
-			glDepthMask(GL_FALSE);
-			OpenGL::enableDepthTest();
-			OpenGL::enableBlending();
+			OpenGL::depthMask(false);
+			OpenGL::depthTest(true);
+			OpenGL::blending(true);
 
 			OpenGL::setBlendMode(AlphaBufferTex::Accumulated, GLBlendModes::One, GLBlendModes::One);
 			OpenGL::setBlendMode(AlphaBufferTex::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
@@ -69,7 +69,7 @@ public:
 
 			blendingPass(scene);
 			
-			glDepthMask(GL_TRUE);
+			OpenGL::depthMask(true);
 		}
 
 		{
@@ -79,7 +79,7 @@ public:
 
 			compositePass();
 
-			OpenGL::disableBlending();
+			OpenGL::blending(false);
 		}
 	}
 

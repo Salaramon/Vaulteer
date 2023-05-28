@@ -4,30 +4,8 @@
 #include <nlohmann/json.hpp>
 
 #include "Model/Resources/FontResourceLocator.h"
+#include "Model/Storage/Quad.h"
 #include "Utils/FileUtils.h"
-#include "Utils/TypeDefUtils.h"
-#include "Model/Storage/QuadVertex.h"
-
-struct Quad {
-	float x, y, w, h;
-	glm::vec2 texFrom, texTo;
-
-	Quad(float x, float y, float w, float h, glm::vec2 texFrom = {0.0, 0.0}, glm::vec2 texTo = {1.0, 1.0})
-		: x(x), y(y), w(w), h(h), texFrom(texFrom), texTo(texTo) {}
-
-	std::array<QuadVertex, 4> vertices() {
-		std::array<QuadVertex, 4> vertices;
-		vertices[0] = QuadVertex({x, y, 0}, texFrom);
-		vertices[1] = QuadVertex({x + w, y, 0}, glm::vec2(texTo.x, texFrom.y));
-		vertices[2] = QuadVertex({x + w, y - h, 0}, texTo);
-		vertices[3] = QuadVertex({x, y - h, 0}, glm::vec2(texFrom.x, texTo.y));
-		return vertices;
-	}
-
-	std::array<uint, 6> indices() {
-		return {0, 1, 2, 2, 3, 0};
-	}
-};
 
 struct Glyph {
 	char code;
@@ -89,14 +67,14 @@ public:
 
 	inline static std::unordered_map<std::string, std::unique_ptr<Font>> fontLibrary; 
 
-	static std::tuple<glm::vec2, std::vector<Quad>> stringToQuads(const Font* font, std::string chars, glm::vec2 pos, float size = 1.0) {
+	static std::tuple<glm::vec2, std::vector<Quad>> stringToQuads(const Font* font, std::string& chars, glm::vec2 pos, float size = 1.0) {
 		std::vector<Quad> quads;
 		quads.reserve(chars.size());
 
 		auto& atlas = font->atlas;
 
 		float biggestW = 0.f, biggestH = 0.f;
-		float lastGlyphW;
+		float lastGlyphW = 0.f;
 
 		float sumAdvanceW = 0.f, sumAdvanceH = 0.f;
 		float scaleFactor = atlas.size * size;
@@ -129,8 +107,7 @@ public:
 			}
 		}
 
-		std::cout << "cumulative line width: " << biggestW * scaleFactor << std::endl;
-		return {{(biggestW + lastGlyphW) * scaleFactor, biggestH * scaleFactor}, std::move(quads)};
+		return {{(biggestW + lastGlyphW) * scaleFactor, biggestH * scaleFactor}, quads};
 	}
 
 	static Quad quadFromGlyph(const FontAtlas& atlas, Glyph& g, glm::vec2 pos, float scale) {

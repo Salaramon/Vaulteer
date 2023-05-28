@@ -61,33 +61,25 @@ public:
 	//Face culling enumerations
 	inline static const GLenum FRONT = GL_FRONT;
 	inline static const GLenum BACK = GL_BACK;
-
-	//Debug enumeration
-	inline static const GLenum SYNC = 0x01;
+	inline static const GLenum FRONT_AND_BACK = GL_FRONT_AND_BACK;
 
 	static void initialize();
-	static void initializeSTBI();
 
-	static void enableDepthTest();
-	static void disableDepthTest();
-	static void enableStencilTest();
-	static void disableStencilTest();
-	static void enableDebugOutput(GLenum mode = 0);
-	static void disableDebugOutput();
-	static void enableCullFace();
-	static void enableCullFace(GLenum faces);
-	static void disableCullFace();
-	static void enableDirectDebugMessageing();
-	static void disableDirectDebugMessageing();
-	static void enableSRGB();
-	static void disableSRGB();
+	static void depthMask(bool enabled);
+	static void depthTest(bool enabled);
+	static void stencilTest(bool enabled);
 
-	static void enableBlending();
-	static void disableBlending();
+	static void directDebugMessaging(bool enabled);
+	static void SRGB(bool enabled);
+	static void blending(bool enabled);
+
+	static void debugOutput(GLenum mode);
+	static void cullFace(GLenum faces);
+
 	static void setBlendMode(GLenum sourceFactor, GLenum destFactor);
 	static void setBlendMode(GLint target, GLenum sourceFactor, GLenum destFactor);
 
 	inline static bool directMessaging = false;
 
-	inline static GLenum debugModes = 0;
+	inline static GLenum debugModes = GL_NONE;
 };

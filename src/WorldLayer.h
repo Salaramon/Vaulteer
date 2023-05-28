@@ -144,8 +144,31 @@ public:
 		glClearColor(0.001f, 0.001f, 0.001f, 1.0f);
 	}
 
+	float fps = 0.0f;
+	float cumTime = 0.0f;
+	uint cumFrames = 0;
+
 	void onUpdate(float timestep) override {
 		cameraController.onUpdate(timestep);
+
+		TextRenderer::clearScene();
+		std::string content;
+		for (int i = 0; i < 1000; i++) {
+			content += rand() % 128 + 32;
+			if ((i - 40) % 100 == 0) content += '\n';
+		}
+		TextRenderer::submitText(content, {1, 200});
+
+		cumTime += timestep;
+		cumFrames++;
+		if (cumTime > 0.5f) {
+			fps = (float)cumFrames / cumTime;
+			cumFrames = 0;
+			cumTime = 0;
+		}
+
+		std::string timer = std::format("FPS {:.1f}", fps);
+		TextRenderer::submitText(timer, {20, 27}, 0.5);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		renderer.render(scene);

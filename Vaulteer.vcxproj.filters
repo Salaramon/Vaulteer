@@ -329,6 +329,7 @@
     </ClInclude>
     <ClInclude Include="src\Utils\FileUtils.h" />
     <ClInclude Include="src\Model\Resources\FontResourceLocator.h" />
+    <ClInclude Include="src\Model\Storage\Quad.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">

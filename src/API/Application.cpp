@@ -44,6 +44,7 @@ size_t Application::run() {
 		float time = glfwGetTime();
 		float timestep = time - lastFrameTime;
 		lastFrameTime = time;
+		frameCounter++;
 
 		for (Layer* layer : layerStack) {
 			layer->onUpdate(timestep);

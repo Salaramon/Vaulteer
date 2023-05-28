@@ -129,21 +129,21 @@ public:
 		}
 
 		
-		OpenGL::enableDepthTest();
+		OpenGL::depthTest(true);
 
 		geometryPass(camera);
 
-		OpenGL::disableDepthTest();
-		OpenGL::enableBlending();
+		OpenGL::depthTest(false);
+		OpenGL::blending(true);
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 		
 		directionalLightPass(camera);
-		OpenGL::enableCullFace(OpenGL::FRONT);
+		OpenGL::cullFace(OpenGL::FRONT);
 		
 		lightingPass(camera);
 		
-		OpenGL::disableBlending();
-		OpenGL::disableCullFace();
+		OpenGL::blending(false);
+		OpenGL::cullFace(GL_NONE);
 	}
 
 	static void geometryPass(const CameraReference& camera) {

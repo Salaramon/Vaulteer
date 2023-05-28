@@ -127,6 +127,7 @@
     <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Storage\MaterialVertex.h" />
     <ClInclude Include="src\Model\Storage\Point.h" />
+    <ClInclude Include="src\Model\Storage\Quad.h" />
     <ClInclude Include="src\Model\Storage\QuadVertex.h" />
     <ClInclude Include="src\Model\Storage\Vertex.h" />
     <ClInclude Include="src\Model\Storage\VertexContainer.h" />

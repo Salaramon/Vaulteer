@@ -29,7 +29,6 @@ public:
 	virtual ~Application() = default;
 
 	static Window& getWindow() { return *(instance->window); }
-	static Application& get() { return *instance; }
 
 	/* Initialization - runs once on start/restart, calls subclass */
 	void init();
@@ -39,7 +38,7 @@ public:
 
 	void onEvent(BaseEvent& e);
 
-protected:
+
 	virtual void setup() = 0;
 
 	const ApplicationSpecification& specification;
@@ -52,7 +51,7 @@ protected:
 	bool isMinimized = false;
 
 	float lastFrameTime = 0.0f;
+	uint frameCounter = 0;
 
-private:
 	static Application* instance;
 };
