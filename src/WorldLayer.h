@@ -78,6 +78,30 @@ public:
 			scene.add(*model);
 		}
 
+		/*
+		auto mat1 = palm.meshes->at(0)->material->data;
+		mat1.matOpacity = 0.1;
+		auto mat2 = palm.meshes->at(1)->material->data;
+		mat2.matOpacity = 0.1;
+		auto* ins1 = MaterialLibrary::create(mat1, "palm0_transparent");
+		auto* ins2 = MaterialLibrary::create(mat2, "palm1_transparent");
+
+		for (int y = 0; y < 100; y++) {
+			for (int x = 0; x < 100; x++) {
+				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+
+				a.setPosition(y*4 - 100, -(rand() % 6), x*4 - 100);
+				if ((y + x % 16) % 16 == 0) {
+					a.setMaterial(ins1, 0);
+					a.setMaterial(ins2, 1);
+					a.add<Transparent>();
+				}
+			}
+			
+		}
+		*/
+
+
 		//Generate trees how about you kill yourself
 		/*
 		intmax_t width = 10, height = 10;

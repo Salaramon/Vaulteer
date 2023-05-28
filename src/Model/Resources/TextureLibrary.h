@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Model/Material.h"
+#include "Model/Textures/Texture2D.h"
 #include "Model/Textures/TextureViewData.h"
 
 constexpr size_t max_texture_count = 128;
@@ -19,26 +20,29 @@ public:
 	inline static std::vector<TextureData> textureData;
 	
 	inline static bool packingErrorReported = false;
-
+	
+	inline static std::unique_ptr<Texture2D> defaultTexture;
 	inline static std::vector<std::unique_ptr<Texture2DArray>> textureLibrary;
-
-
+	
+	static Texture2D* initDefaultTexture() {
+		Image2D whitePixel({ 0xFFFFFFFF }, 1, 1);
+		defaultTexture = std::make_unique<Texture2D>(whitePixel, false);
+		return defaultTexture.get();
+	}
 
 	static Texture2DArray* storeMaterialTextures(const std::vector<Material*>& materials) {
 		/*
 		 * TODO: always assumes 3 texture types based on what's implemented (see: Material::validTextureTypes)
 		 * Could be done better by dynamically allocating space for n types based on what textures are read here. ASSIMP supports many types of textures.
 		 */
-
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
 
-		std::vector<uint32_t> whitePixel = { 0xFFFFFFFF };
-		Image2D& pixelImg = images.emplace_back(whitePixel, 1, 1);
-		pixelImg.view.textureViewId = numTextureViews;
+		Image2D& whitePixel = images.emplace_back(std::vector<uint32_t>{ 0xFFFFFFFF }, 1, 1);
+		whitePixel.view.textureViewId = numTextureViews;
 		textureData.emplace_back(numTextures++);
 
-		views.push_back(pixelImg.view);
+		views.push_back(whitePixel.view);
 		viewIndexByTexturePath["white1x1"] = numTextureViews;
 		numTextureViews += 3;
 

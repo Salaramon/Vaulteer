@@ -282,7 +282,7 @@
     <ClInclude Include="src\SceneTypedefs.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Text\TextLoader.h">
+    <ClInclude Include="src\Text\FontLibrary.h">
       <Filter>Source Files\Text</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
@@ -327,6 +327,8 @@
     <ClInclude Include="vendor\GEM\GEM.h">
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\FileUtils.h" />
+    <ClInclude Include="src\Model\Resources\FontResourceLocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -354,9 +356,6 @@
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Textures\Texture.cpp">
-      <Filter>Source Files\Model\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model\Textures\Texture2D.cpp">
       <Filter>Source Files\Model\Textures</Filter>
     </ClCompile>
     <ClCompile Include="src\OpenGL.cpp">

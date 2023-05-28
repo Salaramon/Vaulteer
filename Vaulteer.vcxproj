@@ -114,6 +114,7 @@
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\ModelResourceLocator.h" />
+    <ClInclude Include="src\Model\Resources\FontResourceLocator.h" />
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h" />
     <ClInclude Include="src\Model\Resources\MaterialLoader.h" />
     <ClInclude Include="src\Model\Resources\MeshLibrary.h" />
@@ -161,7 +162,7 @@
     <ClInclude Include="src\Scene\Register.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\SceneTypedefs.h" />
-    <ClInclude Include="src\Text\TextLoader.h" />
+    <ClInclude Include="src\Text\FontLibrary.h" />
     <ClInclude Include="src\Utils\FileUtils.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />

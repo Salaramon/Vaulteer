@@ -14,7 +14,7 @@ public:
 		reserve(internalFormat);
 
 		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, repeatX);
 		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, repeatY);
@@ -27,7 +27,7 @@ public:
 		initialize(img);
 
 		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, repeatX);
 		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, repeatY);
@@ -58,7 +58,6 @@ public:
 
 		assert(img.load());
 
-		glTextureStorage2D(textureID, 1, img.internalFormat, w, h);
 		glTextureSubImage2D(textureID, 0, 0, 0, w, h, img.dataFormat, GL_UNSIGNED_BYTE, img.data);
 
 		if (mipmapEnabled)

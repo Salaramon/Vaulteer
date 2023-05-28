@@ -1,6 +1,8 @@
 #include "vpch.h"
 #include "Application.h"
 
+#include "Renderer/Renderer.h"
+
 
 Application* Application::instance = nullptr;
 
@@ -18,14 +20,12 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	OpenGL::initialize();
 
 	Event::initialize();
-
 	Event::setEventCallback(FORWARD_FN(onEvent));
+
+	TextureLibrary::initDefaultTexture();
 }
 
 void Application::init() {
-	Image2D whitePixel({ 0xFFFFFFFF }, 1, 1);
-	defaultTexture = std::make_unique<Texture2D>(whitePixel, false);
-
 	auto rebuildGBufferFn = [&](int w, int h) {
 		DeferredRenderer::rebuildGBuffer(w, h);
 		BlendingForwardRenderer::rebuildAlphaBuffer(w, h);

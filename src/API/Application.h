@@ -55,5 +55,4 @@ protected:
 
 private:
 	static Application* instance;
-	std::unique_ptr<Texture2D> defaultTexture;
 };

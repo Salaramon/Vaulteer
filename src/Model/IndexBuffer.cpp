@@ -30,6 +30,10 @@ void IndexBuffer::insertPartial(size_t position, const std::vector<GLuint>& indi
 	glNamedBufferSubData(buffer, position * sizeof(GLuint), indices.size() * sizeof(GLuint), indices.data());
 }
 
+void IndexBuffer::insertPartial(size_t position, const void* data, size_t count) {
+	glNamedBufferSubData(buffer, position * sizeof(GLuint), count * sizeof(GLuint), data);
+}
+
 void IndexBuffer::reserve(size_t bufferSize) const {
 	glNamedBufferStorage(buffer, bufferSize * sizeof(GLuint), nullptr, GL_DYNAMIC_STORAGE_BIT);
 }

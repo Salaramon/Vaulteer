@@ -24,6 +24,8 @@ public:
 
 	void insertPartial(size_t position, const std::vector<GLuint>& indices);
 
+	void insertPartial(size_t position, const void* data, size_t count);
+
 	void reserve(size_t bufferSize) const;
 
 	void bindVertexArray(GLuint vao);

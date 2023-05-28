@@ -75,6 +75,7 @@ public:
 		{
 			// TODO: put this in gbuffer or something
 			DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
+			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
 			compositePass();
 
@@ -120,8 +121,6 @@ public:
 
 	static void compositePass() {
 		compositeShader->use();
-
-		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
 		//glDepthFunc(GL_LESS); // less is the default
 
