@@ -58,8 +58,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\entt;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -77,13 +77,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\ASSIMP\include;vendor\entt;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\stb_image;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
@@ -125,6 +126,7 @@
     <ClInclude Include="src\Model\Storage\InstanceVertex.h" />
     <ClInclude Include="src\Model\Storage\MaterialVertex.h" />
     <ClInclude Include="src\Model\Storage\Point.h" />
+    <ClInclude Include="src\Model\Storage\QuadVertex.h" />
     <ClInclude Include="src\Model\Storage\Vertex.h" />
     <ClInclude Include="src\Model\Storage\VertexContainer.h" />
     <ClInclude Include="src\Model\Storage\VertexHash.h" />
@@ -153,11 +155,14 @@
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h" />
+    <ClInclude Include="src\Renderer\TextRenderer.h" />
     <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Object3D.h" />
     <ClInclude Include="src\Scene\Register.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\SceneTypedefs.h" />
+    <ClInclude Include="src\Text\TextLoader.h" />
+    <ClInclude Include="src\Utils\FileUtils.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />
@@ -183,7 +188,6 @@
     <ClCompile Include="src\Model\Resources\ResourceManager.cpp" />
     <ClCompile Include="src\Model\Textures\CubemapTexture.cpp" />
     <ClCompile Include="src\Model\Textures\Texture.cpp" />
-    <ClCompile Include="src\Model\Textures\Texture2D.cpp" />
     <ClCompile Include="src\OpenGL.cpp" />
     <ClCompile Include="src\Program.cpp" />
     <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp" />
@@ -216,6 +220,7 @@
     <None Include="resources\backpack\teapot.obj" />
     <None Include="resources\cone.obj" />
     <None Include="resources\cube.obj" />
+    <None Include="resources\fonts\hack\mask.json" />
     <None Include="resources\palm\palm.mtl" />
     <None Include="resources\palm\palm.obj" />
     <None Include="resources\plane\plane_mesh.mtl" />
@@ -224,18 +229,18 @@
     <None Include="resources\quad.obj" />
     <None Include="resources\shaders\blending_composite_frag.glsl" />
     <None Include="resources\shaders\blending_composite_vertex.glsl" />
-    <None Include="resources\shaders\preprocessor\blending_vertex.gem" />
     <None Include="resources\shaders\cluster_tile_compute.glsl" />
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
-    <None Include="resources\shaders\preprocessor\forward_vertex.gem" />
     <None Include="resources\shaders\preprocessor\blending_frag.gem" />
+    <None Include="resources\shaders\preprocessor\blending_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_frag.gem" />
     <None Include="resources\shaders\preprocessor\deferred_point_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_spot_frag.gem" />
     <None Include="resources\shaders\preprocessor\forward_frag.gem" />
+    <None Include="resources\shaders\preprocessor\forward_vertex.gem" />
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem" />
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
@@ -250,6 +255,8 @@
     <None Include="resources\shaders\shadow_cube_vertex.glsl" />
     <None Include="resources\shaders\shadow_frag.glsl" />
     <None Include="resources\shaders\shadow_vertex.glsl" />
+    <None Include="resources\shaders\text_frag.glsl" />
+    <None Include="resources\shaders\text_vertex.glsl" />
     <None Include="resources\shaders\volume_frag.glsl" />
     <None Include="resources\shaders\volume_geom.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
@@ -268,6 +275,7 @@
     <Image Include="resources\backpack\roughness.jpg" />
     <Image Include="resources\backpack\specular.jpg" />
     <Image Include="resources\box.png" />
+    <Image Include="resources\fonts\hack\mask.png" />
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />

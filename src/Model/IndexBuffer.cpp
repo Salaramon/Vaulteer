@@ -22,6 +22,10 @@ void IndexBuffer::insert(const std::vector<GLuint>& indices) {
 	glNamedBufferData(buffer, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 }
 
+void IndexBuffer::insert(const void* data, size_t count) {
+	glNamedBufferData(buffer, count * sizeof(GLuint), data, GL_STATIC_DRAW);
+}
+
 void IndexBuffer::insertPartial(size_t position, const std::vector<GLuint>& indices) {
 	glNamedBufferSubData(buffer, position * sizeof(GLuint), indices.size() * sizeof(GLuint), indices.data());
 }

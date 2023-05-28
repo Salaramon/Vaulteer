@@ -7,6 +7,7 @@
 
 #include "API/Application.h"
 #include "Model/Resources/ResourceManager.h"
+#include "Renderer/TextRenderer.h"
 #include "Utils/MathUtils.h"
 
 class WorldLayer : public Layer {
@@ -23,7 +24,7 @@ public:
 	inline static constexpr size_t scene_0 = 0;
 	Scene<scene_0> scene;
 
-	Renderer<DeferredRenderer, BlendingForwardRenderer> renderer;
+	Renderer<DeferredRenderer, BlendingForwardRenderer, TextRenderer> renderer;
 	//Renderer<ForwardRenderer> renderer;
 
 	void onAttach() override {
@@ -39,6 +40,7 @@ public:
 		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		TextRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		
 		camera.enableAxisLock();
@@ -60,21 +62,6 @@ public:
 		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
-		for (Material* mat : MaterialLibrary::getAllMaterials())
-			mat->data.matOpacity = 1.0;
-
-		palm.add<Transparent>();
-		crate1.add<Transparent>();
-		crate2.add<Transparent>();
-		crate3.add<Transparent>();
-
-		/*
-		Material::MaterialData& data = palm.meshes->at(1)->material->data;
-		Material::MaterialData transparent = data;
-		transparent.matOpacity = 0.1f;
-		palm.setMaterial(MaterialLibrary::create(transparent, "palm0_transparent"), 0);
-		palm.addRenderComponents();
-		*/
 
 		palm.setPosition(glm::vec3(0, 0, -5));
 		crate1.setPosition(glm::vec3(5, 0, 0));

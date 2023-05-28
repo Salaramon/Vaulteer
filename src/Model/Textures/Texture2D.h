@@ -7,26 +7,67 @@
 
 class Texture2D : public Texture {
 public:
-    Texture2D(TextureResourceLocator path, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
-    Texture2D(int width, int height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE);
+	Texture2D(int width, int height, GLenum internalFormat, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE)
+			: Texture(width, height, mipmapEnabled) {
 
-    Texture2D(int width, int height, std::vector<glm::vec4> colors);
+		createTexture(GL_TEXTURE_2D);
+		reserve(internalFormat);
 
-    Texture2D(Texture2D& other) noexcept;
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    Texture2D(Texture2D&& other) noexcept;
-    ~Texture2D();
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, repeatX);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, repeatY);
+	}
 
-    void setupBlankTexture(GLenum internalFormat, GLenum format) const;
+	Texture2D(Image2D& img, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE)
+			: Texture(img.w, img.h, mipmapEnabled) {
 
-    GLint getTextureID() const;
+		createTexture(GL_TEXTURE_2D);
+		initialize(img);
 
-    void setWrap(GLenum x, GLenum y) const;
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-protected:
-    TextureResourceLocator locator;
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, repeatX);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, repeatY);
+	}
 
-    void createSingleImageTexture();
-    void createTextureFromData(GLenum internalFormat, GLenum format, byte* data);
+	Texture2D(Texture2D& other) noexcept
+			: Texture(other.w, other.h, other.mipmapEnabled) {
+		textureID = other.textureID;
+		other.textureID = 0;
+	}
+
+	Texture2D(Texture2D&& other) noexcept
+			: Texture(other.w, other.h, other.mipmapEnabled) {
+		textureID = other.textureID;
+		other.textureID = 0;
+	}
+
+	~Texture2D() {
+		cleanup();
+	}
+
+	void reserve(GLenum internalFormat) {
+		glTextureStorage2D(textureID, 1, internalFormat, w, h);
+	}
+
+	void initialize(Image2D& img) {
+		reserve(img.internalFormat);
+
+		assert(img.load());
+
+		glTextureStorage2D(textureID, 1, img.internalFormat, w, h);
+		glTextureSubImage2D(textureID, 0, 0, 0, w, h, img.dataFormat, GL_UNSIGNED_BYTE, img.data);
+
+		if (mipmapEnabled)
+			glGenerateTextureMipmap(textureID);
+
+		assert(img.free());
+	}
+
+	GLint getTextureID() const {
+		return textureID;
+	}
 };
-

@@ -5,14 +5,13 @@
 
 #include "Renderer/BlendingForwardRenderer.h"
 #include "Renderer/DeferredRenderer.h"
-#include "Renderer/Shader.h"
 
 class DebugLayer : public Layer {
 public:
 	DebugLayer(WorldLayer* world) : Layer("DebugLayer"), world(world) {}
 
 	WorldLayer* world;
-	
+
 	//void onAttach() override;
 	//void onUpdate(float timestep) override;
 

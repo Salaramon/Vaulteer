@@ -29,7 +29,9 @@ public:
 	};
 
 
-	UniformBuffer(const UniformBlock& block, GLenum hint = DrawHint::Dynamic) : name(block.name), binding(block.binding), size(block.size), drawHint(hint) {}
+	UniformBuffer(const UniformBlock& block, GLenum hint = DrawHint::Dynamic) : name(block.name), binding(block.binding), size(block.size), drawHint(hint) {
+		glNamedBufferData(buffer, size, nullptr, drawHint);
+	}
 
 	UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(other)), binding(other.binding), size(other.size), drawHint(other.drawHint) {
 		other.buffer = 0;
@@ -42,7 +44,7 @@ public:
 		assert(dataSize <= size);
 
  		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
-		glNamedBufferData(buffer, std::min(size, dataSize), data.data(), drawHint);
+		glNamedBufferSubData(buffer, 0, dataSize, data.data());
 	}
 
 	template<class T>
@@ -52,18 +54,17 @@ public:
 		assert(dataSize <= size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
-		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
+		glNamedBufferSubData(buffer, 0, dataSize, &data);
 	}
 
 	template<class T>
-	void insertAt(const T& data, int index) {
-		// TODO this is not finished
+	void insertAt(const T& data, size_t offset) {
 		GLsizei dataSize = sizeof(data);
 
-		assert(index * dataSize + dataSize <= size);
+		assert(offset + dataSize <= size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
-		glNamedBufferData(buffer, std::min(size, dataSize), &data, drawHint);
+		glNamedBufferSubData(buffer, offset, dataSize, &data);
 	}
 
 	UniformBuffer(UniformBuffer& other) = delete;

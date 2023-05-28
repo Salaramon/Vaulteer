@@ -41,6 +41,7 @@ public:
 	std::vector<VertexBuffer*> createVertexBuffers(const BufferLayout& bufferLayout) {
 		setUpAttributes(bufferLayout);
 
+		// create view
 		std::vector<VertexBuffer*> buffers;
 		for (auto& buf : vertexBuffers) {
 			buffers.push_back(buf.get());

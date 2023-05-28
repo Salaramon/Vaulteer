@@ -34,6 +34,7 @@ project "Vaulteer"
 		"src/**",
 		"resources/**",
 		"vendor/GEM/GEM.h",
+		
 		"vendor/GLAD/src/**.c",
 	}
 
@@ -43,8 +44,8 @@ project "Vaulteer"
 
 	includedirs {
 		"%{wks.location}/src",
+		"%{wks.location}/vendor/_headers",
 		"%{wks.location}/vendor/ASSIMP/include",
-		"%{wks.location}/vendor/entt",
 		"%{wks.location}/vendor/GEM/include",
 		"%{wks.location}/vendor/GLAD/include",
 		"%{wks.location}/vendor/GLFW/include",
@@ -52,7 +53,6 @@ project "Vaulteer"
 		"%{wks.location}/vendor/miniball/include",
 		"%{wks.location}/vendor/rectpack2D/include",
 		"%{wks.location}/vendor/sqlite/include",
-		"%{wks.location}/vendor/stb_image",
 		"%{wks.location}/vendor/tomlplusplus-2.4.0/include",
 	}
 
@@ -77,6 +77,11 @@ project "Vaulteer"
 	   ["Resource Files/unspecified/*"] = { "resources/**", "**" },
 	}
 
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
+	}
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }
@@ -89,6 +94,7 @@ project "Vaulteer"
 	filter "configurations:Release"
 		defines { "NDEBUG" }
 		optimize "On"
+		inlining "Auto"
 
 		links {
 			"assimp-vc142-mt"

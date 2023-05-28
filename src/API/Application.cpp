@@ -1,10 +1,6 @@
 #include "vpch.h"
 #include "Application.h"
 
-#include "Events/Event.h"
-#include "Renderer/BlendingForwardRenderer.h"
-#include "Renderer/DeferredRenderer.h"
-
 
 Application* Application::instance = nullptr;
 
@@ -27,9 +23,13 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 }
 
 void Application::init() {
+	Image2D whitePixel({ 0xFFFFFFFF }, 1, 1);
+	defaultTexture = std::make_unique<Texture2D>(whitePixel, false);
+
 	auto rebuildGBufferFn = [&](int w, int h) {
 		DeferredRenderer::rebuildGBuffer(w, h);
 		BlendingForwardRenderer::rebuildAlphaBuffer(w, h);
+		TextRenderer::buildScreenProjection(w, h);
 	};
 	window->addResizeCallback(rebuildGBufferFn);
 

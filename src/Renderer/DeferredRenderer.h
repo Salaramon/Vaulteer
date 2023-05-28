@@ -13,6 +13,7 @@
 #include "Renderer/Buffers/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
 #include "Techniques/UniformBufferTechnique.h"
+#include "Renderer/Shader.h"
 
 #include "Scene/Scene.h"
 

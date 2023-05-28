@@ -1,8 +1,6 @@
 #include "vpch.h"
 #include "Renderer/Shader.h"
 
-#include "Techniques/UniformBufferTechnique.h"
-
 void Shader::use() const {
 	glUseProgram(shaderProgramID);
 }
@@ -123,27 +121,6 @@ bool Shader::catchCompileError(GLuint id, const std::string& filename) {
 	}
 
 	return false;
-}
-
-std::string Shader::readFile(std::string& path) {
-	// TODO read without exceptions...
-	std::ifstream file;
-	file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try {
-		std::stringstream stream;
-
-		file.open(path);
-		stream << file.rdbuf();
-		file.close();
-		return stream.str();
-	}
-	catch (std::ifstream::failure& e) {
-		std::cout << std::format("Error reading file:\n\t{}", path) << std::endl;
-		__debugbreak();
-		//Return empty string upon error.
-		return "";
-	}
 }
 
 template<class T>

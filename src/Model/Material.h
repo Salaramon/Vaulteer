@@ -6,6 +6,8 @@
 
 #include "Model/Textures/Texture2DArray.h"
 
+constexpr int validTextureTypeSize = 3;
+
 class Material {
 public:
 	std::string name;
@@ -20,7 +22,7 @@ public:
 	
 	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
-	inline static std::array<aiTextureType, 3> validTextureTypes {
+	inline static std::array<aiTextureType, validTextureTypeSize> validTextureTypes {
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
 		aiTextureType_HEIGHT,

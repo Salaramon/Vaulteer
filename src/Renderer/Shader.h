@@ -4,11 +4,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <string>
-#include <iostream>
 #include <vector>
 
-
+#include "Techniques/UniformBufferTechnique.h"
+#include "Utils/FileUtils.h"
 
 class Shader {
 	// Parameter utility
@@ -111,11 +110,6 @@ private:
 	//Checks and logs eventual shader compile errors.
 	bool catchCompileError(GLuint id, const std::string& filename);
 
-
-
-	//Takes file contents and converts it to string.
-	//Returns contents of a file in string format.
-	std::string readFile(std::string& path);
 
 	//Wraps OpenGL int vector(iv) functions. !!(Warning: May be incomplete!)
 	//Returns an integer representing parameters pertaining to OpenGL's object status.

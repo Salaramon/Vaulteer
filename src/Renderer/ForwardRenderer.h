@@ -4,8 +4,9 @@
 
 #include "API/Camera.h"
 
-#include "Scene/Scene.h"
 #include "Model/Resources/ResourcePack.h"
+#include "Scene/Scene.h"
+#include "Renderer/Shader.h"
 
 class ForwardRenderer {
 

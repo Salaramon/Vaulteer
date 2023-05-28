@@ -43,6 +43,7 @@ public:
 
 		std::vector<MaterialVertex> vertices;
 		std::vector<VertexImpl> meshVertices = mesh.getCopiedData<VertexImpl>();
+		vertices.reserve(meshVertices.size());
 
 		for (int i = 0; i < mesh.vertexContainer.size(); i++) {
 			auto* vertex = mesh.getVertex<VertexImpl>(i);
@@ -55,8 +56,8 @@ public:
 		}
 
 		std::vector<GLuint> indices = mesh.indices;
-		for (unsigned int& indice : indices) {
-			indice += numVertices;
+		for (unsigned int& index : indices) {
+			index += numVertices;
 		}
 
 		vertexBuffers[0]->insertPartial(numVertices, vertices);

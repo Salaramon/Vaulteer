@@ -39,6 +39,9 @@ private:
 		std::vector<VertexImpl> vertices;
 		std::vector<GLuint> indices;
 		std::vector<Texture> textures;
+		vertices.reserve(aiMesh->mNumVertices);
+		indices.reserve(aiMesh->mNumFaces);
+		textures.reserve(Material::validTextureTypes.size());
 
 		for (size_t i = 0; i < aiMesh->mNumVertices; i++) {
 			VertexImpl vertex = generateVertex(aiMesh, i);

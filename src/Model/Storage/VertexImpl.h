@@ -33,20 +33,3 @@ private:
 		{ "aMaterialNumber", ShaderDataType::Int, 1 } // instanced
 	};
 };
-
-struct MaterialInstance {
-	VertexContainer container;
-	uint materialNumber;
-
-	MaterialInstance(const std::vector<VertexImpl>& vertices, uint materialNumber) : container(vertices), materialNumber(materialNumber) {}
-
-	void* data() {
-		return container.data();
-	}
-	size_t size() {
-		return container.size();
-	}
-	size_t stride() {
-		return container.stride();
-	}
-};

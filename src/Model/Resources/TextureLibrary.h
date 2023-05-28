@@ -22,12 +22,9 @@ public:
 
 	inline static std::vector<std::unique_ptr<Texture2DArray>> textureLibrary;
 
-	static Texture2DArray* initializeTextureArray(int w, int h, int layers) {
-		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(w, h, layers)).get();
-	}
+
 
 	static Texture2DArray* storeMaterialTextures(const std::vector<Material*>& materials) {
-
 		/*
 		 * TODO: always assumes 3 texture types based on what's implemented (see: Material::validTextureTypes)
 		 * Could be done better by dynamically allocating space for n types based on what textures are read here. ASSIMP supports many types of textures.
@@ -36,7 +33,7 @@ public:
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
 
-		std::vector<uint32_t> whitePixel = { 0x00000000 };
+		std::vector<uint32_t> whitePixel = { 0xFFFFFFFF };
 		Image2D& pixelImg = images.emplace_back(whitePixel, 1, 1);
 		pixelImg.view.textureViewId = numTextureViews;
 		textureData.emplace_back(numTextures++);
@@ -67,18 +64,15 @@ public:
 				viewIndexByTexturePath[locator.path] = numTextureViews++;
 				views.push_back(image.view);
 
-				maxW = std::max(maxW, image.width);
-				maxH = std::max(maxH, image.height);
+				maxW = std::max(maxW, image.w);
+				maxH = std::max(maxH, image.h);
 			}
 		}
 
 		auto [width, height] = pack2D(images);
 
 		// todo how does calling this function multiple times work? everything stored here will have global IDs, but a new texture will be made each call
-
-		auto texture = initializeTextureArray(width, height, 1);
-		texture->initialize(images);
-		return texture;
+		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(images, width, height)).get();;
 	}
 
 	static TextureView& getView(unsigned int index) {

@@ -10,6 +10,12 @@
     <Filter Include="Resource Files\backpack">
       <UniqueIdentifier>{9FC13F20-0BF9-87B7-1403-ECDA80B9AEB0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\fonts">
+      <UniqueIdentifier>{19E97097-0578-FA60-AE96-0E5C9A040B07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fonts\hack">
+      <UniqueIdentifier>{9FB1487D-0B74-7C07-5424-0B94C02555E5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\palm">
       <UniqueIdentifier>{D9AB08B7-450D-E6C4-CE7A-2C773ADB1C84}</UniqueIdentifier>
     </Filter>
@@ -60,6 +66,9 @@
     </Filter>
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{C6BF7061-B2A3-31B7-1B04-2C0A07071C39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Text">
+      <UniqueIdentifier>{9D6EB60A-0985-B4A0-52FC-3FC2BE518528}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{09549E61-F537-5FB7-5E98-590A4A9B4939}</UniqueIdentifier>
@@ -168,6 +177,9 @@
     <ClInclude Include="src\Model\Storage\Point.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Storage\QuadVertex.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Storage\Vertex.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
@@ -252,6 +264,9 @@
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\TextRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scene\Entity.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
@@ -266,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="src\SceneTypedefs.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Text\TextLoader.h">
+      <Filter>Source Files\Text</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
       <Filter>Source Files\Utils</Filter>
@@ -421,6 +439,9 @@
     <None Include="resources\cube.obj">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\fonts\hack\mask.json">
+      <Filter>Resource Files\fonts\hack</Filter>
+    </None>
     <None Include="resources\palm\palm.mtl">
       <Filter>Resource Files\palm</Filter>
     </None>
@@ -445,9 +466,6 @@
     <None Include="resources\shaders\blending_composite_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\blending_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -460,10 +478,10 @@
     <None Include="resources\shaders\depth_map_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="resources\shaders\forward_vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="resources\shaders\preprocessor\blending_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\blending_vertex.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem">
@@ -479,6 +497,9 @@
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\forward_frag.gem">
+      <Filter>Resource Files\shaders\preprocessor</Filter>
+    </None>
+    <None Include="resources\shaders\preprocessor\forward_vertex.gem">
       <Filter>Resource Files\shaders\preprocessor</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem">
@@ -521,6 +542,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\shadow_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\text_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\text_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="resources\shaders\volume_frag.glsl">
@@ -572,6 +599,9 @@
     </Image>
     <Image Include="resources\box.png">
       <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\fonts\hack\mask.png">
+      <Filter>Resource Files\fonts\hack</Filter>
     </Image>
     <Image Include="resources\palm\leaflong.jpg">
       <Filter>Resource Files\palm</Filter>

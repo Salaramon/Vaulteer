@@ -24,6 +24,7 @@ uniform mat4 normal;
 
 layout (std140, binding = 0) uniform Camera {
     uniform mat4 projection;
+    uniform mat4 screenProjection;
 };
 
 ##[fragments/materialData] //! #include "fragments/materialData.gem"

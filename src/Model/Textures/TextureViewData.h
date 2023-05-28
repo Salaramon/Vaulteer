@@ -2,7 +2,7 @@
 
 #include <assimp/material.h>
 #include <rectpack2D/finders_interface.h>
-#include <glm/glm.hpp>
+#include <stb_image.h>
 
 #include "Model/Textures/TextureResourceLocator.h"
 #include "Utils/TypeDefUtils.h"
@@ -65,22 +65,24 @@ struct Image2D {
 	bool fileBacked;
 	std::string path;
 
-	int width = -1, height = -1, channels = -1;
+	int w = -1, h = -1, channels = -1;
 	byte* data = nullptr;
 	GLenum internalFormat, dataFormat;
 
-	Image2D(const TextureResourceLocator& locator) : fileBacked(true) {
-		bool ok = stbi_info(locator.path.data(), &width, &height, &channels);
+	Image2D(const TextureResourceLocator& locator) : Image2D(locator.path, locator.type) {}
+
+	Image2D(const std::string& filePath, aiTextureType type = aiTextureType_NONE) : fileBacked(true) {
+		bool ok = stbi_info(filePath.data(), &w, &h, &channels);
 		assert(ok);
 
-		path = locator.path;
-		view = TextureView({0, 0, width, height}, 0, locator.type);
+		path = filePath;
+		view = TextureView({0, 0, w, h}, 0, type);
 		auto [inFormat, exFormat] = getFormatsFromChannels(channels);
 		internalFormat = inFormat;
 		dataFormat = exFormat;
 	}
 	
-	Image2D(const std::vector<uint32_t>& pixels, int width, int height) : fileBacked(false), width(width), height(height) {
+	Image2D(const std::vector<uint32_t>& pixels, int width, int height) : fileBacked(false), w(width), h(height) {
 		channels = STBI_rgb_alpha;
 		internalFormat = GL_RGBA8;
 		dataFormat = GL_RGBA;
@@ -91,10 +93,10 @@ struct Image2D {
 	}
 
 	bool load() {
-		if (!fileBacked)
+		if (!fileBacked && data)
 			return true;
 
-		data = stbi_load(path.data(), &width, &height, &channels, 0);
+		data = stbi_load(path.data(), &w, &h, &channels, 0);
 		return loaded();
 	}
 

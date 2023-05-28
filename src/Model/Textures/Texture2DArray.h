@@ -15,14 +15,29 @@ public:
 			: Texture(width, height, mipmapEnabled), numLayers(layers) {
 
 		createTexture(GL_TEXTURE_2D_ARRAY);
-		setWrap(repeatX, repeatY);
+		
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, repeatX);
+		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, repeatY);
+	}
+
+	Texture2DArray(std::vector<Image2D>& images, int width, int height, bool mipmapEnabled = true, GLenum repeatX = GL_CLAMP_TO_EDGE, GLenum repeatY = GL_CLAMP_TO_EDGE)
+			: Texture(width, height, mipmapEnabled), numLayers(images.size()) {
+
+		createTexture(GL_TEXTURE_2D_ARRAY);
+		initialize(images);
+		
+		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
 		glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	Texture2DArray(Texture2DArray&& other) noexcept
-			: Texture(other.width, other.height, other.mipmapEnabled), locators(other.locators), types(other.types) {
+			: Texture(other.w, other.h, other.mipmapEnabled), locators(other.locators), types(other.types) {
 		textureID = other.textureID;
 		numLayers = other.numLayers;
 
@@ -37,7 +52,7 @@ public:
 		}
 
 		GLenum inFormat = Image2D::getFormatsFromChannels(maxChannels).first;
-		glTextureStorage3D(textureID, 1, inFormat, width, height, numLayers);
+		glTextureStorage3D(textureID, 1, inFormat, w, h, numLayers);
 
 		for (Image2D& img : images) {
 			assert(img.load());
@@ -63,9 +78,4 @@ public:
 		return textureID;
 	}
 
-protected:
-	void setWrap(GLenum x, GLenum y) const {
-		glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, x);
-		glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, y);
-	}
 };

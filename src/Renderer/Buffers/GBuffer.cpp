@@ -28,8 +28,7 @@ bool GBuffer::init() {
 }
 
 std::shared_ptr<Texture2D> GBuffer::initTexture(GLenum internalFormat, GLenum format, GLenum type) {
-	Texture2D texture = Texture2D(width, height);
-	texture.setupBlankTexture(internalFormat, format);
+	Texture2D texture = Texture2D(width, height, internalFormat);
 	texture.setMinifyingFilter(GL_NEAREST);
 	texture.setMagnifyingFilter(GL_NEAREST);
 

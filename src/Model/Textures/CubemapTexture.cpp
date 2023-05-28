@@ -30,7 +30,7 @@ void CubemapTexture::createTextureFromFiles(std::array<std::string, 6> const& pa
     int loadCount = 0;
 
     for (int i = 0; i < 6; i++) {
-        faces[i] = stbi_load(paths[i].data(), &width, &height, &comp, 0);
+        faces[i] = stbi_load(paths[i].data(), &w, &h, &comp, 0);
         if (faces[i]) {
             loaded[i] = true;
             loadCount++;
@@ -40,7 +40,7 @@ void CubemapTexture::createTextureFromFiles(std::array<std::string, 6> const& pa
 
     if (loadCount == 6) {
         auto [inFormat, exFormat] = Image2D::getFormatsFromChannels(comp);
-        nrComponents = comp;
+        //nrComponents = comp;
         createCubeTexture(inFormat, exFormat, faces);
     }
 
@@ -51,10 +51,10 @@ void CubemapTexture::createTextureFromFiles(std::array<std::string, 6> const& pa
 }
 
 void CubemapTexture::createCubeTexture(GLenum internalFormat, GLenum format, std::array<byte*, 6> data) {
-    glTextureStorage2D(textureID, 1, internalFormat, width, height);
+    glTextureStorage2D(textureID, 1, internalFormat, w, h);
 
     for (GLint i = 0; i < 6; ++i) {
-        glTextureSubImage3D(textureID, 0, 0, 0, i, width, height, 1, format, GL_UNSIGNED_BYTE, data[i]);
+        glTextureSubImage3D(textureID, 0, 0, 0, i, w, h, 1, format, GL_UNSIGNED_BYTE, data[i]);
     }
 
     glGenerateTextureMipmap(textureID);

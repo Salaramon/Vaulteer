@@ -31,15 +31,15 @@ public:
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot insert non-vertex type into vertex buffer.");
 		glNamedBufferData(buffer, vertices.size() * stride, vertices.data(), drawHint);
 	}
+
+	void insert(const void* data, size_t count, GLenum drawHint = GL_STATIC_DRAW) const {
+		glNamedBufferData(buffer, count * stride, data, drawHint);
+	}
 	
 	template<class T>
 	void insertPartial(size_t position, const std::vector<T>& vertices) const {
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot insert non-vertex type into vertex buffer.");
 		glNamedBufferSubData(buffer, position * stride, vertices.size() * stride, vertices.data());
-	}
-
-	void insert(const void* data, size_t count, GLenum drawHint = GL_STATIC_DRAW) const {
-		glNamedBufferData(buffer, count * stride, data, drawHint);
 	}
 	
 	void insertPartial(size_t position, const void* data, size_t count) const {

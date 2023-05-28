@@ -9,6 +9,12 @@
 #include "LayerStack.h"
 
 #include "Events/Event.h"
+#include "Model/Textures/Texture2D.h"
+
+#include "Events/Event.h"
+#include "Renderer/BlendingForwardRenderer.h"
+#include "Renderer/DeferredRenderer.h"
+#include "Renderer/TextRenderer.h"
 
 
 struct ApplicationSpecification {
@@ -49,4 +55,5 @@ protected:
 
 private:
 	static Application* instance;
+	std::unique_ptr<Texture2D> defaultTexture;
 };

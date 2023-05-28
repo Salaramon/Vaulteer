@@ -9,8 +9,6 @@
 
 class ResourcePack {
 public:
-	using ResourceData = std::tuple<Mesh, Material>;
-
 	bool finalized = false;
 
 	Texture2DArray* texture;

@@ -8,7 +8,6 @@
 #include "Model/VertexArray.h"
 
 #include "Model/Material.h"
-#include "Renderer/Shader.h"
 #include "Storage/VertexImpl.h"
 
 
@@ -16,7 +15,7 @@ class Mesh {
 public:
 	template<class T>
 	Mesh(std::vector<T> vertices, std::vector<GLuint>& indices, Material* material) :
-		vertexContainer(vertices, material->materialIndex),
+		vertexContainer(vertices),
 		indices(indices),
 		material(material) {
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot create mesh of non-vertices.");
@@ -57,7 +56,7 @@ public:
 	template<class T>
 	T* getVertex(int index) {
 		static_assert(std::is_base_of_v<Vertex, T>, "Cannot copy out vertices to non-vertex type.");
-		return vertexContainer.container.at<T>(index);
+		return vertexContainer.at<T>(index);
 	}
 
 	void overrideMaterial(Material* material) {
@@ -73,7 +72,7 @@ public:
 		vertexBuffers[1]->insert(&material->materialIndex, 1, GL_DYNAMIC_DRAW);
 	}
 
-	MaterialInstance vertexContainer;
+	VertexContainer vertexContainer;
 	std::vector<GLuint> indices;
 	Material* material;
 

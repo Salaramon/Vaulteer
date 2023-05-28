@@ -35,7 +35,10 @@ public:
 
 	
 	static void uploadCameraProjection(const glm::mat4& projection) {
-		buffers.at(binding("Camera"))->insert(projection);
+		buffers.at(binding("Camera"))->insertAt(projection, 0);
+	}
+	static void uploadScreenProjection(const glm::mat4& projection) {
+		buffers.at(binding("Camera"))->insertAt(projection, sizeof(glm::mat4));
 	}
 	
 	static void uploadMaterialData() {
