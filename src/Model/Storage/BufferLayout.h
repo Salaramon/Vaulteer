@@ -91,6 +91,11 @@ public:
 	const std::vector<VertexElement>& getElements() const {
 		return layout;
 	}
+
+	void addElement(VertexElement el) {
+		layout.push_back(el);
+		updateOffsetsAndStride();
+	}
 	
 	size_t stride = 0;
 private:

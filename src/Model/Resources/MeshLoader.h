@@ -17,7 +17,7 @@ public:
 	}
 
 	static std::unique_ptr<Mesh> loadFromMesh(const aiMesh* aiMesh, Material* mat) {
-		return processMesh(aiMesh, mat);
+		return processMesh<VertexImpl>(aiMesh, mat);
 	}
 
 private:
@@ -26,17 +26,18 @@ private:
 			aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
 			auto mat = sceneMaterials.at(aiMesh->mMaterialIndex);
 
-			meshes.emplace_back(processMesh(aiMesh, mat));
+			meshes.emplace_back(processMesh<VertexImpl>(aiMesh, mat));
 		}
 
 		for (size_t i = 0; i < node->mNumChildren; i++) {
 			processNode(meshes, scene, node->mChildren[i], sceneMaterials);
 		}
 	}
-	
+
+	template <vertex_concept T>
 	static std::unique_ptr<Mesh> processMesh(const aiMesh* aiMesh, Material* mat) {
 		
-		std::vector<VertexImpl> vertices;
+		std::vector<T> vertices;
 		std::vector<GLuint> indices;
 		std::vector<Texture> textures;
 		vertices.reserve(aiMesh->mNumVertices);
@@ -44,7 +45,7 @@ private:
 		textures.reserve(Material::validTextureTypes.size());
 
 		for (size_t i = 0; i < aiMesh->mNumVertices; i++) {
-			VertexImpl vertex = generateVertex(aiMesh, i);
+			T vertex = T::generateVertex(aiMesh, i);
 			vertices.push_back(vertex);
 		}
 
@@ -58,23 +59,4 @@ private:
 		return std::make_unique<Mesh>( vertices, indices, mat );
 	}
 
-	static VertexImpl generateVertex(const aiMesh* aiMesh, size_t i) {
-		VertexImpl vertex;
-		vertex.aPos = ai_glmVec(aiMesh->mVertices[i]);
-		vertex.aNormal = aiMesh->HasNormals() ? ai_glmVec(aiMesh->mNormals[i]) : glm::vec3(0);
-		vertex.aTexCoords = aiMesh->HasTextureCoords(0) ? glm::vec2(aiMesh->mTextureCoords[0][i].x, aiMesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
-
-		if (aiMesh->HasTangentsAndBitangents()) {
-			vertex.aTangent = ai_glmVec(aiMesh->mTangents[i]);
-			vertex.aBitangent = ai_glmVec(aiMesh->mBitangents[i]);
-		}
-
-		//vertex.aMaterialNumber = mat->materialIndex;
-		return vertex;
-	}
-
-
-	static glm::vec3 ai_glmVec(aiVector3D aiVec) {
-		return { aiVec.x, aiVec.y, aiVec.z };
-	}
 };

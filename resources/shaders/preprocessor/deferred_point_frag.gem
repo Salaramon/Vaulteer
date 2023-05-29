@@ -1,7 +1,7 @@
 #version 450 core
 out vec4 FragColor;
 
-//flat in int instanceID;
+flat in int instanceID;
 
 // imports
 ##[fragments/pointLightData] //! #include "fragments/pointLightData.gem"
@@ -285,9 +285,8 @@ void main() {
     float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
     
     // TODO instancing impl
-    //vec4 totalLight = calcPointLight(params, getPointLight(instanceID)) * (1.0 - pointLightShadow);
-    
-    vec4 totalLight = calcPointLight(params, getPointLight(pointLightIndex)) * (1.0 - pointLightShadow);
+    vec4 totalLight = calcPointLight(params, getPointLight(instanceID)) * (1.0 - pointLightShadow);
+    //vec4 totalLight = calcPointLight(params, getPointLight()) * (1.0 - pointLightShadow);
 
 
     

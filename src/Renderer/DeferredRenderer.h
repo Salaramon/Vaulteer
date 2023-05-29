@@ -44,6 +44,7 @@ private:
 
 	// TODO
 	inline static std::vector<PointLight> pointLights;
+	inline static std::vector<glm::mat4> pointLightInstanceMats;
 	
 	inline static std::unique_ptr<Shader> geometryShader;
 	inline static std::unique_ptr<Shader> pointShader;
@@ -58,6 +59,7 @@ public:
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 		sphereMesh = ResourceLoader::importModel("resources/sphere-hd.obj")[0];
+
 		coneMesh = ResourceLoader::importModel("resources/cone.obj")[0];
 
 		//sphereRadius = 0.45f; // sphere.obj
@@ -111,6 +113,7 @@ public:
 		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
 		
 		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, ExcludeComponent<Transparent>>();
+		auto lights = scene.view<PointLightComp>();
 
 		if (buildBatch) {
 			batchManager.batches.clear();
@@ -126,6 +129,16 @@ public:
 				}
 			});
 			buildBatch = false;
+		}
+		
+		if (buildLights) {
+			lights.each([](const PointLightComp& p) {
+				pointLights.push_back(*p.light);
+				pointLightInstanceMats.push_back(p.light->getTransformMatrix(sphereRadius));
+			});
+
+			UniformBufferTechnique::uploadPointLightData(pointLights);
+			sphereMesh->insertInstances(pointLightInstanceMats);
 		}
 
 		
@@ -144,6 +157,8 @@ public:
 		
 		OpenGL::blending(false);
 		OpenGL::cullFace(GL_NONE);
+
+		buildLights = false;
 	}
 
 	static void geometryPass(const CameraReference& camera) {
@@ -211,7 +226,7 @@ public:
 
 		gbuffer->unbind();
 	}
-
+	
 	static void lightingPass(const CameraReference& camera) {
 		pointShader->use();
 
@@ -219,18 +234,6 @@ public:
 
 		pointShader->setUniform("worldCameraPos", *camera.position);
 		pointShader->setUniform("view", view);
-
-		if (buildLights) {
-			BaseLight greenLight = { glm::vec3(0,1,0), 0.1f, 1.0f };
-			BaseLight blueLight = { glm::vec3(0,0,1), 0.1f, 1.0f };
-			Attenuation att = { 1.0f, 0.15f, 0.042f };
-
-			pointLights.emplace_back(att, greenLight, glm::vec3(20, 2, 0));
-			pointLights.emplace_back(att, blueLight, glm::vec3(0, 2, 20));
-
-			UniformBufferTechnique::uploadPointLightData(pointLights);
-			buildLights = false;
-		}
 
 		gbuffer->bindForReading();
 
@@ -243,13 +246,7 @@ public:
 
 
 		sphereMesh->bind();
-		int i = 0;
-		for (auto& light : pointLights) {
-			pointShader->setUniform("model", Model::modelMatrix(light.position, glm::vec3(0.f), glm::vec3(light.calculatePointRadius() / sphereRadius)));
-			pointShader->setUniform("pointLightIndex", i++);
-			glDrawElements(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
-		}
-		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, pointLights.size());
+		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
 		sphereMesh->unbind();
 
 		gbuffer->unbind();

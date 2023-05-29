@@ -40,7 +40,8 @@ struct PointLight {
 	Attenuation attenuation;
 	glm::vec3 position;
 	float radius;
-	//glm::mat4 instanceMat;
+
+	PointLight() {}
 
 	PointLight(Attenuation a, BaseLight l, glm::vec3 position) : light(l), attenuation(a), position(position) {
 		radius = calculatePointRadius();
@@ -48,6 +49,12 @@ struct PointLight {
 
 	float calculatePointRadius() const {
 		return attenuation.calculateRadius(light.getLightMax());
+	}
+
+	glm::mat4 getTransformMatrix(float sphereRadius) {
+		return
+			glm::translate(glm::mat4(1.0f), position) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(radius / sphereRadius));
 	}
 };
 

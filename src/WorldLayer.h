@@ -19,6 +19,7 @@ public:
 	CameraController cameraController;
 
 	std::vector<std::unique_ptr<Model>> loadedModels;
+	std::vector<PointLight> lights;
 
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
@@ -78,7 +79,6 @@ public:
 			scene.add(*model);
 		}
 
-		/*
 		auto mat1 = palm.meshes->at(0)->material->data;
 		mat1.matOpacity = 0.1;
 		auto mat2 = palm.meshes->at(1)->material->data;
@@ -86,20 +86,35 @@ public:
 		auto* ins1 = MaterialLibrary::create(mat1, "palm0_transparent");
 		auto* ins2 = MaterialLibrary::create(mat2, "palm1_transparent");
 
-		for (int y = 0; y < 100; y++) {
-			for (int x = 0; x < 100; x++) {
+		std::vector<glm::vec3> lightColors = {
+			{1.0, 0.5, 0.5},
+			{1.0, 1.0, 0.5},
+			{0.5, 1.0, 0.5},
+			{0.5, 1.0, 1.0},
+			{0.5, 0.5, 1.0},
+			{1.0, 0.5, 1.0},
+		};
+
+		for (int y = 0; y < 10; y++) {
+			for (int x = 0; x < 10; x++) {
 				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
 
-				a.setPosition(y*4 - 100, -(rand() % 6), x*4 - 100);
+				glm::vec3 pos = {y*4 - 100, -(rand() % 6), x*4 - 100};
+				a.setPosition(pos);
+
 				if ((y + x % 16) % 16 == 0) {
-					a.setMaterial(ins1, 0);
-					a.setMaterial(ins2, 1);
-					a.add<Transparent>();
+					//a.setMaterial(ins1, 0);
+					//a.setMaterial(ins2, 1);
+					//a.add<Transparent>();
+					BaseLight light = { lightColors[rand() % 6], 0.1f, 1.0f };
+					Attenuation att = { 1.0f, 0.15f, 0.042f };
+
+					//auto& l = lights.emplace_back(att, light, pos + glm::vec3(0.0, 3.0, 0.0));
+					auto& p = a.add<PointLight>(att, light, pos + glm::vec3(0.0, 3.0, 0.0));
 				}
 			}
 			
 		}
-		*/
 
 
 		//Generate trees how about you kill yourself
@@ -150,7 +165,7 @@ public:
 	uint cumFrames = 0;
 	uint cumDrawCalls = 0;
 
-	bool update = true;
+	bool update = false;
 	std::string content;
 	Justify justify = Justify::Right;
 	float scale = 1.0;
@@ -160,21 +175,6 @@ public:
 		TextRenderer::resetStats();
 
 		cameraController.onUpdate(timestep);
-		if (Event::isDown(KeyboardKey::_5)) {
-			scale += 1.0 * timestep;
-		}
-		if (Event::isDown(KeyboardKey::_6)) {
-			scale -= 1.0 * timestep;
-		}
-
-		if (update) {
-			content = "";
-			for (int i = 0; i < 1000; i++) {
-				content += rand() % 96 + 32;
-				if (rand() % 8 == 0) content += '\n';
-			}
-		}
-		TextRenderer::submitText(content, TextRenderer::screenMiddle - glm::vec2{0, 300}, scale, justify);
 
 		cumTime += timestep;
 		cumFrames++;
@@ -198,16 +198,6 @@ public:
 	}
 
 	bool onKeyboardPressEvent(KeyboardButtonEvent& e) {
-		if (e.button.key == KeyboardKey::_1 && e.button.action == KeyAction::PRESS)
-			justify = Justify::Left;
-		if (e.button.key == KeyboardKey::_2 && e.button.action == KeyAction::PRESS)
-			justify = Justify::Center;
-		if (e.button.key == KeyboardKey::_3 && e.button.action == KeyAction::PRESS)
-			justify = Justify::Right;
-
-		if (e.button.key == KeyboardKey::_4 && e.button.action == KeyAction::PRESS)
-			update = !update;
-
 		return true;
 	}
 

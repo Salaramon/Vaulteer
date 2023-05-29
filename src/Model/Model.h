@@ -10,6 +10,7 @@
 #include "Scene/Object3D.h"
 #include "Storage/VertexImpl.h"
 #include "Resources/MaterialLibrary.h"
+#include "VFX/LightTypes.h"
 
 
 enum class Faces {
@@ -37,13 +38,17 @@ struct Transparent {
 	bool transparent = true;
 };
 
+struct PointLightComp {
+	PointLight* light;
+};
+
 
 class Model : public Object3D {
 public:
 	Model() :
 			meshes(&this->add<Meshes>()),
 			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
-				.boundingSphere = boundingSphere(),
+				.boundingSphere = glm::vec4(1.0), //boundingSphere(),
 				.faces = Faces::FRONT,
 				.textureID = 0
 			})),
@@ -52,7 +57,7 @@ public:
 	Model(std::vector<Mesh*>& meshes) :
 			meshes(&this->add<Meshes>(meshes)),
 			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
-				.boundingSphere = boundingSphere(),
+				.boundingSphere = glm::vec4(1.0), //boundingSphere(),
 				.faces = Faces::FRONT,
 				.textureID = 0
 			})),

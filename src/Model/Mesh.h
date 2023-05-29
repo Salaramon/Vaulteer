@@ -11,7 +11,7 @@
 #include "Storage/VertexImpl.h"
 
 
-class Mesh {
+class  Mesh {
 public:
 	template<class T>
 	Mesh(std::vector<T> vertices, std::vector<GLuint>& indices, Material* material) :
@@ -25,6 +25,9 @@ public:
 
 		insertVertices();
 		insertMaterial();
+
+		glm::mat4 ins(1.0);
+		insertInstances({ins});
 	}
 
 	Mesh(Mesh& other) = delete;
@@ -69,8 +72,14 @@ public:
 		vertexBuffers[0]->insert(vertexContainer.data(), vertexContainer.size());
 	}
 	void insertMaterial() {
-		vertexBuffers[1]->insert(&material->materialIndex, 1, GL_DYNAMIC_DRAW);
+		std::vector mats(instanceCount, material->materialIndex);
+ 		vertexBuffers[1]->insert(&mats, mats.size(), GL_DYNAMIC_DRAW);
 	}
+	void insertInstances(const std::vector<glm::mat4>& instanceMats) {
+		instanceCount = instanceMats.size();
+		vertexBuffers[2]->insert(instanceMats.data(), instanceCount);
+	}
+
 
 	VertexContainer vertexContainer;
 	std::vector<GLuint> indices;
@@ -79,6 +88,8 @@ public:
 	VertexArray vertexArray;
 	std::vector<VertexBuffer*> vertexBuffers;
 	IndexBuffer* indexBuffer;
+
+	uint instanceCount = 1;
 };
 
 

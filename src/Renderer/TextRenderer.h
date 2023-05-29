@@ -23,7 +23,7 @@ public:
 	inline static Font* regularFont;
 	inline static glm::vec2 screenMiddle;
 
-	inline static constexpr size_t maxQuads = 100;
+	inline static constexpr size_t maxQuads = 1000;
 	inline static std::array<QuadVertex, maxQuads * 4> vertices;
 	inline static std::array<GLuint, maxQuads * 6> indices;
 
@@ -77,7 +77,7 @@ public:
 
 			OpenGL::depthTest(false);
 			OpenGL::blending(true);
-			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
+			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
 			glBindTextureUnit(0, regularFont->mapTexture->textureID);
 			shader->setUniform("msdf", 0);
