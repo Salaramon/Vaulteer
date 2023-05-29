@@ -61,62 +61,119 @@ struct Font {
 	}
 };
 
+enum class Justify {
+	Left,
+	Center,
+	Right
+};
+
 class FontLibrary {
 public:
 	using json = nlohmann::json;
 
-	inline static std::unordered_map<std::string, std::unique_ptr<Font>> fontLibrary; 
+	inline static std::unordered_map<std::string, std::unique_ptr<Font>> fontLibrary;
 
-	static std::tuple<glm::vec2, std::vector<Quad>> stringToQuads(const Font* font, std::string& chars, glm::vec2 pos, float size = 1.0) {
+	// produces a set of quads and the bounds for string of text with the given font
+	static std::tuple<glm::vec2, std::vector<Quad>> stringToQuads(
+		const Font* font, std::string& chars, glm::vec2 pos, float size = 1.0, Justify justify = Justify::Left) {
 		std::vector<Quad> quads;
 		quads.reserve(chars.size());
 
 		auto& atlas = font->atlas;
 
-		float biggestW = 0.f, biggestH = 0.f;
-		float lastGlyphW = 0.f;
+		float biggestW = 0.f;
+		float firstGlyphW = 0.f, lastGlyphW = 0.f;
+
+		uint numLines = 1;
+		std::vector<float> lineWidths;
+		std::vector<uint> lineBreakPos;
 
 		float sumAdvanceW = 0.f, sumAdvanceH = 0.f;
-		float scaleFactor = atlas.size * size;
+		float emToPixels = atlas.size * size;
 
 		for (auto it = chars.begin(); it != chars.end(); it++) {
 			char c = *it;
 
 			float advance = 0.f;
-			if (c >= 32) {
+			if (c >= 32 && c < 128) {
 				Glyph g = atlas.ascii[c - 32];
 				advance = g.advance;
 
 				if (g.height() != 0.f) {
-					glm::vec2 cursorPos = pos + glm::vec2(sumAdvanceW, sumAdvanceH) * scaleFactor;
-					lastGlyphW = g.width();
- 					quads.push_back(quadFromGlyph(atlas, g, cursorPos, scaleFactor));
+					if (firstGlyphW == 0.f)
+						firstGlyphW = g.planeBounds.left;
+
+					glm::vec2 cursorPos = pos + glm::vec2(sumAdvanceW, sumAdvanceH) * emToPixels;
+					lastGlyphW = g.planeBounds.right;
+					quads.push_back(quadFromGlyph(atlas, g, cursorPos, emToPixels));
+				}
+				else {
+					lastGlyphW = 0.f;
 				}
 			}
 
 			if (it + 1 != chars.end()) {
 				if (c == '\n') {
+					lineWidths.push_back(sumAdvanceW + lastGlyphW - firstGlyphW);
+					lineBreakPos.push_back(quads.size());
+					numLines++;
+					firstGlyphW = 0.f;
+
 					sumAdvanceW = 0.f;
 					sumAdvanceH += atlas.lineHeight;
-					biggestH = std::max(biggestH, sumAdvanceH);
 				}
 				else {
 					sumAdvanceW += advance;
 					biggestW = std::max(biggestW, sumAdvanceW);
 				}
 			}
+			else {
+				sumAdvanceW += advance;
+				lineWidths.push_back(sumAdvanceW + lastGlyphW - firstGlyphW);
+				lineBreakPos.push_back(quads.size());
+
+				biggestW = std::max(biggestW, sumAdvanceW);
+			}
 		}
 
-		return {{(biggestW + lastGlyphW) * scaleFactor, biggestH * scaleFactor}, quads};
+		if (justify == Justify::Center) {
+			float justifyMove = -lineWidths[0] / 2;
+			uint lineIndex = 0;
+			for (uint i = 0; i < quads.size();) {
+				if (i == lineBreakPos[lineIndex]) {
+					justifyMove = -lineWidths[++lineIndex] / 2;
+				}
+				else {
+					quads[i].x += justifyMove * emToPixels;
+					i++;
+				}
+			}
+		}
+		else if (justify == Justify::Right) {
+			float justifyMove = -lineWidths[0];
+			uint lineIndex = 0;
+			for (uint i = 0; i < quads.size();) {
+				if (i == lineBreakPos[lineIndex]) {
+					justifyMove = -lineWidths[++lineIndex];
+				}
+				else {
+					quads[i].x += justifyMove * emToPixels;
+					i++;
+				}
+			}
+		}
+
+		glm::vec2 bounds = {(biggestW + lastGlyphW - firstGlyphW) * emToPixels, atlas.lineHeight * numLines * emToPixels};
+		return {bounds, quads};
 	}
 
-	static Quad quadFromGlyph(const FontAtlas& atlas, Glyph& g, glm::vec2 pos, float scale) {
+	static Quad quadFromGlyph(const FontAtlas& atlas, Glyph& g, glm::vec2 pos, float emToPixels) {
 		uint aw = atlas.width, ah = atlas.height;
 		glm::vec2 texFrom = {g.atlasBounds.left / aw, 1.0 - g.atlasBounds.bottom / ah};
 		glm::vec2 texTo = {g.atlasBounds.right / aw, 1.0 - g.atlasBounds.top / ah};
 
-		glm::vec2 truePos = {pos.x + g.planeBounds.left * scale, pos.y - g.planeBounds.bottom * scale};
-		return Quad(truePos.x, truePos.y, g.width() * scale, g.height() * scale, texFrom, texTo);
+		glm::vec2 truePos = {pos.x + g.planeBounds.left * emToPixels, pos.y - g.planeBounds.bottom * emToPixels};
+		return Quad(truePos.x, truePos.y, g.width() * emToPixels, g.height() * emToPixels, texFrom, texTo);
 	}
 
 
@@ -136,7 +193,7 @@ public:
 			Glyph::AtlasBounds atlasBounds;
 			if (!atlasB.is_null()) atlasBounds = {atlasB["left"].get<float>(), atlasB["bottom"].get<float>(), atlasB["right"].get<float>(), atlasB["top"].get<float>()};
 			else atlasBounds = {0, 0, 0, 0};
-			
+
 			int code = maskGlyph["unicode"].get<int>();
 			atlas.ascii[code - 32] = Glyph(
 				code,
@@ -145,6 +202,7 @@ public:
 				atlasBounds
 			);
 		}
+		atlas.ascii[95] = Glyph('\x7F', atlas.ascii[0].advance, {0, 0, 0, 0}, {0, 0, 0, 0});
 
 		atlas.width = mask["atlas"]["width"].get<uint>();
 		atlas.height = mask["atlas"]["height"].get<uint>();

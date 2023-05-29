@@ -19,15 +19,26 @@ public:
 
 	inline static std::unique_ptr<Shader> shader;
 
-	inline static Font* font;
+	inline static Font* monospaceFont;
+	inline static Font* regularFont;
 	inline static glm::vec2 screenMiddle;
 
-	inline static constexpr uint maxQuads = 1000;
+	inline static constexpr size_t maxQuads = 100;
 	inline static std::array<QuadVertex, maxQuads * 4> vertices;
 	inline static std::array<GLuint, maxQuads * 6> indices;
 
-	inline static uint numQuads = 0;
-	inline static uint numVertices = 0, numIndices = 0;
+	inline static struct RenderStats {
+		size_t numQuads = 0;
+		size_t drawCalls = 0;
+
+		size_t numVertices() {
+			return numQuads * 4;
+		}
+		size_t numIndices() {
+			return numQuads * 6;
+		}
+	} stats;
+
 
 	static void initialize(uint screenWidth, uint screenHeight) {
 		buildScreenProjection(screenWidth, screenHeight);
@@ -39,76 +50,91 @@ public:
 		vertexBuffer->reserve(maxQuads * 4);
 		indexBuffer->reserve(maxQuads * 6);
 
-		font = FontLibrary::loadFont({"Georgia", "resources/fonts/georgia/msdf.json", "resources/fonts/georgia/msdf.png"});
+		monospaceFont = FontLibrary::loadFont({"Hack", "resources/fonts/hack/msdf.json", "resources/fonts/hack/msdf.png"});
+		regularFont = FontLibrary::loadFont({"Georgia", "resources/fonts/georgia/msdf.json", "resources/fonts/georgia/msdf.png"});
 
-		screenMiddle = {screenWidth/2,screenHeight/2};
+		screenMiddle = {screenWidth / 2, screenHeight / 2};
 
 		loadShaders();
 	}
 
 	static void loadShaders() {
 		shader = std::make_unique<Shader>(
-			"resources/shaders/text_vertex.glsl", GL_VERTEX_SHADER, 
+			"resources/shaders/text_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/text_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
 
 
-	template<size_t SCENE_ID>
+	template <size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
-		shader->use();
+		flush();
+	}
 
-		OpenGL::depthTest(false);
-		OpenGL::blending(true);
-		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
+	static void flush() {
+		if (stats.numQuads) {
+			shader->use();
 
-		glBindTextureUnit(0, font->mapTexture->textureID);
-		shader->setUniform("msdf", 0);
+			OpenGL::depthTest(false);
+			OpenGL::blending(true);
+			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 
-		vertexArray->bind();
-		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
-		vertexArray->unbind();
-		
-		OpenGL::blending(false);
-		OpenGL::depthTest(true);
+			glBindTextureUnit(0, regularFont->mapTexture->textureID);
+			shader->setUniform("msdf", 0);
+
+			vertexArray->bind();
+			glDrawElements(GL_TRIANGLES, stats.numIndices(), GL_UNSIGNED_INT, nullptr);
+			vertexArray->unbind();
+
+			OpenGL::blending(false);
+			OpenGL::depthTest(true);
+
+			stats.drawCalls++;
+		}
 	}
 
 	static void clearScene() {
-		numQuads = 0;
-		numVertices = 0;
-		numIndices = 0;
+		stats.numQuads = 0;
 	}
 
-	static void submitText(std::string content, glm::vec2 position = screenMiddle, float scale = 1.0) {
+	static void submitText(std::string content, glm::vec2 position = screenMiddle, float scale = 1.0, Justify justify = Justify::Left) {
 
-		uint index = numQuads;
-		auto [lineSize, quads] = FontLibrary::stringToQuads(font, content, position, scale);
-		numQuads += quads.size();
+		//TODO make some eventual indirection of quad generation... should be handled by callers
+		auto [lineSize, quads] = FontLibrary::stringToQuads(regularFont, content, position, scale, justify);
 
-		int offset = 0;
+		uint offset = stats.numQuads;
+		uint index = 0;
 		for (auto& quad : quads) {
-			/* eventual quad transforms here
-			quad.x -= lineSize.x / 2;
-			quad.y -= lineSize.y / 2;
-			*/
+
+			if (stats.numQuads >= maxQuads) {
+				if (index > 0) {
+					vertexBuffer->insertPartial(offset * 4, &vertices[offset * 4], index * 4);
+					indexBuffer->insertPartial(offset * 6, &indices[offset * 6], index * 6);
+				}
+
+				flush();
+				clearScene();
+				
+				offset = 0;
+				index = 0;
+			}
 
 			std::array<QuadVertex, 4> v = quad.vertices();
-			std::copy(std::begin(v), std::end(v), vertices.begin() + numVertices);
-			numVertices += 4;
+			std::copy(std::begin(v), std::end(v), vertices.begin() + stats.numVertices());
 
-			std::array<uint, 6> in = quad.indices();
-			indices[numIndices + 0] = (offset + index) * 4 + 0;
-			indices[numIndices + 1] = (offset + index) * 4 + 1;
-			indices[numIndices + 2] = (offset + index) * 4 + 2;
-			indices[numIndices + 3] = (offset + index) * 4 + 2;
-			indices[numIndices + 4] = (offset + index) * 4 + 3;
-			indices[numIndices + 5] = (offset + index) * 4 + 0;
-			numIndices += 6;
-			offset++;
+			indices[stats.numIndices() + 0] = (index + offset) * 4 + 0;
+			indices[stats.numIndices() + 1] = (index + offset) * 4 + 1;
+			indices[stats.numIndices() + 2] = (index + offset) * 4 + 2;
+			indices[stats.numIndices() + 3] = (index + offset) * 4 + 2;
+			indices[stats.numIndices() + 4] = (index + offset) * 4 + 3;
+			indices[stats.numIndices() + 5] = (index + offset) * 4 + 0;
+
+			stats.numQuads++;
+			index++;
 		}
 
-		vertexBuffer->insertPartial(index * 4, &vertices[index*4], offset * 4);
-		indexBuffer->insertPartial(index * 6, &indices[index*6], offset * 6);
+		vertexBuffer->insertPartial(offset * 4, &vertices[offset * 4], index * 4);
+		indexBuffer->insertPartial(offset * 6, &indices[offset * 6], index * 6);
 	}
 
 
@@ -120,10 +146,14 @@ public:
 	// orthographic projection matrix with size of screen
 	static glm::mat4 getScreenProjectionMatrix(uint w, uint h) {
 		return {
-			 2.f/w, 0,  0, 0,
-			 0,-2.f/h,  0, 0,
-			 0,     0, -1, 0,
-			-1,     1,  0, 1
+			2.f / w, 0, 0, 0,
+			0, -2.f / h, 0, 0,
+			0, 0, -1, 0,
+			-1, 1, 0, 1
 		};
+	}
+
+	static void resetStats() {
+		memset(&stats, 0, sizeof(RenderStats));
 	}
 };

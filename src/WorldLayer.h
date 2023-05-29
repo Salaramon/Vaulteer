@@ -145,39 +145,77 @@ public:
 	}
 
 	float fps = 0.0f;
+	float drawCalls = 0.0f;
 	float cumTime = 0.0f;
 	uint cumFrames = 0;
+	uint cumDrawCalls = 0;
+
+	bool update = true;
+	std::string content;
+	Justify justify = Justify::Right;
+	float scale = 1.0;
 
 	void onUpdate(float timestep) override {
-		cameraController.onUpdate(timestep);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		TextRenderer::resetStats();
 
-		TextRenderer::clearScene();
-		std::string content;
-		for (int i = 0; i < 1000; i++) {
-			content += rand() % 128 + 32;
-			if ((i - 40) % 100 == 0) content += '\n';
+		cameraController.onUpdate(timestep);
+		if (Event::isDown(KeyboardKey::_5)) {
+			scale += 1.0 * timestep;
 		}
-		TextRenderer::submitText(content, {1, 200});
+		if (Event::isDown(KeyboardKey::_6)) {
+			scale -= 1.0 * timestep;
+		}
+
+		if (update) {
+			content = "";
+			for (int i = 0; i < 1000; i++) {
+				content += rand() % 96 + 32;
+				if (rand() % 8 == 0) content += '\n';
+			}
+		}
+		TextRenderer::submitText(content, TextRenderer::screenMiddle - glm::vec2{0, 300}, scale, justify);
 
 		cumTime += timestep;
 		cumFrames++;
 		if (cumTime > 0.5f) {
 			fps = (float)cumFrames / cumTime;
+			drawCalls = (float)cumDrawCalls / cumFrames;
 			cumFrames = 0;
-			cumTime = 0;
+			cumDrawCalls = 0;
+			cumTime = 0.0f;
 		}
 
 		std::string timer = std::format("FPS {:.1f}", fps);
+		std::string calls = std::format("Draws per frame: {:.1f}", drawCalls);
 		TextRenderer::submitText(timer, {20, 27}, 0.5);
+		TextRenderer::submitText(calls, {20, 50}, 0.5);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		renderer.render(scene);
+		
+		cumDrawCalls += TextRenderer::stats.drawCalls;
+		TextRenderer::clearScene();
+	}
+
+	bool onKeyboardPressEvent(KeyboardButtonEvent& e) {
+		if (e.button.key == KeyboardKey::_1 && e.button.action == KeyAction::PRESS)
+			justify = Justify::Left;
+		if (e.button.key == KeyboardKey::_2 && e.button.action == KeyAction::PRESS)
+			justify = Justify::Center;
+		if (e.button.key == KeyboardKey::_3 && e.button.action == KeyAction::PRESS)
+			justify = Justify::Right;
+
+		if (e.button.key == KeyboardKey::_4 && e.button.action == KeyAction::PRESS)
+			update = !update;
+
+		return true;
 	}
 
 	void onEvent(BaseEvent& e) override {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
+		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardPressEvent));
 	}
 };
 
