@@ -101,7 +101,7 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		return;
 
 	vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, format.stride));
-	std::cout << "- created initial vertexbuffer: stride " << format.stride << std::endl;
+	//std::cout << "- created initial vertexbuffer: stride " << format.stride << std::endl;
 
 	int location = 0;
 

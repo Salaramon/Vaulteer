@@ -19,7 +19,6 @@
 
 
 class DeferredRenderer {
-private:
 
 	inline static std::unique_ptr<GBuffer> gbuffer;
 
@@ -51,8 +50,13 @@ private:
 	inline static std::unique_ptr<Shader> dirShader;
 
 	inline static GLint textureLibraryId;
-
+	
 public:
+	inline static struct RenderStats {
+		size_t drawCalls = 0;
+	} stats;
+
+
 	static void initialize(GLint textureId, uint screenWidth, uint screenHeight) {
 		textureLibraryId = textureId;
 		gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
@@ -73,7 +77,7 @@ public:
 	}
 
 	static void loadShaders() {
-		constexpr int maxPointLights = 128;
+		constexpr int maxPointLights = 625;
 
 		gem::Shader<gem::geometry_vertex> gvert;
 		gvert.setgeometry_vertex_materialData(max_material_count);
@@ -131,7 +135,7 @@ public:
 		}
 		
 		if (buildLights) {
-			auto lights = scene.view<PointLight>();
+			auto lights = scene.view<PointLight, ExcludeComponent<Transparent>>();
 
 			lights.each([](const PointLight& p) {
 				pointLights.push_back(p);
@@ -151,7 +155,7 @@ public:
 		OpenGL::blending(true);
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 		
-		directionalLightPass(camera);
+		//directionalLightPass(camera);
 		OpenGL::cullFace(OpenGL::FRONT);
 		
 		lightingPass(camera);
@@ -185,6 +189,8 @@ public:
 
 			glDrawElements(GL_TRIANGLES, batch->numIndices, GL_UNSIGNED_INT, nullptr);
 			batch->unbind();
+
+			stats.drawCalls++;
 		}
 
 		gbuffer->unbind();
@@ -196,10 +202,6 @@ public:
 		dirShader->setUniform("worldCameraPos", *camera.position);
 		dirShader->setUniform("view", camera.viewMatrix());
 
-		/*auto pos = camera.position;
-		auto rot = camera.rotation;
-		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);*/
-
 		if (buildLights) {
 			std::vector<DirectionalLight> dirLights = {
 				{{glm::vec3(1.0, 0.0, 0.0), 0.03f, 1.0f}, glm::vec3(0.0, -1.0, 0.0)}
@@ -208,10 +210,6 @@ public:
 			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
 		}
 		
-		/*auto pos2 = camera.position;
-		auto rot2 = camera.rotation;
-		auto view2 = Object3D::viewMatrix(*camera.position, *camera.rotation);*/
-
 		gbuffer->bindForReading();
 
 		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
@@ -224,7 +222,8 @@ public:
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
 		quadMesh->unbind();
-
+		
+		stats.drawCalls++;
 		gbuffer->unbind();
 	}
 	
@@ -247,10 +246,11 @@ public:
 
 
 		sphereMesh->bind();
-		//glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
+		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
 		sphereMesh->unbind();
 
 		gbuffer->unbind();
+		stats.drawCalls++;
 	}
 
 	// Utility functions
@@ -271,6 +271,10 @@ public:
 		GLuint width = gbuffer->width, height = gbuffer->height;
 		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	
+	static void resetStats() {
+		memset(&stats, 0, sizeof(RenderStats));
 	}
 
 };

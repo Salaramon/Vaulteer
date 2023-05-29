@@ -87,22 +87,23 @@ public:
 		auto* ins2 = MaterialLibrary::create(mat2, "palm1_transparent");
 
 		std::vector<glm::vec3> lightColors = {
-			{1.0, 0.5, 0.5},
-			{1.0, 1.0, 0.5},
-			{0.5, 1.0, 0.5},
-			{0.5, 1.0, 1.0},
-			{0.5, 0.5, 1.0},
-			{1.0, 0.5, 1.0},
+			{1.0, 0.01, 0.01},
+			{1.0, 1.0, 0.01},
+			{0.01, 1.0, 0.01},
+			{0.01, 1.0, 1.0},
+			{0.01, 0.01, 1.0},
+			{1.0, 0.01, 1.0},
 		};
 
-		for (int y = 0; y < 10; y++) {
-			for (int x = 0; x < 10; x++) {
-				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+		int i = 0;
+		for (int y = 0; y < 100; y++) {
+			for (int x = 0; x < 100; x++) {
+				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
-				glm::vec3 pos = {y*4 - 100, -(rand() % 6), x*4 - 100};
+				glm::vec3 pos = {y*2 - 100, -(rand() % 6), x*2 - 100};
 				a.setPosition(pos);
 
-				if ((y + x % 16) % 16 == 0) {
+				if ((y + x % 8) % 8 == 0 && i % 8 == 0) {
 					//a.setMaterial(ins1, 0);
 					//a.setMaterial(ins2, 1);
 					//a.add<Transparent>();
@@ -110,8 +111,9 @@ public:
 					Attenuation att = { 1.0f, 0.15f, 0.042f };
 
 					//auto& l = lights.emplace_back(att, light, pos + glm::vec3(0.0, 3.0, 0.0));
-					auto& p = a.add<PointLight>(att, light, pos + glm::vec3(0.0, 3.0, 0.0));
+					auto& p = a.add<PointLight>(att, light, pos + glm::vec3(0.0, 10.0, 0.0));
 				}
+				i++;
 			}
 			
 		}
@@ -172,6 +174,7 @@ public:
 
 	void onUpdate(float timestep) override {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		DeferredRenderer::resetStats();
 		TextRenderer::resetStats();
 
 		cameraController.onUpdate(timestep);
@@ -186,13 +189,14 @@ public:
 			cumTime = 0.0f;
 		}
 
-		std::string timer = std::format("FPS {:.1f}", fps);
+		std::string timer = std::format("FPS {:.1f}", 1.0/timestep);
 		std::string calls = std::format("Draws per frame: {:.1f}", drawCalls);
 		TextRenderer::submitText(timer, {20, 27}, 0.5);
 		TextRenderer::submitText(calls, {20, 50}, 0.5);
 
 		renderer.render(scene);
 		
+		cumDrawCalls += DeferredRenderer::stats.drawCalls;
 		cumDrawCalls += TextRenderer::stats.drawCalls;
 		TextRenderer::clearScene();
 	}

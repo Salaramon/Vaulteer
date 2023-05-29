@@ -228,6 +228,9 @@ vec4 calcPointLight(FragParams p, PointLight pointLight) {
 
 void main() {
     const float gamma = 1.0;
+    
+    //FragColor = vec4(getPointLight(instanceID).light.color, 1.0);
+    //return;
 
     // -------- reading from GBuffer --------
     
