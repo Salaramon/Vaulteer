@@ -229,8 +229,7 @@ vec4 calcPointLight(FragParams p, PointLight pointLight) {
 void main() {
     const float gamma = 1.0;
     
-    //FragColor = vec4(getPointLight(instanceID).light.color, 1.0);
-    //return;
+    PointLight light = getPointLight(instanceID);
 
     // -------- reading from GBuffer --------
     
@@ -288,7 +287,7 @@ void main() {
     float pointLightShadow = 0.0;//calcShadowCube(fragPosition, getShadowCubeMap(i), i);
     
     // TODO instancing impl
-    vec4 totalLight = calcPointLight(params, getPointLight(instanceID)) * (1.0 - pointLightShadow);
+    vec4 totalLight = calcPointLight(params, light) * (1.0 - pointLightShadow);
     //vec4 totalLight = calcPointLight(params, getPointLight()) * (1.0 - pointLightShadow);
 
 
