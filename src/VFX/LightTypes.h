@@ -51,7 +51,7 @@ struct PointLight {
 		return attenuation.calculateRadius(light.getLightMax());
 	}
 
-	glm::mat4 getTransformMatrix(float sphereRadius) {
+	glm::mat4 getTransformMatrix(float sphereRadius) const {
 		return
 			glm::translate(glm::mat4(1.0f), position) *
 			glm::scale(glm::mat4(1.0f), glm::vec3(radius / sphereRadius));

@@ -113,7 +113,6 @@ public:
 		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
 		
 		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, ExcludeComponent<Transparent>>();
-		auto lights = scene.view<PointLightComp>();
 
 		if (buildBatch) {
 			batchManager.batches.clear();
@@ -132,9 +131,11 @@ public:
 		}
 		
 		if (buildLights) {
-			lights.each([](const PointLightComp& p) {
-				pointLights.push_back(*p.light);
-				pointLightInstanceMats.push_back(p.light->getTransformMatrix(sphereRadius));
+			auto lights = scene.view<PointLight>();
+
+			lights.each([](const PointLight& p) {
+				pointLights.push_back(p);
+				pointLightInstanceMats.push_back(p.getTransformMatrix(sphereRadius));
 			});
 
 			UniformBufferTechnique::uploadPointLightData(pointLights);
