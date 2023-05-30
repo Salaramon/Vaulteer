@@ -19,7 +19,11 @@ public:
 	CameraController cameraController;
 
 	std::vector<std::unique_ptr<Model>> loadedModels;
+	std::vector<std::unique_ptr<Mesh>> copies;
+	std::vector<std::vector<Mesh*>> something;
+
 	std::vector<PointLight> lights;
+	std::vector<Entity> lightEntities;
 
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
@@ -79,12 +83,6 @@ public:
 			scene.add(*model);
 		}
 
-		auto mat1 = palm.meshes->at(0)->material->data;
-		mat1.matOpacity = 0.1;
-		auto mat2 = palm.meshes->at(1)->material->data;
-		mat2.matOpacity = 0.1;
-		auto* ins1 = MaterialLibrary::create(mat1, "palm0_transparent");
-		auto* ins2 = MaterialLibrary::create(mat2, "palm1_transparent");
 
 		std::vector<glm::vec3> lightColors = {
 			{1.0, 0.01, 0.01},
@@ -98,19 +96,33 @@ public:
 		int i = 0;
 		for (int y = 0; y < 100; y++) {
 			for (int x = 0; x < 100; x++) {
-				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+				Mesh* m = pack.getMeshes("crate")[0];
+				auto verts = m->getCopiedData<VertexImpl>();
+				std::vector<Mesh*> temp = {copies.emplace_back(std::make_unique<Mesh>(verts, m->indices, m->material)).get()};
+				temp = something.emplace_back(temp);
+				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(temp));
 
 				glm::vec3 pos = {y*2 - 100, -(rand() % 6), x*2 - 100};
 				a.setPosition(pos);
 
-				if ((y + x % 8) % 8 == 0 && i % 8 == 0) {
-					//a.setMaterial(ins1, 0);
-					//a.setMaterial(ins2, 1);
-					//a.add<Transparent>();
-					BaseLight light = { lightColors[rand() % 6], 0.1f, 1.0f };
-					Attenuation att = { 1.0f, 0.15f, 0.042f };
+				if ((y + x % 8) % 8 == 0 && i % 17 == 0) {
+					auto color = lightColors[rand() % 6];
 
-					//auto& l = lights.emplace_back(att, light, pos + glm::vec3(0.0, 3.0, 0.0));
+					auto mat = crate1.meshes->at(0)->material->data;
+					mat.matOpacity = 0.2;
+					mat.colorAmbient = color;
+					mat.textureId = TextureLibrary::getView("white1x1").textureViewId;
+
+					auto* ins1 = MaterialLibrary::create(mat, std::format("color{}", i));
+
+					a.setPosition(pos + glm::vec3(0.0, 8.0, 0.0));
+					a.setMaterial(ins1, 0);
+					a.add<Transparent>();
+
+					BaseLight light = { color, 0.1f, 1.0f };
+					Attenuation att = { 1.0f, 0.10f, 0.042f };
+
+					auto& l = lights.emplace_back(att, light, pos + glm::vec3(0.0, 8.0, 0.0));
 					auto& p = a.add<PointLight>(att, light, pos + glm::vec3(0.0, 10.0, 0.0));
 				}
 				i++;
@@ -118,41 +130,11 @@ public:
 			
 		}
 
+		DirectionalLight dirLight = {{glm::vec3(1.0, 0.0, 0.0), 0.03f, 1.0f}, glm::vec3(0.0, -1.0, 0.0)};
+		auto& e = lightEntities.emplace_back();
 
-		//Generate trees how about you kill yourself
-		/*
-		intmax_t width = 10, height = 10;
-		for (intmax_t i = -(ceil(width / 2.0f)); i < (ceil(width / 2.0f)); i++) {
-			for (intmax_t j = -(ceil(height / 2.0f)); j < (ceil(height / 2.0f)); j++) {
-				float r = randf(1.0, 25.0);
-				float x = sin(randf(0.f, M_2_PI)) * r;
-				float y = cos(randf(0.f, M_2_PI)) * r;
-				
-				Model& model = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
-				model.setPosition({8 * i + x, ((float)(rand() % 8)/8), 8 * j + y});
-				model.setRotation((float) (rand() % 360) / M_PI, glm::vec3(0, 1, 0));
-				opaqueScene.addObject(std::move(OpaqueModel(model1)), model1.getBoundingSphere());
-			}
-		}
-		 */
-		/*
-		model2.setPosition(0, 0, 0);
-		model2.setScale(glm::vec3(5.0f));
-		model2.setRotation(0.0, glm::vec3(1.0, 0.0, 0));
-		opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
-		opaqueScene.addObject(std::move(OpaqueModel(model2)), model2.getBoundingSphere());
-
-		opaqueScene.finalize();
-
-		model2.setPosition(20, 2, 0);
-		model2.setScale(glm::vec3(0.5f));
-		transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
-		model2.setPosition(0, 2, 20);
-		transparentScene.addObject(std::move(TransparentModel(model2)), model2.getBoundingSphere());
-
-		transparentScene.finalize();
-		*/
-
+		e.add<DirectionalLight>(dirLight);
+		scene.add(e);
 		
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
@@ -189,7 +171,7 @@ public:
 			cumTime = 0.0f;
 		}
 
-		std::string timer = std::format("FPS {:.1f}", 1.0/timestep);
+		std::string timer = std::format("FPS {:.1f}", fps);
 		std::string calls = std::format("Draws per frame: {:.1f}", drawCalls);
 		TextRenderer::submitText(timer, {20, 27}, 0.5);
 		TextRenderer::submitText(calls, {20, 50}, 0.5);

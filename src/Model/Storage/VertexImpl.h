@@ -46,6 +46,6 @@ private:
 		{ "aTangent", ShaderDataType::Float3 },
 		{ "aBitangent", ShaderDataType::Float3 },
 		{ "aMaterialNumber", ShaderDataType::Int, 1 }, // instanced
-		{ "instance", ShaderDataType::Mat4, 1}
+		{ "instance", ShaderDataType::Mat4, 1} // instanced
 	};
 };

@@ -34,7 +34,7 @@ void main() {
     Material mat = materialTable[fs_in.materialNumber];
 
     vec3 lightColor = vec3(1.0);
-    vec3 ambient = 0.6 * lightColor;
+    vec3 ambient = mat.colorAmbient.rgb * lightColor;
     
     // unit reads
     vec3 normal = fs_in.hasNormal ? 

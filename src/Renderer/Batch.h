@@ -17,8 +17,8 @@ public:
 	size_t vertexBufferSize;
 	size_t indexBufferSize;
 
-	size_t numVertices = 0;
-	size_t numIndices = 0;
+	int numVertices = 0;
+	int numIndices = 0;
 
 	Batch(GLint textureID, size_t vertexBufferSize, size_t indexBufferSize) :
 		textureID(textureID), vertexBufferSize(vertexBufferSize), indexBufferSize(indexBufferSize) {

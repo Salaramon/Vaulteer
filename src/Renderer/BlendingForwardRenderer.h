@@ -94,7 +94,7 @@ public:
 		blendingShader->setUniform("view", viewMat);
 		blendingShader->setUniform("inverseViewMat", glm::inverse(viewMat)); // glsl inverse is not the same as glm inverse...
 
-		glBindTextureUnit(0, textureId);
+		glBindTextureUnit(0, TextureLibrary::defaultTexture->textureID);
 		blendingShader->setUniform("textureLib", 0);
 
 		blendingShader->setUniform("cameraPos", *camera.position);

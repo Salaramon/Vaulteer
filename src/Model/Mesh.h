@@ -72,10 +72,12 @@ public:
 		vertexBuffers[0]->insert(vertexContainer.data(), vertexContainer.size());
 	}
 	void insertMaterial() {
-		std::vector mats(instanceCount, material->materialIndex);
- 		vertexBuffers[1]->insert(&mats, mats.size(), GL_DYNAMIC_DRAW);
+		std::vector<int> mats(instanceCount, material->materialIndex);
+ 		vertexBuffers[1]->insert(mats.data(), 1, GL_DYNAMIC_DRAW);
 	}
 	void insertInstances(const std::vector<glm::mat4>& instanceMats) {
+		if (instanceMats.empty()) 
+			return;
 		instanceCount = instanceMats.size();
 		vertexBuffers[2]->insert(instanceMats.data(), instanceCount);
 	}

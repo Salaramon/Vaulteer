@@ -42,8 +42,8 @@ uniform vec3 fogColor;
 
 
 struct FragParams {
-    vec3 fragPosition;
-    vec3 fragNormal;
+    vec3 position;
+    vec3 normal;
     int materialIndex;
     float specIntensity;
 } params;
@@ -59,7 +59,7 @@ sampler2D getShadowMap(int cascadeIndex) {
     }
 }
 
-float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D shadowMap, vec3 lightDirection, float farPlane) {
+float calcShadow(vec3 fragPos, vec3 normal, mat4 lightSpaceMat, sampler2D shadowMap, vec3 lightDirection, float farPlane) {
     vec4 fragPosLightSpace = lightSpaceMat * vec4(fragPos, 1.0);
 
     // perform perspective divide
@@ -71,7 +71,7 @@ float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D sh
     
     float currentDepth = projCoords.z;
     
-    float bias = max(0.02 * (1.0 - dot(fragNormal, lightDirection)), 0.005) * (currentDepth);
+    float bias = max(0.02 * (1.0 - dot(normal, lightDirection)), 0.005) * (currentDepth);
 
     float shadow = 0.0;
     vec2 texelSize = (15.0 / farPlane) / textureSize(shadowMap, 0);
@@ -87,40 +87,36 @@ float calcShadow(vec3 fragPos, vec3 fragNormal, mat4 lightSpaceMat, sampler2D sh
     return shadow;
 }
 
-vec4 calcLightInternal(FragParams p, BaseLight light, vec3 lightDirection, float shadow) {
+vec3 calcLightInternal(FragParams p, BaseLight light, vec3 lightDir, float shadow) {
     Material mat = materialTable[p.materialIndex];
 
-    float ambient = light.ambientIntensity;
-    float diffuse = 0.0;
-    float specular = 0.0;
+    vec3 ambient = light.color * light.ambientIntensity;
+    vec3 diffuse = vec3(0.0);
+    vec3 specular = vec3(0.0);
+    
+    // diffuse
+    float diff = max(dot(p.normal, -lightDir), 0.0);
+    diffuse = diff * light.color * light.diffuseIntensity;
+        
+    // specular
+    float kEnergyConservation = (8.0 + mat.shininess) / (8.0 * 3.14159265);
+    vec3 viewDir = normalize(worldCameraPos - p.position);
 
-    float diffuseFactor = dot(p.fragNormal, -lightDirection);
-    if (diffuseFactor > 0.0) {
-        diffuse = diffuseFactor * light.diffuseIntensity;
+    // blinn-phong shading impl
+    vec3 halfwayDir = normalize(viewDir - lightDir);
+    float specularFactor = max(dot(p.normal, halfwayDir), 0.0);
+    specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
 
-        float kEnergyConservation = (8.0 + mat.shininess) / (8.0 * 3.14159265);
-        vec3 viewDir = normalize(worldCameraPos - p.fragPosition);
+    specular = specularFactor * light.color;
 
-        // blinn-phong shading impl
-        vec3 halfwayDir = normalize(viewDir - lightDirection);
-        float specularFactor = max(dot(p.fragNormal, halfwayDir), 0.0);
+    float adjustFactor = max(ambient.r + diffuse.r + specular.r, ambient.g + diffuse.g + specular.g);
+          adjustFactor = max(ambient.b + diffuse.b + specular.b, adjustFactor);
+          adjustFactor = max(adjustFactor, 1.0);
 
-        // phong shading impl
-        /*vec3 reflectDir = reflect(lightDirection, fragNormal);
-        float specularFactor = max(dot(reflectDir, viewDir), 0.0);*/
-
-        specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
-
-        float shadowFactor = 1.0 - shadow;
-        specular = specularFactor * shadowFactor;
-
-        //specular = vec4(specularFactor, 0.0, 0.0, 1.0); // specfactor is weird when material shininess is 0
-    }
-
-    return vec4((ambient + diffuse + specular) * light.color, 1.0);
+    return (ambient + diffuse + specular) * adjustFactor;
 }
 
-vec4 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow) {
+vec3 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow) {
     vec3 lightDirection = normalize(dirLight.direction);
     return calcLightInternal(p, dirLight.light, lightDirection, shadow);
 }
@@ -138,9 +134,9 @@ void main() {
 
     // ------------- aggregation ------------
 
-    params.fragPosition = vec4(inverse(cameraView) * vec4(positionSample, 1.0)).xyz;
+    params.position = vec4(inverse(cameraView) * vec4(positionSample, 1.0)).xyz;
     
-    params.fragNormal = normalSample.xyz;
+    params.normal = normalSample.xyz;
     params.materialIndex = int(normalSample.w);
 
     vec3 diffuse = colorSample.rgb;
@@ -148,7 +144,7 @@ void main() {
 
     // --------------------------------------
  
-    float fragDepth = abs((cameraView * vec4(params.fragPosition, 1.0)).z);
+    float fragDepth = abs((cameraView * vec4(params.position, 1.0)).z);
 
     // shadow calc
     
@@ -162,7 +158,7 @@ void main() {
     }
 
     float dirLightShadow = cascadeIndex > -1 ? 
-            calcShadow(fragPosition, fragNormal, lightSpaceMatrices[cascadeIndex], getShadowMap(cascadeIndex), directionalLight.direction, cascadeFarPlanes[cascadeIndex]) :
+            calcShadow(position, normal, lightSpaceMatrices[cascadeIndex], getShadowMap(cascadeIndex), directionalLight.direction, cascadeFarPlanes[cascadeIndex]) :
             0.0; 
 
     float dirLightShadowFactor = (1.0 - dirLightShadow / 1.5);*/
@@ -171,13 +167,12 @@ void main() {
     float dirLightShadowFactor = 1.0;
 
     // light calc
-    vec4 totalLight = calcDirectionalLight(params, getDirLight(), dirLightShadow) * dirLightShadowFactor;
-
+    vec3 totalLight = calcDirectionalLight(params, getDirLight(), dirLightShadow) * dirLightShadowFactor;
     
     // kinda hdr impl
     
-    totalLight = vec4(min(totalLight.x, 1.0), min(totalLight.y, 1.0), min(totalLight.z, 1.0), totalLight.w) + 
-                 vec4(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0), totalLight.w);
+    totalLight = vec3(min(totalLight.x, 1.0), min(totalLight.y, 1.0), min(totalLight.z, 1.0)) + 
+                 vec3(max(0.0,totalLight.x / 5.0 - 1.0), max(0.0,totalLight.y / 5.0 - 1.0), max(0.0,totalLight.z / 5.0 - 1.0));
                  
     vec4 fragColor = vec4(diffuse.x * totalLight.x, diffuse.y * totalLight.y, diffuse.z * totalLight.z, 1.0);
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);

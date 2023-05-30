@@ -24,6 +24,13 @@ public:
 
     unsigned int width, height;
 
+    void copyDepth(GLint destFBO) {
+        bindForReading();
+        glBindFramebuffer(destFBO, GL_DRAW_FRAMEBUFFER);
+		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(0, GL_DRAW_FRAMEBUFFER);
+    }
+
 private:
     unsigned int colorTexturesInitialized = 0;
     std::array<GLenum, 3> drawBuffers = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };

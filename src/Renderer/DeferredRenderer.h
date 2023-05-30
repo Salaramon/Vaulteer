@@ -12,6 +12,7 @@
 #include "API/Camera.h"
 #include "Renderer/Buffers/GBuffer.h"
 #include "Model/Resources/ResourcePack.h"
+#include "Model/Storage/Quad.h"
 #include "Techniques/UniformBufferTechnique.h"
 #include "Renderer/Shader.h"
 
@@ -19,9 +20,6 @@
 
 
 class DeferredRenderer {
-
-	inline static std::unique_ptr<GBuffer> gbuffer;
-
 	inline static Mesh* quadMesh;
 
 	// sphere used to align affected light area with pointlight radius
@@ -40,10 +38,6 @@ class DeferredRenderer {
 	inline static bool buildLights = true;
 
 	inline static BatchManager batchManager;
-
-	// TODO
-	inline static std::vector<PointLight> pointLights;
-	inline static std::vector<glm::mat4> pointLightInstanceMats;
 	
 	inline static std::unique_ptr<Shader> geometryShader;
 	inline static std::unique_ptr<Shader> pointShader;
@@ -52,6 +46,8 @@ class DeferredRenderer {
 	inline static GLint textureLibraryId;
 	
 public:
+	inline static std::unique_ptr<GBuffer> gbuffer;
+
 	inline static struct RenderStats {
 		size_t drawCalls = 0;
 	} stats;
@@ -135,18 +131,32 @@ public:
 		}
 		
 		if (buildLights) {
-			auto lights = scene.view<PointLight, ExcludeComponent<Transparent>>();
+			auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
+			std::vector<PointLight> pointLights;
+			std::vector<glm::mat4> pointLightInstanceMats;
 
-			lights.each([](const PointLight& p) {
+			pointLightView.each([&](const PointLight& p) {
 				pointLights.push_back(p);
 				pointLightInstanceMats.push_back(p.getTransformMatrix(sphereRadius));
 			});
 
 			UniformBufferTechnique::uploadPointLightData(pointLights);
 			sphereMesh->insertInstances(pointLightInstanceMats);
+			
+			auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
+			std::vector<DirectionalLight> dirLights;
+
+			dirLightView.each([&](const DirectionalLight& d) {
+				dirLights.push_back(d);
+			});
+
+			std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
+			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
+			quadMesh->insertInstances(dirLightMats);
+			
+			buildLights = false;
 		}
 
-		
 		OpenGL::depthTest(true);
 
 		geometryPass(camera);
@@ -155,7 +165,8 @@ public:
 		OpenGL::blending(true);
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::One);
 		
-		//directionalLightPass(camera);
+		directionalLightPass(camera);
+
 		OpenGL::cullFace(OpenGL::FRONT);
 		
 		lightingPass(camera);
@@ -163,7 +174,6 @@ public:
 		OpenGL::blending(false);
 		OpenGL::cullFace(GL_NONE);
 
-		buildLights = false;
 	}
 
 	static void geometryPass(const CameraReference& camera) {
@@ -201,14 +211,6 @@ public:
 
 		dirShader->setUniform("worldCameraPos", *camera.position);
 		dirShader->setUniform("view", camera.viewMatrix());
-
-		if (buildLights) {
-			std::vector<DirectionalLight> dirLights = {
-				{{glm::vec3(1.0, 0.0, 0.0), 0.03f, 1.0f}, glm::vec3(0.0, -1.0, 0.0)}
-			}; // TODO get from scene :3
-
-			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
-		}
 		
 		gbuffer->bindForReading();
 
@@ -220,7 +222,7 @@ public:
 		dirShader->setUniform("gColor", GBuffer::GBufferTextureType::Color_Specular);
 
 		quadMesh->bind();
-		glDrawElements(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr);
+		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr, quadMesh->instanceCount);
 		quadMesh->unbind();
 		
 		stats.drawCalls++;

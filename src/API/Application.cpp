@@ -16,7 +16,6 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	
 	window = std::make_unique<Window>(specification.title, 1280, 720);
 
-	/* Platform specific... TODO */
 	OpenGL::initialize();
 
 	Event::initialize();
