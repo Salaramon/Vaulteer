@@ -1,12 +1,12 @@
 #pragma once
 
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "Utils/TypeDefUtils.h"
 
 /*
 	Abstract frame buffer. Subclasses should implement initTexture() with textures that populate the frame buffer when bound
 */
-class TextureFrameBuffer : FrameBuffer {
+class TextureFrameBuffer : Framebuffer {
 public:
 	TextureFrameBuffer();
 	TextureFrameBuffer(uint frameBufferTexId);

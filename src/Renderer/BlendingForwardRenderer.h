@@ -58,29 +58,23 @@ public:
 
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
-		{
-			OpenGL::depthMask(false);
-			OpenGL::depthTest(true);
-			OpenGL::blending(true);
+		OpenGL::depthMask(false);
+		OpenGL::depthTest(true);
+		OpenGL::blending(true);
 
-			OpenGL::setBlendMode(AlphaBufferTex::Accumulated, GLBlendModes::One, GLBlendModes::One);
-			OpenGL::setBlendMode(AlphaBufferTex::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
-			glBlendEquation(GL_FUNC_ADD);
+		OpenGL::setBlendMode(AlphaBufferTex::Accumulated, GLBlendModes::One, GLBlendModes::One);
+		OpenGL::setBlendMode(AlphaBufferTex::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
+		glBlendEquation(GL_FUNC_ADD);
 
-			blendingPass(scene);
+		blendingPass(scene);
 			
-			OpenGL::depthMask(true);
-		}
+		OpenGL::depthMask(true);
+		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
+		DeferredRenderer::gbuffer->copyDepth(alphaBuffer->fbo);
 
-		{
-			// TODO: put this in gbuffer or something
-			DeferredRenderer::copyGBufferDepth(alphaBuffer->fbo);
-			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
+		compositePass();
 
-			compositePass();
-
-			OpenGL::blending(false);
-		}
+		OpenGL::blending(false);
 	}
 
 	template<size_t SCENE_ID>
@@ -124,7 +118,7 @@ public:
 
 		//glDepthFunc(GL_LESS); // less is the default
 
-		DeferredRenderer::copyGBufferDepth(0); // copy to backbuffer FBO
+		DeferredRenderer::gbuffer->copyDepth(0); // copy to backbuffer FBO
 
 		alphaBuffer->bindForReading();
 		

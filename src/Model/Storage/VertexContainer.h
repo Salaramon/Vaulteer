@@ -13,6 +13,7 @@ public:
 
 	template<vertex_concept T>
 	VertexContainer(std::vector<T> vertices) : vertexType(typeid(T)), format(T::getFormat()) {
+		vertexData.reserve(vertices.size() * sizeof(T));
 		for (T vertex : vertices)
 			this->add<T>(vertex);
 	}

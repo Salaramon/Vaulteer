@@ -231,7 +231,7 @@
     <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h">
+    <ClInclude Include="src\Renderer\Buffers\Framebuffer.h">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Buffers\GBuffer.h">

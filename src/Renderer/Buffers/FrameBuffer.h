@@ -1,19 +1,22 @@
 #pragma once
 
-class FrameBuffer {
+
+
+
+class Framebuffer {
 public:
-	FrameBuffer(int numTextures) : numTextures(numTextures) {
+	Framebuffer(int numTextures) : numTextures(numTextures) {
 		glCreateFramebuffers(1, &fbo);
 	}
 
-	FrameBuffer(GLuint fbo, int numTextures) : fbo(fbo), numTextures(numTextures) 
+	Framebuffer(GLuint fbo, int numTextures) : fbo(fbo), numTextures(numTextures) 
 	{}
 
-	FrameBuffer(FrameBuffer&& other) noexcept : fbo(other.fbo), numTextures(other.numTextures){
+	Framebuffer(Framebuffer&& other) noexcept : fbo(other.fbo), numTextures(other.numTextures){
 		other.fbo = 0;
 	}
 
-	virtual ~FrameBuffer() {
+	virtual ~Framebuffer() {
 		// 12 hours were wasted here by copypasting glDeleteBuffers from Buffer.h
 		glDeleteFramebuffers(1, &fbo);
 	}

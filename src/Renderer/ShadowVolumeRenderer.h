@@ -15,7 +15,7 @@
 
 
 class ShadowVolumeRenderer {
-	inline static std::unique_ptr<FrameBuffer> frameBuffer;
+	inline static std::unique_ptr<Framebuffer> frameBuffer;
 	inline static Mesh* quad;
 
 	inline static std::unique_ptr<Shader> shader;

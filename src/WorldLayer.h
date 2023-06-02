@@ -30,7 +30,6 @@ public:
 	Scene<scene_0> scene;
 
 	Renderer<DeferredRenderer, BlendingForwardRenderer, TextRenderer> renderer;
-	//Renderer<ForwardRenderer> renderer;
 
 	void onAttach() override {
 		Window& window = Application::getWindow();
@@ -129,16 +128,12 @@ public:
 			}
 			
 		}
-
-		DirectionalLight dirLight = {{glm::vec3(1.0, 0.0, 0.0), 0.03f, 1.0f}, glm::vec3(0.0, -1.0, 0.0)};
-		auto& e = lightEntities.emplace_back();
-
-		e.add<DirectionalLight>(dirLight);
-		scene.add(e);
 		
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
  		UniformBufferTechnique::uploadTextureViewData();
+
+		DeferredRenderer::buildLights(scene);
 
 		glClearColor(0.001f, 0.001f, 0.001f, 1.0f);
 	}

@@ -3,7 +3,7 @@
 
 
 GBuffer::GBuffer(unsigned int width, unsigned int height)
-		: FrameBuffer(NumTextures), width(width), height(height) {
+		: Framebuffer(NumTextures), width(width), height(height) {
 	init();
 }
 

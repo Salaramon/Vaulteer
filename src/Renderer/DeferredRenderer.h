@@ -34,9 +34,6 @@ class DeferredRenderer {
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
 
-	// for debugging while we're not fetching lights from scene
-	inline static bool buildLights = true;
-
 	inline static BatchManager batchManager;
 	
 	inline static std::unique_ptr<Shader> geometryShader;
@@ -74,6 +71,7 @@ public:
 
 	static void loadShaders() {
 		constexpr int maxPointLights = 625;
+		constexpr int maxDirLights = 128;
 
 		gem::Shader<gem::geometry_vertex> gvert;
 		gvert.setgeometry_vertex_materialData(max_material_count);
@@ -99,11 +97,40 @@ public:
 		
 		gem::Shader<gem::deferred_directional_frag> dir;
 		dir.setdeferred_directional_frag_materialData(max_material_count);
+		dir.setdeferred_directional_frag_dirLightData(maxDirLights);
 		dir.compile();
 		dirShader = std::make_unique<Shader>(
 			"resources/shaders/deferred_directional_vertex.glsl", GL_VERTEX_SHADER, 
 			"resources/shaders/build/deferred_directional_frag.glsl", GL_FRAGMENT_SHADER
 		);
+	}
+
+	template<size_t SCENE_ID>
+	static void buildLights(Scene<SCENE_ID>& scene) {
+
+		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
+		std::vector<PointLight> pointLights;
+		std::vector<glm::mat4> pointLightInstanceMats;
+
+		pointLightView.each([&](const PointLight& p) {
+			pointLights.push_back(p);
+			pointLightInstanceMats.push_back(p.getTransformMatrix(sphereRadius));
+		});
+
+		UniformBufferTechnique::uploadPointLightData(pointLights);
+		sphereMesh->insertInstances(pointLightInstanceMats);
+
+
+		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
+		std::vector<DirectionalLight> dirLights;
+
+		dirLightView.each([&](const DirectionalLight& d) {
+			dirLights.push_back(d);
+		});
+
+		std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
+		UniformBufferTechnique::uploadDirectionalLightData(dirLights);
+		quadMesh->insertInstances(dirLightMats);
 	}
 
 	template<size_t SCENE_ID>
@@ -128,33 +155,6 @@ public:
 				}
 			});
 			buildBatch = false;
-		}
-		
-		if (buildLights) {
-			auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
-			std::vector<PointLight> pointLights;
-			std::vector<glm::mat4> pointLightInstanceMats;
-
-			pointLightView.each([&](const PointLight& p) {
-				pointLights.push_back(p);
-				pointLightInstanceMats.push_back(p.getTransformMatrix(sphereRadius));
-			});
-
-			UniformBufferTechnique::uploadPointLightData(pointLights);
-			sphereMesh->insertInstances(pointLightInstanceMats);
-			
-			auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
-			std::vector<DirectionalLight> dirLights;
-
-			dirLightView.each([&](const DirectionalLight& d) {
-				dirLights.push_back(d);
-			});
-
-			std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
-			UniformBufferTechnique::uploadDirectionalLightData(dirLights);
-			quadMesh->insertInstances(dirLightMats);
-			
-			buildLights = false;
 		}
 
 		OpenGL::depthTest(true);

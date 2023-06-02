@@ -3,10 +3,10 @@
 #include <glad/glad.h>
 #include <iostream>
 
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "Model/Textures/Texture2D.h"
 
-class AlphaBuffer : public FrameBuffer
+class AlphaBuffer : public Framebuffer
 {
 public:
     enum AlphaBufferTextureType {

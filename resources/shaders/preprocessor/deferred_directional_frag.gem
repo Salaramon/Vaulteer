@@ -1,6 +1,8 @@
 #version 450 core
 out vec4 FragColor;
 
+flat in int instanceID;
+
 // imports
 ##[fragments/dirLightData] //! #include "fragments/dirLightData.gem"
 ##[fragments/materialData] //! #include "fragments/materialData.gem"
@@ -125,6 +127,8 @@ vec3 calcDirectionalLight(FragParams p, DirectionalLight dirLight, float shadow)
 void main() {
     const float gamma = 1.0;
 
+    DirectionalLight light = getDirLight(instanceID);
+
     // -------- reading from GBuffer --------
     
     ivec2 coords = ivec2(gl_FragCoord.xy);
@@ -167,7 +171,7 @@ void main() {
     float dirLightShadowFactor = 1.0;
 
     // light calc
-    vec3 totalLight = calcDirectionalLight(params, getDirLight(), dirLightShadow) * dirLightShadowFactor;
+    vec3 totalLight = calcDirectionalLight(params, light, dirLightShadow) * dirLightShadowFactor;
     
     // kinda hdr impl
     

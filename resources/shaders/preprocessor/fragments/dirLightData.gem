@@ -1,6 +1,8 @@
 //? #version 450 core 
 ##[fragments/baseLight.gem] //! #include "baseLight.gem"
 
+const int MAX_DIR_LIGHTS = %%[maxDirLights:int]; //! const int MAX_DIR_LIGHTS = 1;
+
 struct DirectionalLight {
     BaseLight light;
     vec3 direction;
@@ -14,11 +16,11 @@ struct UBDirectionalLight {
 };
 
 layout(shared, binding = 4) uniform DirectionalLightData {
-    uniform UBDirectionalLight directionalLight;
+    uniform UBDirectionalLight directionalLight[MAX_DIR_LIGHTS];
 };
 
-DirectionalLight getDirLight() {
-    UBDirectionalLight ubl = directionalLight;
+DirectionalLight getDirLight(int i) {
+    UBDirectionalLight ubl = directionalLight[i];
     DirectionalLight l;
     l.light.color = vec3(ubl.color.xyz);
     l.light.ambientIntensity = ubl.color.w;

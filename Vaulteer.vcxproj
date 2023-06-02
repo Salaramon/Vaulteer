@@ -146,7 +146,7 @@
     <ClInclude Include="src\Renderer\BatchManager.h" />
     <ClInclude Include="src\Renderer\BlendingForwardRenderer.h" />
     <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h" />
-    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\Framebuffer.h" />
     <ClInclude Include="src\Renderer\Buffers\GBuffer.h" />
     <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h" />
     <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h" />

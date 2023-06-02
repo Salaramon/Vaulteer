@@ -1,18 +1,18 @@
 #include "vpch.h"
 #include "TextureFrameBuffer.h"
 
-TextureFrameBuffer::TextureFrameBuffer() : FrameBuffer(1) {}
+TextureFrameBuffer::TextureFrameBuffer() : Framebuffer(1) {}
 
-TextureFrameBuffer::TextureFrameBuffer(uint frameBufferTexId) : FrameBuffer(1), frameBufferTexId(frameBufferTexId) {
+TextureFrameBuffer::TextureFrameBuffer(uint frameBufferTexId) : Framebuffer(1), frameBufferTexId(frameBufferTexId) {
 	initWithTexture();
 }
 
 TextureFrameBuffer::TextureFrameBuffer(uint frameBufferTexId, uint fbo)
-	: FrameBuffer(fbo, 1), frameBufferTexId(frameBufferTexId)
+	: Framebuffer(fbo, 1), frameBufferTexId(frameBufferTexId)
 {}
 
 TextureFrameBuffer::TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept
-	: FrameBuffer(fbo, 1), frameBufferTexId(mv.frameBufferTexId) {
+	: Framebuffer(fbo, 1), frameBufferTexId(mv.frameBufferTexId) {
 	mv.fbo = 0;
 	mv.frameBufferTexId = 0;
 }

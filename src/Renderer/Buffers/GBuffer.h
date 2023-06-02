@@ -3,10 +3,10 @@
 #include <glad/glad.h>
 #include <iostream>
 
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "Model/Textures/Texture2D.h"
 
-class GBuffer : public FrameBuffer {
+class GBuffer : public Framebuffer {
 public:
     enum GBufferTextureType {
         Position,               // vec3 position
@@ -22,14 +22,14 @@ public:
     void bindReadTexture(GBufferTextureType textureType) const;
     void bindTextureUnit(GBufferTextureType textureType) const;
 
-    unsigned int width, height;
-
     void copyDepth(GLint destFBO) {
         bindForReading();
-        glBindFramebuffer(destFBO, GL_DRAW_FRAMEBUFFER);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, destFBO);
 		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-        glBindFramebuffer(0, GL_DRAW_FRAMEBUFFER);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
+    
+    unsigned int width, height;
 
 private:
     unsigned int colorTexturesInitialized = 0;

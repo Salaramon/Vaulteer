@@ -12,6 +12,7 @@ void OpenGL::initialize() {
 	debugOutput(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	directDebugMessaging(true);
 	
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 	//stbi_set_flip_vertically_on_load(true);
 }
 
