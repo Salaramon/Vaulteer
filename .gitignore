@@ -5,6 +5,7 @@ vendor/*
 resources/*
 !resources/shaders
 resources/shaders/build/
+!resources/fonts
 
 # binder
 GLSLCPPBinder.exe
