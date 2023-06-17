@@ -10,7 +10,7 @@
 #include "Renderer/BatchManager.h"
 #include "Model/Model.h"
 #include "API/Camera.h"
-#include "Renderer/Buffers/GBuffer.h"
+#include "Renderer/Buffers/FrameBuffer.h"
 #include "Model/Resources/ResourcePack.h"
 #include "Model/Storage/Quad.h"
 #include "Techniques/UniformBufferTechnique.h"
@@ -20,6 +20,13 @@
 
 
 class DeferredRenderer {
+    enum GBufferTextureType {
+        Position,               // vec3 position
+        Normal_Material,        // vec3 normal   + int material_index
+        Color_Specular,         // vec3 diffuse  + float specular
+        NumTextures
+    };
+
 	inline static Mesh* quadMesh;
 
 	// sphere used to align affected light area with pointlight radius
@@ -33,7 +40,7 @@ class DeferredRenderer {
 
 	inline static GLint currentlyBoundTexture = -1;
 	inline static bool buildBatch = true;
-
+	
 	inline static BatchManager batchManager;
 	
 	inline static std::unique_ptr<Shader> geometryShader;
@@ -43,7 +50,7 @@ class DeferredRenderer {
 	inline static GLint textureLibraryId;
 	
 public:
-	inline static std::unique_ptr<GBuffer> gbuffer;
+	inline static std::unique_ptr<Framebuffer> gbuffer;
 
 	inline static struct RenderStats {
 		size_t drawCalls = 0;
@@ -52,7 +59,12 @@ public:
 
 	static void initialize(GLint textureId, uint screenWidth, uint screenHeight) {
 		textureLibraryId = textureId;
-		gbuffer = std::make_unique<GBuffer>(screenWidth, screenHeight);
+
+		FramebufferSpecification gbufferSpec{
+			screenWidth, screenHeight,
+			{{GL_RGBA16F}, {GL_RGBA16F}, {GL_RGBA16F}, {GL_DEPTH24_STENCIL8}}
+		};
+		gbuffer = std::make_unique<Framebuffer>(gbufferSpec);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 		sphereMesh = ResourceLoader::importModel("resources/sphere-hd.obj")[0];
@@ -173,7 +185,6 @@ public:
 		
 		OpenGL::blending(false);
 		OpenGL::cullFace(GL_NONE);
-
 	}
 
 	static void geometryPass(const CameraReference& camera) {
@@ -182,7 +193,7 @@ public:
 		GLint texUnit = 0;
 		glBindTextureUnit(texUnit, textureLibraryId);
 		geometryShader->setUniform("textureLib", texUnit);
-
+		
 		gbuffer->clear();
 		gbuffer->bindForWriting();
 
@@ -214,12 +225,12 @@ public:
 		
 		gbuffer->bindForReading();
 
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		dirShader->setUniform("gPosition", GBuffer::GBufferTextureType::Position);
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		dirShader->setUniform("gNormal", GBuffer::GBufferTextureType::Normal_Material);
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		dirShader->setUniform("gColor", GBuffer::GBufferTextureType::Color_Specular);
+		gbuffer->bindTextureUnit(GBufferTextureType::Position);
+		dirShader->setUniform("gPosition", GBufferTextureType::Position);
+		gbuffer->bindTextureUnit(GBufferTextureType::Normal_Material);
+		dirShader->setUniform("gNormal", GBufferTextureType::Normal_Material);
+		gbuffer->bindTextureUnit(GBufferTextureType::Color_Specular);
+		dirShader->setUniform("gColor", GBufferTextureType::Color_Specular);
 
 		quadMesh->bind();
 		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr, quadMesh->instanceCount);
@@ -230,7 +241,7 @@ public:
 	}
 	
 	static void lightingPass(const CameraReference& camera) {
-		pointShader->use();
+		pointShader->use(); 
 
 		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);
 
@@ -239,12 +250,12 @@ public:
 
 		gbuffer->bindForReading();
 
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Position);
-		pointShader->setUniform("gPosition", GBuffer::GBufferTextureType::Position);
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Normal_Material);
-		pointShader->setUniform("gNormal", GBuffer::GBufferTextureType::Normal_Material);
-		gbuffer->bindTextureUnit(GBuffer::GBufferTextureType::Color_Specular);
-		pointShader->setUniform("gColor", GBuffer::GBufferTextureType::Color_Specular);
+		gbuffer->bindTextureUnit(GBufferTextureType::Position);
+		pointShader->setUniform("gPosition", GBufferTextureType::Position);
+		gbuffer->bindTextureUnit(GBufferTextureType::Normal_Material);
+		pointShader->setUniform("gNormal", GBufferTextureType::Normal_Material);
+		gbuffer->bindTextureUnit(GBufferTextureType::Color_Specular);
+		pointShader->setUniform("gColor", GBufferTextureType::Color_Specular);
 
 
 		sphereMesh->bind();
@@ -262,17 +273,7 @@ public:
 	}
 
 	static void rebuildGBuffer(int width, int height) {
-		gbuffer.reset();
-		gbuffer = std::make_unique<GBuffer>(width, height);
-	}
-
-	static void copyGBufferDepth(GLint fbo) {
-		gbuffer->bindForReading();
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-
-		GLuint width = gbuffer->width, height = gbuffer->height;
-		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		gbuffer->resize(width, height);
 	}
 	
 	static void resetStats() {

@@ -5,17 +5,20 @@
 #include "OpenGL.h"
 
 #include "Renderer/DeferredRenderer.h"
-#include "Renderer/Buffers/AlphaBuffer.h"
 
 #include "API/Camera.h"
 #include "SceneTypedefs.h"
+#include "Buffers/Framebuffer.h"
 #include "Scene/Scene.h"
 
 
 class BlendingForwardRenderer  {
-	using AlphaBufferTex = AlphaBuffer::AlphaBufferTextureType;
-
-	inline static std::unique_ptr<AlphaBuffer> alphaBuffer;
+    enum AlphaBufferTextureType {
+        Accumulated,
+        Alpha,
+        NumTextures
+    };
+	inline static std::unique_ptr<Framebuffer> alphaBuffer;
 	inline static Mesh* quadMesh;
 
 	inline static GLint textureId;
@@ -26,7 +29,12 @@ class BlendingForwardRenderer  {
 public:
 	static void initialize(const GLint textureId, uint screenWidth, uint screenHeight) {
 		BlendingForwardRenderer::textureId = textureId;
-		alphaBuffer = std::make_unique<AlphaBuffer>(screenWidth, screenHeight);
+
+		FramebufferSpecification alphaBufferSpec{
+			screenWidth, screenHeight,
+			{{GL_RGBA16F}, {GL_R8}, {GL_DEPTH24_STENCIL8}}
+		};
+		alphaBuffer = std::make_unique<Framebuffer>(alphaBufferSpec);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 
@@ -52,8 +60,7 @@ public:
 	}
 
 	static void rebuildAlphaBuffer(int width, int height) {
-		alphaBuffer.reset();
-		alphaBuffer = std::make_unique<AlphaBuffer>(width, height);
+		alphaBuffer->resize(width, height);
 	}
 
 	template<size_t SCENE_ID>
@@ -62,18 +69,19 @@ public:
 		OpenGL::depthTest(true);
 		OpenGL::blending(true);
 
-		OpenGL::setBlendMode(AlphaBufferTex::Accumulated, GLBlendModes::One, GLBlendModes::One);
-		OpenGL::setBlendMode(AlphaBufferTex::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
+		OpenGL::setBlendMode(AlphaBufferTextureType::Accumulated, GLBlendModes::One, GLBlendModes::One);
+		OpenGL::setBlendMode(AlphaBufferTextureType::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
 		glBlendEquation(GL_FUNC_ADD);
 
 		blendingPass(scene);
 			
 		OpenGL::depthMask(true);
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
-		DeferredRenderer::gbuffer->copyDepth(alphaBuffer->fbo);
 
+		Framebuffer::copyDepth(*DeferredRenderer::gbuffer, *alphaBuffer);
+		
 		compositePass();
-
+		
 		OpenGL::blending(false);
 	}
 
@@ -93,8 +101,11 @@ public:
 
 		blendingShader->setUniform("cameraPos", *camera.position);
 		blendingShader->setUniform("lightPos", glm::vec3(5.0));
-		
-		alphaBuffer->clear();
+
+		alphaBuffer->clearAttachment(0, 0.0f);
+		alphaBuffer->clearAttachment(1, 1.0f);
+ 		alphaBuffer->clearDepthStencil();
+
 		alphaBuffer->bindForWriting();
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, const Transparent&) {
@@ -118,14 +129,14 @@ public:
 
 		//glDepthFunc(GL_LESS); // less is the default
 
-		DeferredRenderer::gbuffer->copyDepth(0); // copy to backbuffer FBO
+		Framebuffer::copyDepthToBackFBO(*DeferredRenderer::gbuffer);
 
 		alphaBuffer->bindForReading();
 		
-		alphaBuffer->bindTextureUnit(AlphaBufferTex::Accumulated);
-		alphaBuffer->bindTextureUnit(AlphaBufferTex::Alpha);
-		compositeShader->setUniform("accum", AlphaBufferTex::Accumulated);
-		compositeShader->setUniform("reveal", AlphaBufferTex::Alpha);
+		alphaBuffer->bindTextureUnit(AlphaBufferTextureType::Accumulated);
+		alphaBuffer->bindTextureUnit(AlphaBufferTextureType::Alpha);
+		compositeShader->setUniform("accum", AlphaBufferTextureType::Accumulated);
+		compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
 
 		quadMesh->bind();
 		glDrawElements(GL_TRIANGLES, quadMesh->indices.size(), GL_UNSIGNED_INT, nullptr);

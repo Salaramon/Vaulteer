@@ -297,13 +297,7 @@
     <ClInclude Include="src\VFX\LightTypes.h">
       <Filter>Source Files\VFX</Filter>
     </ClInclude>
-    <ClInclude Include="src\VFX\ShadowBuffer.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
     <ClInclude Include="src\VFX\ShadowCascade.h">
-      <Filter>Source Files\VFX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VFX\ShadowCubeBuffer.h">
       <Filter>Source Files\VFX</Filter>
     </ClInclude>
     <ClInclude Include="src\VFX\ShadowCubeTechnique.h">
@@ -386,13 +380,7 @@
     <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\VFX\ShadowBuffer.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
     <ClCompile Include="src\VFX\ShadowCascade.cpp">
-      <Filter>Source Files\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VFX\ShadowCubeBuffer.cpp">
       <Filter>Source Files\VFX</Filter>
     </ClCompile>
     <ClCompile Include="src\Vaulteer.cpp">

@@ -95,18 +95,14 @@ public:
 		int i = 0;
 		for (int y = 0; y < 100; y++) {
 			for (int x = 0; x < 100; x++) {
-				Mesh* m = pack.getMeshes("crate")[0];
-				auto verts = m->getCopiedData<VertexImpl>();
-				std::vector<Mesh*> temp = {copies.emplace_back(std::make_unique<Mesh>(verts, m->indices, m->material)).get()};
-				temp = something.emplace_back(temp);
-				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(temp));
+				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
 				glm::vec3 pos = {y*2 - 100, -(rand() % 6), x*2 - 100};
 				a.setPosition(pos);
 
 				if ((y + x % 8) % 8 == 0 && i % 17 == 0) {
 					auto color = lightColors[rand() % 6];
-
+					
 					auto mat = crate1.meshes->at(0)->material->data;
 					mat.matOpacity = 0.2;
 					mat.colorAmbient = color;

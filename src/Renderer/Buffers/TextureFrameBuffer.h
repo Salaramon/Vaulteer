@@ -6,14 +6,18 @@
 /*
 	Abstract frame buffer. Subclasses should implement initTexture() with textures that populate the frame buffer when bound
 */
-class TextureFrameBuffer : Framebuffer {
+class TextureFrameBuffer {
 public:
-	TextureFrameBuffer();
-	TextureFrameBuffer(uint frameBufferTexId);
-	TextureFrameBuffer(uint frameBufferTexId, uint fbo);
-	TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept;
+	Framebuffer framebuffer;
 
-	~TextureFrameBuffer() override;
+	TextureFrameBuffer(FramebufferSpecification spec) : framebuffer(spec) {}
+	TextureFrameBuffer(uint frameBufferTexId, FramebufferSpecification spec) : framebuffer(spec), frameBufferTexId(frameBufferTexId) {
+		assert(initWithTexture());
+	}
+
+	TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept : framebuffer(std::move(mv.framebuffer)), frameBufferTexId(mv.frameBufferTexId) {}
+
+	~TextureFrameBuffer();
 
 	void destroy() const;
 

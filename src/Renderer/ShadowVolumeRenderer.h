@@ -8,8 +8,6 @@
 
 #include "Renderer/DeferredRenderer.h"
 
-#include "Renderer/Buffers/AlphaBuffer.h"
-
 #include "API/Camera.h"
 #include "Scene/Scene.h"
 
