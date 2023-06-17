@@ -12,8 +12,8 @@ void Vaulteer::loadResources() {
 	std::vector<ModelResourceLocator> locators = {
 		{ "crate", "resources/crate/crate1.obj" },
 		{ "palm", "resources/palm/palm.obj", aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
+		{ "quad", "resources/quad.obj" },
 		//{ "plane", "resources/plane/plane_mesh.obj", aiProcess_GenNormals | aiProcess_Triangulate },
-		//{ "vase", "resources/vase/untitled.obj" },
 		//{ "backpack", "backpack/backpack.obj" },
 		//{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};

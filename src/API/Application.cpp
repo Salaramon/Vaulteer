@@ -11,10 +11,20 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	assert(!instance); // "Application already exists, but construction was attempted."
 	instance = this;
 
-	if (!specification.workingDir.empty())
-		std::filesystem::current_path(specification.workingDir);
-	
-	window = std::make_unique<Window>(specification.title, 1280, 720);
+	int success = glfwInit();
+	assert(success); // "GLFW could not be initialized!"
+
+	if (!spec.workingDir.empty())
+		std::filesystem::current_path(spec.workingDir);
+
+	auto* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+	int windowWidth = 1280, windowHeight = 720;
+	int windowX = mode->width / 2 - windowWidth / 2;
+	int windowY = mode->height / 2 - windowHeight / 2;
+
+	WindowSpecification windowSpec = {spec.title, windowWidth, windowHeight, windowX, windowY};
+	window = std::make_unique<Window>(windowSpec);
 
 	OpenGL::initialize();
 
@@ -56,10 +66,17 @@ size_t Application::run() {
 	return 0;
 }
 
+
+
 void Application::onEvent(BaseEvent& e) {
 
 	EventDispatcher dispatcher(e);
+	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
+
 	dispatcher.dispatch<WindowCloseEvent>(FORWARD_FN(window->onWindowCloseEvent));
+	dispatcher.dispatch<WindowFullscreenEvent>(FORWARD_FN(window->onWindowFullscreenEvent));
+	dispatcher.dispatch<WindowMaximizeEvent>(FORWARD_FN(window->onWindowMaximizeEvent));
+	dispatcher.dispatch<WindowPositionEvent>(FORWARD_FN(window->onWindowPositionEvent));
 	dispatcher.dispatch<WindowFocusEvent>(FORWARD_FN(window->onWindowFocusEvent));
 	dispatcher.dispatch<WindowResizeEvent>(FORWARD_FN(window->onWindowResizeEvent));
 
@@ -69,4 +86,15 @@ void Application::onEvent(BaseEvent& e) {
 
 		it->onEvent(e);
 	}
+}
+
+bool Application::onKeyboardButtonEvent(const KeyboardButtonEvent& e) {
+	// toggle fullscreen state on alt+enter;
+	bool altHeld = Event::state(KeyboardKey::LEFT_ALT) || Event::state(KeyboardKey::RIGHT_ALT);
+	if (altHeld && e.button.key == KeyboardKey::ENTER && e.button.action == KeyAction::RELEASE) {
+		Event::window_fullscreen_callback(Window::getRawWindow(), !Window::fullscreen);
+		return true;
+	}
+
+	return false;
 }

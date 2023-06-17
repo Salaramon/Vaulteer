@@ -54,4 +54,7 @@ public:
 	uint frameCounter = 0;
 
 	static Application* instance;
+
+private:
+	bool onKeyboardButtonEvent(const KeyboardButtonEvent& e);
 };

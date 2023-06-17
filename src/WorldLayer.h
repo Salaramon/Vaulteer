@@ -106,7 +106,6 @@ public:
 					auto mat = crate1.meshes->at(0)->material->data;
 					mat.matOpacity = 0.2;
 					mat.colorAmbient = color;
-					mat.textureId = TextureLibrary::getView("white1x1").textureViewId;
 
 					auto* ins1 = MaterialLibrary::create(mat, std::format("color{}", i));
 

@@ -12,30 +12,33 @@
 
 static size_t GLFWWindowCount = 0;
 
+struct WindowSpecification {
+	std::string title;
+	int width, height;
+	int x, y;
+
+	// can eventually put initial state here
+};
+
 class Window {
 public:
-	//=============================================================================================================================================//
+	// Fields
+	inline static WindowSpecification specification;
 
+	inline static bool fullscreen = false;
+	inline static bool maximized = false;
+	inline static bool focused = true;
+
+	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		  CONSTRUCTORS 			|
 		|_______________________________|	*/
 
 	//Creates and sets up the window
-	Window(const std::string& title, unsigned int width, unsigned int height);
+	Window(WindowSpecification spec);
 
 	~Window();
-
-
-	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-		|		WRAPPER FUNCTIONS 		|
-		|_______________________________|	*/
-
-	//Returns a non-zero value as long the window is running
-	static int isRunning();
-
-	static bool isFocused();
-
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
@@ -46,6 +49,8 @@ public:
 
 	static int getWidth();
 	static int getHeight();
+
+	static int isRunning();
 
 	static void addResizeCallback(const std::function<void(int, int)>& callback);
 
@@ -59,6 +64,9 @@ public:
 		|_______________________________|	*/
 
 	static bool onWindowCloseEvent(const WindowCloseEvent& e);
+	static bool onWindowFullscreenEvent(const WindowFullscreenEvent& e);
+	static bool onWindowMaximizeEvent(const WindowMaximizeEvent& e);
+	static bool onWindowPositionEvent(const WindowPositionEvent& e);
 	static bool onWindowFocusEvent(const WindowFocusEvent& e);
 	static bool onWindowResizeEvent(const WindowResizeEvent& e); // calls all registered callbacks
 	//static void onWindowIconifyCallback(const WindowIconifyEvent& e);
@@ -71,7 +79,7 @@ private:
 		|_______________________________|	*/
 
 	//Initializes the window
-	void setup(const std::string& title, int width, int height);
+	void setup();
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
 		|		UTILITY FUNCTIONS 		|
@@ -79,14 +87,8 @@ private:
 
 	inline static std::unordered_map<GLFWwindow*, std::vector<std::function<void(int, int)>>> resizeCallbacks;
 
-protected:
 	//=============================================================================================================================================//
 
-	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|
-		|			VARIABLES			|
-		|_______________________________|	*/
-
-	//GLFW window variable
+	//GLFW internal window
 	inline static GLFWwindow* window{};
-	inline static bool focused = true;
 };

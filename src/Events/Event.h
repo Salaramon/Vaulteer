@@ -34,8 +34,10 @@ public:
 		glfwSetScrollCallback(rawWindow, scroll_callback);
 		glfwSetKeyCallback(rawWindow, key_callback);
 
-		glfwSetWindowFocusCallback(rawWindow, window_focus_callback);
 		glfwSetWindowCloseCallback(rawWindow, window_close_callback);
+		glfwSetWindowPosCallback(rawWindow, window_position_callback);
+		glfwSetWindowMaximizeCallback(rawWindow, window_maximize_callback);
+		glfwSetWindowFocusCallback(rawWindow, window_focus_callback);
 		glfwSetFramebufferSizeCallback(rawWindow, window_resize_callback);
 		glfwSetWindowIconifyCallback(rawWindow, window_iconify_callback);
 	}                                               
@@ -101,7 +103,7 @@ public:
 
 
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-		if (Window::isFocused()) {
+		if (Window::focused) {
 			auto eKey = static_cast<MouseKey>(button);
 			auto eAction = static_cast<KeyAction>(action);
 
@@ -116,7 +118,7 @@ public:
 	}
 
 	static void cursor_position_callback(GLFWwindow* window, double x, double y) {
-		if (Window::isFocused()) {
+		if (Window::focused) {
 			glm::vec2 mousePosition = glm::vec2(x, y);
 			glm::vec2 mouseDelta = mousePosition - previousPolledMousePosition;
 
@@ -125,8 +127,11 @@ public:
 				.delta = mousePosition - previousPolledMousePosition
 			};
 			
-			MouseMoveEvent e(motion);
-			eventCallbackFn(e);
+ 			MouseMoveEvent e(motion);
+			if (!resizeSkipMousePoll)
+				eventCallbackFn(e);
+			else
+				resizeSkipMousePoll = false;
 
 			//Keep this at the end of this callback
 			previousPolledMousePosition = mousePosition;
@@ -134,7 +139,7 @@ public:
 	}
 
 	static void scroll_callback(GLFWwindow* window, double x, double y) {
-		if (Window::isFocused()) {
+		if (Window::focused) {
 			glm::vec2 scrollChange = glm::vec2(x, y);
 			
 			MouseScrollEvent e(scrollChange);
@@ -143,7 +148,7 @@ public:
 	}
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		if (Window::isFocused()) {
+		if (Window::focused) {
 			auto eKey = static_cast<KeyboardKey>(key);
 			auto eAction = static_cast<KeyAction>(action);
 
@@ -157,17 +162,36 @@ public:
 		}
 	}
 	
-	static void window_focus_callback(GLFWwindow* window, int focused) {
-		WindowFocusEvent e(focused);
-		eventCallbackFn(e);
-	}
-	
 	static void window_close_callback(GLFWwindow* window) {
 		WindowCloseEvent e;
 		eventCallbackFn(e);
 	}
 
+	static void window_fullscreen_callback(GLFWwindow* window, int fullscreen) {
+		WindowFullscreenEvent e(fullscreen);
+		eventCallbackFn(e);
+	}
+
+	static void window_maximize_callback(GLFWwindow* window, int maximized) {
+		WindowMaximizeEvent e(maximized);
+		eventCallbackFn(e);
+	}
+
+	static void window_position_callback(GLFWwindow* window, int xpos, int ypos) {
+		WindowPositionEvent e(xpos, ypos);
+		eventCallbackFn(e);
+	}
+	
+	static void window_focus_callback(GLFWwindow* window, int focused) {
+		WindowFocusEvent e(focused);
+		eventCallbackFn(e);
+	}
+
+	// -- special resize state --
+	// used to handle window resize after rendered frame to prevent state errors
 	inline static std::unique_ptr<WindowResizeEvent> queuedResizeEvent;
+	// used to skip mouse polling after resize to prevent unexpected camera jump
+	inline static bool resizeSkipMousePoll;
 
 	static void window_resize_callback(GLFWwindow* window, int width, int height) {
 		//WindowResizeEvent e(width, height);
@@ -176,6 +200,8 @@ public:
 			window_iconify_callback(window, true);
 		else 
 			queuedResizeEvent = std::make_unique<WindowResizeEvent>(width, height);
+
+		resizeSkipMousePoll = true;
 	}
 
 	static void window_iconify_callback(GLFWwindow* window, int iconified) {

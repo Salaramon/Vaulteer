@@ -1,8 +1,12 @@
 #include "vpch.h"
 #include "Window.h"
 
-Window::Window(const std::string& title, unsigned const int width, unsigned const int height) {
-	setup(title, width, height);
+#include "Events/Event.h"
+
+Window::Window(WindowSpecification spec) {
+	Window::specification = spec;
+	setup();
+
 	int init = !gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 }
 
@@ -12,14 +16,6 @@ Window::~Window() {
 	}
 }
 
-
-int Window::isRunning() {
-	return !glfwWindowShouldClose(window);
-}
-
-bool Window::isFocused() {
-	return focused;
-}
 
 GLFWwindow* Window::getRawWindow() {
 	return window;
@@ -37,8 +33,38 @@ int Window::getWidth() {
 	return width;
 }
 
+int Window::isRunning() {
+	return !glfwWindowShouldClose(window);
+}
+
 bool Window::onWindowCloseEvent(const WindowCloseEvent& e) {
 	// todo why is this handled here if it doesn't do anything
+	return true;
+}
+
+bool Window::onWindowFullscreenEvent(const WindowFullscreenEvent& e) {
+	fullscreen = e.fullscreen;
+	if (fullscreen) {
+		auto* monitor = glfwGetPrimaryMonitor();
+		auto* mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+	} else {
+		auto* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowMonitor(window, nullptr, specification.x, specification.y, specification.width, specification.height, mode->refreshRate);
+	}
+	return true;
+}
+
+bool Window::onWindowMaximizeEvent(const WindowMaximizeEvent& e) {
+	maximized = e.maximized;
+	return true;
+}
+
+bool Window::onWindowPositionEvent(const WindowPositionEvent& e) {
+	if (!fullscreen) {
+		specification.x = std::max(e.xpos, 0);
+		specification.y = std::max(e.ypos, 0);
+	}
 	return true;
 }
 
@@ -51,7 +77,7 @@ bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
 	glViewport(0, 0, e.width, e.height);
 
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
-
+	
 	if (auto it = resizeCallbacks.find(currentWindow); it != resizeCallbacks.end()) {
 		std::vector<std::function<void(int, int)>>& callbackVector = it->second;
 
@@ -60,7 +86,7 @@ bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
 		}
 	}
 
-	std::cout << "Window was resized" << std::endl;
+	std::cout << std::format("Window was resized to {}x{}", e.width, e.height) << std::endl;
 	return true;
 }
 
@@ -69,22 +95,22 @@ void Window::addResizeCallback(const std::function<void(int, int)>& callback) {
 	resizeCallbacks.at(window).push_back(callback);
 }
 
-void Window::setup(const std::string& title, const int width, const int height) {
-	if (GLFWWindowCount++ == 0) {
-		int success = glfwInit();
-		assert(success); // "GLFW could not be initialized!"
-	}
-
+void Window::setup() {
 	//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	window = glfwCreateWindow(specification.width, specification.height, specification.title.c_str(), nullptr, nullptr);
 	bool success = window != nullptr;
+	assert(success);  // "Window could not be initialized!"
 
-	std::cout << std::format("Window created with title {} and dimensions {}x{}", title, width, height) << std::endl;
-
+	glfwSetWindowPos(window, specification.x, specification.y);
 	glfwMakeContextCurrent(window);
 
+	bool vsync = false; 
+	glfwSwapInterval(vsync ? 1 : 0);
+
 	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
+
+	std::cout << std::format("Window created with title {} and dimensions {}x{}", specification.title, specification.width, specification.height) << std::endl;
 }
 
 bool Window::onUpdate() {

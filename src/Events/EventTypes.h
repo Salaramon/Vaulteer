@@ -144,9 +144,13 @@ enum class KeyAction {
 };
 
 enum class KeyState {
-	UP, 
-	DOWN, 
+	UP,
+	DOWN
 };
+
+inline bool operator||(KeyState l, KeyState r) {
+	return (int)l | (int)r;
+}
 
 
 #define FORWARD_THIS [this]<class EventType, auto fn>(EventType& e, Event::GenericWrapper<fn> fnWrap) -> bool { return (this->*fn)(e); }
@@ -157,6 +161,8 @@ enum class KeyState {
 enum EventType {
 	None,
 	WindowClose,
+	WindowFullscreen,
+	WindowMaximize,
 	WindowResize,
 	WindowFocus,
 	KeyboardButtonAction,
@@ -229,6 +235,30 @@ struct MouseMoveEvent : BaseEvent {
 
 struct WindowCloseEvent : BaseEvent {
 	EVENT_CLASS_TYPE(WindowClose)
+};
+
+struct WindowFullscreenEvent : BaseEvent {
+	WindowFullscreenEvent(bool fullscreen) : fullscreen(fullscreen) {}
+
+	bool fullscreen;
+
+	EVENT_CLASS_TYPE(WindowFullscreen)
+};
+
+struct WindowMaximizeEvent : BaseEvent {
+	WindowMaximizeEvent(bool maximized) : maximized(maximized) {}
+
+	bool maximized;
+
+	EVENT_CLASS_TYPE(WindowMaximize)
+};
+
+struct WindowPositionEvent : BaseEvent {
+	WindowPositionEvent(int xpos, int ypos) : xpos(xpos), ypos(ypos) {}
+
+	int xpos, ypos;
+
+	EVENT_CLASS_TYPE(WindowMaximize)
 };
 
 struct WindowFocusEvent : BaseEvent {
