@@ -127,6 +127,7 @@ public:
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
  		UniformBufferTechnique::uploadTextureViewData();
+		UniformBufferTechnique::uploadCameraProjection(scene.getActiveCamera().projectionMatrix());
 
 		DeferredRenderer::buildLights(scene);
 

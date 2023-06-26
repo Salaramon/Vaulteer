@@ -41,9 +41,9 @@ public:
 		auto camera = scene.getActiveCamera();
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D>();
 
-		auto viewMat = camera.viewMatrix();
-		shader->setUniform("view", viewMat);
-		shader->setUniform("inverseViewMat", glm::inverse(viewMat));
+		auto view = camera.viewMatrix();
+		UniformBufferTechnique::uploadCameraView(view);
+		shader->setUniform("inverseViewMat", glm::inverse(view));
 
 		glBindTextureUnit(0, textureID);
 		shader->setUniform("textureLib", 0);

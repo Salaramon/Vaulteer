@@ -5,15 +5,11 @@ layout(location = 6) in mat4 instance;
 flat out int instanceID;
 
 uniform mat4 model;
-uniform mat4 view;
 
-layout (std140, binding = 0) uniform Camera {
-    uniform mat4 projection;
-    uniform mat4 screenProjection;
-};
+##[fragments/camera] //! #include "fragments/camera.gem"
 
 
 void main() {
     instanceID = gl_InstanceID;
-    gl_Position = ((projection)) * view * instance * vec4(aPos.xyz, 1.0);
+    gl_Position = projection * view * instance * vec4(aPos.xyz, 1.0);
 }

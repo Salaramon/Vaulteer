@@ -19,14 +19,10 @@ out VS_OUT {
 } vs_out;
 
 uniform mat4 model;
-uniform mat4 view;
 uniform mat4 normal;
 
-layout (std140, binding = 0) uniform Camera {
-    uniform mat4 projection;
-    uniform mat4 screenProjection;
-};
 
+##[fragments/camera] //! #include "fragments/camera.gem"
 ##[fragments/materialData] //! #include "fragments/materialData.gem"
 ##[fragments/textureData] //! #include "fragments/textureData.gem"
 

@@ -34,6 +34,7 @@ public:
 		size_t numVertices() {
 			return numQuads * 4;
 		}
+
 		size_t numIndices() {
 			return numQuads * 6;
 		}
@@ -114,7 +115,7 @@ public:
 
 				flush();
 				clearScene();
-				
+
 				offset = 0;
 				index = 0;
 			}

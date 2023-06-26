@@ -92,9 +92,9 @@ public:
 		auto camera = scene.getActiveCamera();
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Transparent>();
 
-		auto viewMat = camera.viewMatrix();
-		blendingShader->setUniform("view", viewMat);
-		blendingShader->setUniform("inverseViewMat", glm::inverse(viewMat)); // glsl inverse is not the same as glm inverse...
+		auto view = camera.viewMatrix();
+		UniformBufferTechnique::uploadCameraView(view);
+		blendingShader->setUniform("inverseViewMat", glm::inverse(view)); // glsl inverse is not the same as glm inverse...
 
 		glBindTextureUnit(0, TextureLibrary::defaultTexture->textureID);
 		blendingShader->setUniform("textureLib", 0);

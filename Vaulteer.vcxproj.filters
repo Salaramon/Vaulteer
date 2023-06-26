@@ -228,13 +228,7 @@
     <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\AlphaBuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Buffers\Framebuffer.h">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\GBuffer.h">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h">
@@ -358,12 +352,6 @@
     </ClCompile>
     <ClCompile Include="src\Program.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\AlphaBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers\GBuffer.cpp">
-      <Filter>Source Files\Renderer\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Buffers\TextureFrameBuffer.cpp">
       <Filter>Source Files\Renderer\Buffers</Filter>
@@ -565,6 +553,7 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

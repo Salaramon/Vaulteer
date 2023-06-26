@@ -4,6 +4,7 @@ out vec4 FragColor;
 flat in int instanceID;
 
 // imports
+##[fragments/camera] //! #include "fragments/camera.gem"
 ##[fragments/pointLightData] //! #include "fragments/pointLightData.gem"
 ##[fragments/materialData] //! #include "fragments/materialData.gem"
 
@@ -52,7 +53,6 @@ uniform float cubeMapFarPlanes[1];
 // uniforms
 
 uniform vec3 worldCameraPos;
-uniform mat4 view;
 
 uniform vec3 fogColor;
 

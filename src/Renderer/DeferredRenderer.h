@@ -196,9 +196,9 @@ public:
 		
 		gbuffer->clear();
 		gbuffer->bindForWriting();
-
-		geometryShader->setUniform("modelView", camera.viewMatrix()); // disregard model since everything is batched
-		geometryShader->setUniform("model", glm::mat4(1.0));
+		
+		UniformBufferTechnique::uploadCameraView(camera.viewMatrix());
+		geometryShader->setUniform("model", glm::mat4(1.0)); // disregard model since everything is batched
 		geometryShader->setUniform("normal", glm::mat4(1.0));
 
 		for (Batch* batch : batchManager.getBatches()) {
@@ -221,7 +221,7 @@ public:
 		dirShader->use();
 
 		dirShader->setUniform("worldCameraPos", *camera.position);
-		dirShader->setUniform("view", camera.viewMatrix());
+		UniformBufferTechnique::uploadCameraView(camera.viewMatrix());
 		
 		gbuffer->bindForReading();
 
@@ -246,7 +246,7 @@ public:
 		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);
 
 		pointShader->setUniform("worldCameraPos", *camera.position);
-		pointShader->setUniform("view", view);
+		UniformBufferTechnique::uploadCameraView(view);
 
 		gbuffer->bindForReading();
 

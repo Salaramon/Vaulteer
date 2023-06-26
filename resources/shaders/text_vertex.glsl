@@ -6,6 +6,7 @@ out vec3 fragPos;
 out vec2 texCoords;
 
 layout (std140, binding = 0) uniform Camera {
+    uniform mat4 view;
     uniform mat4 projection;
     uniform mat4 screenProjection;
 };

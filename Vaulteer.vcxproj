@@ -227,6 +227,7 @@
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
+    <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
     <None Include="resources\shaders\preprocessor\blending_frag.gem" />
     <None Include="resources\shaders\preprocessor\blending_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
