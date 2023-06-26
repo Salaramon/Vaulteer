@@ -57,10 +57,11 @@ bool Window::onWindowFullscreenEvent(const WindowFullscreenEvent& e) {
 
 bool Window::onWindowMaximizeEvent(const WindowMaximizeEvent& e) {
 	maximized = e.maximized;
-	return true;
+	return true; 
 }
 
 bool Window::onWindowPositionEvent(const WindowPositionEvent& e) {
+	// stops the window from travelling offscreen in special circumstances
 	if (!fullscreen) {
 		specification.x = std::max(e.xpos, 0);
 		specification.y = std::max(e.ypos, 0);
@@ -77,13 +78,17 @@ bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
 	glViewport(0, 0, e.width, e.height);
 
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
-	
 	if (auto it = resizeCallbacks.find(currentWindow); it != resizeCallbacks.end()) {
 		std::vector<std::function<void(int, int)>>& callbackVector = it->second;
 
 		for (auto& fn : callbackVector) {
 			fn(e.width, e.height);
 		}
+	}
+	
+	if (!fullscreen) {
+		specification.width = e.width;
+		specification.height = e.height;
 	}
 
 	std::cout << std::format("Window was resized to {}x{}", e.width, e.height) << std::endl;
