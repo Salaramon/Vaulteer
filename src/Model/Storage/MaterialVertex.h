@@ -31,6 +31,7 @@ private:
 		{ "aTexCoords", ShaderDataType::Float2 },
 		{ "aTangent", ShaderDataType::Float3 },
 		{ "aBitangent", ShaderDataType::Float3 },
-		{ "aMaterialNumber", ShaderDataType::Int }
+		{ "aMaterialNumber", ShaderDataType::Int },
+		{ "instance", ShaderDataType::Mat4, 1 } // instanced
 	};
 };

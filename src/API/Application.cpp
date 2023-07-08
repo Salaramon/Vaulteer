@@ -36,8 +36,8 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 
 void Application::init() {
 	auto rebuildGBufferFn = [&](int w, int h) {
-		DeferredRenderer::rebuildGBuffer(w, h);
-		BlendingForwardRenderer::rebuildAlphaBuffer(w, h);
+		DeferredRenderer::resizeFramebuffers(w, h);
+		BlendingForwardRenderer::resizeFramebuffers(w, h);
 		TextRenderer::buildScreenProjection(w, h);
 	};
 	window->addResizeCallback(rebuildGBufferFn);

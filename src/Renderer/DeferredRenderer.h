@@ -54,12 +54,12 @@ class DeferredRenderer {
 	inline static std::unique_ptr<Shader> shadowShader;
 
 	inline static GLint textureLibraryId;
-	
+
 public:
 	inline static std::unique_ptr<Framebuffer> gbuffer;
 	inline static std::unique_ptr<Framebuffer> shadowBuffer;
-	
-	inline static bool drawVolumes = false;
+
+	inline static bool drawShadowVolumes = false;
 
 	inline static struct RenderStats {
 		size_t drawCalls = 0;
@@ -94,7 +94,7 @@ public:
 		gbuffer = std::make_unique<Framebuffer>(gbufferSpec);
 
 		FramebufferSpecification shadowbufferSpec {
-			1280, 720,
+			screenWidth, screenHeight,
 			{{.textureFormat = GL_DEPTH24_STENCIL8, .depthStencilMode = GL_STENCIL_INDEX}},
 			GL_TEXTURE_2D_ARRAY, initialShadowMapCount
 		};
@@ -179,14 +179,13 @@ public:
 		if (buildBatch) {
 			batchManager.batches.clear();
 
-			modelView.each([](
-				const PropertiesModel& propertiesModel, 
-				const Meshes& meshes, 
-				const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
+			modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, 
+							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
 				batchManager.setTextureID(propertiesModel.textureID); //This should be taken from its own component in the future.
 
 				for (Mesh* mesh : meshes) {
-					batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
+					if (!mesh->isInstanced())
+						batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
 				}
 			});
 			buildBatch = false;
@@ -194,8 +193,8 @@ public:
 
 		OpenGL::depthTest(true);
 
-		geometryPass(camera);
-		
+		geometryPass(scene);
+
 		OpenGL::stencilTest(true);
 
 		shadowVolumePass(scene);
@@ -215,8 +214,9 @@ public:
 		OpenGL::blending(false);
 		OpenGL::cullFace(GL_NONE);
 	}
-
-	static void geometryPass(const CameraReference& camera) {
+	
+	template<size_t SCENE_ID>
+	static void geometryPass(Scene<SCENE_ID>& scene) {
 		geometryShader->use();
 		
 		GLint texUnit = 0;
@@ -226,7 +226,7 @@ public:
 		gbuffer->clear();
 		gbuffer->bindForWriting();
 		
-		geometryShader->setUniform("model", glm::mat4(1.0)); // disregard model since everything is batched
+		//geometryShader->setUniform("model", glm::mat4(1.0)); // disregard model since everything is batched
 		geometryShader->setUniform("normal", glm::mat4(1.0));
 
 		for (Batch* batch : batchManager.getBatches()) {
@@ -241,10 +241,21 @@ public:
 			stats.drawCalls++;
 		}
 		Batch::unbind();
+		
+		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Instanced, ExcludeComponent<Transparent>>();
+		modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, 
+						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+						  const Instanced&) {
+			for (Mesh* mesh : meshes) {
+				mesh->bind();
+				glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+				stats.drawCalls++;
+			}
+		});
 
 		gbuffer->unbind();
 	}
-	
+
 
 	template<size_t SCENE_ID>
 	static void shadowVolumePass(Scene<SCENE_ID>& scene) {
@@ -258,15 +269,20 @@ public:
 		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
 		dirLightView.each([&](const DirectionalLight& light) {
 			glm::vec3 lightPos = light.direction * -1000.f;
-			glm::vec4 lightViewPos = view * glm::vec4(lightPos, 1.0f);
-			lightPositions.push_back(lightViewPos);
+			lightPositions.push_back(lightPos);
 		});
 		
-		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow>();
+		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, ExcludeComponent<Transparent>>();
 			
+		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
+		pointLightView.each([&](const PointLight& p) {
+			lightPositions.push_back(p.position);
+		});
 
-		// need stencil test to be enabled but we want it to succeed always. 
-		// Only the depth test matters.
+		if (lightPositions.size() > shadowBuffer->specification.layers) {
+			shadowBuffer->growDepthLayers(lightPositions.size());
+		}
+
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);  // Set all stencil values to 0
 
 		// set stencil test according to zfail algorithm
@@ -274,7 +290,6 @@ public:
 		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 			
 		// Clamp depth values at infinity to max depth. Required for back cap of volume to be included
-		// (Obs! requires depth test GL_EQUAL to include max value. GL_LESS is not enough)
 		glEnable(GL_DEPTH_CLAMP);
 
 		// do not render to depth or color buffer 
@@ -289,17 +304,15 @@ public:
 			gbuffer->bindForReading();
 			shadowBuffer->bindForWriting();
 
-			shadowShader->setUniform("lightPos", lightPositions[i]);
+			glm::vec4 lightViewPos = view * glm::vec4(lightPositions[i], 1.0f);
+			shadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
 			
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
 							        const Shadow&) {
-				auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
-				shadowShader->setUniform("model", modelMat);
-
-				for (auto mesh : meshes) {
+				for (Mesh* mesh : meshes) {
 					mesh->bind();
-					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
 				}
 				Mesh::unbind();
@@ -314,16 +327,13 @@ public:
 		
 		glDisable(GL_DEPTH_CLAMP);
 
-		if (drawVolumes) {
+		if (drawShadowVolumes) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
 							        const Shadow&) {
-				auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
-				shadowShader->setUniform("model", modelMat);
-
 				for (auto mesh : meshes) {
 					mesh->bind();
 					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
@@ -354,7 +364,7 @@ public:
 		dirShader->setUniform("shadowTexture", 3);
 
 		quadMesh->bind();
-		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr, quadMesh->instanceCount);
+		glDrawElementsInstanced(quadMesh->getType(), quadMesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, quadMesh->instanceCount);
 		Mesh::unbind();
 		
 		stats.drawCalls++;
@@ -375,9 +385,13 @@ public:
 		gbuffer->bindColorTextureUnit(GBufferTextureType::Color_Specular);
 		pointShader->setUniform("gColor", GBufferTextureType::Color_Specular);
 
+		glBindTextureUnit(3, shadowBuffer->depthTexture);
+		pointShader->setUniform("shadowTexture", 3);
+		
+		pointShader->setUniform("dirLightCount", quadMesh->instanceCount);
 
 		sphereMesh->bind();
-		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
+		glDrawElementsInstanced(sphereMesh->getType(), sphereMesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
 		Mesh::unbind();
 
 		gbuffer->unbind();
@@ -390,8 +404,9 @@ public:
 		buildBatch = true;
 	}
 
-	static void rebuildGBuffer(int width, int height) {
+	static void resizeFramebuffers(int width, int height) {
 		gbuffer->resize(width, height);
+		shadowBuffer->resize(width, height);
 	}
 	
 	static void resetStats() {

@@ -19,4 +19,20 @@ public:
 	void reloadShaders() {
 		(Renderers::loadShaders(), ...);
 	}
+
+
+	// Statistics
+
+	template<class... R>
+	size_t sum(R... r) {
+	  return (r + ...);
+	}
+
+	size_t getNumDrawCalls() {
+		return sum(Renderers::stats.drawCalls...);
+	}
+
+	void resetStats() {
+		(Renderers::resetStats(), ...);
+	}
 };

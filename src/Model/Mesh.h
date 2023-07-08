@@ -126,10 +126,15 @@ public:
 		return adjacency ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
 	}
 
-	uint getNumIndices() {
+	int getNumIndices() {
 		return adjacency ? adjacencyIndices.size() : indices.size();
 	}
 
+	bool isInstanced() {
+		return instanceCount > 1;
+	}
+
+	// TODO this should use half edges instead
 
 	void useAdjacency() {
 		if (adjacency)

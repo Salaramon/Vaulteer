@@ -27,7 +27,6 @@ private:
 			auto mat = sceneMaterials.at(aiMesh->mMaterialIndex);
 
 			auto& mesh = meshes.emplace_back(processMesh<VertexImpl>(aiMesh, mat));
-			mesh->useAdjacency();
 		}
 
 		for (size_t i = 0; i < node->mNumChildren; i++) {

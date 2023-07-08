@@ -50,6 +50,10 @@ uniform samplerCube shadowCubeMap_3;
 uniform float cubeMapFarPlanes[1];
 
 
+uniform uint dirLightCount;
+uniform usampler2DArray shadowTexture;
+
+
 // uniforms
 
 uniform vec3 worldCameraPos;
@@ -153,16 +157,16 @@ float calcShadowCube(vec3 fragPos, samplerCube shadowCubeMap, int pointLightInde
     return shadow;
 }
 
-vec3 calcLightInternal(FragParams p, BaseLight light, vec3 lightDir, float shadow) {
+float calcLightInternal(FragParams p, BaseLight light, vec3 lightDir) {
     Material mat = materialTable[p.materialIndex];
 
-    vec3 ambient = light.color * light.ambientIntensity;
-    vec3 diffuse = vec3(0.0);
-    vec3 specular = vec3(0.0);
+    float ambient = light.ambientIntensity;
+    float diffuse = 0.0;
+    float specular = 0.0;
     
     // diffuse
     float diff = max(dot(p.normal, -lightDir), 0.0);
-    diffuse = diff * light.color * light.diffuseIntensity;
+    diffuse = diff * light.diffuseIntensity;
         
     // specular
     float kEnergyConservation = (8.0 + mat.shininess) / (8.0 * 3.14159265);
@@ -173,25 +177,18 @@ vec3 calcLightInternal(FragParams p, BaseLight light, vec3 lightDir, float shado
     float specularFactor = max(dot(p.normal, halfwayDir), 0.0);
     specularFactor = p.specIntensity * kEnergyConservation * pow(specularFactor, mat.shininess / 5.0);
 
-    specular = specularFactor * light.color;
+    specular = specularFactor;
 
-    float adjustFactor = max(ambient.r + diffuse.r + specular.r, ambient.g + diffuse.g + specular.g);
-          adjustFactor = max(ambient.b + diffuse.b + specular.b, adjustFactor);
-          adjustFactor = max(adjustFactor, 1.0);
-
-    return (ambient + diffuse + specular) * adjustFactor;
+    return (ambient + diffuse + specular);
 }
 
-vec3 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3 lightDir, float radius, float lightDistance) {
+float calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3 lightDir, float radius, float lightDistance) {
     const float pointLightAngleDropoff = 0.20; // determines light fade rate at edge
 
     if (lightDistance > radius)
-        return vec3(0.0);
+        return 0.0;
 
     float radiusCutoffFactor = min(1.0, (radius - lightDistance) / (radius * pointLightAngleDropoff));
-
-    //return vec4(max(radius - lightDistance * 2.5, 0.0)) + vec4(0, 0.1, 0, 0);
-    //return vec4((radius - lightDistance) / (radius * pointLightAngleDropoff));
 
     lightDir = normalize(lightDir);
 
@@ -199,12 +196,10 @@ vec3 calcPointLightInternal(FragParams p, BaseLight light, Attenuation att, vec3
         + att.aLinear * lightDistance
         + 0.1 *att.aQuadratic * (lightDistance * lightDistance));
 
-    //attenuation = 1.0 * radiusCutoffFactor;
-
-    return (calcLightInternal(p, light, lightDir, 0.0) * attenuation) * radiusCutoffFactor;
+    return calcLightInternal(p, light, lightDir) * attenuation * radiusCutoffFactor;
 }
 
-vec3 calcPointLight(FragParams p, PointLight pointLight) {
+float calcPointLight(FragParams p, PointLight pointLight) {
     vec3 lightDir = p.position - pointLight.position;
     float lightDistance = length(lightDir);
 
@@ -215,7 +210,7 @@ vec3 calcPointLight(FragParams p, PointLight pointLight) {
 void main() {
     const float gamma = 1.0;
     
-    PointLight light = getPointLight(instanceID);
+    PointLight pointLight = getPointLight(instanceID);
 
     // -------- reading from GBuffer --------
     
@@ -235,44 +230,24 @@ void main() {
     params.specIntensity = colorSample.a;
 
     // --------------------------------------
-
-    /*Material mat = materialData[1];
-
-    switch (int(gl_FragCoord.y)) {
-        case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
-        case 4*1:  FragColor = vec4(mat.colorAmbient.y); break;
-        case 4*2:  FragColor = vec4(mat.colorAmbient.z); break;
-        case 4*3:  FragColor = vec4(mat.colorAmbient.w); break;
-        case 4*4:  FragColor = vec4(mat.colorDiffuse.x); break;
-        case 4*5:  FragColor = vec4(mat.colorDiffuse.y); break;
-        case 4*6:  FragColor = vec4(mat.colorDiffuse.z); break;
-        case 4*7:  FragColor = vec4(mat.colorDiffuse.w); break;
-        case 4*8:  FragColor = vec4(mat.colorSpecular.x); break;
-        case 4*9:  FragColor = vec4(mat.colorSpecular.y); break;
-        case 4*10: FragColor = vec4(mat.colorSpecular.z); break;
-        case 4*11: FragColor = vec4(mat.colorSpecular.w); break;
-        case 4*12: FragColor = vec4(mat.shininess / 256.0); break;
-        case 4*13: FragColor = vec4(mat.opacity); break;
-        case 4*14: FragColor = vec4(mat.pad.x); break;
-        case 4*15: FragColor = vec4(mat.pad.y); break;
-    }
-    if (gl_FragCoord.y < 64) return;*/
-    
-    //mat4 lightSpaceMatrix;
-     
-    //FragColor = vec4(colorSample.a); //spec demo
-    //FragColor = vec4(diffuse.rgb, 1.0); // diffuse demo
-    //diffuse = vec3(-normalSample.rgb); // normal demo
-    //FragColor = vec4(diffuse, 1.0);
-    //return;
  
     float fragDepth = abs((view * vec4(params.position, 1.0)).z);
 
     // shadow calc
 
-    float pointLightShadow = 0.0;//calcShadowCube(position, getShadowCubeMap(i), i);
     
-    vec3 totalLight = calcPointLight(params, light) * (1.0 - pointLightShadow);
+    vec3 totalLight;
+
+    uint lightIndex = instanceID + dirLightCount;
+    bool shadow = texelFetch(shadowTexture, ivec3(coords, lightIndex), 0).r > 0.0;
+
+    if (shadow) {
+        totalLight = vec3(0.0);
+    }
+    else {
+        // float pointLightShadow = 0.0;//calcShadowCube(position, getShadowCubeMap(i), i);
+        totalLight = calcPointLight(params, pointLight) * pointLight.light.color;
+    }
 
     //float fogFactor = min(fragDepth / 20.0, 1.0);
     //vec4 fog = vec4((vec3(1.0) - vec3(1.0-fogColor.r, 1.0-fogColor.g, 1.0-fogColor.b) * fogFactor), 1.0);
@@ -286,3 +261,27 @@ void main() {
     vec4 fragColor = vec4(diffuse.x * totalLight.x, diffuse.y * totalLight.y, diffuse.z * totalLight.z, 1.0);
     FragColor = vec4(pow(fragColor.xyz, vec3(1.0 / gamma)), 1.0);
 }
+
+
+/*Material mat = materialData[1];
+
+switch (int(gl_FragCoord.y)) {
+    case 4*0:  FragColor = vec4(mat.colorAmbient.x); break;
+    case 4*1:  FragColor = vec4(mat.colorAmbient.y); break;
+    case 4*2:  FragColor = vec4(mat.colorAmbient.z); break;
+    case 4*3:  FragColor = vec4(mat.colorAmbient.w); break;
+    case 4*4:  FragColor = vec4(mat.colorDiffuse.x); break;
+    case 4*5:  FragColor = vec4(mat.colorDiffuse.y); break;
+    case 4*6:  FragColor = vec4(mat.colorDiffuse.z); break;
+    case 4*7:  FragColor = vec4(mat.colorDiffuse.w); break;
+    case 4*8:  FragColor = vec4(mat.colorSpecular.x); break;
+    case 4*9:  FragColor = vec4(mat.colorSpecular.y); break;
+    case 4*10: FragColor = vec4(mat.colorSpecular.z); break;
+    case 4*11: FragColor = vec4(mat.colorSpecular.w); break;
+    case 4*12: FragColor = vec4(mat.shininess / 256.0); break;
+    case 4*13: FragColor = vec4(mat.opacity); break;
+    case 4*14: FragColor = vec4(mat.pad.x); break;
+    case 4*15: FragColor = vec4(mat.pad.y); break;
+}
+if (gl_FragCoord.y < 64) return;*/
+

@@ -20,8 +20,6 @@ public:
 	CameraController cameraController;
 
 	std::vector<std::unique_ptr<Model>> loadedModels;
-	std::vector<std::unique_ptr<Mesh>> copies;
-	std::vector<std::vector<Mesh*>> something;
 
 	std::vector<PointLight> lights;
 	std::vector<Entity> lightEntities;
@@ -42,33 +40,19 @@ public:
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
 		
-
+		/*
 		Entity& lightEntity = lightEntities.emplace_back();
-		DirectionalLight light = {
-			{glm::vec3(1.0f, 0.01f, 0.01f), 0.01f, 1.0f},
-			glm::vec3(0.5f, -1.f, -0.5f)};
-		lightEntity.add<DirectionalLight>(light);
+		DirectionalLight dirLight = {
+			{glm::vec3(0.3f, 0.6f, 0.2f), 0.01f, 1.0f},
+			glm::vec3(0.0f, -1.0f, -1.0f)};
+		lightEntity.add<DirectionalLight>(dirLight);
 		scene.add(lightEntity);
-		
-		Entity& lightEntity2 = lightEntities.emplace_back();
-		DirectionalLight light2 = {
-			{glm::vec3(0.01f, 0.01f, 1.0f), 0.01f, 1.0f},
-			glm::vec3(0.4f, -1.f, -0.6f)};
-		lightEntity2.add<DirectionalLight>(light2);
-		scene.add(lightEntity2);
-		
-		Entity& lightEntity3 = lightEntities.emplace_back();
-		DirectionalLight light3 = {
-			{glm::vec3(0.01f, 1.0f, 0.01f), 0.01f, 1.0f},
-			glm::vec3(0.6f, -1.f, -0.4f)};
-		lightEntity3.add<DirectionalLight>(light3);
-		scene.add(lightEntity3);
+		 */
 
 
 		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
-		ShadowVolumeRenderer::initialize(light);
 		TextRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		
@@ -87,20 +71,13 @@ public:
 
 
 		Model& palm = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
-		Model& teapot = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
-
 
 		Model& quad = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
 		Model& quad2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
-		Model& crate1 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
-		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
-		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+
 
 		palm.add<Shadow>();
-		teapot.add<Shadow>();
-		crate1.add<Shadow>();
 		
-		crate1.setRotation(M_PI_4,M_PI_4 / 3 * 2,M_PI_4);
 
 
 		quad.setPosition({0.f, -2.f, 0.f});
@@ -115,17 +92,57 @@ public:
 		palm.setPosition(glm::vec3(0, 0, -5));
 		palm.setScale(glm::vec3(0.5f));
 
-		teapot.setPosition(glm::vec3(0, 0, 5));
 
-		crate1.setPosition(glm::vec3(5, 0, 0));
+		int plane = 20;
+		int dispersion = 2;
+		
+		std::vector<glm::vec3> lightColors = {
+			{1.0, 0.01, 0.01},
+			{1.0, 1.0, 0.01},
+			{0.01, 1.0, 0.01},
+			{0.01, 1.0, 1.0},
+			{0.01, 0.01, 1.0},
+			{1.0, 0.01, 1.0},
+		};
 
-		crate2.setPosition(glm::vec3(20, 2, 0));
-		crate2.setScale(glm::vec3(0.3f));
-		crate3.setPosition(glm::vec3(0, 2, 20));
-		crate3.setScale(glm::vec3(0.3f));
+		Material copy = *MaterialLibrary::get(0);
+		copy.data.colorAmbient = 0.9f;
+		copy.data.matOpacity = 0.1f;
+		Material* mat = MaterialLibrary::create(copy.data, "cratei");
 
-		crate2.setRotation(M_PI_4,M_PI_4 / 3 * 2,M_PI_4);
+		for (int y = 0; y < plane * dispersion; y += 2 * dispersion) {
+			for (int x = -plane * dispersion; x < plane * dispersion; x += 2 * dispersion) {
+				if (rand() % 8 == 0) {
+					Model& crate = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+					crate.setPosition(glm::vec3(x, y, 10.0f));
+					crate.setScale(glm::vec3(0.2f));
+					crate.setMaterial(mat);
 
+					BaseLight base = {lightColors[rand() % 6], 0.13f, 0.5f};
+					Attenuation att = { 1.0f, 0.18f, 0.032f };
+					PointLight& pointLight = lights.emplace_back(att, base, *crate.position);
+					crate.add<PointLight>(pointLight);
+					crate.add<Transparent>();
+				}
+			}
+		}
+		
+		Model& cratei = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("cratei")));
+		cratei.add<Shadow>();
+		std::vector<glm::mat4> instances;
+
+		for (int y = 0; y < plane * dispersion; y += 1 * dispersion) {
+			for (int x = -plane * dispersion; x < plane * dispersion; x += 1 * dispersion) {
+				if (rand() % 8 == 0) {
+					Position3D pos = glm::vec3(x, y, 0.0f);
+					Rotation3D rot = Rotation3D({rand() % 8 * M_PI_4, rand() % 8 * M_PI_4, rand() % 8 * M_PI_4});
+					Properties3D props = {.scale = glm::vec3(1.0f)};
+					instances.push_back(Object3D::modelMatrix(pos, rot, props));
+				}
+			}
+		}
+		cratei.useInstancing(instances);
+		
 		// should this not be done automatically on construction?
 		for (auto& model : loadedModels) {
 			scene.add(*model);
@@ -155,8 +172,6 @@ public:
 
 	void onUpdate(float timestep) override {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		DeferredRenderer::resetStats();
-		TextRenderer::resetStats();
 
 		cameraController.onUpdate(timestep);
 
@@ -179,15 +194,16 @@ public:
 		UniformBufferTechnique::uploadCameraView(view);
 
 		renderer.render(scene);
-		
-		cumDrawCalls += DeferredRenderer::stats.drawCalls;
-		cumDrawCalls += TextRenderer::stats.drawCalls;
+
+		cumDrawCalls += renderer.getNumDrawCalls();
+		renderer.resetStats();
+
 		TextRenderer::clearScene();
 	}
 
 	bool onKeyboardPressEvent(KeyboardButtonEvent& e) {
 		if (e.button.action == KeyAction::PRESS && e.button.key == KeyboardKey::Q) {
-			DeferredRenderer::drawVolumes = !DeferredRenderer::drawVolumes;
+			DeferredRenderer::drawShadowVolumes = !DeferredRenderer::drawShadowVolumes;
 		}
 
 		return true;

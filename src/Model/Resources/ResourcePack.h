@@ -45,7 +45,11 @@ public:
 
 		// import all models
 		for (const auto& locator : modelLocators) {
-			meshesByModelName[locator.name] = ResourceLoader::importModel(locator);
+			auto meshes = ResourceLoader::importModel(locator);
+			for (Mesh* mesh : meshes) {
+				mesh->useAdjacency();
+			}
+			meshesByModelName[locator.name] = meshes;
 		}
 
 		// find all locators

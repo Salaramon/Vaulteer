@@ -16,6 +16,11 @@ class ForwardRenderer {
 	inline static std::unique_ptr<Shader> shader;
 
 public:
+	inline static struct RenderStats {
+		size_t drawCalls = 0;
+	} stats;
+
+
 	static void initialize(const GLint textureId) {
 		ForwardRenderer::textureID = textureId;
 		loadShaders();
@@ -72,11 +77,18 @@ public:
 			for (auto mesh : meshes) {
 				mesh->bind();
 				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+				stats.drawCalls++;
 			}
 			Mesh::unbind();
 		});
 
 		OpenGL::stencilTest(false);
+	}
+	
+	// Utility functions
+	
+	static void resetStats() {
+		memset(&stats, 0, sizeof(RenderStats));
 	}
 
 };

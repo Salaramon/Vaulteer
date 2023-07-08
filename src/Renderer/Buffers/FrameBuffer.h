@@ -220,7 +220,7 @@ public:
 			0, 0, to.specification.width, to.specification.height, 
 			GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 
-		to.unbind();
+		unbind();
 	}
 
 	static void copyDepthFromBackFBO(const Framebuffer& to) {
@@ -232,7 +232,7 @@ public:
 			0, 0, to.specification.width, to.specification.height, 
 			GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 
-		to.unbind();
+		unbind();
 	}
 
 	static void copyDepthToBackFBO(const Framebuffer& from) {
@@ -244,6 +244,6 @@ public:
 			0, 0, from.specification.width, from.specification.height, 
 			GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 
-		from.unbind();
+		unbind();
 	}
 };

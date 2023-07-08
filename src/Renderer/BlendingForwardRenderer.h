@@ -12,7 +12,7 @@
 #include "Scene/Scene.h"
 
 
-class BlendingForwardRenderer  {
+class BlendingForwardRenderer {
     enum AlphaBufferTextureType {
         Accumulated,
         Alpha,
@@ -27,6 +27,11 @@ class BlendingForwardRenderer  {
 	inline static std::unique_ptr<Shader> compositeShader;
 
 public:
+	inline static struct RenderStats {
+		size_t drawCalls = 0;
+	} stats;
+
+
 	static void initialize(const GLint textureId, int screenWidth, int screenHeight) {
 		BlendingForwardRenderer::textureId = textureId;
 
@@ -57,10 +62,6 @@ public:
 			"resources/shaders/blending_composite_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/blending_composite_frag.glsl", GL_FRAGMENT_SHADER
 		);
-	}
-
-	static void rebuildAlphaBuffer(int width, int height) {
-		alphaBuffer->resize(width, height);
 	}
 
 	template<size_t SCENE_ID>
@@ -115,7 +116,8 @@ public:
 
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElements(mesh->getType(), mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+				stats.drawCalls++;
 			}
 			Mesh::unbind();
 		});
@@ -138,9 +140,21 @@ public:
 		compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
 
 		quadMesh->bind();
-		glDrawElements(GL_TRIANGLES, quadMesh->indices.size(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, quadMesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+		stats.drawCalls++;
 		quadMesh->unbind();
 
 		alphaBuffer->unbind();
 	}
+
+	// Utility functions
+	
+	static void resetStats() {
+		memset(&stats, 0, sizeof(RenderStats));
+	}
+
+	static void resizeFramebuffers(int width, int height) {
+		alphaBuffer->resize(width, height);
+	}
+
 };

@@ -30,7 +30,7 @@ public:
 		ShadowVolumeRenderer::light = light;
 
 		FramebufferSpecification shadowbufferSpec {
-			1280, 720,
+			1280, 720, // nooo
 			{{.textureFormat = GL_DEPTH24_STENCIL8, .depthStencilMode = GL_STENCIL_INDEX}},
 			GL_TEXTURE_2D_ARRAY, initialShadowMapCount
 		};
@@ -52,6 +52,8 @@ public:
 
 	template<auto SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
+
+		// renderer sets up stencil test for single light position, reliant on forwardrenderer or similar to render world
 
 		// -- depth pass (for testing, we should use depth from geometry pass later)
 		

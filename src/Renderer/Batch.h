@@ -25,6 +25,10 @@ public:
 
 		vertexBuffers = vertexArray.createVertexBuffers(MaterialVertex::getFormat());
 		vertexBuffers[0]->reserve(vertexBufferSize);
+		
+		glm::mat4 ins(1.0);
+		vertexBuffers[1]->insert(&ins, 1);
+
 		indexBuffer = vertexArray.createIndexBuffer();
 		indexBuffer->reserve(indexBufferSize);
 

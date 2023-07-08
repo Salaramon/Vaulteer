@@ -5,6 +5,7 @@ layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 layout(location = 5) in int aMaterialNumber;
+//layout(location = 6) in mat4 instance;
 
 out VS_OUT {
     vec3 fragPosition;
@@ -20,7 +21,6 @@ out VS_OUT {
 
 uniform mat4 model;
 uniform mat4 normal;
-
 
 ##[fragments/camera] //! #include "fragments/camera.gem"
 ##[fragments/materialData] //! #include "fragments/materialData.gem"

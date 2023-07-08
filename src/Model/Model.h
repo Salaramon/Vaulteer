@@ -42,6 +42,10 @@ struct Shadow {
 	bool shadow = true;
 };
 
+struct Instanced {
+	bool instanced = true;
+};
+
 
 class Model : public Object3D {
 public:
@@ -107,6 +111,13 @@ public:
 				break;
 			}
 		}
+	}
+
+	void useInstancing(const std::vector<glm::mat4>& instanceMats) {
+		for (auto* mesh : *meshes) {
+			mesh->insertInstances(instanceMats);
+		}
+		this->add<Instanced>();
 	}
 	
 private:
