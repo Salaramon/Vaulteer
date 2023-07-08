@@ -7,20 +7,23 @@ struct FBAttachmentSpecification {
 	GLenum textureFormat = GL_NONE;
 	GLenum minFilter = GL_LINEAR, magFilter = GL_LINEAR;
 	GLenum wrapX = GL_REPEAT, wrapY = GL_REPEAT;
+	GLenum depthStencilMode = GL_DEPTH_COMPONENT;
 };
 
 struct FramebufferSpecification {
-	uint width = 0, height = 0;
-	uint samples = 1;
-	
+	int width = 0, height = 0, layers;
+	GLenum textureType;
+	//uint samples = 1;
+
 	std::vector<FBAttachmentSpecification> attachments;
 
 	FramebufferSpecification() = default;
 
-	FramebufferSpecification(uint width, uint height, uint samples = 1) : width(width), height(height), samples(samples) {}
+	FramebufferSpecification(int width, int height, GLenum textureType = GL_TEXTURE_2D, uint layers = 1)
+		: width(width), height(height), textureType(textureType), layers(layers) {}
 
-	FramebufferSpecification(uint width, uint height, std::initializer_list<FBAttachmentSpecification> attachments, uint samples = 1)
-		: width(width), height(height), samples(samples), attachments(std::move(attachments)) {}
+	FramebufferSpecification(int width, int height, std::initializer_list<FBAttachmentSpecification> attachments, GLenum textureType = GL_TEXTURE_2D, uint layers = 1)
+		: width(width), height(height), textureType(textureType), layers(layers), attachments(attachments) {}
 };
 
 
@@ -37,7 +40,9 @@ public:
 
 	Framebuffer(FramebufferSpecification spec) : specification(std::move(spec)) {
 		for (auto& attachment : specification.attachments) {
-			if (attachment.textureFormat == GL_DEPTH24_STENCIL8 || attachment.textureFormat == GL_DEPTH32F_STENCIL8)
+			if (attachment.textureFormat == GL_DEPTH24_STENCIL8 || 
+				attachment.textureFormat == GL_DEPTH32F_STENCIL8 || 
+				attachment.textureFormat == GL_STENCIL_INDEX8)
 				depthAttachment = attachment;
 			else
 				colorAttachments.push_back(attachment);
@@ -53,6 +58,8 @@ public:
 	~Framebuffer() {
 		// 12 hours were wasted here by copypasting glDeleteBuffers from Buffer.h
 		glDeleteFramebuffers(1, &fbo);
+		glDeleteTextures(colorTextures.size(), colorTextures.data());
+		glDeleteTextures(1, &depthTexture);
 	}
 
 	void invalidate() {
@@ -72,7 +79,7 @@ public:
 
 		if (!colorAttachments.empty()) {
 			colorTextures.resize(colorAttachments.size());
-			glCreateTextures(GL_TEXTURE_2D, colorAttachments.size(), colorTextures.data());
+			glCreateTextures(specification.textureType, colorAttachments.size(), colorTextures.data());
 
 			for (int i = 0; i < colorAttachments.size(); i++) {
 				FBAttachmentSpecification& attachment = colorAttachments[i];
@@ -90,16 +97,32 @@ public:
 		}
 
 		if (depthAttachment.textureFormat != GL_NONE) {
-			glCreateTextures(GL_TEXTURE_2D, 1, &depthTexture);
-			
-			glTextureStorage2D(depthTexture, 1, depthAttachment.textureFormat, specification.width, specification.height);
-			
+			glCreateTextures(specification.textureType, 1, &depthTexture);
+
+			switch (specification.textureType) {
+			case GL_TEXTURE_2D:
+				glTextureStorage2D(depthTexture, 1, depthAttachment.textureFormat, specification.width, specification.height);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, specification.textureType, depthTexture, 0);
+				break;
+				
+			case GL_TEXTURE_2D_ARRAY:
+				glTextureStorage3D(depthTexture, 1, depthAttachment.textureFormat, specification.width, specification.height, specification.layers);
+				glNamedFramebufferTexture(fbo, GL_DEPTH_STENCIL_ATTACHMENT, depthTexture, 0);
+				
+
+				bindDepthLayer(0);
+				break;
+
+			default:
+				assert(false); // texture type is not implemented!
+				break;
+			}
+				
 			glTextureParameteri(depthTexture, GL_TEXTURE_MIN_FILTER, depthAttachment.minFilter);
 			glTextureParameteri(depthTexture, GL_TEXTURE_MAG_FILTER, depthAttachment.magFilter);
 			glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_S, depthAttachment.wrapX);
 			glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_T, depthAttachment.wrapY);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+			glTextureParameteri(depthTexture, GL_DEPTH_STENCIL_TEXTURE_MODE, depthAttachment.depthStencilMode);
 		}
 
 		if (!colorAttachments.empty()) {
@@ -121,6 +144,21 @@ public:
 		invalidate();
 	}
 
+	//void growColorLayers(uint layers) {}
+
+	void growDepthLayers(uint layers) {
+		specification.layers = layers;
+
+		GLuint temp = depthTexture;
+		glCreateTextures(specification.textureType, 1, &depthTexture);
+
+		glTextureStorage3D(depthTexture, 1, depthAttachment.textureFormat, specification.width, specification.height, specification.layers);
+		glNamedFramebufferTexture(fbo, GL_DEPTH_STENCIL_ATTACHMENT, depthTexture, 0);
+		bindDepthLayer(0);
+
+		glDeleteFramebuffers(1, &temp);
+	}
+
 
 	void bindForWriting() const {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
@@ -130,13 +168,24 @@ public:
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	}
 
-	void unbind() const {
+	static void unbind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void bindTextureUnit(int unitIndex) {
+	void bindColorLayer(int attachment, int i) {
+		assert(attachment < colorAttachments.size());
+		assert(i < specification.layers);
+		glNamedFramebufferTextureLayer(fbo, GL_COLOR_ATTACHMENT0 + attachment, colorTextures[attachment], 0, i);
+	}
+
+	void bindDepthLayer(int i) {
+		glNamedFramebufferTextureLayer(fbo, GL_DEPTH_STENCIL_ATTACHMENT, depthTexture, 0, i);
+	}
+
+	void bindColorTextureUnit(int unitIndex) {
 		glBindTextureUnit(unitIndex, colorTextures[unitIndex]);
 	}
+
 
 	void clear() {
 		clearColor();
@@ -145,18 +194,18 @@ public:
 
 	void clearColor(float value = 0.0) {
 		for (int i = 0; i < colorAttachments.size(); i++)
- 			clearAttachment(i, value);
+ 			clearColorAttachment(i, value);
 	}
 
 	void clearDepthStencil(float depth = 1.0, int stencil = 0) {
 		glClearNamedFramebufferfi(fbo, GL_DEPTH_STENCIL, 0, depth, stencil);
 	}
 
-	void clearAttachment(int index, int value = 0) {
+	void clearColorAttachment(int index, int value = 0) {
 		assert(index < colorAttachments.size());
  		glClearNamedFramebufferiv(fbo, GL_COLOR, index, &value);
 	}
-	void clearAttachment(int index, float value = 0.0) {
+	void clearColorAttachment(int index, float value = 0.0) {
 		assert(index < colorAttachments.size());
  		glClearNamedFramebufferfv(fbo, GL_COLOR, index, &value);
 	}

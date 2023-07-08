@@ -79,8 +79,9 @@ public:
 	void bind() {
 		vertexArray.bind();
 	}
-	void unbind() {
-		vertexArray.unbind();
+
+	static void unbind() {
+		VertexArray::unbind();
 	}
 };
 

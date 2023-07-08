@@ -7,6 +7,7 @@
 #include "Model/Resources/ResourcePack.h"
 #include "Scene/Scene.h"
 #include "Renderer/Shader.h"
+#include "Renderer/ShadowVolumeRenderer.h"
 
 class ForwardRenderer {
 
@@ -36,13 +37,14 @@ public:
 
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
+		OpenGL::stencilTest(true);
+
 		shader->use();
 		
 		auto camera = scene.getActiveCamera();
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D>();
 
 		auto view = camera.viewMatrix();
-		UniformBufferTechnique::uploadCameraView(view);
 		shader->setUniform("inverseViewMat", glm::inverse(view));
 
 		glBindTextureUnit(0, textureID);
@@ -50,7 +52,9 @@ public:
 
 		shader->setUniform("cameraPos", *camera.position);
 		shader->setUniform("lightPos", glm::vec3(5.0));
-
+		
+		glBindTextureUnit(1, ShadowVolumeRenderer::shadowbuffer->depthTexture);
+		shader->setUniform("stencilTexture", 1);
 		
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
@@ -67,10 +71,12 @@ public:
 
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
-				mesh->unbind();
+				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
 			}
+			Mesh::unbind();
 		});
+
+		OpenGL::stencilTest(false);
 	}
 
 };

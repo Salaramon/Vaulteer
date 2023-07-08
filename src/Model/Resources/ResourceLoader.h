@@ -28,7 +28,10 @@ public:
 	static std::vector<Mesh*> importModel(const std::string& objPath, int importFlags = blank_import_flags) {
 		// default flags
 		if (importFlags == blank_import_flags)
-			importFlags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace;
+			importFlags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace;
+
+		//assimp optimizations - not sure if these help yet
+		importFlags |= aiProcessPreset_TargetRealtime_Fast & ~aiProcess_GenNormals;
 
 		Assimp::Importer modelImporter;
 		const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);

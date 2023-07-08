@@ -254,6 +254,7 @@
     <None Include="resources\shaders\text_vertex.glsl" />
     <None Include="resources\shaders\volume_frag.glsl" />
     <None Include="resources\shaders\volume_geom.glsl" />
+    <None Include="resources\shaders\volume_prepass_vertex.glsl" />
     <None Include="resources\shaders\volume_vertex.glsl" />
     <None Include="resources\sphere-hd.obj" />
     <None Include="resources\sphere.obj" />

@@ -18,6 +18,11 @@
 
 #include "Scene/Scene.h"
 
+	
+constexpr int maxPointLights = 625;
+constexpr int maxDirLights = 128;
+
+constexpr int initialShadowMapCount = 32;
 
 class DeferredRenderer {
     enum GBufferTextureType {
@@ -46,25 +51,23 @@ class DeferredRenderer {
 	inline static std::unique_ptr<Shader> geometryShader;
 	inline static std::unique_ptr<Shader> pointShader;
 	inline static std::unique_ptr<Shader> dirShader;
+	inline static std::unique_ptr<Shader> shadowShader;
 
 	inline static GLint textureLibraryId;
 	
 public:
 	inline static std::unique_ptr<Framebuffer> gbuffer;
+	inline static std::unique_ptr<Framebuffer> shadowBuffer;
+	
+	inline static bool drawVolumes = false;
 
 	inline static struct RenderStats {
 		size_t drawCalls = 0;
 	} stats;
 
 
-	static void initialize(GLint textureId, uint screenWidth, uint screenHeight) {
+	static void initialize(GLint textureId, int screenWidth, int screenHeight) {
 		textureLibraryId = textureId;
-
-		FramebufferSpecification gbufferSpec{
-			screenWidth, screenHeight,
-			{{GL_RGBA16F}, {GL_RGBA16F}, {GL_RGBA16F}, {GL_DEPTH24_STENCIL8}}
-		};
-		gbuffer = std::make_unique<Framebuffer>(gbufferSpec);
 
 		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
 		sphereMesh = ResourceLoader::importModel("resources/sphere-hd.obj")[0];
@@ -77,14 +80,28 @@ public:
 		coneLength = 1.0f;
 		coneRadius = 1.0f;
 		coneDirection = glm::vec3(.0f, 1.0f, .0f);
+		
+		initFramebuffers(screenWidth, screenHeight);
 
 		loadShaders();
 	}
 
-	static void loadShaders() {
-		constexpr int maxPointLights = 625;
-		constexpr int maxDirLights = 128;
+	static void initFramebuffers(int screenWidth, int screenHeight) {
+		FramebufferSpecification gbufferSpec{
+			screenWidth, screenHeight,
+			{{GL_RGBA16F}, {GL_RGBA16F}, {GL_RGBA16F}, {GL_DEPTH24_STENCIL8}}
+		};
+		gbuffer = std::make_unique<Framebuffer>(gbufferSpec);
 
+		FramebufferSpecification shadowbufferSpec {
+			1280, 720,
+			{{.textureFormat = GL_DEPTH24_STENCIL8, .depthStencilMode = GL_STENCIL_INDEX}},
+			GL_TEXTURE_2D_ARRAY, initialShadowMapCount
+		};
+		shadowBuffer = std::make_unique<Framebuffer>(shadowbufferSpec);
+	}
+
+	static void loadShaders() {
 		gem::Shader<gem::geometry_vertex> gvert;
 		gvert.setgeometry_vertex_materialData(max_material_count);
 		gvert.compile();
@@ -114,6 +131,12 @@ public:
 		dirShader = std::make_unique<Shader>(
 			"resources/shaders/deferred_directional_vertex.glsl", GL_VERTEX_SHADER, 
 			"resources/shaders/build/deferred_directional_frag.glsl", GL_FRAGMENT_SHADER
+		);
+
+		shadowShader = std::make_unique<Shader>(
+			"resources/shaders/volume_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/volume_geom.glsl", GL_GEOMETRY_SHADER,
+			"resources/shaders/volume_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
 
@@ -172,6 +195,12 @@ public:
 		OpenGL::depthTest(true);
 
 		geometryPass(camera);
+		
+		OpenGL::stencilTest(true);
+
+		shadowVolumePass(scene);
+
+		OpenGL::stencilTest(false);
 
 		OpenGL::depthTest(false);
 		OpenGL::blending(true);
@@ -181,7 +210,7 @@ public:
 
 		OpenGL::cullFace(OpenGL::FRONT);
 		
-		lightingPass(camera);
+		pointLightPass(camera);
 		
 		OpenGL::blending(false);
 		OpenGL::cullFace(GL_NONE);
@@ -197,7 +226,6 @@ public:
 		gbuffer->clear();
 		gbuffer->bindForWriting();
 		
-		UniformBufferTechnique::uploadCameraView(camera.viewMatrix());
 		geometryShader->setUniform("model", glm::mat4(1.0)); // disregard model since everything is batched
 		geometryShader->setUniform("normal", glm::mat4(1.0));
 
@@ -209,58 +237,148 @@ public:
 			}
 
 			glDrawElements(GL_TRIANGLES, batch->numIndices, GL_UNSIGNED_INT, nullptr);
-			batch->unbind();
 
 			stats.drawCalls++;
 		}
+		Batch::unbind();
 
 		gbuffer->unbind();
+	}
+	
+
+	template<size_t SCENE_ID>
+	static void shadowVolumePass(Scene<SCENE_ID>& scene) {
+		shadowShader->use();
+
+		auto camera = scene.getActiveCamera();
+		auto view = camera.viewMatrix();
+		
+		std::vector<glm::vec3> lightPositions;
+
+		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
+		dirLightView.each([&](const DirectionalLight& light) {
+			glm::vec3 lightPos = light.direction * -1000.f;
+			glm::vec4 lightViewPos = view * glm::vec4(lightPos, 1.0f);
+			lightPositions.push_back(lightViewPos);
+		});
+		
+		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow>();
+			
+
+		// need stencil test to be enabled but we want it to succeed always. 
+		// Only the depth test matters.
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);  // Set all stencil values to 0
+
+		// set stencil test according to zfail algorithm
+		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+			
+		// Clamp depth values at infinity to max depth. Required for back cap of volume to be included
+		// (Obs! requires depth test GL_EQUAL to include max value. GL_LESS is not enough)
+		glEnable(GL_DEPTH_CLAMP);
+
+		// do not render to depth or color buffer 
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glDepthMask(GL_FALSE);
+
+		for (int i = 0; i < lightPositions.size(); i++) {
+			shadowBuffer->bindDepthLayer(i);
+			shadowBuffer->clearDepthStencil();
+			Framebuffer::copyDepth(*gbuffer, *shadowBuffer);
+
+			gbuffer->bindForReading();
+			shadowBuffer->bindForWriting();
+
+			shadowShader->setUniform("lightPos", lightPositions[i]);
+			
+			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+							        const Shadow&) {
+				auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
+				shadowShader->setUniform("model", modelMat);
+
+				for (auto mesh : meshes) {
+					mesh->bind();
+					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+					stats.drawCalls++;
+				}
+				Mesh::unbind();
+			});
+		}
+		
+		shadowBuffer->unbind();
+		
+		// reset to working state
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glDepthMask(GL_TRUE);
+		
+		glDisable(GL_DEPTH_CLAMP);
+
+		if (drawVolumes) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+							        const Shadow&) {
+				auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
+				shadowShader->setUniform("model", modelMat);
+
+				for (auto mesh : meshes) {
+					mesh->bind();
+					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+					stats.drawCalls++;
+				}
+				Mesh::unbind();
+			});
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 	}
 
 	static void directionalLightPass(const CameraReference& camera) {
 		dirShader->use();
 
 		dirShader->setUniform("worldCameraPos", *camera.position);
-		UniformBufferTechnique::uploadCameraView(camera.viewMatrix());
 		
 		gbuffer->bindForReading();
 
-		gbuffer->bindTextureUnit(GBufferTextureType::Position);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Position);
 		dirShader->setUniform("gPosition", GBufferTextureType::Position);
-		gbuffer->bindTextureUnit(GBufferTextureType::Normal_Material);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Normal_Material);
 		dirShader->setUniform("gNormal", GBufferTextureType::Normal_Material);
-		gbuffer->bindTextureUnit(GBufferTextureType::Color_Specular);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Color_Specular);
 		dirShader->setUniform("gColor", GBufferTextureType::Color_Specular);
+
+		glBindTextureUnit(3, shadowBuffer->depthTexture);
+		dirShader->setUniform("shadowTexture", 3);
 
 		quadMesh->bind();
 		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(quadMesh->indices.size()), GL_UNSIGNED_INT, nullptr, quadMesh->instanceCount);
-		quadMesh->unbind();
+		Mesh::unbind();
 		
 		stats.drawCalls++;
 		gbuffer->unbind();
 	}
 	
-	static void lightingPass(const CameraReference& camera) {
+	static void pointLightPass(const CameraReference& camera) {
 		pointShader->use(); 
 
-		auto view = Object3D::viewMatrix(*camera.position, *camera.rotation);
-
 		pointShader->setUniform("worldCameraPos", *camera.position);
-		UniformBufferTechnique::uploadCameraView(view);
 
 		gbuffer->bindForReading();
 
-		gbuffer->bindTextureUnit(GBufferTextureType::Position);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Position);
 		pointShader->setUniform("gPosition", GBufferTextureType::Position);
-		gbuffer->bindTextureUnit(GBufferTextureType::Normal_Material);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Normal_Material);
 		pointShader->setUniform("gNormal", GBufferTextureType::Normal_Material);
-		gbuffer->bindTextureUnit(GBufferTextureType::Color_Specular);
+		gbuffer->bindColorTextureUnit(GBufferTextureType::Color_Specular);
 		pointShader->setUniform("gColor", GBufferTextureType::Color_Specular);
 
 
 		sphereMesh->bind();
 		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLint>(sphereMesh->indices.size()), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
-		sphereMesh->unbind();
+		Mesh::unbind();
 
 		gbuffer->unbind();
 		stats.drawCalls++;

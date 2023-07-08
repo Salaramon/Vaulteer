@@ -26,7 +26,8 @@ private:
 			aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
 			auto mat = sceneMaterials.at(aiMesh->mMaterialIndex);
 
-			meshes.emplace_back(processMesh<VertexImpl>(aiMesh, mat));
+			auto& mesh = meshes.emplace_back(processMesh<VertexImpl>(aiMesh, mat));
+			mesh->useAdjacency();
 		}
 
 		for (size_t i = 0; i < node->mNumChildren; i++) {
@@ -40,6 +41,8 @@ private:
 		std::vector<T> vertices;
 		std::vector<GLuint> indices;
 		std::vector<Texture> textures;
+		GLuint numFaces = aiMesh->mNumFaces;
+
 		vertices.reserve(aiMesh->mNumVertices);
 		indices.reserve(aiMesh->mNumFaces);
 		textures.reserve(Material::validTextureTypes.size());
@@ -56,7 +59,7 @@ private:
 			}
 		}
 		
-		return std::make_unique<Mesh>( vertices, indices, mat );
+		return std::make_unique<Mesh>( vertices, indices, numFaces, mat );
 	}
 
 };

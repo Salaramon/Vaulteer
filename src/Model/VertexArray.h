@@ -42,7 +42,7 @@ public:
 		glBindVertexArray(vao);
 	}
 
-	void unbind() const {
+	static void unbind() {
 		glBindVertexArray(0);
 	}
 
@@ -63,9 +63,8 @@ public:
 	}
 
 	IndexBuffer* createIndexBuffer(const std::vector<GLuint>& indices) {
-		IndexBuffer* ib = createIndexBuffer();
-		ib->insert(indices);
-		return ib;
+		this->indexBuffer = std::make_unique<IndexBuffer>(indices, vao);
+		return indexBuffer.get();
 	}
 
 	VertexBuffer* getVertexBuffer(int index) {
@@ -74,16 +73,6 @@ public:
 
 	IndexBuffer* getIndexBuffer() {
 		return indexBuffer.get();
-	}
-
-	void reset() {
-		vertexBuffers.clear();
-		indexBuffer.reset();
-
-		glDeleteVertexArrays(1, &vao);
-		glCreateVertexArrays(1, &vao);
-
-		setUp = false;
 	}
 
 private:

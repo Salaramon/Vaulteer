@@ -14,7 +14,7 @@ void Vaulteer::loadResources() {
 		{ "palm", "resources/palm/palm.obj", aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 		{ "quad", "resources/quad.obj" },
 		//{ "plane", "resources/plane/plane_mesh.obj", aiProcess_GenNormals | aiProcess_Triangulate },
-		//{ "backpack", "backpack/backpack.obj" },
+		//{ "backpack", "resources/backpack/backpack.obj" },
 		//{ "teapot", "resources/backpack/teapot.obj", aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs },
 	};
 

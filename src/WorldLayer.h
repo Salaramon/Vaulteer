@@ -4,6 +4,7 @@
 
 #include "Renderer/Renderer.h"
 #include "Renderer/ForwardRenderer.h"
+#include "Renderer/ShadowVolumeRenderer.h"
 
 #include "API/Application.h"
 #include "Model/Resources/ResourceManager.h"
@@ -40,10 +41,34 @@ public:
  		Window::addResizeCallback(setAspectRatio);
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
+		
+
+		Entity& lightEntity = lightEntities.emplace_back();
+		DirectionalLight light = {
+			{glm::vec3(1.0f, 0.01f, 0.01f), 0.01f, 1.0f},
+			glm::vec3(0.5f, -1.f, -0.5f)};
+		lightEntity.add<DirectionalLight>(light);
+		scene.add(lightEntity);
+		
+		Entity& lightEntity2 = lightEntities.emplace_back();
+		DirectionalLight light2 = {
+			{glm::vec3(0.01f, 0.01f, 1.0f), 0.01f, 1.0f},
+			glm::vec3(0.4f, -1.f, -0.6f)};
+		lightEntity2.add<DirectionalLight>(light2);
+		scene.add(lightEntity2);
+		
+		Entity& lightEntity3 = lightEntities.emplace_back();
+		DirectionalLight light3 = {
+			{glm::vec3(0.01f, 1.0f, 0.01f), 0.01f, 1.0f},
+			glm::vec3(0.6f, -1.f, -0.4f)};
+		lightEntity3.add<DirectionalLight>(light3);
+		scene.add(lightEntity3);
+
 
 		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		ShadowVolumeRenderer::initialize(light);
 		TextRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		
@@ -62,12 +87,36 @@ public:
 
 
 		Model& palm = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+		Model& teapot = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
+
+
+		Model& quad = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
+		Model& quad2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
 		Model& crate1 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 		Model& crate3 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 
+		palm.add<Shadow>();
+		teapot.add<Shadow>();
+		crate1.add<Shadow>();
+		
+		crate1.setRotation(M_PI_4,M_PI_4 / 3 * 2,M_PI_4);
+
+
+		quad.setPosition({0.f, -2.f, 0.f});
+		quad.setRotation(-M_PI_2, 0.f, 0.f);
+		quad.setScale({100.f, 1.f, 100.f});
+
+		quad2.setPosition({0.f, 0.f, -10.f});
+		quad2.setRotation(0.f, 0.f, -M_PI_2);
+		quad2.setScale({100.f, 100.f, 1.f});
+
 
 		palm.setPosition(glm::vec3(0, 0, -5));
+		palm.setScale(glm::vec3(0.5f));
+
+		teapot.setPosition(glm::vec3(0, 0, 5));
+
 		crate1.setPosition(glm::vec3(5, 0, 0));
 
 		crate2.setPosition(glm::vec3(20, 2, 0));
@@ -82,47 +131,6 @@ public:
 			scene.add(*model);
 		}
 
-
-		std::vector<glm::vec3> lightColors = {
-			{1.0, 0.01, 0.01},
-			{1.0, 1.0, 0.01},
-			{0.01, 1.0, 0.01},
-			{0.01, 1.0, 1.0},
-			{0.01, 0.01, 1.0},
-			{1.0, 0.01, 1.0},
-		};
-
-		int i = 0;
-		for (int y = 0; y < 100; y++) {
-			for (int x = 0; x < 100; x++) {
-				Model& a = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
-
-				glm::vec3 pos = {y*2 - 100, -(rand() % 6), x*2 - 100};
-				a.setPosition(pos);
-
-				if ((y + x % 8) % 8 == 0 && i % 17 == 0) {
-					auto color = lightColors[rand() % 6];
-					
-					auto mat = crate1.meshes->at(0)->material->data;
-					mat.matOpacity = 0.2;
-					mat.colorAmbient = color;
-
-					auto* ins1 = MaterialLibrary::create(mat, std::format("color{}", i));
-
-					a.setPosition(pos + glm::vec3(0.0, 8.0, 0.0));
-					a.setMaterial(ins1, 0);
-					a.add<Transparent>();
-
-					BaseLight light = { color, 0.1f, 1.0f };
-					Attenuation att = { 1.0f, 0.10f, 0.042f };
-
-					auto& l = lights.emplace_back(att, light, pos + glm::vec3(0.0, 8.0, 0.0));
-					auto& p = a.add<PointLight>(att, light, pos + glm::vec3(0.0, 10.0, 0.0));
-				}
-				i++;
-			}
-			
-		}
 		
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
@@ -167,6 +175,9 @@ public:
 		TextRenderer::submitText(timer, {20, 27}, 0.5);
 		TextRenderer::submitText(calls, {20, 50}, 0.5);
 
+		glm::mat4 view = scene.getActiveCamera().viewMatrix();
+		UniformBufferTechnique::uploadCameraView(view);
+
 		renderer.render(scene);
 		
 		cumDrawCalls += DeferredRenderer::stats.drawCalls;
@@ -175,6 +186,10 @@ public:
 	}
 
 	bool onKeyboardPressEvent(KeyboardButtonEvent& e) {
+		if (e.button.action == KeyAction::PRESS && e.button.key == KeyboardKey::Q) {
+			DeferredRenderer::drawVolumes = !DeferredRenderer::drawVolumes;
+		}
+
 		return true;
 	}
 

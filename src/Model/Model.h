@@ -38,8 +38,8 @@ struct Transparent {
 	bool transparent = true;
 };
 
-struct PointLightComp {
-	PointLight* light;
+struct Shadow {
+	bool shadow = true;
 };
 
 

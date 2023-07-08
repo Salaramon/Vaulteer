@@ -18,12 +18,12 @@ out VS_OUT {
     mat3 tbnMat;
 } vs_out;
 
-uniform mat4 model;
-uniform mat4 normal;
-
 ##[fragments/camera] //! #include "fragments/camera.gem"
 ##[fragments/materialData] //! #include "fragments/materialData.gem"
 ##[fragments/textureData] //! #include "fragments/textureData.gem"
+
+uniform mat4 model;
+uniform mat4 normal;
 
 uniform sampler2DArray textureLib;
 

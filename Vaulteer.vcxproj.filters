@@ -554,6 +554,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
+    <None Include="resources\shaders\volume_prepass_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

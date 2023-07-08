@@ -27,7 +27,7 @@ class BlendingForwardRenderer  {
 	inline static std::unique_ptr<Shader> compositeShader;
 
 public:
-	static void initialize(const GLint textureId, uint screenWidth, uint screenHeight) {
+	static void initialize(const GLint textureId, int screenWidth, int screenHeight) {
 		BlendingForwardRenderer::textureId = textureId;
 
 		FramebufferSpecification alphaBufferSpec{
@@ -93,7 +93,6 @@ public:
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Transparent>();
 
 		auto view = camera.viewMatrix();
-		UniformBufferTechnique::uploadCameraView(view);
 		blendingShader->setUniform("inverseViewMat", glm::inverse(view)); // glsl inverse is not the same as glm inverse...
 
 		glBindTextureUnit(0, TextureLibrary::defaultTexture->textureID);
@@ -102,8 +101,8 @@ public:
 		blendingShader->setUniform("cameraPos", *camera.position);
 		blendingShader->setUniform("lightPos", glm::vec3(5.0));
 
-		alphaBuffer->clearAttachment(0, 0.0f);
-		alphaBuffer->clearAttachment(1, 1.0f);
+		alphaBuffer->clearColorAttachment(0, 0.0f);
+		alphaBuffer->clearColorAttachment(1, 1.0f);
  		alphaBuffer->clearDepthStencil();
 
 		alphaBuffer->bindForWriting();
@@ -116,9 +115,9 @@ public:
 
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
-				mesh->unbind();
+				glDrawElements(mesh->getType(), mesh->indices.size(), GL_UNSIGNED_INT, nullptr);
 			}
+			Mesh::unbind();
 		});
 
 		alphaBuffer->unbind();
@@ -133,8 +132,8 @@ public:
 
 		alphaBuffer->bindForReading();
 		
-		alphaBuffer->bindTextureUnit(AlphaBufferTextureType::Accumulated);
-		alphaBuffer->bindTextureUnit(AlphaBufferTextureType::Alpha);
+		alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Accumulated);
+		alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Alpha);
 		compositeShader->setUniform("accum", AlphaBufferTextureType::Accumulated);
 		compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
 

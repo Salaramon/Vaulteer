@@ -13,79 +13,150 @@
 
 
 class ShadowVolumeRenderer {
+	inline static DirectionalLight light;
+
 	inline static std::unique_ptr<Framebuffer> frameBuffer;
 	inline static Mesh* quad;
+	
+	inline static std::unique_ptr<Shader> prepassShader;
+	inline static std::unique_ptr<Shader> volumeShader;
 
-	inline static std::unique_ptr<Shader> shader;
+public:	
+	inline static std::unique_ptr<Framebuffer> shadowbuffer;
 
-public:
-	static void initialize() {
-		shader = std::make_unique<Shader>(
+	inline static bool drawVolumes = false;
+
+	static void initialize(const DirectionalLight light) {
+		ShadowVolumeRenderer::light = light;
+
+		FramebufferSpecification shadowbufferSpec {
+			1280, 720,
+			{{.textureFormat = GL_DEPTH24_STENCIL8, .depthStencilMode = GL_STENCIL_INDEX}},
+			GL_TEXTURE_2D_ARRAY, initialShadowMapCount
+		};
+		shadowbuffer = std::make_unique<Framebuffer>(shadowbufferSpec);
+
+		loadShaders();
+	}
+	 
+	static void loadShaders() {		
+		prepassShader = std::make_unique<Shader>(
+			"resources/shaders/volume_prepass_vertex.glsl", GL_VERTEX_SHADER
+		);	
+		volumeShader = std::make_unique<Shader>(
 			"resources/shaders/volume_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/volume_geom.glsl", GL_GEOMETRY_SHADER,
 			"resources/shaders/volume_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
-	
-	static void reloadShaders() {
-		
-	}
 
 	template<auto SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
-		auto cameraIteratorPair = scene.get<Camera>();
-		auto cameraBeginIt = cameraIteratorPair.first;
-		auto* camera = (*cameraBeginIt).get();
 
-		blendingPass(scene, camera);
+		// -- depth pass (for testing, we should use depth from geometry pass later)
 		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//drawShadowVolumes();
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+		shadowbuffer->bindForWriting();
+		shadowbuffer->clearDepthStencil();
+
+		OpenGL::stencilTest(false);
+
+		// do not render to color buffer 
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+		prepassShader->use();
+
+		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D>();
+		modelView.each([](const PropertiesModel&, const Meshes& meshes, 
+						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
+			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
+			prepassShader->setUniform("model", modelMat);
+
+			for (auto mesh : meshes) {
+				mesh->bind();
+				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+			}
+			Mesh::unbind();
+		});
+
+		// -- drawShadowVolumes
+
+		auto camera = scene.getActiveCamera();
+		auto view = camera.viewMatrix();
+		
+		glm::vec3 lightPos = light.direction * -100.f;
+		glm::vec4 lightViewPos = view * glm::vec4(lightPos, 1.0f);
+
+		volumeShader->use();
+		volumeShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
+
+		OpenGL::stencilTest(true);
+		OpenGL::depthTest(true);
 
 
-	template<size_t SCENE_ID>
-	static void blendingPass(Scene<SCENE_ID>& scene, Camera* camera) {
-		shader->use();
+		// need stencil test to be enabled but we want it to succeed always. 
+		// Only the depth test matters.
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);  // Set all stencil values to 0
 
-		// TODO: NEEDS TO BE CHANGED TO FRUSTUM SHAPE
-		auto staticSceneRestriction = [&](glm::vec4 sphere) -> bool {
-			return true;
-			/*Camera::Frustum frustum = camera->getFrustum();
+		// set stencil test according to zfail algorithm
+		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+		glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+			
+		// Clamp depth values at infinity to max depth. Required for back cap of volume to be included
+		// (Obs! requires depth test GL_EQUAL to include max value. GL_LESS is not enough)
+		glEnable(GL_DEPTH_CLAMP);
 
-			glm::vec3 cameraPosition = camera->getPosition();
+		// do not render to depth or color buffer 
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glDepthMask(GL_FALSE);
 
-			float cameraInfluenceRadius = 50;
-			glm::vec3 spherePoint = glm::vec3(sphere);
 
-			float dist = glm::distance(cameraPosition, spherePoint);
-			float radSum = cameraInfluenceRadius + sphere.w;
-			bool result = dist < radSum;
-			return result;*/
-		};
+		drawShadowVolumes(scene);
+		shadowbuffer->unbind();
 
-		//const auto modelDataIteratorPair = scene.get<OpaqueModel>(staticSceneRestriction);
-
-		//ShadowVolumeTechnique::setInverseViewMatrix(camera->getViewMatrix());
 
 		/*
-		for (auto it = modelDataIteratorPair.first; it != modelDataIteratorPair.second; it++) {
-			auto& model = (*it).get()->model;
-			ModelData* modelData = model.getData();
-			ShadowVolumeTechnique::setModelView(model.getModelMatrix(), camera->getViewMatrix());
+		// only draw if corresponding value in stencil buffer is zero
+		glStencilFunc(GL_EQUAL, 0x0, 0xFF);
 
-			std::vector<Mesh>& modelDataMeshes = modelData->getMeshes();
-			
-
-			for (Mesh& mesh : modelDataMeshes) {
-				mesh.bind();
-				glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
-				mesh.unbind();
-			}
-			
-		}
+		// prevent update to the stencil buffer
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		*/
+
+		// reset to working state
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glDepthMask(GL_TRUE);
+		
+		glDepthFunc(GL_LESS);
+		glDisable(GL_DEPTH_CLAMP);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
+		if (drawVolumes) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+			drawShadowVolumes(scene);
+			
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
+	
+	
+	template<auto SCENE_ID>
+	static void drawShadowVolumes(Scene<SCENE_ID>& scene) {
+		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow>();
+
+		shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+						  const Shadow&) {
+			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
+			volumeShader->setUniform("model", modelMat);
+
+			for (auto mesh : meshes) {
+				mesh->bind();
+				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+			}
+			Mesh::unbind();
+		});
 	}
 };
 
