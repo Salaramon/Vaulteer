@@ -92,6 +92,9 @@ public:
 		palm.setPosition(glm::vec3(0, 0, -5));
 		palm.setScale(glm::vec3(0.5f));
 
+		
+		std::vector<glm::mat4> palmInstance = { palm.getModelMatrix() };
+		palm.useInstancing(palmInstance);
 
 		int plane = 20;
 		int dispersion = 2;
@@ -108,7 +111,7 @@ public:
 		Material copy = *MaterialLibrary::get(0);
 		copy.data.colorAmbient = 0.9f;
 		copy.data.matOpacity = 0.1f;
-		Material* mat = MaterialLibrary::create(copy.data, "cratei");
+		Material* transparent = MaterialLibrary::create(copy.data, "cratei");
 
 		for (int y = 0; y < plane * dispersion; y += 2 * dispersion) {
 			for (int x = -plane * dispersion; x < plane * dispersion; x += 2 * dispersion) {
@@ -116,13 +119,12 @@ public:
 					Model& crate = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 					crate.setPosition(glm::vec3(x, y, 10.0f));
 					crate.setScale(glm::vec3(0.2f));
-					crate.setMaterial(mat);
+					crate.setMaterial(transparent);
 
 					BaseLight base = {lightColors[rand() % 6], 0.13f, 0.5f};
 					Attenuation att = { 1.0f, 0.18f, 0.032f };
 					PointLight& pointLight = lights.emplace_back(att, base, *crate.position);
 					crate.add<PointLight>(pointLight);
-					crate.add<Transparent>();
 				}
 			}
 		}
@@ -145,6 +147,7 @@ public:
 		
 		// should this not be done automatically on construction?
 		for (auto& model : loadedModels) {
+			model->addRenderComponents();
 			scene.add(*model);
 		}
 

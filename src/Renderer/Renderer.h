@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "Scene/Scene.h"
-#include "Techniques/UniformBufferTechnique.h"
 
 
 template<class... Renderers>

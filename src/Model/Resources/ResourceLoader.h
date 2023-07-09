@@ -31,7 +31,7 @@ public:
 			importFlags = aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace;
 
 		//assimp optimizations - not sure if these help yet
-		importFlags |= aiProcessPreset_TargetRealtime_Fast & ~aiProcess_GenNormals;
+		importFlags |= aiProcess_JoinIdenticalVertices | aiProcessPreset_TargetRealtime_Fast & ~aiProcess_GenNormals;
 
 		Assimp::Importer modelImporter;
 		const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);

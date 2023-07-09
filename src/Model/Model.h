@@ -105,11 +105,17 @@ public:
 	}
 
 	void addRenderComponents() {
+		bool transparent = false;
 		for (auto* mesh : *meshes) {
 			if (mesh->material->isTransparent()) {
-				this->add<Transparent>();
+				transparent = true;
 				break;
 			}
+		}
+		if (transparent) {
+			this->add<Transparent>();
+		} else {
+			this->add<Opaque>();
 		}
 	}
 
@@ -118,6 +124,10 @@ public:
 			mesh->insertInstances(instanceMats);
 		}
 		this->add<Instanced>();
+	}
+
+	glm::mat4 getModelMatrix() {
+		return Object3D::modelMatrix(*position, *rotation, *properties3D);
 	}
 	
 private:

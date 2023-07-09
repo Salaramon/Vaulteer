@@ -127,6 +127,7 @@ public:
 	}
 
 	int getNumIndices() {
+		//return indices.size();
 		return adjacency ? adjacencyIndices.size() : indices.size();
 	}
 

@@ -7,6 +7,8 @@
 #include "Model/Storage/VertexImpl.h"
 #include "Model/Textures/Texture.h"
 
+
+
 class MeshLoader {
 public:
 	// creates Mesh set from scene populated with MaterialVertex data and material

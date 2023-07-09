@@ -13,6 +13,9 @@
     <Filter Include="Resource Files\fonts">
       <UniqueIdentifier>{19E97097-0578-FA60-AE96-0E5C9A040B07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\fonts\georgia">
+      <UniqueIdentifier>{C667E7F6-B222-D7A2-5BDA-4FED47742133}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\fonts\hack">
       <UniqueIdentifier>{9FB1487D-0B74-7C07-5424-0B94C02555E5}</UniqueIdentifier>
     </Filter>
@@ -141,6 +144,9 @@
     <ClInclude Include="src\Model\ModelResourceLocator.h">
       <Filter>Source Files\Model</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Resources\FontResourceLocator.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
@@ -175,6 +181,9 @@
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\Point.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\Quad.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\QuadVertex.h">
@@ -228,7 +237,7 @@
     <ClInclude Include="src\Renderer\BlendingForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Buffers\Framebuffer.h">
+    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h">
       <Filter>Source Files\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h">
@@ -279,6 +288,9 @@
     <ClInclude Include="src\Text\FontLibrary.h">
       <Filter>Source Files\Text</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\FileUtils.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -315,9 +327,6 @@
     <ClInclude Include="vendor\GEM\GEM.h">
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\FileUtils.h" />
-    <ClInclude Include="src\Model\Resources\FontResourceLocator.h" />
-    <ClInclude Include="src\Model\Storage\Quad.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -394,6 +403,9 @@
     <None Include="resources\Crate\Crate1.obj">
       <Filter>Resource Files\Crate</Filter>
     </None>
+    <None Include="resources\Crate\Crate2.obj">
+      <Filter>Resource Files\Crate</Filter>
+    </None>
     <None Include="resources\backpack\backpack.mtl">
       <Filter>Resource Files\backpack</Filter>
     </None>
@@ -415,7 +427,10 @@
     <None Include="resources\cube.obj">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\fonts\hack\mask.json">
+    <None Include="resources\fonts\georgia\msdf.json">
+      <Filter>Resource Files\fonts\georgia</Filter>
+    </None>
+    <None Include="resources\fonts\hack\msdf.json">
       <Filter>Resource Files\fonts\hack</Filter>
     </None>
     <None Include="resources\palm\palm.mtl">
@@ -481,6 +496,9 @@
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
+    <None Include="resources\shaders\preprocessor\fragments\camera.gem">
+      <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
+    </None>
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem">
       <Filter>Resource Files\shaders\preprocessor\fragments</Filter>
     </None>
@@ -532,6 +550,9 @@
     <None Include="resources\shaders\volume_geom.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="resources\shaders\volume_prepass_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
     <None Include="resources\shaders\volume_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -553,8 +574,6 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
-    <None Include="resources\shaders\volume_prepass_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">
@@ -578,7 +597,10 @@
     <Image Include="resources\box.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="resources\fonts\hack\mask.png">
+    <Image Include="resources\fonts\georgia\msdf.png">
+      <Filter>Resource Files\fonts\georgia</Filter>
+    </Image>
+    <Image Include="resources\fonts\hack\msdf.png">
       <Filter>Resource Files\fonts\hack</Filter>
     </Image>
     <Image Include="resources\palm\leaflong.jpg">

@@ -47,6 +47,7 @@ public:
 		for (const auto& locator : modelLocators) {
 			auto meshes = ResourceLoader::importModel(locator);
 			for (Mesh* mesh : meshes) {
+				// TODO might not need everything to have adjacency
 				mesh->useAdjacency();
 			}
 			meshesByModelName[locator.name] = meshes;

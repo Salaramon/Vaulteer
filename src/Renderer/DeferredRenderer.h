@@ -174,18 +174,18 @@ public:
 
 		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
 		
-		auto modelView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, ExcludeComponent<Transparent>>();
-
 		if (buildBatch) {
 			batchManager.batches.clear();
 
-			modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, 
-							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D) {
+			auto batchView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, Opaque, ExcludeComponent<Instanced>>();
+
+			batchView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes,
+							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D,
+							  const Opaque&) {
 				batchManager.setTextureID(propertiesModel.textureID); //This should be taken from its own component in the future.
 
 				for (Mesh* mesh : meshes) {
-					if (!mesh->isInstanced())
-						batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
+					batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
 				}
 			});
 			buildBatch = false;
@@ -242,10 +242,10 @@ public:
 		}
 		Batch::unbind();
 		
-		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Instanced, ExcludeComponent<Transparent>>();
+		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Instanced, Opaque>();
 		modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, 
-						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-						  const Instanced&) {
+						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D,
+			              const Instanced&, const Opaque&) {
 			for (Mesh* mesh : meshes) {
 				mesh->bind();
 				glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
@@ -271,8 +271,6 @@ public:
 			glm::vec3 lightPos = light.direction * -1000.f;
 			lightPositions.push_back(lightPos);
 		});
-		
-		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, ExcludeComponent<Transparent>>();
 			
 		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
 		pointLightView.each([&](const PointLight& p) {
@@ -295,6 +293,8 @@ public:
 		// do not render to depth or color buffer 
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		glDepthMask(GL_FALSE);
+		
+		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, Opaque>();
 
 		for (int i = 0; i < lightPositions.size(); i++) {
 			shadowBuffer->bindDepthLayer(i);
@@ -309,7 +309,7 @@ public:
 			
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-							        const Shadow&) {
+							        const Shadow&, const Opaque&) {
 				for (Mesh* mesh : meshes) {
 					mesh->bind();
 					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
@@ -333,7 +333,7 @@ public:
 
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-							        const Shadow&) {
+							        const Shadow&, const Opaque&) {
 				for (auto mesh : meshes) {
 					mesh->bind();
 					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);

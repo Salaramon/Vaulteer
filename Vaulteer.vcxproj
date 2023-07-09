@@ -145,7 +145,7 @@
     <ClInclude Include="src\Renderer\Batch.h" />
     <ClInclude Include="src\Renderer\BatchManager.h" />
     <ClInclude Include="src\Renderer\BlendingForwardRenderer.h" />
-    <ClInclude Include="src\Renderer\Buffers\Framebuffer.h" />
+    <ClInclude Include="src\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="src\Renderer\Buffers\TextureFrameBuffer.h" />
     <ClInclude Include="src\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h" />
@@ -207,6 +207,7 @@
     <None Include="resources\Crate\Crate1.blend" />
     <None Include="resources\Crate\Crate1.mtl" />
     <None Include="resources\Crate\Crate1.obj" />
+    <None Include="resources\Crate\Crate2.obj" />
     <None Include="resources\backpack\backpack.mtl" />
     <None Include="resources\backpack\backpack.obj" />
     <None Include="resources\backpack\source_attribution.txt" />
@@ -214,7 +215,8 @@
     <None Include="resources\backpack\teapot.obj" />
     <None Include="resources\cone.obj" />
     <None Include="resources\cube.obj" />
-    <None Include="resources\fonts\hack\mask.json" />
+    <None Include="resources\fonts\georgia\msdf.json" />
+    <None Include="resources\fonts\hack\msdf.json" />
     <None Include="resources\palm\palm.mtl" />
     <None Include="resources\palm\palm.obj" />
     <None Include="resources\plane\plane_mesh.mtl" />
@@ -227,7 +229,6 @@
     <None Include="resources\shaders\deferred_directional_vertex.glsl" />
     <None Include="resources\shaders\depth_map_frag.glsl" />
     <None Include="resources\shaders\depth_map_vertex.glsl" />
-    <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
     <None Include="resources\shaders\preprocessor\blending_frag.gem" />
     <None Include="resources\shaders\preprocessor\blending_vertex.gem" />
     <None Include="resources\shaders\preprocessor\deferred_directional_frag.gem" />
@@ -237,6 +238,7 @@
     <None Include="resources\shaders\preprocessor\forward_frag.gem" />
     <None Include="resources\shaders\preprocessor\forward_vertex.gem" />
     <None Include="resources\shaders\preprocessor\fragments\baseLight.gem" />
+    <None Include="resources\shaders\preprocessor\fragments\camera.gem" />
     <None Include="resources\shaders\preprocessor\fragments\dirLightData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\materialData.gem" />
     <None Include="resources\shaders\preprocessor\fragments\pointLightData.gem" />
@@ -271,7 +273,8 @@
     <Image Include="resources\backpack\roughness.jpg" />
     <Image Include="resources\backpack\specular.jpg" />
     <Image Include="resources\box.png" />
-    <Image Include="resources\fonts\hack\mask.png" />
+    <Image Include="resources\fonts\georgia\msdf.png" />
+    <Image Include="resources\fonts\hack\msdf.png" />
     <Image Include="resources\palm\leaflong.jpg" />
     <Image Include="resources\palm\trunk.png" />
     <Image Include="resources\plane\map.png" />
