@@ -288,7 +288,7 @@
     <ClInclude Include="src\Text\FontLibrary.h">
       <Filter>Source Files\Text</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utils\FileUtils.h">
+    <ClInclude Include="src\Utils\FileSystem.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\MathUtils.h">

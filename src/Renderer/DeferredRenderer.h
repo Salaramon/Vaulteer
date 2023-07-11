@@ -54,6 +54,8 @@ class DeferredRenderer {
 	inline static std::unique_ptr<Shader> shadowShader;
 
 	inline static GLint textureLibraryId;
+	
+	inline static std::vector<glm::vec3> lightPositions;
 
 public:
 	inline static std::unique_ptr<Framebuffer> gbuffer;
@@ -143,6 +145,26 @@ public:
 	template<size_t SCENE_ID>
 	static void buildLights(Scene<SCENE_ID>& scene) {
 
+		// -- dirlights --
+
+		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
+		std::vector<DirectionalLight> dirLights;
+
+		dirLightView.each([&](const DirectionalLight& d) {
+			dirLights.push_back(d);
+			
+			glm::vec3 lightPos = d.direction * -1000.f;
+			lightPositions.push_back(lightPos);
+		});
+
+		std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
+		UniformBufferTechnique::uploadDirectionalLightData(dirLights);
+		quadMesh->insertInstances(dirLightMats);
+		
+		// -- pointlights --
+		// TODO: dirlight/pointlight shadows use the same light texture array, so pointlights index it based on number of dirlights
+		// pointlights come after dirlights in position
+
 		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
 		std::vector<PointLight> pointLights;
 		std::vector<glm::mat4> pointLightInstanceMats;
@@ -150,22 +172,16 @@ public:
 		pointLightView.each([&](const PointLight& p) {
 			pointLights.push_back(p);
 			pointLightInstanceMats.push_back(p.getTransformMatrix(sphereRadius));
+			lightPositions.push_back(p.position);
 		});
 
 		UniformBufferTechnique::uploadPointLightData(pointLights);
 		sphereMesh->insertInstances(pointLightInstanceMats);
 
 
-		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
-		std::vector<DirectionalLight> dirLights;
-
-		dirLightView.each([&](const DirectionalLight& d) {
-			dirLights.push_back(d);
-		});
-
-		std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
-		UniformBufferTechnique::uploadDirectionalLightData(dirLights);
-		quadMesh->insertInstances(dirLightMats);
+		if (lightPositions.size() > shadowBuffer->specification.layers) {
+			shadowBuffer->growDepthLayers(lightPositions.size());
+		}
 	}
 
 	template<size_t SCENE_ID>
@@ -263,23 +279,6 @@ public:
 
 		auto camera = scene.getActiveCamera();
 		auto view = camera.viewMatrix();
-		
-		std::vector<glm::vec3> lightPositions;
-
-		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
-		dirLightView.each([&](const DirectionalLight& light) {
-			glm::vec3 lightPos = light.direction * -1000.f;
-			lightPositions.push_back(lightPos);
-		});
-			
-		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
-		pointLightView.each([&](const PointLight& p) {
-			lightPositions.push_back(p.position);
-		});
-
-		if (lightPositions.size() > shadowBuffer->specification.layers) {
-			shadowBuffer->growDepthLayers(lightPositions.size());
-		}
 
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);  // Set all stencil values to 0
 
@@ -311,6 +310,7 @@ public:
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
 							        const Shadow&, const Opaque&) {
 				for (Mesh* mesh : meshes) {
+					assert(mesh->getType() == GL_TRIANGLES_ADJACENCY);
 					mesh->bind();
 					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
@@ -331,16 +331,26 @@ public:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
+			OpenGL::depthTest(false);
+
+			glm::vec4 lightViewPos = view * glm::vec4(lightPositions[1], 1.0f);
+			shadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
+
+
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
 							        const Shadow&, const Opaque&) {
-				for (auto mesh : meshes) {
+
+				for (Mesh* mesh : meshes) {
+					assert(mesh->getType() == GL_TRIANGLES_ADJACENCY);
 					mesh->bind();
-					glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
 				}
 				Mesh::unbind();
 			});
+
+			OpenGL::depthTest(true);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}

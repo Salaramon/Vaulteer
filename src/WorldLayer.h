@@ -170,8 +170,7 @@ public:
 
 	bool update = false;
 	std::string content;
-	Justify justify = Justify::Right;
-	float scale = 1.0;
+	float textScale = 0.5;
 
 	void onUpdate(float timestep) override {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -190,8 +189,8 @@ public:
 
 		std::string timer = std::format("FPS {:.1f}", fps);
 		std::string calls = std::format("Draws per frame: {:.1f}", drawCalls);
-		TextRenderer::submitText(timer, {20, 27}, 0.5);
-		TextRenderer::submitText(calls, {20, 50}, 0.5);
+		TextRenderer::submitText(timer, {20, 27}, textScale);
+		TextRenderer::submitText(calls, {20, 50}, textScale);
 
 		glm::mat4 view = scene.getActiveCamera().viewMatrix();
 		UniformBufferTechnique::uploadCameraView(view);
@@ -204,11 +203,7 @@ public:
 		TextRenderer::clearScene();
 	}
 
-	bool onKeyboardPressEvent(KeyboardButtonEvent& e) {
-		if (e.button.action == KeyAction::PRESS && e.button.key == KeyboardKey::Q) {
-			DeferredRenderer::drawShadowVolumes = !DeferredRenderer::drawShadowVolumes;
-		}
-
+	bool onKeyboardButtonEvent(KeyboardButtonEvent& e) {
 		return true;
 	}
 
@@ -216,7 +211,7 @@ public:
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
-		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardPressEvent));
+		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 	}
 };
 

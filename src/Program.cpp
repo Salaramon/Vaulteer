@@ -13,6 +13,7 @@ int main() {
 	while (gameFlags) {
 		application.init();
  		gameFlags = application.run();
+		application.destroy();
 	}
 	return 0;
 }

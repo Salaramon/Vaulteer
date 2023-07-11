@@ -22,7 +22,7 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 
 void Shader::loadShader(std::string path, GLenum type) {
 	std::cout << std::format("Loading shader \"{}\", of type {}", path, (type == GL_FRAGMENT_SHADER ? "fragment" : "vertex")) << std::endl;
-	std::string shaderCode = readFile(path);
+	std::string shaderCode = FileSystem::readFileToString(path);
 	const char* rawCode = shaderCode.c_str();
 
 	GLuint id = glCreateShader(type);

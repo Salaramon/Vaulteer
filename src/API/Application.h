@@ -32,6 +32,9 @@ public:
 
 	/* Initialization - runs once on start/restart, calls subclass */
 	void init();
+	void initWindow();
+
+	void destroy();
 
 	/* Start game loop, calls update on every layer from back to front */
 	size_t run();
@@ -47,8 +50,8 @@ public:
 	LayerStack layerStack;
 	std::vector<std::unique_ptr<Layer>> layers;
 
-	bool isRunning = true;
-	bool isMinimized = false;
+	bool isRunning;
+	bool isMinimized;
 
 	float lastFrameTime = 0.0f;
 	uint frameCounter = 0;

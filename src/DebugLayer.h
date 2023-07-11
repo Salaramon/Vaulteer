@@ -22,6 +22,11 @@ public:
 
 private:
 	bool onKeyboardButtonEvent(KeyboardButtonEvent& e) {
+		if (e.button.key == KeyboardKey::Q && e.button.action == KeyAction::PRESS) {
+			DeferredRenderer::drawShadowVolumes = !DeferredRenderer::drawShadowVolumes;
+			std::cout << "Toggled shadow volume visualization" << std::endl;
+		}
+
 		if (e.button.key == KeyboardKey::T && e.button.action == KeyAction::RELEASE) {
 			world->renderer.reloadShaders();
 			std::cout << "Shaders reloaded" << std::endl;

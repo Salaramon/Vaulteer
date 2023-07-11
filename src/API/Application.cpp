@@ -11,20 +11,15 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	assert(!instance); // "Application already exists, but construction was attempted."
 	instance = this;
 
+	if (!specification.workingDir.empty())
+		std::filesystem::current_path(specification.workingDir);
+}
+
+void Application::init() {
 	int success = glfwInit();
 	assert(success); // "GLFW could not be initialized!"
 
-	if (!spec.workingDir.empty())
-		std::filesystem::current_path(spec.workingDir);
-
-	auto* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-	int windowWidth = 1280, windowHeight = 720;
-	int windowX = mode->width / 2 - windowWidth / 2;
-	int windowY = mode->height / 2 - windowHeight / 2;
-
-	WindowSpecification windowSpec = {spec.title, windowWidth, windowHeight, windowX, windowY};
-	window = std::make_unique<Window>(windowSpec);
+	initWindow();
 
 	OpenGL::initialize();
 
@@ -32,18 +27,35 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 	Event::setEventCallback(FORWARD_FN(onEvent));
 
 	TextureLibrary::initDefaultTexture();
+
+	isRunning = true;
+	isMinimized = false;
+
+	// Do any implementation specific setup here
+	setup();
 }
 
-void Application::init() {
+void Application::initWindow() {
+	auto* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+	int windowWidth = 1280, windowHeight = 720;
+	int windowX = mode->width / 2 - windowWidth / 2;
+	int windowY = mode->height / 2 - windowHeight / 2;
+
+	WindowSpecification windowSpec = {specification.title, windowWidth, windowHeight, windowX, windowY};
+	window = std::make_unique<Window>(windowSpec);
+
 	auto rebuildGBufferFn = [&](int w, int h) {
 		DeferredRenderer::resizeFramebuffers(w, h);
 		BlendingForwardRenderer::resizeFramebuffers(w, h);
 		TextRenderer::buildScreenProjection(w, h);
 	};
 	window->addResizeCallback(rebuildGBufferFn);
+}
 
-	// Do any implementation specific setup here
-	setup();
+void Application::destroy() {
+	window = nullptr;
+	glfwTerminate();
 }
 
 size_t Application::run() {
@@ -63,6 +75,7 @@ size_t Application::run() {
 	}
 
 	// to note: this method can return anything else to reinitalize window and game state
+	// TODO doesn't work because static objects don't get reset
 	return 0;
 }
 

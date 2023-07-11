@@ -29,6 +29,8 @@ public:
 	inline static bool maximized = false;
 	inline static bool focused = true;
 
+	inline static bool isClosing = false;
+
 	//=============================================================================================================================================//
 
 	/*	|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾|

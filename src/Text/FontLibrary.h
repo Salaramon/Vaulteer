@@ -5,7 +5,7 @@
 
 #include "Model/Resources/FontResourceLocator.h"
 #include "Model/Storage/Quad.h"
-#include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 
 struct Glyph {
 	char code;
@@ -178,7 +178,7 @@ public:
 
 
 	static Font* loadFont(const FontResourceLocator locator) {
-		json mask = json::parse(openFile(locator.atlasJsonPath));
+		json mask = json::parse(FileSystem::openFile(locator.atlasJsonPath));
 
 		FontAtlas atlas;
 

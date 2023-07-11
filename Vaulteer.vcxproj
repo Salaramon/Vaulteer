@@ -162,7 +162,7 @@
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\SceneTypedefs.h" />
     <ClInclude Include="src\Text\FontLibrary.h" />
-    <ClInclude Include="src\Utils\FileUtils.h" />
+    <ClInclude Include="src\Utils\FileSystem.h" />
     <ClInclude Include="src\Utils\MathUtils.h" />
     <ClInclude Include="src\Utils\TemplateUtility.h" />
     <ClInclude Include="src\Utils\TypeDefUtils.h" />

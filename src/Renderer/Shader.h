@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Techniques/UniformBufferTechnique.h"
-#include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 
 class Shader {
 	// Parameter utility

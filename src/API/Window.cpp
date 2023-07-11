@@ -11,9 +11,7 @@ Window::Window(WindowSpecification spec) {
 }
 
 Window::~Window() {
-	if (--GLFWWindowCount == 0) {
-		glfwTerminate();
-	}
+	
 }
 
 
@@ -38,7 +36,8 @@ int Window::isRunning() {
 }
 
 bool Window::onWindowCloseEvent(const WindowCloseEvent& e) {
-	// todo why is this handled here if it doesn't do anything
+	// registering the closing status - but actual closing is handled by GLFW
+	isClosing = true;
 	return true;
 }
 

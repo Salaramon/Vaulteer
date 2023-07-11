@@ -141,8 +141,9 @@ public:
 		if (adjacency)
 			return;
 
-		if (adjacencyIndices.empty()) 
+		if (adjacencyIndices.empty()) {
 			genAdjacencyInfo();
+		}
 		
 		indexBuffer = vertexArray.createIndexBuffer(adjacencyIndices);
 	}

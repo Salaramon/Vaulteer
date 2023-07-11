@@ -4,8 +4,17 @@
 #include "WorldLayer.h"
 #include "DebugLayer.h"
 
-Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {
+Vaulteer::Vaulteer(const ApplicationSpecification& spec) : Application(spec) {}
+
+void Vaulteer::setup() {
 	loadResources();
+
+	//glEnable(GL_LINE_SMOOTH);
+	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
+	auto world = new WorldLayer();
+	layerStack.pushLayer(world);
+	layerStack.pushLayer(new DebugLayer(world));
 }
 
 void Vaulteer::loadResources() {
@@ -20,13 +29,4 @@ void Vaulteer::loadResources() {
 	};
 
 	ResourceManager::createPack(locators);
-}
-
-void Vaulteer::setup() {
-	//glEnable(GL_LINE_SMOOTH);
-	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
-	auto world = new WorldLayer();
-	layerStack.pushLayer(world);
-	layerStack.pushLayer(new DebugLayer(world));
 }
