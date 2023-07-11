@@ -207,6 +207,16 @@ struct KeyboardButtonEvent : BaseEvent {
 	KeyboardButton button;
 
 	EVENT_CLASS_TYPE(KeyboardButtonAction)
+
+	bool checkPress(KeyboardKey key) const {
+		return button.key == key && button.action == KeyAction::PRESS;
+	}
+	bool checkRelease(KeyboardKey key) const {
+		return button.key == key && button.action == KeyAction::RELEASE;
+	}
+	bool checkRepeat(KeyboardKey key) const {
+		return button.key == key && button.action == KeyAction::REPEAT;
+	}
 };
 
 struct MouseButtonEvent : BaseEvent {

@@ -82,7 +82,6 @@ size_t Application::run() {
 
 
 void Application::onEvent(BaseEvent& e) {
-
 	EventDispatcher dispatcher(e);
 	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 
@@ -104,7 +103,7 @@ void Application::onEvent(BaseEvent& e) {
 bool Application::onKeyboardButtonEvent(const KeyboardButtonEvent& e) {
 	// toggle fullscreen state on alt+enter;
 	bool altHeld = Event::state(KeyboardKey::LEFT_ALT) || Event::state(KeyboardKey::RIGHT_ALT);
-	if (altHeld && e.button.key == KeyboardKey::ENTER && e.button.action == KeyAction::RELEASE) {
+	if (altHeld && e.checkRelease(KeyboardKey::ENTER)) {
 		Event::window_fullscreen_callback(Window::getRawWindow(), !Window::fullscreen);
 		return true;
 	}
