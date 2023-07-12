@@ -56,14 +56,14 @@ public:
 	void initialize(Image2D& img) {
 		reserve(img.internalFormat);
 
-		assert(img.load());
+		KYSE_ASSERT(img.load());
 
 		glTextureSubImage2D(textureID, 0, 0, 0, w, h, img.dataFormat, GL_UNSIGNED_BYTE, img.data);
 
 		if (mipmapEnabled)
 			glGenerateTextureMipmap(textureID);
 
-		assert(img.free());
+		KYSE_ASSERT(img.free());
 	}
 
 	GLint getTextureID() const {

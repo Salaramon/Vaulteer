@@ -29,7 +29,7 @@
 #include <limits>
 #include <ranges>
 
-//#include <windows.h>
+#include <windows.h>
 
 #include <Seb.h>
 #include <glad/glad.h>
@@ -39,4 +39,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <rectpack2D/finders_interface.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
+#undef far
+#undef near
+#undef DELETE

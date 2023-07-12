@@ -9,7 +9,7 @@
 class MeshLibrary {
 public:
 	static std::vector<Mesh*> create(aiMesh* aiMesh, Material* mat, std::string& objPath) {
-		assert(false); // "Not implemented"
+		KYSE_ASSERT(false, "Not implemented");
 	}
 
 	// creates a set of meshes with the given path as key. existing keys will return already inserted set of meshes
@@ -26,7 +26,7 @@ public:
 		meshLibrary.push_back(std::move(meshes));
 
 		auto [meshByPath, inserted] = meshIndexByPath.emplace(objPath, numMeshes);
-		assert(inserted);
+		KYSE_ASSERT(inserted);
 
 		numMeshes++;
 
@@ -34,7 +34,7 @@ public:
 	}
 
 	static std::vector<Mesh*> get(unsigned int index) {
-		assert(index < numMeshes);
+		KYSE_ASSERT(index < numMeshes);
 		return view(meshLibrary[index]);
 	}
 
@@ -43,7 +43,7 @@ public:
 		if (it != meshIndexByPath.end()) {
 			return get(meshIndexByPath[objPath]);
 		}
-		assert(false); // "Mesh with path does not exist in library."
+		KYSE_ASSERT(false, "Mesh with path does not exist in library.");
 		return {};
 	}
 

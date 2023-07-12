@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 
+#include "API/Core.h"
 #include "Model/IndexBuffer.h"
 #include "Model/VertexBuffer.h"
 #include "Model/Storage/BufferLayout.h"
@@ -90,7 +91,7 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		return;
 
 	vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, format.stride));
-	//std::cout << "- created initial vertexbuffer: stride " << format.stride << std::endl;
+	//Log::info("- created initial vertexbuffer: stride {}", format.stride);
 
 	int location = 0;
 
@@ -102,7 +103,7 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		if (element.instance > 0) {
 			bindIndex = vertexBuffers.size();
 			vertexBuffers.push_back(std::make_unique<VertexBuffer>(vao, element.size, bindIndex));
-			//std::cout << "- created sub-vertexbuffer " << bindIndex << ": stride " << element.size << std::endl;
+			//Log::info("- created sub-vertexbuffer {}: stride {}", bindIndex, element.size);
 			offset = 0;
 		} else {
 			offset = element.offset;
@@ -155,7 +156,7 @@ inline void VertexArray::setUpAttributes(const BufferLayout& format) {
 		}
 		case ShaderDataType::Bool:
 		default:
-			assert(false); // implement as needed
+			KYSE_ASSERT(false); // implement as needed
 			break;
 		}
 

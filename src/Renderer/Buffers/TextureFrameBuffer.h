@@ -1,5 +1,6 @@
 #pragma once
 
+#include "API/Core.h"
 #include "Framebuffer.h"
 #include "Utils/TypeDefUtils.h"
 
@@ -12,7 +13,7 @@ public:
 
 	TextureFrameBuffer(FramebufferSpecification spec) : framebuffer(spec) {}
 	TextureFrameBuffer(uint frameBufferTexId, FramebufferSpecification spec) : framebuffer(spec), frameBufferTexId(frameBufferTexId) {
-		assert(initWithTexture());
+		KYSE_ASSERT(initWithTexture());
 	}
 
 	TextureFrameBuffer(TextureFrameBuffer&& mv) noexcept : framebuffer(std::move(mv.framebuffer)), frameBufferTexId(mv.frameBufferTexId) {}

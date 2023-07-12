@@ -24,12 +24,12 @@ private:
 	bool onKeyboardButtonEvent(const KeyboardButtonEvent& e) {
 		if (e.checkPress(KeyboardKey::Q)) {
 			DeferredRenderer::drawShadowVolumes = !DeferredRenderer::drawShadowVolumes;
-			std::cout << "Shadow volume visualization: " << (DeferredRenderer::drawShadowVolumes ? "on" : "off") << std::endl;
+			Log::info("Shadow volume visualization: {}", (DeferredRenderer::drawShadowVolumes ? "on" : "off"));
 		}
 
 		if (e.checkPress(KeyboardKey::T)) {
 			world->renderer.reloadShaders();
-			std::cout << "Shaders reloaded" << std::endl;
+			Log::info("Shaders reloaded");
 		}
 		// events should be allowed to bleed through debug layer
 		return false;

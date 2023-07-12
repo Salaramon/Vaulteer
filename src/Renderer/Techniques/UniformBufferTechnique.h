@@ -71,12 +71,11 @@ public:
 			if (block.binding != it->second.binding) {
 				conflicts[block.binding] = &it->second;
 
-				std::cout << std::format("conflict in UBO definitions - {} (binding {}) does not match {} (binding {}) in program {}",
+				std::string error = std::format("conflict in UBO definitions - {} (binding {}) does not match {} (binding {}) in program {}",
 					block.name, block.binding,
 					it->second.name, it->second.binding,
-					shaderProgram
-				) << std::endl;
-				__debugbreak();
+					shaderProgram);
+				KYSE_ASSERT(false, error);
 			}
 			return true;
 		}
@@ -84,12 +83,12 @@ public:
 		if (bufIt != buffers.end() && block.name.compare(buffers[block.binding]->name) != 0) {
 			auto conflicting = buffers[block.binding].get();
 
-			std::cout << std::format("conflict in UBO definitions - {} (binding {}) already bound for {} (binding {}), currently reading program {}",
+			std::string error = std::format("conflict in UBO definitions - {} (binding {}) already bound for {} (binding {}), currently reading program {}",
 				block.name, block.binding,
 				conflicting->name, conflicting->binding,
 				shaderProgram
-			) << std::endl;
-			__debugbreak();
+			);
+			KYSE_ASSERT(false, error);
 
 			return true;
 		}

@@ -225,6 +225,13 @@ struct MouseButtonEvent : BaseEvent {
 	MouseButton button;
 
 	EVENT_CLASS_TYPE(MouseButtonAction)
+		
+	bool checkPress(MouseKey key) const {
+		return button.key == key && button.action == KeyAction::PRESS;
+	}
+	bool checkRelease(MouseKey key) const {
+		return button.key == key && button.action == KeyAction::RELEASE;
+	}
 };
 
 struct MouseScrollEvent : BaseEvent {

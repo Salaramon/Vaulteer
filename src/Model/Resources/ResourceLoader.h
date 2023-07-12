@@ -37,8 +37,7 @@ public:
 		const aiScene* scene = modelImporter.ReadFile(objPath, importFlags);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			std::cout << "Assimp Error: " + std::string(modelImporter.GetErrorString()) + "\n" << std::endl;
-			assert(false);
+			KYSE_ASSERT(false, "Assimp error: " + std::string(modelImporter.GetErrorString()) + "\n");
 		}
 
 		// aggregate scene materials, used to populate mesh vertices with material index data

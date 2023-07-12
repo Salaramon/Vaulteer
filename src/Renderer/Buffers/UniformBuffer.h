@@ -41,7 +41,7 @@ public:
 	void insert(const std::vector<T>& data) {
 		GLsizei dataSize = data.size() * sizeof(data[0]);
 		
-		assert(dataSize <= size);
+		KYSE_ASSERT(dataSize <= size);
 
  		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
 		glNamedBufferSubData(buffer, 0, dataSize, data.data());
@@ -51,7 +51,7 @@ public:
 	void insert(const T& data) {
 		GLsizei dataSize = sizeof(data);
 
-		assert(dataSize <= size);
+		KYSE_ASSERT(dataSize <= size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
 		glNamedBufferSubData(buffer, 0, dataSize, &data);
@@ -61,7 +61,7 @@ public:
 	void insertAt(const T& data, size_t offset) {
 		GLsizei dataSize = sizeof(data);
 
-		assert(offset + dataSize <= size);
+		KYSE_ASSERT(offset + dataSize <= size);
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer);
 		glNamedBufferSubData(buffer, offset, dataSize, &data);

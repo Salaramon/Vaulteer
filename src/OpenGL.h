@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include "API/Log.h"
+
 
 enum GLBlendModes {
 	Zero = GL_ZERO,
@@ -26,14 +28,6 @@ public:
 		if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 			return;
 
-		const char* severityStr = [severity] {
-			switch (severity) {
-			case GL_DEBUG_SEVERITY_NOTIFICATION: return "NOTIFICATION";
-			case GL_DEBUG_SEVERITY_LOW: return "LOW";
-			case GL_DEBUG_SEVERITY_MEDIUM: return "MEDIUM";
-			case GL_DEBUG_SEVERITY_HIGH: return "HIGH";
-			}
-		}();
 		const char* srcStr = [source] {
 			switch (source) {
 			case GL_DEBUG_SOURCE_API: return "API";
@@ -55,7 +49,17 @@ public:
 			case GL_DEBUG_TYPE_OTHER: return "OTHER";
 			}
 		}();
-		std::cout << srcStr << ", " << typeStr << ", " << severityStr /* << ", " << id */ << ": " << message << '\n';
+		
+		switch (severity) {
+		case GL_DEBUG_SEVERITY_LOW: 
+			Log::info("{}, {}: {}", srcStr, typeStr, message); break;
+		case GL_DEBUG_SEVERITY_MEDIUM: 
+			Log::warn("{}, {}: {}", srcStr, typeStr, message); break;
+		case GL_DEBUG_SEVERITY_HIGH: 
+			Log::error("{}, {}: {}", srcStr, typeStr, message); break;
+		default:
+			Log::trace("{}, {}: {}", srcStr, typeStr, message);
+		}
 	}
 
 	//Face culling enumerations

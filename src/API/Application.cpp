@@ -8,7 +8,9 @@ Application* Application::instance = nullptr;
 
 
 Application::Application(const ApplicationSpecification& spec) : specification(spec) {
-	assert(!instance); // "Application already exists, but construction was attempted."
+	Log::initialize();
+
+	KYSE_ASSERT(!instance); // "Application already exists, but construction was attempted."
 	instance = this;
 
 	if (!specification.workingDir.empty())
@@ -17,14 +19,14 @@ Application::Application(const ApplicationSpecification& spec) : specification(s
 
 void Application::init() {
 	int success = glfwInit();
-	assert(success); // "GLFW could not be initialized!"
+	KYSE_ASSERT(success, "GLFW could not be initialized!");
 
 	initWindow();
 
 	OpenGL::initialize();
-
 	Event::initialize();
 	Event::setEventCallback(FORWARD_FN(onEvent));
+
 
 	TextureLibrary::initDefaultTexture();
 

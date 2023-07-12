@@ -17,10 +17,10 @@ public:
 	virtual ~Layer() {}
 
 	virtual void onAttach() {
-		std::cout << "running default attach for layer: " << name << std::endl;
+		Log::trace("running default attach for layer: {}", name);
 	}
 	virtual void onDetach() {
-		std::cout << "running default detach for layer: " << name << std::endl;
+		Log::trace("running default detach for layer: {}", name);
 	}
 	
 	virtual void onEvent(BaseEvent& e) {}

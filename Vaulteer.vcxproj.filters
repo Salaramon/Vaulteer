@@ -102,6 +102,9 @@
     <ClInclude Include="src\API\CameraController.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
+    <ClInclude Include="src\API\Core.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
     <ClInclude Include="src\API\Layer.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>

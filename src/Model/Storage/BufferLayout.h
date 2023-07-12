@@ -4,6 +4,8 @@
 #include <vector>
 #include <glad/glad.h>
 
+#include "API/Core.h"
+
 enum class ShaderDataType {
 	None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 };
@@ -22,7 +24,7 @@ static int getShaderDataTypeSize(ShaderDataType type) {
 		case ShaderDataType::Int4:     return 4 * 4;
 		case ShaderDataType::Bool:     return 1;
 	}
-	//assert(false); // "invalid type in vertex element"
+	KYSE_ASSERT(false, "invalid type in vertex element");
 	return 0;
 }
 
@@ -40,7 +42,7 @@ static GLenum shaderDataTypeToOpenGLBaseType(ShaderDataType type) {
 		case ShaderDataType::Int4:     return GL_INT;
 		case ShaderDataType::Bool:     return GL_BOOL;
 	}
-	//assert(false); // "invalid type in vertex element"
+	KYSE_ASSERT(false, "invalid type in vertex element");
 	return 0;
 }
 
@@ -71,7 +73,7 @@ struct VertexElement {
 		case ShaderDataType::Int4:     return 4;
 		case ShaderDataType::Bool:     return 1;
 		default:                       
-			//assert(false); // "invalid type in vertex element"
+			KYSE_ASSERT(false, "invalid type in vertex element");
 			return 0;
 		}
 	}

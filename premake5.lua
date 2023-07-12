@@ -52,6 +52,7 @@ project "Vaulteer"
 		"%{wks.location}/vendor/GLM/include",
 		"%{wks.location}/vendor/miniball/include",
 		"%{wks.location}/vendor/rectpack2D/include",
+		"%{wks.location}/vendor/spdlog/include",
 		"%{wks.location}/vendor/sqlite/include",
 		"%{wks.location}/vendor/tomlplusplus-2.4.0/include",
 	}
@@ -60,12 +61,14 @@ project "Vaulteer"
 		"%{wks.location}/vendor/ASSIMP/lib/%{cfg.buildcfg}",
 		"%{wks.location}/vendor/GEM/lib/%{cfg.buildcfg}",
 		"%{wks.location}/vendor/GLFW/lib/",
+		"%{wks.location}/vendor/spdlog/lib/",
 		"%{wks.location}/vendor/sqlite/lib/",
 	}
 
 	links {
 		"glfw3",
-		"opengl32"
+		"opengl32",
+		"spdlogd"
 	}
 
 	vpaths {

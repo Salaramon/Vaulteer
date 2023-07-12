@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\spdlog\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <AdditionalOptions>/MP32 /bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -68,8 +68,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\GEM\lib\Debug;vendor\GLFW\lib;vendor\sqlite\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;spdlogd.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Debug;vendor\GEM\lib\Debug;vendor\GLFW\lib;vendor\spdlog\lib;vendor\sqlite\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>vpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\_headers;vendor\ASSIMP\include;vendor\GEM\include;vendor\GLAD\include;vendor\GLFW\include;vendor\GLM\include;vendor\miniball\include;vendor\rectpack2D\include;vendor\spdlog\include;vendor\sqlite\include;vendor\tomlplusplus-2.4.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -92,16 +92,18 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\GEM\lib\Release;vendor\GLFW\lib;vendor\sqlite\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;spdlogd.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>vendor\ASSIMP\lib\Release;vendor\GEM\lib\Release;vendor\GLFW\lib;vendor\spdlog\lib;vendor\sqlite\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\API\Application.h" />
     <ClInclude Include="src\API\Camera.h" />
     <ClInclude Include="src\API\CameraController.h" />
+    <ClInclude Include="src\API\Core.h" />
     <ClInclude Include="src\API\Layer.h" />
     <ClInclude Include="src\API\LayerStack.h" />
+    <ClInclude Include="src\API\Log.h" />
     <ClInclude Include="src\API\Window.h" />
     <ClInclude Include="src\Data Structures\BoundingSphereHierarchy.h" />
     <ClInclude Include="src\Data Structures\PolyTree.h" />

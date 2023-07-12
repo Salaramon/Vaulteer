@@ -13,9 +13,7 @@ public:
 	static std::string readFileToString(const std::string& path) {
 		std::ifstream file(path, std::ifstream::in | std::ifstream::binary);
 
-		file.seekg(0, std::ifstream::end);
-		std::streamsize size = file.tellg();
-
+		std::streamsize size = getFileSize(file);
 		if (size != -1) {
 			std::string result;
 			result.resize(size);
@@ -23,15 +21,24 @@ public:
 			file.read(result.data(), size);
 			return result;
 		}
-		
-		std::cout << std::format("Error reading file:\n\t{}", path) << std::endl;
-		__debugbreak();
+		KYSE_ASSERT(size != -1, std::format("Could not read file: {}", path));
 		return "";
 	}
 
-	// opens file for reading
+	static std::streamsize getFileSize(std::ifstream& file) {
+		file.seekg(0, std::ifstream::end);
+		std::streamsize size = file.tellg();
+		return size;
+	}
+
+	static bool validate(const std::string& path) {
+		std::ifstream file = openFile(path);
+		std::streamsize size = getFileSize(file);
+		KYSE_ASSERT(size != -1, std::format("Could not read file: {}", path));
+		return size;
+	}
+
 	static std::ifstream openFile(const std::string& path) {
-		// TODO handle errors cuz fuckyou
 		return std::ifstream(path, std::ifstream::in | std::ifstream::binary);
 	}
 };

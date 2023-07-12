@@ -12,6 +12,7 @@
 
 #include <iostream>
 
+#include "API/Core.h"
 #include "Utils/MathUtils.h"
 
 
@@ -310,5 +311,5 @@ PolyTree<Content, Value, dimensions>::equal_range(Position position, Position le
 template<class Content, class Value, size_t dimensions>
 inline void PolyTree<Content, Value, dimensions>::remove(Value x, Value y, Value width, Value height)
 {
-	assert(false); // missing implementation
+	KYSE_ASSERT(false, "missing implementation");
 }

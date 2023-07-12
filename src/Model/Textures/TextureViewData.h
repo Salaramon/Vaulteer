@@ -4,6 +4,7 @@
 #include <rectpack2D/finders_interface.h>
 #include <stb_image.h>
 
+#include "API/Core.h"
 #include "Model/Textures/TextureResourceLocator.h"
 #include "Utils/TypeDefUtils.h"
 
@@ -73,7 +74,7 @@ struct Image2D {
 
 	Image2D(const std::string& filePath, aiTextureType type = aiTextureType_NONE) : fileBacked(true) {
 		bool ok = stbi_info(filePath.data(), &w, &h, &channels);
-		assert(ok);
+		KYSE_ASSERT(ok);
 
 		path = filePath;
 		view = TextureView({0, 0, w, h}, 0, type);
@@ -122,7 +123,7 @@ struct Image2D {
         case STBI_rgb:			return std::make_pair(GL_RGB8, GL_RGB);
         case STBI_grey_alpha:	return std::make_pair(GL_RG8, GL_RG);
         case STBI_grey:			return std::make_pair(GL_R8, GL_RED);
-        default: assert(false); // "invalid format"
+        default: KYSE_ASSERT(false, "invalid format");
 		case STBI_rgb_alpha:	return std::make_pair(GL_RGBA8, GL_RGBA);
 	    }
 	}

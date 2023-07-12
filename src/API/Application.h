@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <ranges>
 
+#include "Core.h"
+
 #include "Window.h"
 #include "OpenGL.h"
 #include "Model/Resources/ResourceManager.h"

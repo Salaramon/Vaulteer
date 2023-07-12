@@ -32,11 +32,11 @@ public:
 		indexBuffer = vertexArray.createIndexBuffer();
 		indexBuffer->reserve(indexBufferSize);
 
-		std::cout << "Batch created with size " << vertexBufferSize << "/" << indexBufferSize << "." << std::endl;
+		Log::trace("Batch created with size {}/{}.", vertexBufferSize, indexBufferSize);
 	}
 
 	~Batch() {
-		std::cout << "Batch destroyed." << std::endl;
+		Log::trace("Batch destroyed.");
 	}
 
 	bool add(Mesh& mesh, glm::mat4 modelMat) {

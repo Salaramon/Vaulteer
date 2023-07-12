@@ -114,7 +114,7 @@ public:
 				break;
 
 			default:
-				assert(false); // texture type is not implemented!
+				KYSE_ASSERT(false, "texture type is not implemented!");
 				break;
 			}
 				
@@ -130,7 +130,7 @@ public:
 		}
 
 		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		assert(status == GL_FRAMEBUFFER_COMPLETE);
+		KYSE_ASSERT(status == GL_FRAMEBUFFER_COMPLETE);
 
 		// restore default FBO
 		unbind();
@@ -173,8 +173,8 @@ public:
 	}
 
 	void bindColorLayer(int attachment, int i) {
-		assert(attachment < colorAttachments.size());
-		assert(i < specification.layers);
+		KYSE_ASSERT(attachment < colorAttachments.size());
+		KYSE_ASSERT(i < specification.layers);
 		glNamedFramebufferTextureLayer(fbo, GL_COLOR_ATTACHMENT0 + attachment, colorTextures[attachment], 0, i);
 	}
 
@@ -202,11 +202,11 @@ public:
 	}
 
 	void clearColorAttachment(int index, int value = 0) {
-		assert(index < colorAttachments.size());
+		KYSE_ASSERT(index < colorAttachments.size());
  		glClearNamedFramebufferiv(fbo, GL_COLOR, index, &value);
 	}
 	void clearColorAttachment(int index, float value = 0.0) {
-		assert(index < colorAttachments.size());
+		KYSE_ASSERT(index < colorAttachments.size());
  		glClearNamedFramebufferfv(fbo, GL_COLOR, index, &value);
 	}
 

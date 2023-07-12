@@ -29,8 +29,8 @@ ClusteredForwardRenderer::ClusteredForwardRenderer() : computedTilingTex(1280, 7
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, compute_data.data());
 
 	for (auto d : compute_data) {
-		std::cout << d << " ";
+		printf("{} ", d);
 	}
-	std::cout << std::endl;
+	println("");
 
 }*/

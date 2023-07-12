@@ -76,6 +76,11 @@ public:
 	// produces a set of quads and the bounds for string of text with the given font
 	static std::tuple<glm::vec2, std::vector<Quad>> stringToQuads(
 		const Font* font, std::string& chars, glm::vec2 pos, float size = 1.0, Justify justify = Justify::Left) {
+		if (!font) {
+			KYSE_ASSERT(font, "Font was null!");
+			return {glm::vec2(0.0f), {}};
+		}
+
 		std::vector<Quad> quads;
 		quads.reserve(chars.size());
 
@@ -178,8 +183,10 @@ public:
 
 
 	static Font* loadFont(const FontResourceLocator locator) {
-		json mask = json::parse(FileSystem::openFile(locator.atlasJsonPath));
+		if (!FileSystem::validate(locator.atlasJsonPath))
+			return nullptr;
 
+		json mask = json::parse(FileSystem::openFile(locator.atlasJsonPath));
 		FontAtlas atlas;
 
 		for (auto& maskGlyph : mask["glyphs"]) {

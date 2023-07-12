@@ -18,10 +18,10 @@ public:
 
 
 	ResourcePack() {
-		std::cout << "Resource pack created." << std::endl;
+		Log::trace("Resource pack created.");
 	}
 	~ResourcePack() {
-		std::cout << "Resource pack destroyed." << std::endl;
+		Log::info("Resource pack destroyed.");
 	}
 
 	void add(const ModelResourceLocator& modelLocator) {
@@ -39,7 +39,7 @@ public:
 	/// Imports all added models
 	void finalize() {
 		if (finalized) {
-			std::cout << "Attempted to finalize resource pack that has already been finalized." << std::endl;
+			Log::warn("Attempted to finalize resource pack that has already been finalized.");
 			return;
 		}
 
@@ -76,7 +76,7 @@ public:
 	/*std::vector<Mesh> getModelByName(const std::string& modelName) {
 		auto search = resourcesByName.find(modelName);
 		if (search == resourcesByName.end()) {
-			assert(false, std::string("Resource with name not part of pack: " + modelName));
+			KYSE_ASSERT(false, std::string("Resource with name not part of pack: " + modelName));
 		}
 		return search->second.get();
 	}*/

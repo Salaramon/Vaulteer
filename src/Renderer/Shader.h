@@ -44,7 +44,7 @@ public:
 	template<class ...Infos>
 	Shader(Infos ...infos) : setUniform(this) {
 		shaderProgramID = glCreateProgram();
-		std::cout << std::format("Shader program created with id: {}", shaderProgramID) << std::endl;
+		Log::trace("Shader program created with id: {}", shaderProgramID);
 
 		// load shaders
 		Parameter_Reader<Infos...> reader(this, infos...);
@@ -70,7 +70,7 @@ public:
 		for (GLuint id : shaderIDs) {
 			glDeleteShader(id);
 		}
-		std::cout << std::format("Shader program destroyed with id: {}", shaderProgramID) << std::endl;
+		Log::trace("Shader program destroyed with id: {}", shaderProgramID);
 		glDeleteProgram(shaderProgramID);
 	}
 
@@ -90,6 +90,8 @@ private:
 
 	std::vector<GLuint> shaderIDs;
 	std::vector<std::string> shaderFileNames;
+
+	std::string glShaderTypeToString(GLenum type);
 
 	//Create and compile GL shader
 	void loadShader(std::string path, GLenum type);

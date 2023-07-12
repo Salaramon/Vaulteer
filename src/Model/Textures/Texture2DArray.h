@@ -55,15 +55,12 @@ public:
 		glTextureStorage3D(textureID, 1, inFormat, w, h, numLayers);
 
 		for (Image2D& img : images) {
-			assert(img.load());
+			KYSE_ASSERT(img.load());
 
 			auto& rect = img.view.rect;
 			glTextureSubImage3D(textureID, 0, rect.x, rect.y, img.view.layer, rect.w, rect.h, 1, img.dataFormat, GL_UNSIGNED_BYTE, img.data);
-			std::cout << "- init texture with locator: " << img.path << std::endl;
-			std::cout << "- size: " << sizeof(img.data) << std::endl;
-			std::cout << "- unit: " << rect.x << ":" << rect.y << ":" << rect.w << ":" << rect.h <<  " :: layer: " << img.view.layer << std::endl;
 			
-			assert(img.free());
+			KYSE_ASSERT(img.free());
 		}
 		
 		if (mipmapEnabled)

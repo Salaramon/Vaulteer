@@ -8,6 +8,7 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "Core.h"
 #include "Events/EventTypes.h"
 
 static size_t GLFWWindowCount = 0;

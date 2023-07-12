@@ -23,7 +23,7 @@ public:
 
 	static Material* create(Material::MaterialData& data, const std::string& name) {
 		if (Material* exists = find(name)) {
-			std::cout << std::format("Material name conflict <{}>, material not inserted", name) << std::endl;
+			Log::info("Material name conflict <{}>, material not inserted", name);
 			return exists;
 		}
 
@@ -40,8 +40,8 @@ public:
 	// returns pointer to material, inserted or existing; material will have library index set
 	static Material* create(aiMaterial* aiMat, const std::string& objPath) {
 		if (Material* exists = find(aiMat->GetName().C_Str())) {
-			std::cout << std::format("Material name conflict <{}> for resource {}, material not inserted",
-				aiMat->GetName().C_Str(), objPath) << std::endl;
+			Log::info("Material name conflict <{}> for resource {}, material not inserted",
+				aiMat->GetName().C_Str(), objPath);
 			return exists;
 		}
 		

@@ -310,7 +310,7 @@ public:
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
 							        const Shadow&, const Opaque&) {
 				for (Mesh* mesh : meshes) {
-					assert(mesh->getType() == GL_TRIANGLES_ADJACENCY);
+					KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
 					mesh->bind();
 					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
@@ -342,7 +342,7 @@ public:
 							        const Shadow&, const Opaque&) {
 
 				for (Mesh* mesh : meshes) {
-					assert(mesh->getType() == GL_TRIANGLES_ADJACENCY);
+					KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
 					mesh->bind();
 					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;

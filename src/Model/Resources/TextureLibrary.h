@@ -118,7 +118,7 @@ private:
 		int height = ceilPowerOfTwo(result.height);
 
 		// TODO find repeat strategy
-		assert(!result.errorReported); // "Packing returned error."
+		KYSE_ASSERT(!result.errorReported, "Packing returned error.");
 
 		// overwrite views with packed data
 		for (size_t i = 0; i < rectangles.size(); i++) {

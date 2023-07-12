@@ -2,6 +2,7 @@
 
 #include <typeindex>
 
+#include "API/Core.h"
 #include "Vertex.h"
 #include "BufferLayout.h"
 
@@ -30,13 +31,13 @@ public:
 
 	template<vertex_concept T>
 	T* at(size_t index) {
-		assert(index < vertexCount);
+		KYSE_ASSERT(index < vertexCount);
 		return reinterpret_cast<T*>(vertexData.data() + index * stride());
 	}
 	
 	template<vertex_concept T>
 	void set(size_t index, T& t) {
-		assert(index < vertexCount);
+		KYSE_ASSERT(index < vertexCount);
 		T* ptr = reinterpret_cast<T*>(vertexData.data() + index * stride());
 		memcpy_s(ptr, stride(), &t, stride());
 	}

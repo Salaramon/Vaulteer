@@ -90,7 +90,7 @@ bool Window::onWindowResizeEvent(const WindowResizeEvent& e) {
 		specification.height = e.height;
 	}
 
-	std::cout << std::format("Window was resized to {}x{}", e.width, e.height) << std::endl;
+	Log::info("Window resized to {}x{}", e.width, e.height);
 	return true;
 }
 
@@ -104,7 +104,7 @@ void Window::setup() {
 
 	window = glfwCreateWindow(specification.width, specification.height, specification.title.c_str(), nullptr, nullptr);
 	bool success = window != nullptr;
-	assert(success);  // "Window could not be initialized!"
+	KYSE_ASSERT(success, "Window could not be initialized!");
 
 	glfwSetWindowPos(window, specification.x, specification.y);
 	glfwMakeContextCurrent(window);
@@ -114,7 +114,7 @@ void Window::setup() {
 
 	resizeCallbacks.emplace(window, std::vector<std::function<void(int, int)>>());
 
-	std::cout << std::format("Window created with title {} and dimensions {}x{}", specification.title, specification.width, specification.height) << std::endl;
+	Log::trace("Window created with title {} and dimensions {}x{}", specification.title, specification.width, specification.height);
 }
 
 bool Window::onUpdate() {

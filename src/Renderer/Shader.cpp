@@ -20,8 +20,17 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 	return shaderFileNames;
 }
 
+std::string Shader::glShaderTypeToString(GLenum type) {
+	switch(type) {
+	case GL_VERTEX_SHADER: return "vertex";
+	case GL_FRAGMENT_SHADER: return "fragment";
+	case GL_GEOMETRY_SHADER: return "geometry";
+	case GL_COMPUTE_SHADER: return "compute";
+	default: return "other";
+	}
+}
+
 void Shader::loadShader(std::string path, GLenum type) {
-	std::cout << std::format("Loading shader \"{}\", of type {}", path, (type == GL_FRAGMENT_SHADER ? "fragment" : "vertex")) << std::endl;
 	std::string shaderCode = FileSystem::readFileToString(path);
 	const char* rawCode = shaderCode.c_str();
 
@@ -30,8 +39,8 @@ void Shader::loadShader(std::string path, GLenum type) {
 
 	std::string filename = path.substr(path.find_last_of('/') + 1);
 	shaderFileNames.push_back(filename);
-
-	std::cout << std::format("Shader created with id {} from {}", id, filename) << std::endl;
+	
+	Log::trace("Loaded {} shader ID {} from \"{}\"", glShaderTypeToString(type), id, path);
 
 	compileShader(id, filename, &rawCode);
 	glAttachShader(shaderProgramID, id);
@@ -104,7 +113,7 @@ bool Shader::catchProgramLinkError() {
 
 	if (!getProgramInfo(GL_LINK_STATUS)) {
 		auto error = getErrorMessage(glGetProgramInfoLog, shaderProgramID, getProgramInfo(GL_INFO_LOG_LENGTH));
-		std::cout << std::format("Error: Could not link shader program {}:\n\t{}", getShaderDesc(), error) << std::endl;
+		Log::error("Error linking program <{}>:\n\t{}", getShaderDesc(), error);
 		return true;
 	}
 	return false;
@@ -116,7 +125,7 @@ bool Shader::catchCompileError(GLuint id, const std::string& filename) {
 
 	if (!getShaderInfo(GL_COMPILE_STATUS)) {
 		auto error = getErrorMessage(glGetShaderInfoLog, id, getShaderInfo(GL_INFO_LOG_LENGTH));
-		std::cout << std::format("Error: could not compile shader {}:\n\t{}", filename, error) << std::endl;
+		Log::error("Error compiling shader <{}>:\n\t{}", filename, error);
 		return true;
 	}
 

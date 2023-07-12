@@ -5,7 +5,7 @@
 CameraController::CameraController() : camera(nullptr) {}
 
 CameraController::CameraController(Camera* camera) : camera(camera) {
-	assert(camera != nullptr);
+	KYSE_ASSERT(camera != nullptr);
 }
 
 void CameraController::setCamera(Camera* camera) {
