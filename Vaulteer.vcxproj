@@ -155,7 +155,6 @@
     <ClInclude Include="src\Renderer\ForwardRenderer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
-    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h" />
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h" />
     <ClInclude Include="src\Renderer\TextRenderer.h" />
     <ClInclude Include="src\Scene\Entity.h" />
@@ -194,7 +193,6 @@
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp" />
     <ClCompile Include="src\VFX\ShadowCascade.cpp" />
     <ClCompile Include="src\Vaulteer.cpp" />
     <ClCompile Include="src\vpch.cpp">
@@ -249,6 +247,7 @@
     <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem" />
     <None Include="resources\shaders\preprocessor\geometry_frag.gem" />
     <None Include="resources\shaders\preprocessor\geometry_vertex.gem" />
+    <None Include="resources\shaders\volume_dir_geom.glsl" />
     <None Include="resources\shaders\shadow_cube_frag.glsl" />
     <None Include="resources\shaders\shadow_cube_geometry.glsl" />
     <None Include="resources\shaders\shadow_cube_vertex.glsl" />

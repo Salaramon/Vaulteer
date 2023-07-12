@@ -80,6 +80,7 @@ public:
 		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
 
 		Framebuffer::copyDepth(*DeferredRenderer::gbuffer, *alphaBuffer);
+		Framebuffer::unbind();
 		
 		compositePass();
 		

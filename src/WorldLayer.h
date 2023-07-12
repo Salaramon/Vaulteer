@@ -4,18 +4,16 @@
 
 #include "Renderer/Renderer.h"
 #include "Renderer/ForwardRenderer.h"
-#include "Renderer/ShadowVolumeRenderer.h"
 
 #include "API/Application.h"
 #include "Model/Resources/ResourceManager.h"
 #include "Renderer/TextRenderer.h"
 #include "Utils/MathUtils.h"
 
-class WorldLayer : public Layer {
-public:
-	WorldLayer() : Layer("WorldLayer") {}
-	~WorldLayer() override = default;
-	
+
+// TODO: just a container for what's essentially test/demo data before actual game specific data is designed
+// anything here can be assumed to not be integral to our current structure, but rather an example of how we use types
+struct World {
 	Camera camera;
 	CameraController cameraController;
 
@@ -23,6 +21,15 @@ public:
 
 	std::vector<PointLight> lights;
 	std::vector<Entity> lightEntities;
+};
+
+
+class WorldLayer : public Layer {
+public:
+	WorldLayer() : Layer("WorldLayer") {}
+	~WorldLayer() override = default;
+
+	World world;
 
 	//Scenes
 	inline static constexpr size_t scene_0 = 0;
@@ -34,20 +41,18 @@ public:
 		Window& window = Application::getWindow();
 
 		auto setAspectRatio = [this](int w, int h) {
-			camera.propertiesCamera.aspectRatio = (float)w / h;
+			world.camera.propertiesCamera.aspectRatio = (float)w / h;
 		};
  		Window::addResizeCallback(setAspectRatio);
 		
 		ResourcePack& pack = ResourceManager::getPack(0);
 		
-		/*
-		Entity& lightEntity = lightEntities.emplace_back();
+		Entity& lightEntity = world.lightEntities.emplace_back();
 		DirectionalLight dirLight = {
-			{glm::vec3(0.3f, 0.6f, 0.2f), 0.01f, 1.0f},
+			{glm::vec3(1.0f, 1.0f, 1.0f), 0.001f, 0.01f},
 			glm::vec3(0.0f, -1.0f, -1.0f)};
 		lightEntity.add<DirectionalLight>(dirLight);
 		scene.add(lightEntity);
-		 */
 
 
 		ForwardRenderer::initialize(pack.getTextureID());
@@ -56,24 +61,24 @@ public:
 		TextRenderer::initialize(Window::getWidth(), Window::getHeight());
 
 		
-		camera.enableAxisLock();
-		camera.setLockAxis({0,1,0});
+		world.camera.enableAxisLock();
+		world.camera.setLockAxis({0,1,0});
 
-		camera.propertiesCamera.aspectRatio = (double)Window::getWidth()/Window::getHeight();
-		camera.propertiesCamera.fov = 60;
-		camera.propertiesCamera.near = 0.1f;
-		camera.propertiesCamera.far = 1000;
+		world.camera.propertiesCamera.aspectRatio = (double)Window::getWidth()/Window::getHeight();
+		world.camera.propertiesCamera.fov = 60;
+		world.camera.propertiesCamera.near = 0.1f;
+		world.camera.propertiesCamera.far = 1000;
 
-		cameraController.setCamera(&camera);
+		world.cameraController.setCamera(&world.camera);
 
-		scene.activeCamera = &camera;
-		scene.add(camera);
+		scene.activeCamera = &world.camera;
+		scene.add(world.camera);
 
 
-		Model& palm = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+		Model& palm = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
 
-		Model& quad = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
-		Model& quad2 = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
+		Model& quad = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
+		Model& quad2 = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
 
 
 		palm.add<Shadow>();
@@ -116,20 +121,20 @@ public:
 		for (int y = 0; y < plane * dispersion; y += 2 * dispersion) {
 			for (int x = -plane * dispersion; x < plane * dispersion; x += 2 * dispersion) {
 				if (rand() % 8 == 0) {
-					Model& crate = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+					Model& crate = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
 					crate.setPosition(glm::vec3(x, y, 10.0f));
 					crate.setScale(glm::vec3(0.2f));
 					crate.setMaterial(transparent);
 
 					BaseLight base = {lightColors[rand() % 6], 0.13f, 0.5f};
 					Attenuation att = { 1.0f, 0.18f, 0.032f };
-					PointLight& pointLight = lights.emplace_back(att, base, *crate.position);
+					PointLight& pointLight = world.lights.emplace_back(att, base, *crate.position);
 					crate.add<PointLight>(pointLight);
 				}
 			}
 		}
 		
-		Model& cratei = *loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("cratei")));
+		Model& cratei = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("cratei")));
 		cratei.add<Shadow>();
 		std::vector<glm::mat4> instances;
 
@@ -146,7 +151,7 @@ public:
 		cratei.useInstancing(instances);
 		
 		// should this not be done automatically on construction?
-		for (auto& model : loadedModels) {
+		for (auto& model : world.loadedModels) {
 			model->addRenderComponents();
 			scene.add(*model);
 		}
@@ -175,7 +180,7 @@ public:
 	void onUpdate(float timestep) override {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		cameraController.onUpdate(timestep);
+		world.cameraController.onUpdate(timestep);
 
 		cumTime += timestep;
 		cumFrames++;
@@ -209,8 +214,8 @@ public:
 
 	void onEvent(BaseEvent& e) override {
 		EventDispatcher dispatcher(e);
-		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(cameraController.onMouseMoveEvent));
-		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(cameraController.onKeyboardButtonEvent));
+		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(world.cameraController.onMouseMoveEvent));
+		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(world.cameraController.onKeyboardButtonEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 	}
 };

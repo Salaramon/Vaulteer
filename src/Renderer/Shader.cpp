@@ -20,16 +20,6 @@ std::vector<std::string>& Shader::getShaderFileNames() {
 	return shaderFileNames;
 }
 
-std::string Shader::glShaderTypeToString(GLenum type) {
-	switch(type) {
-	case GL_VERTEX_SHADER: return "vertex";
-	case GL_FRAGMENT_SHADER: return "fragment";
-	case GL_GEOMETRY_SHADER: return "geometry";
-	case GL_COMPUTE_SHADER: return "compute";
-	default: return "other";
-	}
-}
-
 void Shader::loadShader(std::string path, GLenum type) {
 	std::string shaderCode = FileSystem::readFileToString(path);
 	const char* rawCode = shaderCode.c_str();
@@ -145,4 +135,14 @@ std::string Shader::getErrorMessage(T openGLFunctionInfoLog, unsigned int id, in
 	openGLFunctionInfoLog(id, logSize, NULL, log.data());
 
 	return { log.data(), log.size() };
+}
+
+std::string Shader::glShaderTypeToString(GLenum type) {
+	switch(type) {
+	case GL_VERTEX_SHADER: return "vertex";
+	case GL_FRAGMENT_SHADER: return "fragment";
+	case GL_GEOMETRY_SHADER: return "geometry";
+	case GL_COMPUTE_SHADER: return "compute";
+	default: return "other";
+	}
 }

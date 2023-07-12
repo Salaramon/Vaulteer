@@ -91,8 +91,6 @@ private:
 	std::vector<GLuint> shaderIDs;
 	std::vector<std::string> shaderFileNames;
 
-	std::string glShaderTypeToString(GLenum type);
-
 	//Create and compile GL shader
 	void loadShader(std::string path, GLenum type);
 	//Load uniforms and UBOs from GL query API
@@ -121,6 +119,8 @@ private:
 	//Wraps OpenGL info log functions. !!(Warning: May be incomplete!)
 	template<class T>
 	std::string getErrorMessage(T openGLFunctionInfoLog, unsigned int id, int logSize);
+
+	inline static std::string glShaderTypeToString(GLenum type);
 
 
 	// uniform data API related

@@ -264,9 +264,6 @@
     <ClInclude Include="src\Renderer\Shader.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\ShadowVolumeRenderer.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h">
       <Filter>Source Files\Renderer\Techniques</Filter>
     </ClInclude>
@@ -330,6 +327,7 @@
     <ClInclude Include="vendor\GEM\GEM.h">
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
+    <ClInclude Include="src\API\Log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -375,9 +373,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\ShadowVolumeRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\VFX\ShadowCascade.cpp">
@@ -577,6 +572,7 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\shaders\volume_dir_geom.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

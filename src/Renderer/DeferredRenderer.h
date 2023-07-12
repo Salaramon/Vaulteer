@@ -51,10 +51,12 @@ class DeferredRenderer {
 	inline static std::unique_ptr<Shader> geometryShader;
 	inline static std::unique_ptr<Shader> pointShader;
 	inline static std::unique_ptr<Shader> dirShader;
-	inline static std::unique_ptr<Shader> shadowShader;
+	inline static std::unique_ptr<Shader> pointShadowShader;
+	inline static std::unique_ptr<Shader> dirShadowShader;
 
 	inline static GLint textureLibraryId;
 	
+	inline static std::vector<glm::vec3> lightDirections;
 	inline static std::vector<glm::vec3> lightPositions;
 
 public:
@@ -135,16 +137,20 @@ public:
 			"resources/shaders/build/deferred_directional_frag.glsl", GL_FRAGMENT_SHADER
 		);
 
-		shadowShader = std::make_unique<Shader>(
+		pointShadowShader = std::make_unique<Shader>(
 			"resources/shaders/volume_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/volume_geom.glsl", GL_GEOMETRY_SHADER,
+			"resources/shaders/volume_frag.glsl", GL_FRAGMENT_SHADER
+		);
+		dirShadowShader = std::make_unique<Shader>(
+			"resources/shaders/volume_vertex.glsl", GL_VERTEX_SHADER,
+			"resources/shaders/volume_dir_geom.glsl", GL_GEOMETRY_SHADER,
 			"resources/shaders/volume_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
 
 	template<size_t SCENE_ID>
 	static void buildLights(Scene<SCENE_ID>& scene) {
-
 		// -- dirlights --
 
 		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>();
@@ -152,9 +158,7 @@ public:
 
 		dirLightView.each([&](const DirectionalLight& d) {
 			dirLights.push_back(d);
-			
-			glm::vec3 lightPos = d.direction * -1000.f;
-			lightPositions.push_back(lightPos);
+			lightDirections.push_back(d.direction);
 		});
 
 		std::vector<glm::mat4> dirLightMats(dirLights.size(), glm::mat4(1.0));
@@ -162,8 +166,6 @@ public:
 		quadMesh->insertInstances(dirLightMats);
 		
 		// -- pointlights --
-		// TODO: dirlight/pointlight shadows use the same light texture array, so pointlights index it based on number of dirlights
-		// pointlights come after dirlights in position
 
 		auto pointLightView = scene.view<PointLight, ExcludeComponent<Quad>>();
 		std::vector<PointLight> pointLights;
@@ -178,9 +180,9 @@ public:
 		UniformBufferTechnique::uploadPointLightData(pointLights);
 		sphereMesh->insertInstances(pointLightInstanceMats);
 
-
-		if (lightPositions.size() > shadowBuffer->specification.layers) {
-			shadowBuffer->growDepthLayers(lightPositions.size());
+		int totalLights = lightDirections.size() + lightPositions.size();
+		if (totalLights > shadowBuffer->specification.layers) {
+			shadowBuffer->growDepthLayers(totalLights);
 		}
 	}
 
@@ -194,7 +196,6 @@ public:
 			batchManager.batches.clear();
 
 			auto batchView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, Opaque, ExcludeComponent<Instanced>>();
-
 			batchView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes,
 							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D,
 							  const Opaque&) {
@@ -275,7 +276,6 @@ public:
 
 	template<size_t SCENE_ID>
 	static void shadowVolumePass(Scene<SCENE_ID>& scene) {
-		shadowShader->use();
 
 		auto camera = scene.getActiveCamera();
 		auto view = camera.viewMatrix();
@@ -289,22 +289,47 @@ public:
 		// Clamp depth values at infinity to max depth. Required for back cap of volume to be included
 		glEnable(GL_DEPTH_CLAMP);
 
-		// do not render to depth or color buffer 
+		// do not render to depth or color buffer
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		glDepthMask(GL_FALSE);
-		
-		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, Opaque>();
 
-		for (int i = 0; i < lightPositions.size(); i++) {
+		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, Opaque>();
+		dirShadowShader->use();
+		
+		gbuffer->bindForReading();
+		shadowBuffer->bindForWriting();
+
+		for (int i = 0; i < lightDirections.size(); i++) {
 			shadowBuffer->bindDepthLayer(i);
 			shadowBuffer->clearDepthStencil();
 			Framebuffer::copyDepth(*gbuffer, *shadowBuffer);
+			
+			glm::vec4 lightDir = view * glm::vec4(lightDirections[i], 0.0f);
+			dirShadowShader->setUniform("lightDir_viewSpace", glm::vec3(lightDir.x, lightDir.y, lightDir.z));
+			
+			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+							        const Shadow&, const Opaque&) {
+				for (Mesh* mesh : meshes) {
+					KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
+					mesh->bind();
+					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+					stats.drawCalls++;
+				}
+				Mesh::unbind();
+			});
+		}
 
-			gbuffer->bindForReading();
-			shadowBuffer->bindForWriting();
+		pointShadowShader->use();
+		int numDirLights = lightDirections.size();
+
+		for (int i = 0; i < lightPositions.size(); i++) {
+			shadowBuffer->bindDepthLayer(i + numDirLights);
+			shadowBuffer->clearDepthStencil();
+			Framebuffer::copyDepth(*gbuffer, *shadowBuffer);
 
 			glm::vec4 lightViewPos = view * glm::vec4(lightPositions[i], 1.0f);
-			shadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
+			pointShadowShader->setUniform("lightPos_viewSpace", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
 			
 			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
 							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
@@ -333,22 +358,42 @@ public:
 
 			OpenGL::depthTest(false);
 
-			glm::vec4 lightViewPos = view * glm::vec4(lightPositions[1], 1.0f);
-			shadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
+			if (!lightDirections.empty()) {
+				dirShadowShader->use();
+				dirShadowShader->setUniform("lightDir", lightDirections[0]);
 
+				shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+								        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+								        const Shadow&, const Opaque&) {
 
-			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
-							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-							        const Shadow&, const Opaque&) {
+					for (Mesh* mesh : meshes) {
+						KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
+						mesh->bind();
+						glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+						stats.drawCalls++;
+					}
+					Mesh::unbind();
+				});
+			}
 
-				for (Mesh* mesh : meshes) {
-					KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
-					mesh->bind();
-					glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
-					stats.drawCalls++;
-				}
-				Mesh::unbind();
-			});
+			if (!lightPositions.empty()) {
+				pointShadowShader->use();
+				glm::vec4 lightViewPos = view * glm::vec4(lightPositions[0], 1.0f);
+				pointShadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
+
+				shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
+								        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
+								        const Shadow&, const Opaque&) {
+
+					for (Mesh* mesh : meshes) {
+						KYSE_ASSERT(mesh->getType() == GL_TRIANGLES_ADJACENCY);
+						mesh->bind();
+						glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+						stats.drawCalls++;
+					}
+					Mesh::unbind();
+				});
+			}
 
 			OpenGL::depthTest(true);
 
@@ -397,8 +442,9 @@ public:
 
 		glBindTextureUnit(3, shadowBuffer->depthTexture);
 		pointShader->setUniform("shadowTexture", 3);
-		
-		pointShader->setUniform("dirLightCount", quadMesh->instanceCount);
+
+		uint numDirLights = lightDirections.size();
+		pointShader->setUniform("dirLightCount", numDirLights);
 
 		sphereMesh->bind();
 		glDrawElementsInstanced(sphereMesh->getType(), sphereMesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, sphereMesh->instanceCount);
