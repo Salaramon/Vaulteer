@@ -168,6 +168,14 @@ public:
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	}
 
+	int getPixel(int attachment, int x, int y) {
+		int data;
+		KYSE_ASSERT(attachment < colorAttachments.size());
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment);
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &data);
+		return data;
+	}
+
 	static void unbind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

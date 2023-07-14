@@ -49,7 +49,11 @@ public:
 		return current;
 	}
 
-	static glm::vec2 cursor() {
+	/*
+	 * Note: in mode GLFW_CURSOR_DISABLED, this returns a virtual mouse position that reflects
+	 * how far the cursor has moved from the center of a coordinate system that starts at (0,0).
+	 */
+	static glm::vec2 cursorPos() {
 		double x, y;
 		glfwGetCursorPos(Window::getRawWindow(), &x, &y);
 

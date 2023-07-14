@@ -328,6 +328,7 @@
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
     <ClInclude Include="src\API\Log.h" />
+    <ClInclude Include="src\Renderer\DebugRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -573,6 +574,8 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\shaders\volume_dir_geom.glsl" />
+    <None Include="resources\shaders\debug_frag.glsl" />
+    <None Include="resources\shaders\debug_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

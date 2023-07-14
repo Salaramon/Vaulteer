@@ -10,7 +10,7 @@ void Vaulteer::setup() {
 	loadResources();
 
 	//glEnable(GL_LINE_SMOOTH);
-	glfwSetInputMode(window->getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(Window::getRawWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	auto world = new WorldLayer();
 	layerStack.pushLayer(world);

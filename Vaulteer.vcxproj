@@ -155,6 +155,7 @@
     <ClInclude Include="src\Renderer\ForwardRenderer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\Renderer\DebugRenderer.h" />
     <ClInclude Include="src\Renderer\Techniques\UniformBufferTechnique.h" />
     <ClInclude Include="src\Renderer\TextRenderer.h" />
     <ClInclude Include="src\Scene\Entity.h" />
@@ -247,6 +248,8 @@
     <None Include="resources\shaders\preprocessor\fragments\vertexFormat.gem" />
     <None Include="resources\shaders\preprocessor\geometry_frag.gem" />
     <None Include="resources\shaders\preprocessor\geometry_vertex.gem" />
+    <None Include="resources\shaders\debug_frag.glsl" />
+    <None Include="resources\shaders\debug_vertex.glsl" />
     <None Include="resources\shaders\volume_dir_geom.glsl" />
     <None Include="resources\shaders\shadow_cube_frag.glsl" />
     <None Include="resources\shaders\shadow_cube_geometry.glsl" />
