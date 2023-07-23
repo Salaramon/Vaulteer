@@ -2,8 +2,7 @@
 
 #include <glm/glm.hpp>
 
-
-
+#include "API/Core.h"
 #include "Scene/Entity.h"
 
 
@@ -80,6 +79,8 @@ public:
 	}
 
 	void setRotation(const glm::quat quaternion) {
+		// TODO this should use the input parameter
+		KYSE_ASSERT(false)
 		glm::quat qF = *rotation * glm::quat(0, 0, 0, -1) * glm::conjugate(*rotation);
 		glm::vec3 result({ qF.x, qF.y, qF.z });
 		setRotation(result);

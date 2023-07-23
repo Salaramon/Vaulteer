@@ -4,7 +4,7 @@
 #include <assimp/mesh.h>
 
 #include "Vertex.h"
-#include "BufferLayout.h"
+#include "VertexBufferLayout.h"
 #include "VertexContainer.h" 
 #include "Utils/TypeDefUtils.h"
 
@@ -34,12 +34,12 @@ public:
 		return vertex;
 	}
 
-	static BufferLayout& getFormat() {
+	static VertexBufferLayout& getFormat() {
 		return format;
 	}
 	
 private:
-	inline static BufferLayout format = {
+	inline static VertexBufferLayout format = {
 		{ "aPos", ShaderDataType::Float3 },
 		{ "aNormal", ShaderDataType::Float3 },
 		{ "aTexCoords", ShaderDataType::Float2 },

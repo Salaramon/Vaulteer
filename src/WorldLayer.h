@@ -21,6 +21,9 @@ struct World {
 
 	std::vector<PointLight> lights;
 	std::vector<Entity> lightEntities;
+	
+	Meshes specialCrate;
+	std::vector<Meshes> lightMeshes;
 };
 
 
@@ -54,7 +57,7 @@ public:
 		lightEntity.add<DirectionalLight>(dirLight);
 		scene.add(lightEntity);
 
-
+		// TODO it's not actually just initialization, but also setting texture state we don't expect to change in our demo... but it should be handled
 		ForwardRenderer::initialize(pack.getTextureID());
 		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
 		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
@@ -64,7 +67,7 @@ public:
 		world.camera.enableAxisLock();
 		world.camera.setLockAxis({0,1,0});
 
-		world.camera.propertiesCamera.aspectRatio = (double)Window::getWidth()/Window::getHeight();
+		world.camera.propertiesCamera.aspectRatio = (float)Window::getWidth()/Window::getHeight();
 		world.camera.propertiesCamera.fov = 60;
 		world.camera.propertiesCamera.near = 0.1f;
 		world.camera.propertiesCamera.far = 1000;
@@ -76,34 +79,25 @@ public:
 
 
 		Model& palm = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
+		palm.setPosition(glm::vec3(0, 0, -5));
+		palm.setScale(glm::vec3(0.5f));
+		palm.add<Shadow>();
 
 		Model& quad = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
-		Model& quad2 = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
-
-
-		palm.add<Shadow>();
-		
-
-
 		quad.setPosition({0.f, -2.f, 0.f});
 		quad.setRotation(-M_PI_2, 0.f, 0.f);
 		quad.setScale({100.f, 1.f, 100.f});
-
+		
+		Model& quad2 = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
 		quad2.setPosition({0.f, 0.f, -10.f});
 		quad2.setRotation(0.f, 0.f, -M_PI_2);
 		quad2.setScale({100.f, 100.f, 1.f});
 
-
-		palm.setPosition(glm::vec3(0, 0, -5));
-		palm.setScale(glm::vec3(0.5f));
-
-		
-		std::vector<glm::mat4> palmInstance = { palm.getModelMatrix() };
-		palm.useInstancing(palmInstance);
-
 		int plane = 20;
 		int dispersion = 2;
 		
+		//srand(time(nullptr));
+
 		std::vector<glm::vec3> lightColors = {
 			{1.0, 0.01, 0.01},
 			{1.0, 1.0, 0.01},
@@ -112,29 +106,41 @@ public:
 			{0.01, 0.01, 1.0},
 			{1.0, 0.01, 1.0},
 		};
-
+		
+		std::vector<Material*> lightMats(6);
+		
 		Material copy = *MaterialLibrary::get(0);
 		copy.data.colorAmbient = 0.9f;
 		copy.data.matOpacity = 0.1f;
-		Material* transparent = MaterialLibrary::create(copy.data, "cratei");
 
+		for (int i = 0; i < lightColors.size(); i++) {
+			copy.data.colorAmbient = lightColors[i];
+			copy.data.matOpacity = 0.1f;
+			lightMats[i] = MaterialLibrary::create(copy.data, std::format("lightMat_{}", i));
+		}
+
+		int meshCounter = 0;
 		for (int y = 0; y < plane * dispersion; y += 2 * dispersion) {
 			for (int x = -plane * dispersion; x < plane * dispersion; x += 2 * dispersion) {
 				if (rand() % 8 == 0) {
-					Model& crate = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("crate")));
+					int light = rand() % 6;
+					// TODO need consistent way to refer to resources
+					world.lightMeshes.push_back({new Mesh(GeometryLibrary::get("resources/crate/crate1.obj_0"), lightMats[light])});
+					Model& crate = *world.loadedModels.emplace_back(std::make_unique<Model>(world.lightMeshes[meshCounter++]));
+
 					crate.setPosition(glm::vec3(x, y, 10.0f));
 					crate.setScale(glm::vec3(0.2f));
-					crate.setMaterial(transparent);
 
-					BaseLight base = {lightColors[rand() % 6], 0.13f, 0.5f};
+					BaseLight base = {lightColors[light], 0.13f, 0.5f};
 					Attenuation att = { 1.0f, 0.18f, 0.032f };
 					PointLight& pointLight = world.lights.emplace_back(att, base, *crate.position);
 					crate.add<PointLight>(pointLight);
 				}
 			}
 		}
-		
-		Model& cratei = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("cratei")));
+
+		world.specialCrate = {new Mesh(*pack.getMeshes("crate")[0])};
+		Model& cratei = *world.loadedModels.emplace_back(std::make_unique<Model>(world.specialCrate));
 		cratei.add<Shadow>();
 		std::vector<glm::mat4> instances;
 
@@ -150,10 +156,13 @@ public:
 		}
 		cratei.useInstancing(instances);
 		
-		// should this not be done automatically on construction?
+
 		for (auto& model : world.loadedModels) {
 			model->addRenderComponents();
-			scene.add(*model);
+			model->finalizeTransform();
+
+			if (model->propertiesModel->instanceNumber == 0)
+				scene.add(*model);
 		}
 
 		

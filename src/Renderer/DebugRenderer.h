@@ -31,7 +31,7 @@ public:
 		FramebufferSpecification entityBufferSpec{
 			screenWidth, screenHeight,
 			// materialNumber texture, instance id texture
-			{ {GL_R32I}, {GL_R32I} }
+			{ {GL_R32I}, {GL_R32I}, {GL_DEPTH24_STENCIL8} }
 		};
 		inspectorBuffer = std::make_unique<Framebuffer>(entityBufferSpec);
 
@@ -72,10 +72,14 @@ public:
 	template<size_t SCENE_ID>
 	static void render(Scene<SCENE_ID>& scene) {
 		shader->use();
+
+		OpenGL::depthTest(true);
+
 		inspectorBuffer->bindForWriting();
 
 		inspectorBuffer->clearColorAttachment(0, -1);
 		inspectorBuffer->clearColorAttachment(1, -1);
+		inspectorBuffer->clearDepthStencil();
 		
 		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D>();
 
@@ -86,7 +90,7 @@ public:
 			*/
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElementsInstanced(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+				glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 				stats.drawCalls++;
 			}
 			Mesh::unbind();

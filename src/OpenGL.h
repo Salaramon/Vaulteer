@@ -4,24 +4,6 @@
 
 #include "API/Log.h"
 
-
-enum GLBlendModes {
-	Zero = GL_ZERO,
-	One = GL_ONE,
-	SourceColor = GL_SRC_COLOR,
-	OneMinusSourceColor = GL_ONE_MINUS_SRC_COLOR,
-	DestColor = GL_DST_COLOR,
-	OneMinusDestColor = GL_ONE_MINUS_DST_COLOR,
-	SourceAlpha = GL_SRC_ALPHA,
-	OneMinusSourceAlpha = GL_ONE_MINUS_SRC_ALPHA,
-	DestAlpha = GL_DST_ALPHA,
-	OneMinusDestAlpha = GL_ONE_MINUS_DST_ALPHA,
-	ConstantColor = GL_CONSTANT_COLOR,
-	OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR,
-	ConstantAlpha = GL_CONSTANT_ALPHA,
-	OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
-};
-
 class OpenGL {
 public:
 	static void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {

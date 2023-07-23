@@ -23,6 +23,8 @@ struct PropertiesModel {
 	glm::vec4 boundingSphere;
 	Faces faces;
 	size_t textureID;
+	bool manuallyInstanced;
+	size_t instanceNumber;
 };
 
 struct Meshes : std::vector<Mesh*> {
@@ -54,19 +56,27 @@ public:
 			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
 				.boundingSphere = glm::vec4(1.0), //boundingSphere(),
 				.faces = Faces::FRONT,
-				.textureID = 0
+				.textureID = 0,
+				.manuallyInstanced = false,
+				.instanceNumber = 0
 			})),
 			textureView(&this->add<TextureView>()) {}
 
-	Model(std::vector<Mesh*>& meshes) :
+	Model(std::vector<Mesh*> meshes) :
 			meshes(&this->add<Meshes>(meshes)),
 			propertiesModel(&this->add<PropertiesModel>(PropertiesModel{
 				.boundingSphere = glm::vec4(1.0), //boundingSphere(),
 				.faces = Faces::FRONT,
-				.textureID = 0
+				.textureID = 0,
+				.manuallyInstanced = false,
+				.instanceNumber = 0
 			})),
 			textureView(&this->add<TextureView>()) {
-
+		
+		propertiesModel->instanceNumber = meshes[0]->instanceCount;
+		for (auto* mesh : meshes) {
+			mesh->pushInstance(glm::mat4(1.0));
+		}
 		//addRenderComponents();
 	}
 
@@ -121,9 +131,18 @@ public:
 
 	void useInstancing(const std::vector<glm::mat4>& instanceMats) {
 		for (auto* mesh : *meshes) {
-			mesh->insertInstances(instanceMats);
+			mesh->updateInstances(instanceMats);
 		}
-		this->add<Instanced>();
+		propertiesModel->manuallyInstanced = true;
+	}
+
+	void finalizeTransform() {
+		if (!propertiesModel->manuallyInstanced) {
+			for (auto* mesh : *meshes) {
+				auto model = getModelMatrix();
+				mesh->updateInstance(model, propertiesModel->instanceNumber);
+			}	
+		}
 	}
 
 	glm::mat4 getModelMatrix() {
@@ -134,7 +153,7 @@ private:
 	glm::vec4 boundingSphere() {
 		std::vector<Seb::Point<double>> points;
 		for (Mesh* mesh : *meshes) {
-			for (const VertexImpl& vertex : mesh->getCopiedData<VertexImpl>()) {
+			for (const VertexImpl& vertex : mesh->geometry->copyVertices<VertexImpl>()) {
 				std::vector<double> converter({ vertex.aPos.x, vertex.aPos.y, vertex.aPos.z });
 				points.emplace_back(3, converter.begin());
 			}

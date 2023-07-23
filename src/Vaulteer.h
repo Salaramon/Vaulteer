@@ -13,9 +13,11 @@
 
 class Vaulteer : public Application {
 public:
+	std::vector<std::vector<Mesh*>> internalMeshes;
+
 	Vaulteer(const ApplicationSpecification& spec);
 
-	static void loadResources();
+	void loadResources();
 
 	void setup() override;
 

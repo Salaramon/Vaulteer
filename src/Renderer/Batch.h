@@ -39,27 +39,32 @@ public:
 		Log::trace("Batch destroyed.");
 	}
 
-	bool add(Mesh& mesh, glm::mat4 modelMat) {
-		if (vertexBufferSize - numVertices < mesh.vertexContainer.size() || 
-			indexBufferSize - numIndices < mesh.indices.size()) {
+	bool add(const Mesh& mesh, glm::mat4 modelMat) {
+		Geometry* geometry = mesh.geometry;
+		if (vertexBufferSize - numVertices < geometry->vertices.size() || 
+			indexBufferSize - numIndices < geometry->indices.size()) {
 			return false;
 		}
 
-		std::vector<MaterialVertex> vertices;
-		std::vector<VertexImpl> meshVertices = mesh.getCopiedData<VertexImpl>();
-		vertices.reserve(meshVertices.size());
+		size_t numGeometryVertices = geometry->vertices.size();
 
-		for (int i = 0; i < mesh.vertexContainer.size(); i++) {
-			auto* vertex = mesh.getVertex<VertexImpl>(i);
+		std::vector<MaterialVertex> vertices;
+		vertices.reserve(numGeometryVertices);
+		
+		for (int i = 0; i < numGeometryVertices; i++) {
 			// transform from mesh space to batch space
+			// TODO this doesn't transform tangent/bitangent
+			auto* vertex = geometry->getVertex<VertexImpl>(i);
 			glm::vec4 pos4 = (modelMat * glm::vec4(vertex->aPos, 1.0));
 			glm::vec3 pos = glm::vec3(pos4.x, pos4.y, pos4.z);
 			glm::vec4 norm4 = (glm::inverse(glm::transpose(modelMat)) * glm::vec4(vertex->aNormal, 1.0));
 			glm::vec3 norm = glm::normalize(glm::vec3(norm4.x, norm4.y, norm4.z));
-			vertices.emplace_back(*vertex, pos, norm, mesh.material->materialIndex);
+
+			vertices.emplace_back(pos, norm, vertex->aTexCoords, vertex->aTangent, vertex->aBitangent, mesh.material->materialIndex);
 		}
 
-		std::vector<GLuint> indices = mesh.indices;
+		std::vector<GLuint> indices = geometry->indices;
+		KYSE_ASSERT(geometry->type == GL_TRIANGLES) // TODO need to handle an eventual conversion at some point...
 		for (unsigned int& index : indices) {
 			index += numVertices;
 		}

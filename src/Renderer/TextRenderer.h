@@ -78,7 +78,7 @@ public:
 
 			OpenGL::depthTest(false);
 			OpenGL::blending(true);
-			OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
+			OpenGL::setBlendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glBindTextureUnit(0, regularFont->mapTexture->textureID);
 			shader->setUniform("msdf", 0);

@@ -19,7 +19,7 @@ class BlendingForwardRenderer {
         NumTextures
     };
 	inline static std::unique_ptr<Framebuffer> alphaBuffer;
-	inline static Mesh* quadMesh;
+	inline static std::unique_ptr<Mesh> quadMesh;
 
 	inline static GLint textureId;
 	
@@ -40,8 +40,8 @@ public:
 			{{GL_RGBA16F}, {GL_R8}, {GL_DEPTH24_STENCIL8}}
 		};
 		alphaBuffer = std::make_unique<Framebuffer>(alphaBufferSpec);
-
-		quadMesh = ResourceLoader::importModel("resources/quad.obj")[0];
+		
+		quadMesh = std::make_unique<Mesh>(GeometryLibrary::get(0), MaterialLibrary::get(0), glm::mat4(1.0));
 
 		loadShaders();
 	}
@@ -70,16 +70,16 @@ public:
 		OpenGL::depthTest(true);
 		OpenGL::blending(true);
 
-		OpenGL::setBlendMode(AlphaBufferTextureType::Accumulated, GLBlendModes::One, GLBlendModes::One);
-		OpenGL::setBlendMode(AlphaBufferTextureType::Alpha, GLBlendModes::Zero, GLBlendModes::OneMinusSourceColor);
+		OpenGL::setBlendMode(AlphaBufferTextureType::Accumulated, GL_ONE, GL_ONE);
+		OpenGL::setBlendMode(AlphaBufferTextureType::Alpha, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 		glBlendEquation(GL_FUNC_ADD);
 
 		blendingPass(scene);
 			
 		OpenGL::depthMask(true);
-		OpenGL::setBlendMode(GLBlendModes::SourceAlpha, GLBlendModes::OneMinusSourceAlpha);
+		OpenGL::setBlendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		Framebuffer::copyDepth(*DeferredRenderer::gbuffer, *alphaBuffer);
+		Framebuffer::copyDepth(*DeferredRenderer::data.gbuffer, *alphaBuffer);
 		Framebuffer::unbind();
 		
 		compositePass();
@@ -112,12 +112,12 @@ public:
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, const Transparent&) {
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
-			blendingShader->setUniform("model", modelMat);
+			//blendingShader->setUniform("model", modelMat);
 			blendingShader->setUniform("normal", glm::transpose(glm::inverse(modelMat)));
 
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+				glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 				stats.drawCalls++;
 			}
 			Mesh::unbind();
@@ -131,7 +131,7 @@ public:
 
 		//glDepthFunc(GL_LESS); // less is the default
 
-		Framebuffer::copyDepthToBackFBO(*DeferredRenderer::gbuffer);
+		Framebuffer::copyDepthToBackFBO(*DeferredRenderer::data.gbuffer);
 
 		alphaBuffer->bindForReading();
 		
@@ -141,7 +141,7 @@ public:
 		compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
 
 		quadMesh->bind();
-		glDrawElements(GL_TRIANGLES, quadMesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(quadMesh->type(), quadMesh->numIndices(), GL_UNSIGNED_INT, nullptr);
 		stats.drawCalls++;
 		quadMesh->unbind();
 

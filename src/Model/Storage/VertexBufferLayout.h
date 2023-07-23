@@ -54,7 +54,7 @@ struct VertexElement {
 
 	std::string name;
 	ShaderDataType type;
-	size_t size;
+	uint8_t size;
 	size_t offset;
 	int instance;
 	bool normalized;
@@ -73,29 +73,29 @@ struct VertexElement {
 		case ShaderDataType::Int4:     return 4;
 		case ShaderDataType::Bool:     return 1;
 		default:                       
-			KYSE_ASSERT(false, "invalid type in vertex element");
+			KYSE_ASSERT(false, "invalid type in vertex element")
 			return 0;
 		}
 	}
 
 };
 
-class BufferLayout {
+class VertexBufferLayout {
 public:
-	BufferLayout() = default;
+	VertexBufferLayout() = default;
 
-	BufferLayout(std::initializer_list<VertexElement> layout) : layout(layout) {
+	VertexBufferLayout(std::initializer_list<VertexElement> format) : format(format) {
 		updateOffsetsAndStride();
 	}
 
-	BufferLayout(BufferLayout& other) = default;
+	VertexBufferLayout(VertexBufferLayout& other) = default;
 
 	const std::vector<VertexElement>& getElements() const {
-		return layout;
+		return format;
 	}
 
 	void addElement(VertexElement el) {
-		layout.push_back(el);
+		format.push_back(el);
 		updateOffsetsAndStride();
 	}
 	
@@ -104,7 +104,7 @@ private:
 	void updateOffsetsAndStride() {
 		size_t offset = 0;
 		size_t strideTotal = 0;
-		for (auto& element : layout) {
+		for (auto& element : format) {
 			element.offset = offset;
 			offset += element.size;
 			
@@ -115,5 +115,5 @@ private:
 	}
 
 	// total size of layout
-	std::vector<VertexElement> layout;
+	std::vector<VertexElement> format;
 };

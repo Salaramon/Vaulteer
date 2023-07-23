@@ -4,7 +4,7 @@
 
 #include "API/Core.h"
 #include "Vertex.h"
-#include "BufferLayout.h"
+#include "VertexBufferLayout.h"
 
 // Generic container for vertex types to be referenced directly in vertexbuffer insertion
 class VertexContainer {
@@ -43,7 +43,7 @@ public:
 	}
 
 	
-    const BufferLayout& getFormat() const {
+    const VertexBufferLayout& getFormat() const {
         return format;
     }
 	
@@ -64,5 +64,5 @@ private:
 	size_t vertexCount = 0;
 
 	std::type_index vertexType;
-	BufferLayout& format;
+	VertexBufferLayout& format;
 };

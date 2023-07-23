@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Vertex.h"
-#include "BufferLayout.h"
+#include "VertexBufferLayout.h"
 
 class QuadVertex : public Vertex {
 public:
@@ -14,12 +14,12 @@ public:
 	glm::vec3 aPos;
 	glm::vec2 aTexCoords;
 
-	static BufferLayout& getFormat() {
+	static VertexBufferLayout& getFormat() {
 		return format;
 	}
 	
 private:
-	inline static BufferLayout format = {
+	inline static VertexBufferLayout format = {
 		{ "aPos", ShaderDataType::Float3 },
 		{ "aTexCoords", ShaderDataType::Float2 },
 	};

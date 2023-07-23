@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "BufferLayout.h"
+#include "VertexBufferLayout.h"
 #include "Vertex.h"
 
 class Point : Vertex {
@@ -13,12 +13,12 @@ public:
 
 	glm::vec3 aPos;
 
-	static BufferLayout& getFormat() {
+	static VertexBufferLayout& getFormat() {
 		return format;
 	}
 	
 private:
-	inline static BufferLayout format = {
+	inline static VertexBufferLayout format = {
 		{"aPos", ShaderDataType::Float3 }
 	};
 };

@@ -14,6 +14,7 @@ public:
 	Texture2DArray* texture;
 
 	std::vector<ModelResourceLocator> modelLocators;
+
 	std::unordered_map<std::string, std::vector<Mesh*>> meshesByModelName;
 
 
@@ -32,8 +33,9 @@ public:
 		modelLocators = locators;
 	}
 
-	std::vector<Mesh*>& getMeshes(const std::string& name) {
-		return meshesByModelName.at(name);
+	std::vector<Mesh*> getMeshes(const std::string& name) {
+		auto& vec = meshesByModelName.at(name);
+		return vec;
 	}
 
 	/// Imports all added models
@@ -44,12 +46,11 @@ public:
 		}
 
 		// import all models
-		for (const auto& locator : modelLocators) {
+		for (auto& locator : modelLocators) {
+			// TODO debug: might not need adjacency for all objects
+			locator.useAdjacency = true;
+
 			auto meshes = ResourceLoader::importModel(locator);
-			for (Mesh* mesh : meshes) {
-				// TODO might not need everything to have adjacency
-				mesh->useAdjacency();
-			}
 			meshesByModelName[locator.name] = meshes;
 		}
 

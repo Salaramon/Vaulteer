@@ -10,8 +10,8 @@ public:
 	MaterialVertex(const VertexImpl& v, int materialNumber) :
 			aPos(v.aPos), aNormal(v.aNormal), aTexCoords(v.aTexCoords), aTangent(v.aTangent), aBitangent(v.aBitangent), aMaterialNumber(materialNumber) {}
 
-	MaterialVertex(const VertexImpl& v, glm::vec3 pos, glm::vec3 normal, int materialNumber) :
-			aPos(pos), aNormal(normal), aTexCoords(v.aTexCoords), aTangent(v.aTangent), aBitangent(v.aBitangent), aMaterialNumber(materialNumber) {}
+	MaterialVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 texCoords, glm::vec3 tangent, glm::vec3 bitangent, int materialNumber) :
+			aPos(pos), aNormal(normal), aTexCoords(texCoords), aTangent(tangent), aBitangent(bitangent), aMaterialNumber(materialNumber) {}
 
 	glm::vec3 aPos;
 	glm::vec3 aNormal;
@@ -20,12 +20,12 @@ public:
 	glm::vec3 aBitangent;
 	int aMaterialNumber;
 
-	static BufferLayout& getFormat() {
+	static VertexBufferLayout& getFormat() {
 		return format;
 	}
 	
 private:
-	inline static BufferLayout format = {
+	inline static VertexBufferLayout format = {
 		{ "aPos", ShaderDataType::Float3 },
 		{ "aNormal", ShaderDataType::Float3 },
 		{ "aTexCoords", ShaderDataType::Float2 },

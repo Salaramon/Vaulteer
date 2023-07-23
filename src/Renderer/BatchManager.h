@@ -21,7 +21,7 @@ public:
 		batches.push_back(std::make_unique<Batch>(textureID, vbSize, ibSize));
 	}
 
-	void addToBatch(Mesh& mesh, glm::mat4 modelMat) {
+	void addToBatch(const Mesh& mesh, glm::mat4 modelMat) {
 		if (batches.empty()) {
 			createBatch();
 		}

@@ -151,12 +151,9 @@ public:
 
 		GLuint temp = depthTexture;
 		glCreateTextures(specification.textureType, 1, &depthTexture);
+		glDeleteTextures(1, &temp);
 
-		glTextureStorage3D(depthTexture, 1, depthAttachment.textureFormat, specification.width, specification.height, specification.layers);
-		glNamedFramebufferTexture(fbo, GL_DEPTH_STENCIL_ATTACHMENT, depthTexture, 0);
-		bindDepthLayer(0);
-
-		glDeleteFramebuffers(1, &temp);
+		invalidate();
 	}
 
 
