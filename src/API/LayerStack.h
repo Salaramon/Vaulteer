@@ -6,18 +6,32 @@
 
 class LayerStack {
 public:
-	LayerStack();
-	~LayerStack();
+	LayerStack() = default;
 
-	void pushLayer(Layer* layer);
-	Layer* popLayer();
+	~LayerStack() {
+		for (auto layer : layers | std::ranges::views::reverse) {
+			layer->onDetach(layer->context);
+		}
+	}
+
+	void pushLayer(LayerFunctions* layer) {
+		layers.emplace_back(layer);
+		layer->onAttach(layer->context);
+	}
+
+	LayerFunctions* popLayer() {
+		LayerFunctions* layer = layers.back();
+		layers.pop_back();
+		layer->onDetach(layer->context);
+		return layer;
+	}
 	
-	std::vector<Layer*>::iterator begin() { return layers.begin(); }
-	std::vector<Layer*>::iterator end() { return layers.end(); }
+	std::vector<LayerFunctions*>::iterator begin() { return layers.begin(); }
+	std::vector<LayerFunctions*>::iterator end() { return layers.end(); }
 	
-	std::vector<Layer*>::reverse_iterator rbegin() { return layers.rbegin(); }
-	std::vector<Layer*>::reverse_iterator rend() { return layers.rend(); }
+	std::vector<LayerFunctions*>::reverse_iterator rbegin() { return layers.rbegin(); }
+	std::vector<LayerFunctions*>::reverse_iterator rend() { return layers.rend(); }
 
 private:
-	std::vector<Layer*> layers;
+	std::vector<LayerFunctions*> layers;
 };

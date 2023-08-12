@@ -60,7 +60,7 @@ public:
 		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D) {
 			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
 
-			shader->setUniform("model", modelMat);
+			//shader->setUniform("model", modelMat);
 
 			glm::mat4 normalMat;
 			if (properties3D.scale == glm::vec3(1.0))
@@ -72,7 +72,7 @@ public:
 
 			for (auto mesh : meshes) {
 				mesh->bind();
-				glDrawElements(mesh->getType(), mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr);
+				glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 				stats.drawCalls++;
 			}
 			Mesh::unbind();

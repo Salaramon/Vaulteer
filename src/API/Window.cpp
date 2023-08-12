@@ -55,7 +55,7 @@ bool Window::onWindowFullscreenEvent(const WindowFullscreenEvent& e) {
 }
 
 bool Window::onWindowMaximizeEvent(const WindowMaximizeEvent& e) {
-	maximized = e.maximized;
+	maximized = e.maximised;
 	return true; 
 }
 

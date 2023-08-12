@@ -149,8 +149,8 @@ inline bool operator||(KeyState l, KeyState r) {
 }
 
 
-#define FORWARD_THIS [this]<class EventType, auto fn>(EventType& e, Event::GenericWrapper<fn> fnWrap) -> bool { return (this->*fn)(e); }
-#define FORWARD_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define FORWARD_THIS(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define FORWARD_FN(fn) [](auto&&... args) -> decltype(auto) { return fn(std::forward<decltype(args)>(args)...); }
 
 // Base event data
 
@@ -159,6 +159,7 @@ enum EventType {
 	WindowClose,
 	WindowFullscreen,
 	WindowMaximize,
+	WindowPosition,
 	WindowResize,
 	WindowFocus,
 	KeyboardButtonAction,
@@ -167,15 +168,11 @@ enum EventType {
 	MouseMoved
 };
 
-#define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::type; }\
-							   virtual EventType getEventType() const override { return getStaticType(); }\
-							   virtual const char* getName() const override { return #type; }
+#define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::type; }
 
 struct BaseEvent {
+	EventType type = None;
 	bool handled = false;
-
-	virtual EventType getEventType() const = 0;
-	virtual const char* getName() const = 0;
 };
 
 // Event utils
@@ -198,9 +195,9 @@ struct Motion {
 // Event implementations
 
 struct KeyboardButtonEvent : BaseEvent {
-	KeyboardButtonEvent(KeyboardButton button) : button(button) {}
-
 	KeyboardButton button;
+
+	KeyboardButtonEvent(KeyboardButton input) : BaseEvent{KeyboardButtonAction}, button(input) {}
 
 	EVENT_CLASS_TYPE(KeyboardButtonAction)
 
@@ -216,76 +213,78 @@ struct KeyboardButtonEvent : BaseEvent {
 };
 
 struct MouseButtonEvent : BaseEvent {
-	MouseButtonEvent(MouseButton button) : button(button) {}
-
 	MouseButton button;
 
-	EVENT_CLASS_TYPE(MouseButtonAction)
-		
+	MouseButtonEvent(MouseButton input) : BaseEvent{MouseButtonAction}, button(input) {}
+
 	bool checkPress(MouseKey key) const {
 		return button.key == key && button.action == KeyAction::PRESS;
 	}
 	bool checkRelease(MouseKey key) const {
 		return button.key == key && button.action == KeyAction::RELEASE;
 	}
+
+	EVENT_CLASS_TYPE(MouseButtonAction)
 };
 
 struct MouseScrollEvent : BaseEvent {
-	MouseScrollEvent(glm::vec2 mag) : mag(mag) {}
-
 	glm::vec2 mag;
+
+	MouseScrollEvent(glm::vec2 input) : BaseEvent{MouseScroll}, mag(input) {}
 
 	EVENT_CLASS_TYPE(MouseScroll)
 };
 
 struct MouseMoveEvent : BaseEvent {
-	MouseMoveEvent(Motion motion) : motion(motion) {}
+	Motion motion; 
 
-	Motion motion;
+	MouseMoveEvent(Motion input) : BaseEvent{MouseScroll}, motion(input) {}
 
-	EVENT_CLASS_TYPE(MouseMoved)
+	EVENT_CLASS_TYPE(MouseScroll)
 };
 
 struct WindowCloseEvent : BaseEvent {
+	WindowCloseEvent() : BaseEvent{WindowClose} {}
+
 	EVENT_CLASS_TYPE(WindowClose)
 };
 
 struct WindowFullscreenEvent : BaseEvent {
-	WindowFullscreenEvent(bool fullscreen) : fullscreen(fullscreen) {}
-
 	bool fullscreen;
+
+	WindowFullscreenEvent(bool fullscreen) : BaseEvent{WindowFullscreen}, fullscreen(fullscreen) {}
 
 	EVENT_CLASS_TYPE(WindowFullscreen)
 };
 
 struct WindowMaximizeEvent : BaseEvent {
-	WindowMaximizeEvent(bool maximized) : maximized(maximized) {}
+	bool maximised;
 
-	bool maximized;
+	WindowMaximizeEvent(bool maximised) : BaseEvent{WindowMaximize}, maximised(maximised) {}
 
 	EVENT_CLASS_TYPE(WindowMaximize)
 };
 
 struct WindowPositionEvent : BaseEvent {
-	WindowPositionEvent(int xpos, int ypos) : xpos(xpos), ypos(ypos) {}
-
 	int xpos, ypos;
 
-	EVENT_CLASS_TYPE(WindowMaximize)
+	WindowPositionEvent(int xpos, int ypos) : BaseEvent{WindowPosition}, xpos(xpos), ypos(ypos) {}
+
+	EVENT_CLASS_TYPE(WindowPosition)
 };
 
 struct WindowFocusEvent : BaseEvent {
-	WindowFocusEvent(bool focused) : focused(focused) {}
-
 	bool focused;
+
+	WindowFocusEvent(bool focused) : BaseEvent{WindowFocus}, focused(focused) {}
 
 	EVENT_CLASS_TYPE(WindowFocus)
 };
 
 struct WindowResizeEvent : BaseEvent {
-	WindowResizeEvent(int width, int height) : width(width), height(height) {}
-
 	int width, height;
+
+	WindowResizeEvent(int width, int height) : BaseEvent{WindowResize}, width(width), height(height) {}
 
 	EVENT_CLASS_TYPE(WindowResize)
 };

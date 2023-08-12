@@ -25,7 +25,7 @@ void Application::init() {
 
 	OpenGL::initialize();
 	Event::initialize();
-	Event::setEventCallback(FORWARD_FN(onEvent));
+	Event::setEventCallback(FORWARD_THIS(onEvent));
 
 
 	TextureLibrary::initDefaultTexture();
@@ -69,8 +69,8 @@ size_t Application::run() {
 		lastFrameTime = time;
 		frameCounter++;
 
-		for (Layer* layer : layerStack) {
-			layer->onUpdate(timestep);
+		for (LayerFunctions* layer : layerStack) {
+			layer->onUpdate(layer->context, timestep);
 		}
 
 		isRunning = window->onUpdate();
@@ -85,20 +85,20 @@ size_t Application::run() {
 
 void Application::onEvent(BaseEvent& e) {
 	EventDispatcher dispatcher(e);
-	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
+	dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_THIS(onKeyboardButtonEvent));
 
-	dispatcher.dispatch<WindowCloseEvent>(FORWARD_FN(window->onWindowCloseEvent));
-	dispatcher.dispatch<WindowFullscreenEvent>(FORWARD_FN(window->onWindowFullscreenEvent));
-	dispatcher.dispatch<WindowMaximizeEvent>(FORWARD_FN(window->onWindowMaximizeEvent));
-	dispatcher.dispatch<WindowPositionEvent>(FORWARD_FN(window->onWindowPositionEvent));
-	dispatcher.dispatch<WindowFocusEvent>(FORWARD_FN(window->onWindowFocusEvent));
-	dispatcher.dispatch<WindowResizeEvent>(FORWARD_FN(window->onWindowResizeEvent));
+	dispatcher.dispatch<WindowCloseEvent>(FORWARD_THIS(window->onWindowCloseEvent));
+	dispatcher.dispatch<WindowFullscreenEvent>(FORWARD_THIS(window->onWindowFullscreenEvent));
+	dispatcher.dispatch<WindowMaximizeEvent>(FORWARD_THIS(window->onWindowMaximizeEvent));
+	dispatcher.dispatch<WindowPositionEvent>(FORWARD_THIS(window->onWindowPositionEvent));
+	dispatcher.dispatch<WindowFocusEvent>(FORWARD_THIS(window->onWindowFocusEvent));
+	dispatcher.dispatch<WindowResizeEvent>(FORWARD_THIS(window->onWindowResizeEvent));
 
 	for (auto& it : std::ranges::reverse_view(layerStack)) {
 		if (e.handled)
 			return;
 
-		it->onEvent(e);
+		it->onEvent(it->context, e);
 	}
 }
 

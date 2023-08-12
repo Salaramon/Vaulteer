@@ -332,9 +332,6 @@
     <ClCompile Include="src\API\CameraController.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
-    <ClCompile Include="src\API\LayerStack.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
     <ClCompile Include="src\API\Window.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>

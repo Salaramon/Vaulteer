@@ -7,12 +7,10 @@
 #include "Renderer/DebugRenderer.h"
 #include "Renderer/DeferredRenderer.h"
 
-class DebugLayer : public Layer {
-public:
-	DebugLayer(WorldLayer* world) : Layer("DebugLayer"), world(world) {}
+namespace DebugLayer {
 
-	WorldLayer* world;
-	Renderer<DebugRenderer, TextRenderer> renderer;
+	World* world;
+	inline Renderer<DebugRenderer, TextRenderer> renderer;
 
 	bool inspectorEnabled = false;
 	struct InspectorStats {
@@ -20,11 +18,11 @@ public:
 		int instanceID = -1;
 	} inspector;
 
-	void onAttach() override {
+	void onAttach(void* context) {
 		DebugRenderer::initialize(Window::getWidth(), Window::getHeight());
 	}
 
-	void onUpdate(float timestep) override {
+	void onUpdate(void* context, float timestep) {
 		if (inspectorEnabled) {
 			std::string stats = inspector.materialID != -1 && inspector.instanceID != -1 ?
 				std::format("Material ID: {}\nInstance ID: {}", inspector.materialID, inspector.instanceID) :
@@ -36,14 +34,19 @@ public:
 			TextRenderer::clearScene();
 		}
 	}
+	
+	bool onKeyboardButtonEvent(const KeyboardButtonEvent& e);
+	bool onMouseButtonEvent(const MouseButtonEvent& e);
 
-	void onEvent(BaseEvent& e) override {
+	void onEvent(void* context, BaseEvent& e) {
 		EventDispatcher dispatcher(e);
-		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
-		dispatcher.dispatch<MouseButtonEvent>(FORWARD_FN(onMouseButtonEvent));
+		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(DebugLayer::onKeyboardButtonEvent));
+		dispatcher.dispatch<MouseButtonEvent>(FORWARD_FN(DebugLayer::onMouseButtonEvent));
 	}
 
-private:
+
+	// -- event handling implementations --
+
 	bool onKeyboardButtonEvent(const KeyboardButtonEvent& e) {
 		if (e.checkPress(KeyboardKey::Q)) {
 			DeferredRenderer::drawShadowVolumes = !DeferredRenderer::drawShadowVolumes;
@@ -51,7 +54,7 @@ private:
 		}
 
 		if (e.checkPress(KeyboardKey::T)) {
-			world->renderer.reloadShaders();
+			WorldLayer::renderer.reloadShaders();
 			Log::info("Shaders reloaded");
 		}
 
@@ -78,4 +81,12 @@ private:
 		}
 		return false;
 	}
+
+	LayerFunctions debugFunctions {
+		.context = &WorldLayer::world,
+		.onAttach = &onAttach,
+		.onEvent = &onEvent,
+		.onUpdate = &onUpdate
+	};
+
 };

@@ -180,7 +180,6 @@
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp" />
     <ClCompile Include="src\API\CameraController.cpp" />
-    <ClCompile Include="src\API\LayerStack.cpp" />
     <ClCompile Include="src\API\Window.cpp" />
     <ClCompile Include="src\Data Structures\PolyTree.cpp" />
     <ClCompile Include="src\Model\IndexBuffer.cpp" />

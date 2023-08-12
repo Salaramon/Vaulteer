@@ -11,9 +11,14 @@
 #include "Utils/MathUtils.h"
 
 
+
 // TODO: just a container for what's essentially test/demo data before actual game specific data is designed
 // anything here can be assumed to not be integral to our current structure, but rather an example of how we use types
 struct World {
+	//Scenes
+	inline static constexpr size_t scene_0 = 0;
+	Scene<scene_0> scene;
+
 	Camera camera;
 	CameraController cameraController;
 
@@ -27,23 +32,19 @@ struct World {
 };
 
 
-class WorldLayer : public Layer {
-public:
-	WorldLayer() : Layer("WorldLayer") {}
-	~WorldLayer() override = default;
+namespace WorldLayer {
+	
+	inline World world;
 
-	World world;
+	//Renderer<DeferredRenderer, BlendingForwardRenderer, TextRenderer> renderer;
+	inline Renderer<ForwardRenderer, TextRenderer> renderer;
 
-	//Scenes
-	inline static constexpr size_t scene_0 = 0;
-	Scene<scene_0> scene;
+	void onAttach(void* context) {
+		Scene<World::scene_0>* scene = &world.scene;
 
-	Renderer<DeferredRenderer, BlendingForwardRenderer, TextRenderer> renderer;
-
-	void onAttach() override {
 		Window& window = Application::getWindow();
 
-		auto setAspectRatio = [this](int w, int h) {
+		auto setAspectRatio = [](int w, int h) {
 			world.camera.propertiesCamera.aspectRatio = (float)w / h;
 		};
  		Window::addResizeCallback(setAspectRatio);
@@ -55,7 +56,7 @@ public:
 			{glm::vec3(1.0f, 1.0f, 1.0f), 0.001f, 0.01f},
 			glm::vec3(0.0f, -1.0f, -1.0f)};
 		lightEntity.add<DirectionalLight>(dirLight);
-		scene.add(lightEntity);
+		world.scene.add(lightEntity);
 
 		// TODO it's not actually just initialization, but also setting texture state we don't expect to change in our demo... but it should be handled
 		ForwardRenderer::initialize(pack.getTextureID());
@@ -74,8 +75,8 @@ public:
 
 		world.cameraController.setCamera(&world.camera);
 
-		scene.activeCamera = &world.camera;
-		scene.add(world.camera);
+		scene->activeCamera = &world.camera;
+		scene->add(world.camera);
 
 
 		Model& palm = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("palm")));
@@ -162,16 +163,16 @@ public:
 			model->finalizeTransform();
 
 			if (model->propertiesModel->instanceNumber == 0)
-				scene.add(*model);
+				scene->add(*model);
 		}
 
 		
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
  		UniformBufferTechnique::uploadTextureViewData();
-		UniformBufferTechnique::uploadCameraProjection(scene.getActiveCamera().projectionMatrix());
+		UniformBufferTechnique::uploadCameraProjection(scene->getActiveCamera().projectionMatrix());
 
-		DeferredRenderer::buildLights(scene);
+		DeferredRenderer::buildLights(*scene);
 
 		glClearColor(0.001f, 0.001f, 0.001f, 1.0f);
 	}
@@ -186,7 +187,9 @@ public:
 	std::string content;
 	float textScale = 0.5;
 
-	void onUpdate(float timestep) override {
+	void onUpdate(void* context, float timestep) {
+		Scene<World::scene_0>* scene = &world.scene;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		world.cameraController.onUpdate(timestep);
@@ -206,10 +209,10 @@ public:
 		TextRenderer::submitText(timer, {20, 27}, textScale);
 		TextRenderer::submitText(calls, {20, 50}, textScale);
 
-		glm::mat4 view = scene.getActiveCamera().viewMatrix();
+		glm::mat4 view = scene->getActiveCamera().viewMatrix();
 		UniformBufferTechnique::uploadCameraView(view);
 
-		renderer.render(scene);
+		renderer.render(*scene);
 
 		cumDrawCalls += renderer.getNumDrawCalls();
 		renderer.resetStats();
@@ -221,11 +224,18 @@ public:
 		return true;
 	}
 
-	void onEvent(BaseEvent& e) override {
+	void onEvent(void* context, BaseEvent& e) {
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<MouseMoveEvent>(FORWARD_FN(world.cameraController.onMouseMoveEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(world.cameraController.onKeyboardButtonEvent));
 		dispatcher.dispatch<KeyboardButtonEvent>(FORWARD_FN(onKeyboardButtonEvent));
 	}
+
+	LayerFunctions worldFunctions {
+		.context = &world,
+		.onAttach = &onAttach,
+		.onEvent = &onEvent,
+		.onUpdate = &onUpdate 
+	};
 };
 

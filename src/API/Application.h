@@ -50,7 +50,6 @@ public:
 	std::unique_ptr<Window> window;
 
 	LayerStack layerStack;
-	std::vector<std::unique_ptr<Layer>> layers;
 
 	bool isRunning;
 	bool isMinimized;

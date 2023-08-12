@@ -5,29 +5,18 @@
 
 #include "Events/Event.h"
 
-/*
- * Interface for layer component. Used for propagation of events + organization of rendering
- */
-class Layer {
-public:
-	Layer(std::string name) : name(std::move(name)) {}
-	Layer(Layer& other);
-	Layer(Layer&& other) noexcept : name(other.name) {}
+namespace LayerDefaults {
+	inline void no_attach(void*) {}
+	inline void no_detach(void*) {}
+	inline void no_event(void*, BaseEvent&) {}
+	inline void no_update(void*, float) {}
+}
 
-	virtual ~Layer() {}
-
-	virtual void onAttach() {
-		Log::trace("running default attach for layer: {}", name);
-	}
-	virtual void onDetach() {
-		Log::trace("running default detach for layer: {}", name);
-	}
-	
-	virtual void onEvent(BaseEvent& e) {}
-
-	virtual void onUpdate(float timestep) {}
-
-protected:
-	const std::string name;
+struct LayerFunctions {
+	void* context;
+	void (*onAttach)(void*) = &LayerDefaults::no_attach;
+	void (*onDetach)(void*) = &LayerDefaults::no_detach;
+	void (*onEvent)(void*, BaseEvent&) = &LayerDefaults::no_event;
+	void (*onUpdate)(void*, float) = &LayerDefaults::no_update;
 };
 

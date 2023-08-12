@@ -233,7 +233,7 @@ public:
 
 	template <typename T, typename F>
 	bool dispatch(const F& func) {
-		if (event.getEventType() == T::getStaticType()) {
+		if (event.type == T::getStaticType()) {
 			event.handled |= func(static_cast<T&>(event));
 			return true;
 		}
