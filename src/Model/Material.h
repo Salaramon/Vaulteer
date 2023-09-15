@@ -8,10 +8,14 @@
 
 constexpr int validTextureTypeSize = 3;
 
+
+
 class Material {
 public:
 	std::string name;
 	unsigned int materialIndex = -1;	// populated and used by material library
+	
+	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
 	// layout used in uniform buffers
 	struct alignas(16) MaterialData {
@@ -19,16 +23,8 @@ public:
 		float matShininess, matOpacity;
 		int textureId;
 	} data;
-	
-	std::unordered_map<aiTextureType, TextureResourceLocator> textureTypeLocators;
 
-	inline static std::array<aiTextureType, validTextureTypeSize> validTextureTypes {
-		aiTextureType_DIFFUSE,
-		aiTextureType_SPECULAR,
-		aiTextureType_HEIGHT,
-	};
-
-
+	/*
 	// flags
 	bool twoSided = false;
 	bool doDepthTest = true;
@@ -38,7 +34,7 @@ public:
 
 	//bool transparent = false;
 	bool shadow = false;
-	bool blur = false;
+	bool blur = false;*/
 
 
 	Material() : name("DefaultMaterial"), data(defaultMaterial) {}
@@ -53,6 +49,14 @@ public:
 
 	bool isTransparent() const {
 		return data.matOpacity < 1.0f;
+	}
+
+	bool hasSpecularMap() const {
+		return textureTypeLocators.contains(aiTextureType_SPECULAR);
+	}
+
+	bool hasNormalMap() const {
+		return textureTypeLocators.contains(aiTextureType_NORMALS);
 	}
 
 	TextureResourceLocator getLocator(aiTextureType type) {
@@ -75,8 +79,13 @@ public:
 		textureTypeLocators[type] = loc;
 	}
 
+	
+	inline static std::array<aiTextureType, validTextureTypeSize> validTextureTypes {
+		aiTextureType_DIFFUSE,
+		aiTextureType_SPECULAR,
+		aiTextureType_HEIGHT,
+	};
 
-private:
 	inline static MaterialData defaultMaterial = {
 		.colorAmbient = glm::vec3(0.0f),
 		.colorDiffuse = glm::vec3(0.6f),

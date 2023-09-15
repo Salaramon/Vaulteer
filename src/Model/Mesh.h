@@ -12,6 +12,15 @@
 #include "Storage/VertexImpl.h"
 
 
+enum class ShaderType {
+	None,
+	Deferred,
+	Deferred_NormalSpecular,
+	Forward,
+	Transparent,
+};
+
+
 struct Mesh {
 	Geometry* geometry;
 	Material* material;
@@ -22,6 +31,8 @@ struct Mesh {
 	VertexArray vertexArray;
 	std::vector<VertexBuffer*> vertexBuffers;
 	IndexBuffer* indexBuffer;
+
+	ShaderType shaderType = ShaderType::None;
 
 	Mesh(Geometry* geometry, Material* material) :
 		geometry(geometry),
@@ -47,7 +58,7 @@ struct Mesh {
 	Mesh(const Mesh& other) :
 		geometry(other.geometry),
 		material(other.material) {
-		// creates a new VAO with blank instance data for the copied mesh
+		// creates a new VAO with default instance data for the copied mesh
 		initialize();
 
 		instanceCount = 1;
@@ -70,6 +81,8 @@ struct Mesh {
 
 		insertVertices();
 		insertMaterial();
+
+		shaderType = determineShaderType(material);
 	}
 
 	void bind() {
@@ -83,6 +96,8 @@ struct Mesh {
 	void overrideMaterial(Material* material) {
 		this->material = material;
 		insertMaterial();
+		
+		shaderType = determineShaderType(material);
 	}
 
 
@@ -141,5 +156,16 @@ struct Mesh {
 	GLsizei numIndices() {
 		return (GLsizei) geometry->indices.size();
 	}
+	
 
+	static ShaderType determineShaderType(const Material* material) {
+		if (material->isTransparent()) {
+			return ShaderType::Transparent;
+		}
+
+		if (material->hasSpecularMap() || material->hasNormalMap()) {
+			//return ShaderType::Deferred_NormalSpecular;
+		}
+		return ShaderType::Deferred;
+	}
 };

@@ -38,7 +38,7 @@ public:
 	std::vector<GLuint> colorTextures;
 	GLuint depthTexture;
 
-	Framebuffer(FramebufferSpecification spec) : specification(std::move(spec)) {
+	Framebuffer(FramebufferSpecification spec) : specification(spec) {
 		for (auto& attachment : specification.attachments) {
 			if (attachment.textureFormat == GL_DEPTH24_STENCIL8 || 
 				attachment.textureFormat == GL_DEPTH32F_STENCIL8 || 

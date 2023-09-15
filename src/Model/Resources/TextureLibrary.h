@@ -38,7 +38,7 @@ public:
 		std::vector<Image2D> images;
 		int maxW = 0, maxH = 0;
 
-		Image2D& whitePixel = images.emplace_back(std::vector<uint32_t>{ 0xFFFFFFFF }, 1, 1);
+		Image2D& whitePixel = images.emplace_back(std::vector<uint32_t>{ 0xFFFF00FF }, 1, 1);
 		whitePixel.view.textureViewId = numTextureViews;
 		textureData.emplace_back(numTextures++);
 
@@ -76,7 +76,7 @@ public:
 		auto [width, height] = pack2D(images);
 
 		// todo how does calling this function multiple times work? everything stored here will have global IDs, but a new texture will be made each call
-		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(images, width, height)).get();;
+		return textureLibrary.emplace_back(std::make_unique<Texture2DArray>(images, width, height)).get();
 	}
 
 	static TextureView& getView(unsigned int index) {

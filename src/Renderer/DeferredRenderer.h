@@ -5,6 +5,7 @@
 #include <glfw3.h>
 #include <glm/glm.hpp>
 
+#include "Batch.h"
 #include "OpenGL.h"
 
 #include "Renderer/BatchManager.h"
@@ -24,7 +25,11 @@ constexpr int maxDirLights = 128;
 
 constexpr int initialShadowMapCount = 2;
 
-class DeferredRenderer {
+constexpr size_t default_vertex_buffer_size = 4000000 / sizeof(VertexImpl);
+constexpr size_t default_index_buffer_size = 1000000 / sizeof(GLuint);
+	
+
+namespace DeferredRenderer {
     enum GBufferTextureType {
         Position,               // vec3 position
         Normal_Material,        // vec3 normal   + int material_index
@@ -32,66 +37,63 @@ class DeferredRenderer {
         NumTextures
     };
 
-public:
-	inline static struct DeferredRendererData {
-		std::unique_ptr<Mesh> quadMesh;
-
-		// sphere used to align affected light area with pointlight radius
-		float sphereRadius;
-		std::unique_ptr<Mesh> sphereMesh;
-
-		/* float coneLength; float coneRadius; glm::vec3 coneDirection;
-		std::unique_ptr<Mesh> coneMesh;*/
-
-		GLint currentlyBoundTexture = -1;
-
-		BatchManager batchManager;
-
+	inline struct DeferredRendererData {
 		std::unique_ptr<Shader> geometryShader;
 		std::unique_ptr<Shader> pointShader;
 		std::unique_ptr<Shader> dirShader;
 		std::unique_ptr<Shader> pointShadowShader;
 		std::unique_ptr<Shader> dirShadowShader;
 
-		GLint textureLibraryId;
+		std::unique_ptr<CameraReference> renderCamera;
+
+		std::unique_ptr<Mesh> quadMesh;
+		std::unique_ptr<Mesh> sphereMesh; // sphere used to align affected light area with pointlight radius
+		float sphereRadius;
+
+		/* float coneLength; float coneRadius; glm::vec3 coneDirection;
+		std::unique_ptr<Mesh> coneMesh;*/
+
+		GLint currentlyBoundTexture = -1;
+
+		std::vector<std::unique_ptr<Batch>> batches;
+
+		std::vector<Model*>* shadowModels;
+		std::vector<glm::vec3> dirLights;
+		std::vector<glm::vec3> pointLights;
+
+		GLint textureLibraryID;
 
 		std::unique_ptr<Framebuffer> gbuffer;
 		std::unique_ptr<Framebuffer> shadowBuffer;
 	} data;
 
-	inline static struct RenderStats {
+	inline struct RenderStats {
 		size_t drawCalls = 0;
 	} stats;
 
-	// todo this shouldn't be here
-	inline static std::vector<glm::vec3> lightDirections;
-	inline static std::vector<glm::vec3> lightPositions;
-
 
 	// controls
-	inline static bool buildBatch = false; // TODO
-	inline static bool drawShadowVolumes = false;
+	inline bool buildBatch = false; // TODO
+	inline bool drawShadowVolumes = false;
 
-
-
-
-	static void initialize(GLint textureId, int screenWidth, int screenHeight) {
-		data.textureLibraryId = textureId;
-
-		// TODO describe constants
-		data.quadMesh = std::make_unique<Mesh>(GeometryLibrary::get(0), MaterialLibrary::get(0));
-		data.sphereMesh = std::make_unique<Mesh>(GeometryLibrary::get(1), MaterialLibrary::get(0));
-		//data.coneMesh = ResourceLoader::importModel("resources/cone.obj")[0];
-
-		//sphereRadius = 0.45f; // sphere.obj
-		data.sphereRadius = 5.93f; // sphere-hd.obj
-		
-		initFramebuffers(screenWidth, screenHeight);
-
-		loadShaders();
+	
+	inline void createBatch(size_t vbSize = default_vertex_buffer_size, size_t ibSize = default_index_buffer_size) {
+		data.batches.push_back(std::make_unique<Batch>(data.textureLibraryID, vbSize, ibSize));
 	}
 
-	static void initFramebuffers(int screenWidth, int screenHeight) {
+	inline void addToBatch(const Mesh& mesh, glm::mat4 modelMat) {
+		if (data.batches.empty()) {
+			createBatch();
+		}
+
+		if (Batch* batch = data.batches.back().get(); !batch->add(mesh, modelMat)) {
+			createBatch();
+			data.batches.back()->add(mesh, modelMat);
+		}
+	}
+
+
+	inline void initFramebuffers(int screenWidth, int screenHeight) {
 		FramebufferSpecification gbufferSpec{
 			screenWidth, screenHeight,
 			{{GL_RGBA16F}, {GL_RGBA16F}, {GL_RGBA16F}, {GL_DEPTH24_STENCIL8}}
@@ -106,7 +108,7 @@ public:
 		data.shadowBuffer = std::make_unique<Framebuffer>(shadowbufferSpec);
 	}
 
-	static void loadShaders() {
+	inline void loadShaders() {
 		gem::Shader<gem::geometry_vertex> gvert;
 		gvert.setgeometry_vertex_materialData(max_material_count);
 		gvert.compile();
@@ -150,8 +152,25 @@ public:
 		);
 	}
 
+	inline void initialize(const Camera& camera, GLint textureId, int screenWidth, int screenHeight) {
+		data.renderCamera = std::make_unique<CameraReference>(camera);
+		data.textureLibraryID = textureId;
+
+		// TODO better asset system
+		data.quadMesh = std::make_unique<Mesh>(GeometryLibrary::get(0), MaterialLibrary::get(0));
+		data.sphereMesh = std::make_unique<Mesh>(GeometryLibrary::get(1), MaterialLibrary::get(0));
+		//data.coneMesh = ResourceLoader::importModel("resources/cone.obj")[0];
+
+		//sphereRadius = 0.45f; // sphere.obj
+		data.sphereRadius = 5.93f; // sphere-hd.obj
+		
+		initFramebuffers(screenWidth, screenHeight);
+
+		loadShaders();
+	}
+
 	template<size_t SCENE_ID>
-	static void buildLights(Scene<SCENE_ID>& scene) {
+	void buildLights(Scene<SCENE_ID>& scene) {
 		// -- dirlights --
 
 		auto dirLightView = scene.view<DirectionalLight, ExcludeComponent<Quad>>(); // TODO hack to make view work
@@ -159,7 +178,7 @@ public:
 
 		dirLightView.each([&](const DirectionalLight& d) {
 			dirLights.push_back(d);
-			lightDirections.push_back(d.direction);
+			data.dirLights.push_back(d.direction);
 		});
 
 		
@@ -179,7 +198,7 @@ public:
 		pointLightView.each([&](const PointLight& p) {
 			pointLights.push_back(p);
 			pointLightInstanceMats.push_back(p.getTransformMatrix(data.sphereRadius));
-			lightPositions.push_back(p.position);
+			data.pointLights.push_back(p.position);
 		});
 
 		if (!pointLights.empty()) {
@@ -187,110 +206,73 @@ public:
 			data.sphereMesh->updateInstances(pointLightInstanceMats);
 		}
 
-		int totalLights = lightDirections.size() + lightPositions.size();
+		int totalLights = data.dirLights.size() + data.pointLights.size();
 		if (totalLights > data.shadowBuffer->specification.layers) {
 			data.shadowBuffer->growDepthLayers(totalLights);
 		}
 	}
 
-	template<size_t SCENE_ID>
-	static void render(Scene<SCENE_ID>& scene) {
-		auto camera = scene.getActiveCamera();
 
-		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
-		
-		if (buildBatch) {
-			data.batchManager.batches.clear();
-
-			auto batchView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, Opaque, ExcludeComponent<Instanced>>();
-			batchView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes,
-							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D,
-							  const Opaque&) {
-				data.batchManager.setTextureID(propertiesModel.textureID); //This should be taken from its own component in the future.
-
-				for (Mesh* mesh : meshes) {
-					data.batchManager.addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
-				}
-			});
-			buildBatch = false;
-		}
-
+	inline void setupFrame() {
 		OpenGL::depthTest(true);
 
-		geometryPass(scene);
-
-		OpenGL::stencilTest(true);
-
-		shadowVolumePass(scene);
-
-		OpenGL::stencilTest(false);
-
-		OpenGL::depthTest(false);
-		OpenGL::blending(true);
-		OpenGL::setBlendMode(GL_SRC_ALPHA, GL_ONE);
-		
-		data.gbuffer->bindForReading();
-		directionalLightPass(camera);
-
-		OpenGL::cullFace(OpenGL::FRONT);
-		
-		pointLightPass(camera);
-		
-		OpenGL::blending(false);
-		OpenGL::cullFace(GL_NONE);
-		data.gbuffer->unbind();
-	}
-	
-	template<size_t SCENE_ID>
-	static void geometryPass(Scene<SCENE_ID>& scene) {
 		data.geometryShader->use();
 		
 		GLint texUnit = 0;
-		glBindTextureUnit(texUnit, data.textureLibraryId);
+		glBindTextureUnit(texUnit, data.textureLibraryID);
 		data.geometryShader->setUniform("textureLib", texUnit);
 		
 		data.gbuffer->clear();
 		data.gbuffer->bindForWriting();
 
-		// disregard model since everything is batched
-		//geometryShader->setUniform("model", glm::mat4(1.0)); 
 		data.geometryShader->setUniform("normal", glm::mat4(1.0));
 
-		for (Batch* batch : data.batchManager.getBatches()) {
+		// render batches
+		// TODO we don't do any batching right now - see render(scene) for process
+
+		for (auto& batch : data.batches) {
 			batch->bind();
-			if (GLint texID = batch->textureID; data.currentlyBoundTexture != texID) {
+			/*if (GLint texID = batch->textureID; data.currentlyBoundTexture != texID) {
 				glBindTextureUnit(texUnit, texID);
 				data.currentlyBoundTexture = texID;
-			}
-
+			}*/
 			glDrawElements(GL_TRIANGLES, batch->numIndices, GL_UNSIGNED_INT, nullptr);
-
 			stats.drawCalls++;
 		}
 		Batch::unbind();
-		
-		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Opaque>();
-		modelView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes, 
-						  const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D,
-			              const Opaque&) {
-			for (Mesh* mesh : meshes) {
-				mesh->bind();
-				glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
-				stats.drawCalls++;
-			}
-		});
+	}
 
-		data.gbuffer->unbind();
+	inline void render(const Model& model) {
+		for (Mesh* mesh : *model.meshes) {
+			mesh->bind();
+			glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+			stats.drawCalls++;
+		}
 	}
 
 
 	template<size_t SCENE_ID>
-	static void shadowVolumePass(Scene<SCENE_ID>& scene) {
+	void render(Scene<SCENE_ID>& scene) {
+		auto bshBoundrary = [](glm::vec4 sphere) { return true; }; //Utility function combined with necessary rendering logic need to be applied here.
+		
+		if (buildBatch) {
+			data.batches.clear();
 
-		auto camera = scene.getActiveCamera();
-		auto view = camera.viewMatrix();
+			auto batchView = scene.view<PropertiesModel, Meshes, Properties3D, Position3D, Rotation3D, Opaque, ExcludeComponent<Instanced>>();
+			batchView.each([](const PropertiesModel& propertiesModel, const Meshes& meshes,
+							  const Properties3D& properties3D, const Position3D& position3D, const Rotation3D& rotation3D,
+							  const Opaque&) {
+				for (Mesh* mesh : meshes) {
+					addToBatch(*mesh, Model::modelMatrix(position3D, rotation3D, properties3D));
+				}
+			});
+			buildBatch = false;
+		}
+	}
+	
 
-		glStencilFunc(GL_ALWAYS, 0, 0xFF);  // Set all stencil values to 0
+	inline void shadowVolumePass() {
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
 		// set stencil test according to zfail algorithm
 		glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
@@ -303,53 +285,50 @@ public:
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 		glDepthMask(GL_FALSE);
 
-		auto shadowModelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Shadow, Opaque>();
 		data.dirShadowShader->use();
 		
 		data.gbuffer->bindForReading();
 		data.shadowBuffer->bindForWriting();
 
-		for (int i = 0; i < lightDirections.size(); i++) {
+		glm::mat4 viewMat = data.renderCamera->viewMatrix();
+
+		for (int i = 0; i < data.dirLights.size(); i++) {
 			data.shadowBuffer->bindDepthLayer(i);
 			Framebuffer::copyDepth(*data.gbuffer, *data.shadowBuffer);
 			
-			glm::vec4 lightDir = view * glm::vec4(lightDirections[i], 0.0f);
+			glm::vec4 lightDir = viewMat * glm::vec4(data.dirLights[i], 0.0f);
 			data.dirShadowShader->setUniform("lightDir_viewSpace", glm::vec3(lightDir.x, lightDir.y, lightDir.z));
 			
-			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
-							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-							        const Shadow&, const Opaque&) {
-				for (Mesh* mesh : meshes) {
-					KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY);
+			for (Model* model : *data.shadowModels) {
+				for (Mesh* mesh : *model->meshes) {
+					KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY)
 					mesh->bind();
 					glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
 				}
 				Mesh::unbind();
-			});
+			}
 		}
 
 		data.pointShadowShader->use();
-		int numDirLights = lightDirections.size();
+		int numDirLights = data.dirLights.size();
 
-		for (int i = 0; i < lightPositions.size(); i++) {
+		for (int i = 0; i < data.pointLights.size(); i++) {
 			data.shadowBuffer->bindDepthLayer(i + numDirLights);
 			Framebuffer::copyDepth(*data.gbuffer, *data.shadowBuffer);
 
-			glm::vec4 lightViewPos = view * glm::vec4(lightPositions[i], 1.0f);
+			glm::vec4 lightViewPos = viewMat * glm::vec4(data.pointLights[i], 1.0f);
 			data.pointShadowShader->setUniform("lightPos_viewSpace", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
 			
-			shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
-							        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-							        const Shadow&, const Opaque&) {
-				for (Mesh* mesh : meshes) {
-					KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY);
+			for (Model* model : *data.shadowModels) {
+				for (Mesh* mesh : *model->meshes) {
+					KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY)
 					mesh->bind();
 					glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 					stats.drawCalls++;
 				}
 				Mesh::unbind();
-			});
+			}
 		}
 		
 		data.shadowBuffer->unbind();
@@ -366,53 +345,46 @@ public:
 
 			OpenGL::depthTest(false);
 
-			if (!lightDirections.empty()) {
+			if (!data.dirLights.empty()) {
 				data.dirShadowShader->use();
-				data.dirShadowShader->setUniform("lightDir", lightDirections[0]);
-
-				shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
-								        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-								        const Shadow&, const Opaque&) {
-
-					for (Mesh* mesh : meshes) {
+				data.dirShadowShader->setUniform("lightDir", data.dirLights[0]);
+				
+				for (Model* model : *data.shadowModels) {
+					for (Mesh* mesh : *model->meshes) {
 						KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY);
 						mesh->bind();
 						glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 						stats.drawCalls++;
 					}
 					Mesh::unbind();
-				});
+				}
 			}
 
-			if (!lightPositions.empty()) {
+			if (!data.pointLights.empty()) {
 				data.pointShadowShader->use();
-				glm::vec4 lightViewPos = view * glm::vec4(lightPositions[0], 1.0f);
+				glm::vec4 lightViewPos = viewMat * glm::vec4(data.pointLights[0], 1.0f);
 				data.pointShadowShader->setUniform("lightPos", glm::vec3(lightViewPos.x, lightViewPos.y, lightViewPos.z));
-
-				shadowModelView.each([](const PropertiesModel&, const Meshes& meshes, 
-								        const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, 
-								        const Shadow&, const Opaque&) {
-
-					for (Mesh* mesh : meshes) {
+				
+				for (Model* model : *data.shadowModels) {
+					for (Mesh* mesh : *model->meshes) {
 						KYSE_ASSERT(mesh->geometry->type == GL_TRIANGLES_ADJACENCY);
 						mesh->bind();
 						glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
 						stats.drawCalls++;
 					}
 					Mesh::unbind();
-				});
+				}
 			}
 
 			OpenGL::depthTest(true);
-
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 	}
 
-	static void directionalLightPass(const CameraReference& camera) {
+	inline void directionalLightPass() {
 		data.dirShader->use();
 
-		data.dirShader->setUniform("worldCameraPos", *camera.position);
+		data.dirShader->setUniform("worldCameraPos", *data.renderCamera->position);
 		
 		data.gbuffer->bindColorTextureUnit(GBufferTextureType::Position);
 		data.dirShader->setUniform("gPosition", GBufferTextureType::Position);
@@ -432,10 +404,10 @@ public:
 		stats.drawCalls++;
 	}
 	
-	static void pointLightPass(const CameraReference& camera) {
+	inline void pointLightPass() {
 		data.pointShader->use();
 
-		data.pointShader->setUniform("worldCameraPos", *camera.position);
+		data.pointShader->setUniform("worldCameraPos", *data.renderCamera->position);
 
 		data.gbuffer->bindColorTextureUnit(GBufferTextureType::Position);
 		data.pointShader->setUniform("gPosition", GBufferTextureType::Position);
@@ -447,7 +419,7 @@ public:
 		glBindTextureUnit(3, data.shadowBuffer->depthTexture);
 		data.pointShader->setUniform("shadowTexture", 3);
 
-		uint numDirLights = lightDirections.size();
+		uint numDirLights = data.dirLights.size();
 		data.pointShader->setUniform("dirLightCount", numDirLights);
 
 		auto* mesh = data.sphereMesh.get();
@@ -457,19 +429,45 @@ public:
 
 		stats.drawCalls++;
 	}
+	
+
+	inline void endFrame() {
+		OpenGL::stencilTest(true);
+
+		shadowVolumePass();
+		Framebuffer::unbind();
+
+		OpenGL::stencilTest(false);
+
+		OpenGL::depthTest(false);
+
+		OpenGL::blending(true);
+		OpenGL::setBlendMode(GL_SRC_ALPHA, GL_ONE);
+		
+		data.gbuffer->bindForReading();
+		directionalLightPass();
+
+		OpenGL::cullFace(OpenGL::FRONT);
+		
+		pointLightPass();
+		
+		OpenGL::blending(false);
+		OpenGL::cullFace(GL_NONE);
+		data.gbuffer->unbind();
+	}
 
 	// Utility functions
 
-	static void rebuildBatch() {
+	inline void rebuildBatch() {
 		buildBatch = true;
 	}
 
-	static void resizeFramebuffers(int width, int height) {
+	inline void resizeFramebuffers(int width, int height) {
 		data.gbuffer->resize(width, height);
 		data.shadowBuffer->resize(width, height);
 	}
 	
-	static void resetStats() {
+	inline void resetStats() {
 		memset(&stats, 0, sizeof(RenderStats));
 	}
 

@@ -7,6 +7,7 @@
 
 #include "API/Application.h"
 #include "Model/Resources/ResourceManager.h"
+#include "Renderer/ModelRenderer.h"
 #include "Renderer/TextRenderer.h"
 #include "Utils/MathUtils.h"
 
@@ -29,7 +30,13 @@ struct World {
 	
 	Meshes specialCrate;
 	std::vector<Meshes> lightMeshes;
+
+	std::vector<Model*> shadowModels;
 };
+
+bool cmp_model_by_shadertype(const std::unique_ptr<Model>& a, const std::unique_ptr<Model>& b) {
+    return a->meshes->at(0)->shaderType < b->meshes->at(0)->shaderType;
+}
 
 
 namespace WorldLayer {
@@ -37,7 +44,8 @@ namespace WorldLayer {
 	inline World world;
 
 	//Renderer<DeferredRenderer, BlendingForwardRenderer, TextRenderer> renderer;
-	inline Renderer<ForwardRenderer, TextRenderer> renderer;
+	//inline Renderer<ForwardRenderer, TextRenderer> renderer;
+	inline ModelRenderer renderer;
 
 	void onAttach(void* context) {
 		Scene<World::scene_0>* scene = &world.scene;
@@ -58,11 +66,15 @@ namespace WorldLayer {
 		lightEntity.add<DirectionalLight>(dirLight);
 		world.scene.add(lightEntity);
 
+
+
 		// TODO it's not actually just initialization, but also setting texture state we don't expect to change in our demo... but it should be handled
-		ForwardRenderer::initialize(pack.getTextureID());
-		DeferredRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
-		BlendingForwardRenderer::initialize(pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		DeferredRenderer::initialize(world.camera, pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		BlendingForwardRenderer::initialize(world.camera, pack.getTextureID(), Window::getWidth(), Window::getHeight());
+		ForwardRenderer::initialize(world.camera, pack.getTextureID());
+
 		TextRenderer::initialize(Window::getWidth(), Window::getHeight());
+
 
 		
 		world.camera.enableAxisLock();
@@ -83,6 +95,7 @@ namespace WorldLayer {
 		palm.setPosition(glm::vec3(0, 0, -5));
 		palm.setScale(glm::vec3(0.5f));
 		palm.add<Shadow>();
+		world.shadowModels.push_back(&palm);
 
 		Model& quad = *world.loadedModels.emplace_back(std::make_unique<Model>(pack.getMeshes("quad")));
 		quad.setPosition({0.f, -2.f, 0.f});
@@ -136,13 +149,18 @@ namespace WorldLayer {
 					Attenuation att = { 1.0f, 0.18f, 0.032f };
 					PointLight& pointLight = world.lights.emplace_back(att, base, *crate.position);
 					crate.add<PointLight>(pointLight);
+					
+					if (meshCounter >= 1) 
+						goto skip;
 				}
 			}
 		}
+		skip:
 
 		world.specialCrate = {new Mesh(*pack.getMeshes("crate")[0])};
 		Model& cratei = *world.loadedModels.emplace_back(std::make_unique<Model>(world.specialCrate));
 		cratei.add<Shadow>();
+		world.shadowModels.push_back(&cratei);
 		std::vector<glm::mat4> instances;
 
 		for (int y = 0; y < plane * dispersion; y += 1 * dispersion) {
@@ -166,13 +184,19 @@ namespace WorldLayer {
 				scene->add(*model);
 		}
 
-		
+
+		// pretty important for renderer correctness currently (using ModelRenderer). figure out what to do with it
+		std::ranges::sort(world.loadedModels, cmp_model_by_shadertype);
+
+
+
 		UniformBufferTechnique::uploadMaterialData();
 		UniformBufferTechnique::uploadTextureData();
  		UniformBufferTechnique::uploadTextureViewData();
 		UniformBufferTechnique::uploadCameraProjection(scene->getActiveCamera().projectionMatrix());
 
 		DeferredRenderer::buildLights(*scene);
+		DeferredRenderer::data.shadowModels = &world.shadowModels;
 
 		glClearColor(0.001f, 0.001f, 0.001f, 1.0f);
 	}
@@ -212,7 +236,14 @@ namespace WorldLayer {
 		glm::mat4 view = scene->getActiveCamera().viewMatrix();
 		UniformBufferTechnique::uploadCameraView(view);
 
-		renderer.render(*scene);
+		// -- render --
+		for (auto& model : world.loadedModels) {
+			renderer.render(*model);
+		}
+		renderer.endFrame();
+		renderer.currentType = ShaderType::None;
+		TextRenderer::flush();
+		// -- end render --
 
 		cumDrawCalls += renderer.getNumDrawCalls();
 		renderer.resetStats();

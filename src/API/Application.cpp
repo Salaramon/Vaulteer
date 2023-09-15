@@ -47,12 +47,12 @@ void Application::initWindow() {
 	WindowSpecification windowSpec = {specification.title, windowWidth, windowHeight, windowX, windowY};
 	window = std::make_unique<Window>(windowSpec);
 
-	auto rebuildGBufferFn = [&](int w, int h) {
+	auto rebuildScreenBuffersFn = [](int w, int h) {
 		DeferredRenderer::resizeFramebuffers(w, h);
 		BlendingForwardRenderer::resizeFramebuffers(w, h);
 		TextRenderer::buildScreenProjection(w, h);
 	};
-	window->addResizeCallback(rebuildGBufferFn);
+	window->addResizeCallback(rebuildScreenBuffersFn);
 }
 
 void Application::destroy() {

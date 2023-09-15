@@ -111,6 +111,9 @@
     <ClInclude Include="src\API\LayerStack.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
+    <ClInclude Include="src\API\Log.h">
+      <Filter>Source Files\API</Filter>
+    </ClInclude>
     <ClInclude Include="src\API\Window.h">
       <Filter>Source Files\API</Filter>
     </ClInclude>
@@ -150,13 +153,13 @@
     <ClInclude Include="src\Model\Resources\FontResourceLocator.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model\Resources\GeometryLibrary.h">
+      <Filter>Source Files\Model\Resources</Filter>
+    </ClInclude>
     <ClInclude Include="src\Model\Resources\MaterialLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\MaterialLoader.h">
-      <Filter>Source Files\Model\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model\Resources\GeometryLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Resources\MeshLoader.h">
@@ -174,7 +177,7 @@
     <ClInclude Include="src\Model\Resources\TextureLibrary.h">
       <Filter>Source Files\Model\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Storage\VertexBufferLayout.h">
+    <ClInclude Include="src\Model\Storage\Geometry.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\MaterialVertex.h">
@@ -190,6 +193,9 @@
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\Vertex.h">
+      <Filter>Source Files\Model\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Storage\VertexBufferLayout.h">
       <Filter>Source Files\Model\Storage</Filter>
     </ClInclude>
     <ClInclude Include="src\Model\Storage\VertexContainer.h">
@@ -246,10 +252,16 @@
     <ClInclude Include="src\Renderer\ClusteredForwardRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\DebugRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\DeferredRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\ForwardRenderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\ModelRenderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
@@ -321,9 +333,6 @@
     <ClInclude Include="vendor\GEM\GEM.h">
       <Filter>Vendor Files\GEM</Filter>
     </ClInclude>
-    <ClInclude Include="src\API\Log.h" />
-    <ClInclude Include="src\Renderer\DebugRenderer.h" />
-    <ClInclude Include="src\Model\Storage\Geometry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\Application.cpp">
@@ -357,9 +366,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\ClusteredForwardRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Renderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
@@ -448,6 +454,12 @@
     <None Include="resources\shaders\cluster_tile_compute.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="resources\shaders\debug_frag.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\debug_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
     <None Include="resources\shaders\deferred_directional_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -532,6 +544,9 @@
     <None Include="resources\shaders\text_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="resources\shaders\volume_dir_geom.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
     <None Include="resources\shaders\volume_frag.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
@@ -562,9 +577,6 @@
     <None Include="resources\water_norm.tga">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\shaders\volume_dir_geom.glsl" />
-    <None Include="resources\shaders\debug_frag.glsl" />
-    <None Include="resources\shaders\debug_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\Crate\crate_1.jpg">

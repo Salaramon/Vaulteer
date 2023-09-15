@@ -145,7 +145,7 @@ public:
 		}
 	}
 
-	glm::mat4 getModelMatrix() {
+	glm::mat4 getModelMatrix() const {
 		return Object3D::modelMatrix(*position, *rotation, *properties3D);
 	}
 	

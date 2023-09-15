@@ -43,7 +43,7 @@ public:
 		properties3D(&add<Properties3D>(Properties3D{
 			.scale = glm::vec3(1.0),
 			.axisLockDirection = {0.f, 1.f, 0.f},
-			.isAxisLocked = false
+			.isAxisLocked = false,
 		}))
 	{}
 
@@ -133,7 +133,17 @@ public:
 
 	void disableAxisLock() {
 		properties3D->isAxisLocked = false;
-	} 
+	}
+
+	bool hasScaleFactor() const {
+		// todo should be cached
+		return glm::vec3(1.0f) == properties3D->scale;
+	}
+
+	bool hasUniformScale() const {
+		// todo should be cached
+		return properties3D->scale.x == properties3D->scale.y && properties3D->scale.x == properties3D->scale.z;
+	}
 
 	// calculation methods
 

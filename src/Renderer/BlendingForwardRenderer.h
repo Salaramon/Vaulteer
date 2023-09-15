@@ -12,41 +12,31 @@
 #include "Scene/Scene.h"
 
 
-class BlendingForwardRenderer {
+namespace BlendingForwardRenderer {
     enum AlphaBufferTextureType {
         Accumulated,
         Alpha,
         NumTextures
     };
-	inline static std::unique_ptr<Framebuffer> alphaBuffer;
-	inline static std::unique_ptr<Mesh> quadMesh;
 
-	inline static GLint textureId;
-	
-	inline static std::unique_ptr<Shader> blendingShader;
-	inline static std::unique_ptr<Shader> compositeShader;
+	inline struct BlendingForwardData {
+		std::unique_ptr<CameraReference> renderCamera;
 
-public:
-	inline static struct RenderStats {
+		std::unique_ptr<Framebuffer> alphaBuffer;
+		std::unique_ptr<Mesh> quadMesh;
+
+		GLint textureId;
+		
+		std::unique_ptr<Shader> blendingShader;
+		std::unique_ptr<Shader> compositeShader;
+	} data;
+
+	inline struct RenderStats {
 		size_t drawCalls = 0;
 	} stats;
+	
 
-
-	static void initialize(const GLint textureId, int screenWidth, int screenHeight) {
-		BlendingForwardRenderer::textureId = textureId;
-
-		FramebufferSpecification alphaBufferSpec{
-			screenWidth, screenHeight,
-			{{GL_RGBA16F}, {GL_R8}, {GL_DEPTH24_STENCIL8}}
-		};
-		alphaBuffer = std::make_unique<Framebuffer>(alphaBufferSpec);
-		
-		quadMesh = std::make_unique<Mesh>(GeometryLibrary::get(0), MaterialLibrary::get(0), glm::mat4(1.0));
-
-		loadShaders();
-	}
-
-	static void loadShaders() {
+	inline void loadShaders() {
 		gem::Shader<gem::blending_vertex> bv;
 		bv.setblending_vertex_materialData(max_material_count);
 		bv.compile();
@@ -54,108 +44,116 @@ public:
 		bf.setblending_frag_materialData(max_material_count);
 		bf.compile();
 
-		blendingShader = std::make_unique<Shader>(
+		data.blendingShader = std::make_unique<Shader>(
 			"resources/shaders/build/blending_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/build/blending_frag.glsl", GL_FRAGMENT_SHADER
 		);
-		compositeShader = std::make_unique<Shader>(
+		data.compositeShader = std::make_unique<Shader>(
 			"resources/shaders/blending_composite_vertex.glsl", GL_VERTEX_SHADER,
 			"resources/shaders/blending_composite_frag.glsl", GL_FRAGMENT_SHADER
 		);
 	}
 
-	template<size_t SCENE_ID>
-	static void render(Scene<SCENE_ID>& scene) {
+	inline void initialize(const Camera& camera, const GLint textureId, int screenWidth, int screenHeight) {
+		data.renderCamera = std::make_unique<CameraReference>(camera);
+		data.textureId = textureId;
+
+		FramebufferSpecification alphaBufferSpec{
+			screenWidth, screenHeight,
+			{{GL_RGBA16F}, {GL_R8}, {GL_DEPTH24_STENCIL8}}
+		};
+		data.alphaBuffer = std::make_unique<Framebuffer>(alphaBufferSpec);
+
+		// TODO this should be part of internal assets
+		data.quadMesh = std::make_unique<Mesh>(GeometryLibrary::get(0), MaterialLibrary::get(0), glm::mat4(1.0));
+
+		loadShaders();
+	}
+	
+	inline void setupFrame() {
 		OpenGL::depthMask(false);
 		OpenGL::depthTest(true);
 		OpenGL::blending(true);
-
+		
 		OpenGL::setBlendMode(AlphaBufferTextureType::Accumulated, GL_ONE, GL_ONE);
 		OpenGL::setBlendMode(AlphaBufferTextureType::Alpha, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 		glBlendEquation(GL_FUNC_ADD);
 
-		blendingPass(scene);
-			
+		data.blendingShader->use();
+		
+		auto view = data.renderCamera->viewMatrix();
+		data.blendingShader->setUniform("inverseViewMat", glm::inverse(view)); // glsl inverse is not the same as glm inverse...
+
+		glBindTextureUnit(0, TextureLibrary::defaultTexture->textureID);
+		data.blendingShader->setUniform("textureLib", 0);
+
+		data.blendingShader->setUniform("cameraPos", *data.renderCamera->position);
+		data.blendingShader->setUniform("lightPos", glm::vec3(5.0));
+
+		data.alphaBuffer->clearColorAttachment(0, 0.0f);
+		data.alphaBuffer->clearColorAttachment(1, 1.0f);
+ 		data.alphaBuffer->clearDepthStencil();
+
+		data.alphaBuffer->bindForWriting();
+	}
+
+	inline void render(const Model& model) {
+		auto modelMat = model.getModelMatrix();
+		glm::mat4 normalMat = glm::mat4(1.0);
+		if (model.hasScaleFactor()) {
+			normalMat = (model.hasUniformScale() ? modelMat : glm::transpose(glm::inverse(modelMat)));
+		}
+		data.blendingShader->setUniform("normal", normalMat);
+
+		for (auto mesh : *model.meshes) {
+			mesh->bind();
+			glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
+			stats.drawCalls++;
+		}
+		Mesh::unbind();
+	}
+
+	inline void compositePass() {
 		OpenGL::depthMask(true);
 		OpenGL::setBlendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		Framebuffer::copyDepth(*DeferredRenderer::data.gbuffer, *alphaBuffer);
-		Framebuffer::unbind();
-		
-		compositePass();
-		
-		OpenGL::blending(false);
-	}
+		Framebuffer::copyDepth(*DeferredRenderer::data.gbuffer, *data.alphaBuffer);
 
-	template<size_t SCENE_ID>
-	static void blendingPass(Scene<SCENE_ID>& scene) {
-		blendingShader->use();
-		
-		auto camera = scene.getActiveCamera();
-		auto modelView = scene.view<PropertiesModel, Meshes, Position3D, Rotation3D, Properties3D, Transparent>();
-
-		auto view = camera.viewMatrix();
-		blendingShader->setUniform("inverseViewMat", glm::inverse(view)); // glsl inverse is not the same as glm inverse...
-
-		glBindTextureUnit(0, TextureLibrary::defaultTexture->textureID);
-		blendingShader->setUniform("textureLib", 0);
-
-		blendingShader->setUniform("cameraPos", *camera.position);
-		blendingShader->setUniform("lightPos", glm::vec3(5.0));
-
-		alphaBuffer->clearColorAttachment(0, 0.0f);
-		alphaBuffer->clearColorAttachment(1, 1.0f);
- 		alphaBuffer->clearDepthStencil();
-
-		alphaBuffer->bindForWriting();
-		
-		modelView.each([](const PropertiesModel&, const Meshes& meshes, const Position3D& position, const Rotation3D& rotation, const Properties3D& properties3D, const Transparent&) {
-			auto modelMat = Object3D::modelMatrix(position, rotation, properties3D);
-
-			//blendingShader->setUniform("model", modelMat);
-			blendingShader->setUniform("normal", glm::transpose(glm::inverse(modelMat)));
-
-			for (auto mesh : meshes) {
-				mesh->bind();
-				glDrawElementsInstanced(mesh->type(), mesh->numIndices(), GL_UNSIGNED_INT, nullptr, mesh->instanceCount);
-				stats.drawCalls++;
-			}
-			Mesh::unbind();
-		});
-
-		alphaBuffer->unbind();
-	}
-
-	static void compositePass() {
-		compositeShader->use();
+		data.compositeShader->use();
 
 		//glDepthFunc(GL_LESS); // less is the default
 
 		Framebuffer::copyDepthToBackFBO(*DeferredRenderer::data.gbuffer);
 
-		alphaBuffer->bindForReading();
+		Framebuffer::unbind();
+		data.alphaBuffer->bindForReading();
 		
-		alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Accumulated);
-		alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Alpha);
-		compositeShader->setUniform("accum", AlphaBufferTextureType::Accumulated);
-		compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
+		data.alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Accumulated);
+		data.alphaBuffer->bindColorTextureUnit(AlphaBufferTextureType::Alpha);
+		data.compositeShader->setUniform("accum", AlphaBufferTextureType::Accumulated);
+		data.compositeShader->setUniform("reveal", AlphaBufferTextureType::Alpha);
 
-		quadMesh->bind();
-		glDrawElements(quadMesh->type(), quadMesh->numIndices(), GL_UNSIGNED_INT, nullptr);
+		data.quadMesh->bind();
+		glDrawElements(data.quadMesh->type(), data.quadMesh->numIndices(), GL_UNSIGNED_INT, nullptr);
 		stats.drawCalls++;
-		quadMesh->unbind();
+		data.quadMesh->unbind();
 
-		alphaBuffer->unbind();
+		data.alphaBuffer->unbind();
+	}
+	
+	inline void endFrame() {
+		compositePass();
+		OpenGL::blending(false);
 	}
 
 	// Utility functions
 	
-	static void resetStats() {
+	inline void resetStats() {
 		memset(&stats, 0, sizeof(RenderStats));
 	}
 
-	static void resizeFramebuffers(int width, int height) {
-		alphaBuffer->resize(width, height);
+	inline void resizeFramebuffers(int width, int height) {
+		data.alphaBuffer->resize(width, height);
 	}
 
 };
